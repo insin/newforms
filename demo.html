@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+  <title>JS Forms Demo Page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="Author" content="Jonathan Buchanan">
+  <style type="text/css">
+  html { margin: 0; padding: 0; }
+  body { padding: 1em 5%; font-family: sans-serif; }
+  h1, h2 { color: #69c; font-family: sans-serif; border-bottom: 1px solid #000; }
+  h1 { font-size: 160%; margin: 0em 0 1em -3%; }
+  h2 { font-size: 140%; margin: 1em 0 1em -2%; }
+  </style>
+  <script type="text/javascript" src="http://dombuilder.googlecode.com/svn/trunk/DOMBuilder.js"></script>
+  <script type="text/javascript" src="util.js"></script>
+  <script type="text/javascript" src="widgets.js"></script>
+  <script type="text/javascript" src="fields.js"></script>
+  <script type="text/javascript" src="forms.js"></script>
+  <script type="text/javascript">
+  function ContactForm(kwargs)
+  {
+      this.fields =
+      {
+          name: new CharField({maxLength: 100, label: "Your name"}),
+          email: new EmailField({widget: new TextInput({maxlength: "200"}), label: "Your email address"}),
+          body: new CharField({widget: new Textarea(), label: "Your message"}),
+          source: new ChoiceField({choices: [[1, "In a catalogue"],
+                                             [2, "On the internet"],
+                                             [3, "Other"]],
+                                   label: "Where did you hear about us?"})
+      };
+      Form.call(this, kwargs);
+  };
+
+  ContactForm.prototype = extendObject(new Form(), {
+      cleanName: function()
+      {
+          if (this.cleanedData.name != "Cheese")
+          {
+              throw new ValidationError("Your name must be cheese.");
+          }
+          return this.cleanedData.name;
+      }
+  });
+
+  DOMBuilder.addEvent(window, "load", function()
+  {
+      DOMBuilder.apply(window);
+
+      var form = new ContactForm({
+          prefix: "test",
+          initial: {name: "Test", email: "test@test.com", body: "Testing\n\nTesting", source: 2}
+      });
+
+      document.body.appendChild(
+        DIV(
+          H2("Contact Form"),
+          TABLE(
+            TR(
+              TH(form.name.labelTag()),
+              TD(form.name.asWidget())
+            ),
+            TR(
+              TH(form.email.labelTag()),
+              TD(form.email.asWidget())
+            ),
+            TR(
+              TH(form.body.labelTag()),
+              TD(form.body.asWidget())
+            ),
+            TR(
+              TH(form.source.labelTag()),
+              TD(form.source.asWidget())
+            ),
+            TR(
+              TD({colspan: 2, style: "text-align: right;"},
+                INPUT({type: "submit", value: "Contact Me"})
+              )
+            )
+          )
+        )
+      );
+  });
+  </script>
+</head>
+<body>
+
+<h1>JS Forms Demo Page</h1>
+
+</body>
+</html>
