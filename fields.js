@@ -1,20 +1,18 @@
 /**
- * Values which will, if given to <code>clean</code>, trigger the
- * <code>this.required</code> check.
- */
-EMPTY_VALUES = [null, ''];
-
-/**
- * A class that is responsible for doing validation, e.g. an
- * <code>EmailField</code> that makes sure its data is a valid e-mail address.
+ * An object that is responsible for doing validation, for example: an
+ * <code>EmailField</code> makes sure its data is a valid e-mail address.
  *
- * @param {Object} kwargs configuration options
- * @config {Boolean} [required]
- * @config {Widget} [widget]
- * @config {String} [label]
- * @config [initial]
- * @config {String} [helpText]
- * @config {Object} [errorMessages]
+ * @param {Object} [kwargs] configuration options
+ * @config {Boolean} [required] determines if the field is required - defaults
+ *                              to <code>true</code>.
+ * @config {Widget} [widget] overrides the widget used to render the field - if
+ *                           not provided, the field's default will be used.
+ * @config {String} [label] the label to be displayed for the field - if not
+ *                          provided, will be generated from the field's name.
+ * @config [initial] an initial value for the field to be used if none is
+ *                   specified by the field's form.
+ * @config {String} [helpText] help text for the field.
+ * @config {Object} [errorMessages] custom error messages for the field.
  * @constructor
  */
 function Field(kwargs)
@@ -44,7 +42,13 @@ function Field(kwargs)
 }
 
 /**
- * Tracks each time a Field instance is created. Used to retain order.
+ * Values which will, if given to <code>clean</code>, trigger the
+ * <code>this.required</code> check.
+ */
+Field.EMPTY_VALUES = [null, ''];
+
+/**
+ * Tracks each time a Field instance is created; used to retain order.
  */
 Field.creationCounter = 0;
 
@@ -80,9 +84,9 @@ Field.prototype.clean = function(value)
 {
     if (this.required)
     {
-        for (var i = 0, l = EMPTY_VALUES.length; i < l; i++)
+        for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
         {
-            if (value === EMPTY_VALUES[i])
+            if (value === Field.EMPTY_VALUES[i])
             {
                 throw new ValidationError(this.errorMessages.required);
             }
@@ -92,7 +96,8 @@ Field.prototype.clean = function(value)
 };
 
 /**
- * Specifies HTML attributes which should be added to a given widget.
+ * Specifies HTML attributes which should be added to a given widget for this
+ * field.
  *
  * @param {Widget} widget a widget
  * @returns an object specifying HTML attributes that should be added to the
@@ -105,12 +110,12 @@ Field.prototype.widgetAttrs = function(widget)
 };
 
 /**
- * Validates that its imput is a valid string.
+ * Validates that its input is a valid string.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
  *                          in <code>Field</code>.
- * @config {Number} [maxLength]
- * @config {Number} [minLength]
+ * @config {Number} [maxLength] a maximum valid length for the input string.
+ * @config {Number} [minLength] a minimum valid length for the input string.
  * @constructor
  */
 function CharField(kwargs)
@@ -131,20 +136,20 @@ extendObject(CharField.prototype.defaultErrorMessages, {
 });
 
 /**
- * Validates max length and min length.
+ * Validates max length and min length of the input, if configured to do so.
  *
  * @param {String} value the value to be validated.
  *
- * @return a valid string
+ * @return a valid string, which will be <code>""</code> for empty values.
  * @type String
  */
 CharField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = EMPTY_VALUES.length; i < l; i++)
+    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
     {
-        if (value === EMPTY_VALUES[i])
+        if (value === Field.EMPTY_VALUES[i])
         {
             return "";
         }
@@ -167,6 +172,15 @@ CharField.prototype.clean = function(value)
     return value;
 };
 
+/**
+ * If this field is configured to enforce a maximum length, adds a suitable
+ * <code>maxlength</code> attribute to text input fields.
+ *
+ * @param {Widget} widget the widget being used to render this field's value.
+ *
+ * @return additional attributes which should be added to the given widget.
+ * @type Object
+ */
 CharField.prototype.widgetAttrs = function(widget)
 {
     var attrs = {};
@@ -179,12 +193,12 @@ CharField.prototype.widgetAttrs = function(widget)
 };
 
 /**
- * Validates that its imput is a valid integer.
+ * Validates that its input is a valid integer.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
  *                          in <code>Field</code>.
- * @config {Number} [maxValue]
- * @config {Number} [minValue]
+ * @config {Number} [maxValue] a maximum value for the input.
+ * @config {Number} [minValue] a minimum value for the input.
  * @constructor
  */
 function IntegerField(kwargs)
@@ -216,9 +230,9 @@ IntegerField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = EMPTY_VALUES.length; i < l; i++)
+    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
     {
-        if (value === EMPTY_VALUES[i])
+        if (value === Field.EMPTY_VALUES[i])
         {
             return null;
         }
@@ -244,12 +258,12 @@ IntegerField.prototype.clean = function(value)
 };
 
 /**
- * Validates that its imput is a valid float.
+ * Validates that its input is a valid float.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
  *                          in <code>Field</code>.
- * @config {Number} [maxValue]
- * @config {Number} [minValue]
+ * @config {Number} [maxValue] a maximum value for the input.
+ * @config {Number} [minValue] a minimum value for the input.
  * @constructor
  */
 function FloatField(kwargs)
@@ -281,9 +295,9 @@ FloatField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = EMPTY_VALUES.length; i < l; i++)
+    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
     {
-        if (value === EMPTY_VALUES[i])
+        if (value === Field.EMPTY_VALUES[i])
         {
             return null;
         }
@@ -321,8 +335,9 @@ FloatField.prototype.clean = function(value)
  *
  * @param regex a <code>RegExp</code> or a <code>String</code> containing a
  *              pattern. If a <code>String</code> is given, it will be compiled
- *              to a <code>Regexp</code>.
- * @param {Object} [kwargs]
+ *              to a <code>RegExp</code>.
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          <code>Field</code> and <code>CharField</code>.
  * @constructor
  */
 function RegexField(regex, kwargs)
@@ -343,7 +358,7 @@ RegexField.prototype = new CharField();
  *
  * @param {String} value the value to be validated.
  *
- * @return a value which matches the regular expresson defined for this field.
+ * @return a string which matches the regular expresson defined for this field.
  * @type String
  */
 RegexField.prototype.clean = function(value)
@@ -357,23 +372,23 @@ RegexField.prototype.clean = function(value)
 };
 
 /**
- * E-mail validation regular expression.
- */
-var EMAIL_REGEXP = new RegExp(
-    "(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*" +                                // Dot-atom
-    "|^\"([\\001-\\010\\013\\014\\016-\\037!#-\\[\\]-\\177]|\\\\[\\001-011\\013\\014\\016-\\177])*\"" + // Quoted-string
-    ")@(?:[A-Z0-9-]+\\.)+[A-Z]{2,6}$",                                                                  // Domain
-    "i");
-
-/**
  * Validates that its input appears to be a valid e-mail address.
  *
  * @constructor
  */
 function EmailField(kwargs)
 {
-    RegexField.call(this, EMAIL_REGEXP, kwargs);
+    RegexField.call(this, EmailField.EMAIL_REGEXP, kwargs);
 }
+
+/**
+ * E-mail validation regular expression.
+ */
+EmailField.EMAIL_REGEXP = new RegExp(
+    "(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*" +                                // Dot-atom
+    "|^\"([\\001-\\010\\013\\014\\016-\\037!#-\\[\\]-\\177]|\\\\[\\001-011\\013\\014\\016-\\177])*\"" + // Quoted-string
+    ")@(?:[A-Z0-9-]+\\.)+[A-Z]{2,6}$",                                                                  // Domain
+    "i");
 
 EmailField.prototype = new RegexField();
 
@@ -384,8 +399,8 @@ extendObject(EmailField.prototype.defaultErrorMessages, {
 /**
  * Validates that its input is a valid uploaded file.
  * <p>
- * This field is meaningless on the client side, but is included for use in any
- * future server-side implementation.
+ * This field is mostly meaningless on the client side, but is included for
+ * future use in any future server-side implementation.
  *
  * @constructor
  */
@@ -403,8 +418,8 @@ extendObject(FileField.prototype.defaultErrorMessages, {
 /**
  * Validates that its input is a valid uploaded image.
  * <p>
- * This field is meaningless on the client side, but is included for use in any
- * future server-side implementation.
+ * This field is mostly meaningless on the client side, but is included for
+ * future use in any future server-side implementation.
  *
  * @constructor
  */
@@ -417,11 +432,32 @@ extendObject(ImageField.prototype.defaultErrorMessages, {
     invalidImage: "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
 });
 
+/**
+ * Validates that its input appears to be a valid URL.
+ *
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>RegexField</code>
+ * @config {Boolean} [verifyExists] should the field attempt to verify if the
+ *                                  address exists by accessing it? Defaults to
+ *                                  <code>false</code>.
+ * @config {String} [userAgent] the user agent string to use when attempting URL
+ *                              verification.
+ * @constructor
+ */
+function URLField(kwargs)
+{
+    kwags = updateObject({
+        verifyExists: false, userAgent: URLField.URL_VALIDATOR_USER_AGENT
+    }, kwargs || {})
+    RegexField.call(this, URLField.URL_REGEXP, kwargs);
+    this.verifyExists = kwargs.verifyExists;
+    this.userAgent = kwargs.userAgent;
+}
 
 /**
  * URL validation regular expression.
  */
-var URL_REGEXP = new RegExp(
+URLField.URL_REGEXP = new RegExp(
     "^https?://" +                                 // http:// or https://
     "(?:(?:[A-Z0-9-]+\\.)+[A-Z]{2,6}|" +           // Domain...
     "localhost|" +                                 // ...localhost...
@@ -431,27 +467,10 @@ var URL_REGEXP = new RegExp(
     "i")
 
 /**
- * URL validation user agent.
+ * Default URL validation user agent.
  */
-var URL_VALIDATOR_USER_AGENT = "js-forms (http://code.google.com/p/js-forms/)";
-
-/**
- * Validates that its input appears to be a valid URL.
- *
- * @param {Object} [kwargs]
- * @config {Boolean} [verifyExists]
- * @config {String} [userAgent]
- * @constructor
- */
-function URLField(kwargs)
-{
-    kwags = updateObject({
-        verifyExists: false, userAgent: URL_VALIDATOR_USER_AGENT
-    }, kwargs || {})
-    RegexField.call(this, URL_REGEXP, kwargs);
-    this.verifyExists = kwargs.verifyExists;
-    this.userAgent = kwargs.userAgent;
-}
+URLField.URL_VALIDATOR_USER_AGENT =
+    "js-forms (http://code.google.com/p/js-forms/)";
 
 URLField.prototype = new RegexField();
 extendObject(URLField.prototype.defaultErrorMessages, {
@@ -493,13 +512,20 @@ URLField.prototype.clean = function(value)
 /**
  * Validates that its input is one of a valid list of choices.
  *
- * @param {Object} [kwargs]
- * @config {Boolean} [choices]
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>Field</code>.
+ * @config {Array} [choices] a list of choices - each choice should be specified
+ *                           as a list containing two items; the first item is
+ *                           a value which should be validated against, the
+ *                           second item is a display value for that choice, for
+ *                           example:
+ *                           <code>{choices: [[1, "One"], [2, "Two"]]}</code>.
+ *                           Defaults to an empty <code>Array</code>.
  * @constructor
  */
 function ChoiceField(kwargs)
 {
-    // TODO Why was the setter not working when defined "normally"?
+    // TODO Why was the setter not working when defined "normally" in the prototype?
     this.__defineGetter__("choices", function()
     {
         return this._choices;
@@ -524,7 +550,7 @@ extendObject(ChoiceField.prototype.defaultErrorMessages, {
 /**
  * Validates that the given value is in this field's choices.
  *
- * @param {String} the value to be validated.
+ * @param {String} value the value to be validated.
  *
  * @return a valid choice.
  * @type String
@@ -533,9 +559,9 @@ ChoiceField.prototype.clean = function(value)
 {
     value = Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = EMPTY_VALUES.length; i < l; i++)
+    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
     {
-        if (value === EMPTY_VALUES[i])
+        if (value === Field.EMPTY_VALUES[i])
         {
             return "";
         }
@@ -543,7 +569,7 @@ ChoiceField.prototype.clean = function(value)
 
     for (var i = 0, l = this.choices.length; i < l; i++)
     {
-        if (value === this.choices[i][0])
+        if (value === ("" + this.choices[i][0]))
         {
             return value;
         }
@@ -562,18 +588,23 @@ ChoiceField.prototype.clean = function(value)
 
 // TODO SplitDateTimeField
 
-var IPV4_REGEXP = /^(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}$/;
-
 /**
  * Validates that its input is a valid IPv4 address.
  *
- * @param {Object} [kwargs]
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          <code>Field</code> and <code>CharField</code>.
  * @constructor
  */
 function IPAddressField(kwargs)
 {
-    RegexField.call(this, IPV4_REGEXP, kwargs);
+    RegexField.call(this, IPAddressField.IPV4_REGEXP, kwargs);
 };
+
+/**
+ * IPv4 address validation regular expression.
+ */
+IPAddressField.IPV4_REGEXP =
+    /^(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}$/;
 
 IPAddressField.prototype = new RegexField();
 extendObject(IPAddressField.prototype.defaultErrorMessages, {
