@@ -194,9 +194,9 @@ BoundField.prototype.labelTag = function(kwargs)
  * @param {Object} [kwargs] configuration options.
  * @config {Object} [data] input form data, where property names are field
  *                         names.
- * @config {Object} [files] input file data - this is meaningless on the client
- *                          side, but is included for future use in any future
- *                          server-side implementation.
+ * @config {Object} [files] input file data - this is meaningless on the
+ *                          client-side, but is included for future use in any
+ *                          future server-side implementation.
  * @config {String} [autoId] a template for use when automatically generating
  *                           <code>id</code> attributes for fields, which should
  *                           contain a <code>"%(name)s"</code> placeholder for

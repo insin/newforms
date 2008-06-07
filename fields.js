@@ -399,16 +399,18 @@ extendObject(EmailField.prototype.defaultErrorMessages, {
 /**
  * Validates that its input is a valid uploaded file.
  * <p>
- * This field is mostly meaningless on the client side, but is included for
+ * This field is mostly meaningless on the client-side, but is included for
  * future use in any future server-side implementation.
  *
  * @constructor
  */
-function FileField()
+function FileField(kwargs)
 {
+    Field.call(this, kwargs);
 }
 
 FileField.prototype = new Field();
+FileField.prototype.defaultWidget = FileInput;
 extendObject(FileField.prototype.defaultErrorMessages, {
     invalid: "No file was submitted. Check the encoding type on the form.",
     missing: "No file was submitted.",
@@ -418,13 +420,14 @@ extendObject(FileField.prototype.defaultErrorMessages, {
 /**
  * Validates that its input is a valid uploaded image.
  * <p>
- * This field is mostly meaningless on the client side, but is included for
+ * This field is mostly meaningless on the client-side, but is included for
  * future use in any future server-side implementation.
  *
  * @constructor
  */
-function ImageField()
+function ImageField(kwargs)
 {
+    FileField.call(this, kwargs);
 }
 
 ImageField.prototype = new FileField();
@@ -446,7 +449,7 @@ extendObject(ImageField.prototype.defaultErrorMessages, {
  */
 function URLField(kwargs)
 {
-    kwags = updateObject({
+    kwargs = extendObject({
         verifyExists: false, userAgent: URLField.URL_VALIDATOR_USER_AGENT
     }, kwargs || {})
     RegexField.call(this, URLField.URL_REGEXP, kwargs);
@@ -500,7 +503,7 @@ URLField.prototype.clean = function(value)
     }
     if (this.verifyExists === true)
     {
-        // TODO Can URL verification be reliably implemented on the client side?
+        // TODO Can URL verification be reliably implemented on the client-side?
     }
     return value
 };

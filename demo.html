@@ -21,10 +21,18 @@
   {
       this.fields =
       {
-          name: new CharField({maxLength: 100, label: "Your name"}),
+          name: new CharField({minLength: 1, maxLength: 100, label: "Your name"}),
+          age: new IntegerField({minValue: 1, maxValue: 120, label: "Your age"}),
+          faveFloat: new FloatField({minValue: 1.5, maxValue: 24.5, label: "Your favourite number between 1.5 and 24.5"}),
+          phoneNumber: new RegexField(/\d{3}-\d{5}/, {label: "Your phone number (e.g. 555-12345)", errorMessages: {invalid: "Not a valid phone number"}}),
           email: new EmailField({widget: new TextInput({maxlength: "200"}), label: "Your email address"}),
+          zeeMikrofilm: new FileField({label: "Please upload zee mikrofilm"}),
+          photo: new ImageField({label: "Photo or it didn't happen"}),
+          website: new URLField({widget: new TextInput({size: "50"}), label: "Your website URL"}),
+          faveIPAddress: new IPAddressField({label: "Your favourite IP address... you freak"}),
           body: new CharField({widget: new Textarea(), label: "Your message"}),
-          source: new ChoiceField({choices: [[1, "In a catalogue"],
+          source: new ChoiceField({choices: [["", "----------"],
+                                             [1, "In a specialist catalogue"],
                                              [2, "On the internet"],
                                              [3, "Other"]],
                                    label: "Where did you hear about us?"})
@@ -52,31 +60,24 @@
           initial: {name: "Test", email: "test@test.com", body: "Testing\n\nTesting", source: 2}
       });
 
+      var boundFields = form.boundFields();
+      var rows = [];
+      for (var i = 0, l = boundFields.length; i < l; i++)
+      {
+          var field = boundFields[i];
+          rows[rows.length] = TR(
+                                 TH(field.labelTag()),
+                                 TD(field.asWidget()));
+      }
+      rows[rows.length] = TR(
+                            TD({colspan: 2, style: "text-align: right;"},
+                              INPUT({type: "submit", value: "Contact Me"})));
+
       document.body.appendChild(
         DIV(
           H2("Contact Form"),
           TABLE(
-            TR(
-              TH(form.name.labelTag()),
-              TD(form.name.asWidget())
-            ),
-            TR(
-              TH(form.email.labelTag()),
-              TD(form.email.asWidget())
-            ),
-            TR(
-              TH(form.body.labelTag()),
-              TD(form.body.asWidget())
-            ),
-            TR(
-              TH(form.source.labelTag()),
-              TD(form.source.asWidget())
-            ),
-            TR(
-              TD({colspan: 2, style: "text-align: right;"},
-                INPUT({type: "submit", value: "Contact Me"})
-              )
-            )
+            rows
           )
         )
       );

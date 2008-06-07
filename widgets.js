@@ -87,9 +87,14 @@ Input.prototype.inputType = null;
 
 Input.prototype.render = function(name, value, attrs)
 {
+    value = value || "";
     var finalAttrs = this.buildAttrs(attrs, {type: this.inputType,
-                                             name: name,
-                                             value: value || ""});
+                                             name: name});
+    if (value != "")
+    {
+        // Only add the "value" attribute if value is non-empty
+        finalAttrs["value"] = value;
+    }
     return DOMBuilder.createElement("input", finalAttrs);
 };
 
@@ -151,7 +156,37 @@ HiddenInput.prototype.isHidden = true;
 
 // TODO MultipleHiddenInput
 
-// TODO FileInput
+/**
+ * An HTML <code>&lt;input type="file"&gt;</code> widget.
+ *
+ * @param {Object} [attrs] HTML attributes for the rendered widget.
+ * @constructor
+ */
+function FileInput(attrs)
+{
+    Input.call(this, attrs);
+}
+
+FileInput.prototype = new Input();
+FileInput.prototype.inputType = "file";
+FileInput.prototype.needsMultiPartForm = true;
+
+FileInput.prototype.render = function(name, value, attrs)
+{
+    return Input.prototype.render.call(this, name, null, attrs);
+};
+
+/**
+ * File widgets take data from <code>files</code>, not <code>data</code>.
+ */
+FileInput.prototype.valueFromData = function(data, files, name)
+{
+    if (typeof files[name] != "undefined")
+    {
+        return files[name];
+    }
+    return null;
+};
 
 /**
  * An HTML <code>&lt;textarea&gt;</code> widget.
