@@ -1,9 +1,9 @@
 /**
  * A field and its associated data.
  *
- * @param {Form} form
- * @param {Field} field
- * @param {String} name
+ * @param {Form} form a form.
+ * @param {Field} field one of the form's fields.
+ * @param {String} name the name under which the field is held in the form.
  * @constructor
  */
 function BoundField(form, field, name)
@@ -46,7 +46,6 @@ BoundField.prototype =
         {
             if (autoId.indexOf("%(name)s") > -1)
             {
-                // TODO Replace with %s formatting
                 return formatString(autoId, {name: this.htmlName});
             }
             else
@@ -66,13 +65,14 @@ BoundField.prototype =
 };
 
 /**
- * Renders the field by rendering the passed widget, adding any HTML attributes
- * passed as attrs. If no widget is specified, then the field's default widget
- * will be used.
+ * Renders a widget for the field.
  *
- * @param {Object} [kwargs]
- * @config {Widget} widget
- * @config {Object} attrs
+ * @param {Object} [kwargs] configuration options
+ * @config {Widget} [widget] an override for the widget used to render the field
+ *                           - if not provided, the field's configured widget
+ *                           will be used
+ * @config {Object} [attrs] additional attributes to be added to the field's
+ *                          widget.
  */
 BoundField.prototype.asWidget = function(kwargs)
 {
@@ -91,7 +91,6 @@ BoundField.prototype.asWidget = function(kwargs)
     var data;
     if (!this.form.isBound)
     {
-
         if (typeof this.form.initial[this.name] !== "undefined")
         {
             data = this.form.initial[this.name];
@@ -117,7 +116,8 @@ BoundField.prototype.asWidget = function(kwargs)
 /**
  * Renders the field as a hidden field.
  *
- * @param {Object} attrs
+ * @param {Object} [attrs] additional attributes to be added to the field's
+ *                         widget.
  */
 BoundField.prototype.asHidden = function(attrs)
 {
@@ -128,7 +128,8 @@ BoundField.prototype.asHidden = function(attrs)
 /**
  * Renders the field as a text input.
  *
- * @param {Object} attrs
+ * @param {Object} [attrs] additional attributes to be added to the field's
+ *                         widget.
  */
 BoundField.prototype.asText = function(attrs)
 {
@@ -139,7 +140,8 @@ BoundField.prototype.asText = function(attrs)
 /**
  * Renders the field as a textarea.
  *
- * @param {Object} attrs
+ * @param {Object} [attrs] additional attributes to be added to the field's
+ *                         widget.
  */
 BoundField.prototype.asTextarea = function(attrs)
 {
@@ -148,9 +150,12 @@ BoundField.prototype.asTextarea = function(attrs)
 };
 
 /**
- * @param {Object} [kwargs]
- * @config {Node} contents
- * @config {Object} attrs
+ * Creates an HTML <code>&lt;label&gt;</code> for the field.
+ *
+ * @param {Object} [kwargs] configuration options.
+ * @config {String} [contents] contents for the label - if not provided, label
+ *                             contents will be generated from the field itself.
+ * @config {Object} [attrs] additional attributes to be added to the label.
  */
 BoundField.prototype.labelTag = function(kwargs)
 {
@@ -162,7 +167,7 @@ BoundField.prototype.labelTag = function(kwargs)
     }
     else
     {
-        contents = document.createTextNode(this.label);
+        contents = this.label;
     }
     var widget = this.field.widget;
     var id;
@@ -176,32 +181,50 @@ BoundField.prototype.labelTag = function(kwargs)
     }
     if (id)
     {
-        contents = DOMBuilder.createElement(
-            "label", {"for": widget.idForLabel(id)}, [contents]);
+        var attrs = extendObject(kwargs.attrs || {},
+                                 {"for": widget.idForLabel(id)});
+        contents = DOMBuilder.createElement("label", attrs, [contents]);
     }
     return contents;
 };
 
-/** Property under which non-field-specific errors are stored. */
-NON_FIELD_ERRORS = '__all__';
-
 /**
  * A collection of Fields that knows how to validate and display itself.
  *
- * @param {Object} [kwargs]
- * @config {Object} [data]
- * @config {Object} [files]
- * @config {String} [autoId]
- * @config {String} [prefix]
- * @config {Object} [initial]
- * @config {Function} [errorConstructor]
- * @config {String} [labelSuffix]
+ * @param {Object} [kwargs] configuration options.
+ * @config {Object} [data] input form data, where property names are field
+ *                         names.
+ * @config {Object} [files] input file data - this is meaningless on the client
+ *                          side, but is included for future use in any future
+ *                          server-side implementation.
+ * @config {String} [autoId] a template for use when automatically generating
+ *                           <code>id</code> attributes for fields, which should
+ *                           contain a <code>"%(name)s"</code> placeholder for
+ *                           the field name - defaults to
+ *                           <code>"id_%(name)s"</code>.
+ * @config {String} [prefix] a prefix to be applied to the name of each field in
+ *                           this instance of the form - using a prefix allows
+ *                           you to easily work with multiple instances of the
+ *                           same Form object in the same HTML
+ *                           <code>&lt;form&gt;</code>, or to safely mix Form
+ *                           objects which have fields with the same names.
+ * @config {Object} [initial] initial form data, where property names are field
+ *                            names - if a field's value is not specified in
+ *                            <code>data</code>, these values will be used when
+ *                            rendering field widgets.
+ * @config {Function} [errorConstructor] the constructor function to be used
+ *                                       when creating error details - defaults
+ *                                       to <code>ErrorList</code>.
+ * @config {String} [labelSuffix] a suffix to be used when generating labels
+ *                                in one of the convenience method which renders
+ *                                the entire Form - defaults to
+ *                                <code>":"</code>.
  * @constructor
  */
 function Form(kwargs)
 {
     kwargs = extendObject({
-        data: null, files: null, autoId: "id_%s", prefix: null, initial: null,
+        data: null, files: null, autoId: "id_%(name)s", prefix: null, initial: null,
         errorConstructor: ErrorList, labelSuffix: ":"
     }, kwargs || {});
     this.isBound = kwargs.data !== null || kwargs.files !== null;
@@ -241,9 +264,15 @@ function Form(kwargs)
     }
 }
 
+/** Property under which non-field-specific errors are stored. */
+Form.NON_FIELD_ERRORS = '__all__';
+
 Form.prototype =
 {
     /**
+     * Getter for errors, which first cleans the form if there are no errors
+     * defined yet.
+     *
      * @return errors for the data provided for the form.
      * @type ErrorObject
      */
@@ -262,6 +291,15 @@ Form.prototype =
 //    for name, field in self.fields.items():
 //        yield BoundField(self, field, name)
 
+/**
+ * Creates a <code>BoundField</code> for the field with the given name.
+ *
+ * @param {String} name a field name.
+ *
+ * @return a <code>BoundField</code> for the field with the given name, if one
+ *         exists.
+ * @type BoundField
+ */
 Form.prototype.boundField = function(name)
 {
     if (!this.fields.hasOwnProperty(name))
@@ -271,7 +309,15 @@ Form.prototype.boundField = function(name)
     return new BoundField(this, this.fields[name], name);
 };
 
-Form.prototype.boundFields = function(name)
+/**
+ * Creates a <code>BoundField</code> for each field in the form, ordering them
+ * by the order in which the fields were created.
+ *
+ * @return a list of <code>BoundField</code> object - one for each field in the
+ *         form, in the order in which the fields were created.
+ * @type Array
+ */
+Form.prototype.boundFields = function()
 {
     var fields = [];
     for (var name in this.fields)
@@ -287,7 +333,6 @@ Form.prototype.boundFields = function(name)
         return a.field.creationCounter - b.field.creationCounter;
     });
     return fields;
-    var boundFields = [];
 };
 
 /**
@@ -323,30 +368,24 @@ Form.prototype.addPrefix = function(fieldName)
         return formatString("%(prefix)s-%(fieldName)s",
                             {prefix: this.prefix, fieldName: fieldName});
     }
-    else
-    {
-        return fieldName;
-    }
+    return fieldName;
 };
 
 /**
  * Returns errors that aren't associated with a particular field.
  *
- * @return errors that aren't associated with a particular field -- i.e., from
- *         Form.clean(). Will be empty if there are none.
+ * @return errors that aren't associated with a particular field - i.e., errors
+ *         generated by <code>clean()</code>. Will be empty if there are none.
  * @type ErrorList
  */
 Form.prototype.nonFieldErrors = function()
 {
     var errors = this.errors;
-    if (typeof errors[NON_FIELD_ERRORS] != "undefined")
+    if (typeof errors[Form.NON_FIELD_ERRORS] != "undefined")
     {
-        return errors[NON_FIELD_ERRORS];
+        return errors[Form.NON_FIELD_ERRORS];
     }
-    else
-    {
-        return new this.errorConstructor();
-    }
+    return new this.errorConstructor();
 };
 
 /**
@@ -425,7 +464,7 @@ Form.prototype.fullClean = function()
     {
         if (e instanceof ValidationError)
         {
-            this._errors[NON_FIELD_ERRORS] = e.messages;
+            this._errors[Form.NON_FIELD_ERRORS] = e.messages;
         }
         else
         {
@@ -440,12 +479,12 @@ Form.prototype.fullClean = function()
 };
 
 /**
- * Hook for doing any extra form-wide cleaning after <code>Field.clean()</code>
- * has been called on every field. Any <code>ValidationError</code> raised by
- * this method will not be associated with a particular field; it will have a
+ * Hook for doing any extra form-wide cleaning after each Field's
+ * <code>clean()</code> has been called. Any <code>ValidationError</code> raised
+ * by this method will not be associated with a particular field; it will have a
  * special-case association with the field named <code>"__all__"</code>.
  *
- * @return cleaned, validated data.
+ * @return validated, cleaned data.
  * @type Object
  */
 Form.prototype.clean = function()
@@ -475,3 +514,7 @@ Form.prototype.isMultipart = function()
     }
     return false;
 };
+
+// TODO Form.prototype.asTable
+// TODO Form.prototype.asUL
+// TODO Form.prototype.asP
