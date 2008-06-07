@@ -1,8 +1,8 @@
 /**
- * Extends one object's properties with another object's properties.
+ * Updates an object's properties with another object's properties.
  *
- * @param {Object} destination the object being copied to.
- * @param {Object} source the object being copied from.
+ * @param {Object} destination the object to be updated.
+ * @param {Object} source the object providing the updated properties.
  *
  * @return the <code>destination</code> object.
  * @type Object
@@ -20,8 +20,8 @@ function extendObject(destination, source)
 }
 
 /**
- * Performs replacement of named placeholders in a given String, specified in
- * <code>%(name)s</code> format.
+ * Performs replacement of named placeholders in a String, specified in
+ * <code>%(placeholder)s</code> format.
  *
  * @param {String} input the String to be formatted.
  * @param {Object} context an object specifying formatting context attributes.
@@ -32,11 +32,24 @@ function extendObject(destination, source)
  */
 var formatString = function()
 {
+    // Closure for accessing a context object from the replacement function
     var replacer = function(context)
     {
-        return function(s, p1)
+        /**
+         * A replacement function which looks up replacements for a named
+         * placeholder.
+         * <p>
+         * See http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:String:replace#Specifying_a_function_as_a_parameter
+         *
+         * @param {String} s the string undergoing replacement.
+         * @param {String} name the name of a placeholder.
+         *
+         * @return the replacement for the placeholder with the given name.
+         * @type String
+         */
+        return function(s, name)
         {
-            return context[p1];
+            return context[name];
         };
     };
 
@@ -49,9 +62,10 @@ var formatString = function()
 /**
  * Creates an object representing the data held in a form.
  *
- * @param a form object or a string containing a form's <code>name</code> or
- *        <code>id</code> attribute. If a string is given, name is tried before
- *        id when attempting to find the form.
+ * @param form a form object or a <code>String</code> specifying a form's
+ *        <code>name</code> or <code>id</code> attribute. If a
+ *        <code>String</code> is given, name is tried before id when attempting
+ *        to find the form.
  *
  * @return an object representing the data present in the form. If the form
  *         could not be found, this object will be empty.
@@ -130,8 +144,9 @@ function formData(form)
 
 /**
  * A collection of errors that knows how to display itself in various formats.
- *
- * This object's properties are the field names, and the values are the errors.
+ * <p>
+ * This object's properties are the field names, and corresponding values are
+ * the errors.
  *
  * @constructor
  */
@@ -142,8 +157,8 @@ function ErrorObject()
 /**
  * Determines if any errors are present.
  *
- * @return {Boolean} <code>true</code> if this object has had any properties set
- *                   <code>false</code> otherwise.
+ * @return {Boolean} <code>true</code> if this object has had any properties
+ *                   set, <code>false</code> otherwise.
  */
 ErrorObject.prototype.isPopulated = function()
 {
@@ -158,6 +173,43 @@ ErrorObject.prototype.isPopulated = function()
 };
 
 /**
+ * Displays error details as a list.
+ */
+ErrorObject.prototype.asUL = function()
+{
+    var items = [];
+    for (var name in this)
+    {
+        if (this.hasOwnProperty(name))
+        {
+            items[items.length] = this[name].asUL();
+        }
+    }
+    return DOMBuilder.createElement("ul", {"class": "errorlist"}, items);
+};
+
+/**
+ * Displays error details as text.
+ */
+ErrorObject.prototype.asText = function()
+{
+    var items = [];
+    for (var name in this)
+    {
+        if (this.hasOwnProperty(name))
+        {
+            items[items.length] = "* " + name;
+            var errorList = this[name];
+            for (var i = 0, l = errorList.errors.length; i < l; i++)
+            {
+                items[items.length] = "  * " + errorList.errors[i];
+            }
+        }
+    }
+    return items.join("\n");
+};
+
+/**
  * A list of errors which knows how to display itself in various formats.
  *
  * @param {Array} [errors] a list of errors.
@@ -168,22 +220,30 @@ function ErrorList(errors)
     this.errors = errors || [];
 }
 
+/**
+ * Displays errors as a list.
+ */
 ErrorList.prototype.asUL = function()
 {
-    var ul = document.createElement("ul");
-    ul.className = "errorlist";
+    var items = [];
     for (var i = 0, l = this.errors.length; i < l; i++)
     {
-        var li = document.createElement("li");
-        li.appendChild(document.createTextNode(this.errors[i]));
-        ul.appendChild(li);
+        items[items.length] = DOMBuilder.createElement("li", {}, [this.errors[i]])
     }
-    return ul;
+    return DOMBuilder.createElement("ul", {"class": "errorlist"}, items);
 };
 
+/**
+ * Displays errors as text.
+ */
 ErrorList.prototype.asText = function()
 {
-    return this.errors.join("\n");
+    var items = [];
+    for (var i = 0, l = this.errors.length; i < l; i++)
+    {
+        items[items.length] = "* " + this.errors[i]
+    }
+    return items.join("\n");
 };
 
 /**
