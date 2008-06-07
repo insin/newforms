@@ -1,12 +1,12 @@
 /**
  * An HTML form widget.
  *
- * @param {Object} attrs HTML attributes for the rendered widget.
+ * @param {Object} [attrs] HTML attributes for the rendered widget.
  * @constructor
  */
 function Widget(attrs)
 {
-    // Copy attributes
+    // Copy attributes to a new Object
     this.attrs = extendObject({}, attrs || {});
 }
 
@@ -28,14 +28,14 @@ Widget.prototype.buildAttrs = function(extraAttrs, kwargs)
     var attrs = extendObject(extendObject(this.attrs, kwargs || {}),
                              extraAttrs || {});
     return attrs;
-}
+};
 
 /**
  * Retrieves a value for this widget from the given data.
  *
- * @param {Object} data
- * @param {Object} files
- * @param {String} name
+ * @param {Object} data form data.
+ * @param {Object} files file data.
+ * @param {String} name the field name to be used to retrieve data.
  *
  * @return a value for this widget, or <code>null</code> if no value was
  *         provided.
@@ -70,7 +70,7 @@ Widget.prototype.idForLabel = function(id)
 /**
  * An HTML <code>&lt;input&gt;</code> widget.
  *
- * @param {Object} attrs
+ * @param {Object} [attrs] HTML attributes for the rendered widget.
  * @constructor
  */
 function Input(attrs)
@@ -108,9 +108,11 @@ TextInput.prototype.inputType = "text";
 /**
  * An HTML <code>&lt;input type="password"&gt;</code> widget.
  *
- * @param {Object} [kwargs]
- * @config {Object} [attrs]
- * @config {Boolean} [renderValue]
+ * @param {Object} [kwargs] configuration options
+ * @config {Object} [attrs] HTML attributes for the rendered widget.
+ * @config {Boolean} [renderValue] if <code>false</code> a value will not be
+ *                                 rendered for this field - defaults to
+ *                                 <code>true</code>
  * @constructor
  */
 function PasswordInput(kwargs)
@@ -135,7 +137,7 @@ PasswordInput.prototype.render = function(name, value, attrs)
 /**
  * An HTML <code>&lt;input type="hidden"&gt;</code> widget.
  *
- * @param {Object} attrs
+ * @param {Object} [attrs] HTML attributes for the rendered widget.
  * @constructor
  */
 function HiddenInput(attrs)
@@ -154,7 +156,7 @@ HiddenInput.prototype.isHidden = true;
 /**
  * An HTML <code>&lt;textarea&gt;</code> widget.
  *
- * @param {Object} attrs
+ * @param {Object} [attrs] HTML attributes for the rendered widget.
  * @constructor
  */
 function Textarea(attrs)
@@ -178,7 +180,11 @@ Textarea.prototype.render = function(name, value, attrs)
 /**
  * An HTML <code>&lt;select&gt;</code> widget.
  *
- * @param {Object} attrs
+ * @param {Object} kwargs configuration options.
+ * @config {Array} [choices] choices to be used when rendering the widget,
+ *                           with each choice specified as an <code>Array</code>
+ *                           in <code>[value, text]</code> format.
+ * @config {Object} [attrs] HTML attributes for the rendered widget.
  * @constructor
  */
 function Select(kwargs)
@@ -192,15 +198,29 @@ function Select(kwargs)
 
 Select.prototype = new Widget();
 
-Select.prototype.render = function(name, value, attrs, choices)
+/**
+ * Renders the widget.
+ *
+ * @param {String} name the field name.
+ * @param selectedValue the value of an option which should be marked as
+ *                      selected, or null if no value is selected - will be
+ *                      normalised to a <code>String</code> for comparison with
+ *                      choice values.
+ * @param {Object} [attrs] additional HTML attributes for the rendered widget.
+ * @param {Array} [choices] choices to be used when rendering the widget, in
+ *                          addition to those already held by the widget itself.
+ *
+ * @return a <code>&lt;select&gt;</code> element.
+ */
+Select.prototype.render = function(name, selectedValue, attrs, choices)
 {
-    if (value === null)
+    if (selectedValue === null)
     {
-        value = "";
+        selectedValue = "";
     }
     var finalAttrs = this.buildAttrs(attrs, {name: name});
-    // Normalize to string
-    var strValue = "" + value;
+    // Normalise to string
+    var strValue = "" + selectedValue;
     var options = [];
     var finalChoices = this.choices.concat(choices || []);
     for (var i = 0, l = finalChoices.length; i < l; i++)
