@@ -2,7 +2,7 @@
  * An object that is responsible for doing validation, for example: an
  * <code>EmailField</code> makes sure its data is a valid e-mail address.
  *
- * @param {Object} [kwargs] configuration options
+ * @param {Object} [kwargs] configuration options.
  * @config {Boolean} [required] determines if the field is required - defaults
  *                              to <code>true</code>.
  * @config {Widget} [widget] overrides the widget used to render the field - if
@@ -703,7 +703,37 @@ MultipleChoiceField.prototype.clean = function(value)
     return stringValues;
 };
 
-// TODO ComboField
+/**
+ * A Field whose <code>clean()</code> method calls multiple Field
+ * <code>clean()</code> methods.
+ *
+ * @param {Array} fields fields which will be used to perform cleaning in the
+ *                       order they're given in.
+ * @param {Object} kwargs configuration options, as specified in
+ *                        <code>Field</code>.
+ */
+function ComboField(fields, kwargs)
+{
+    Field.call(this, kwargs);
+
+    for (var i = 0, l = fields.length; i < l; i++)
+    {
+        fields[i].required = false;
+    }
+    this.fields = fields;
+}
+
+ComboField.prototype = new Field();
+
+ComboField.prototype.clean = function(value)
+{
+    Field.prototype.clean.call(this, value);
+    for (var i = 0, l = this.fields.length; i < l; i++)
+    {
+        value = this.fields[i].clean(value);
+    }
+    return value;
+};
 
 // TODO MultiValueField
 

@@ -44,7 +44,9 @@
                                           attrs: {size: 5},
                                           label: "Pick stuff you like"}),
           awesome: new BooleanField({label: "Check here if you are awesome!", initial: true}),
-          likeMonkeys: new NullBooleanField({label: "Do you like monkeys?", initial: "2"})
+          likeMonkeys: new NullBooleanField({label: "Do you like monkeys?", initial: "2"}),
+          intBeginningWith5: new ComboField([new RegexField(/^[-+]?5/), new IntegerField()],
+                                            {label: "Type an integer begining with 5"})
       };
       Form.call(this, kwargs);
   };

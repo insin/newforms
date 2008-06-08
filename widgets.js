@@ -223,9 +223,9 @@ Textarea.prototype.render = function(name, value, attrs)
 function CheckboxInput(kwargs)
 {
     kwargs = extendObject({
-        args: null, checkTest: Boolean
+        attrs: null, checkTest: Boolean
     }, kwargs || {});
-    Widget.call(this, kwargs);
+    Widget.call(this, kwargs.attrs);
     this.checkTest = kwargs.checkTest;
 }
 
@@ -247,7 +247,7 @@ CheckboxInput.prototype.render = function(name, value, attrs)
     var finalAttrs = this.buildAttrs(attrs, {type: "checkbox", name: name});
     if (result)
     {
-        finalAttrs.checked = true;
+        finalAttrs.checked = "checked";
     }
     if (value !== "" && value !== true && value !== false && value !== null &&
         value !== undefined)
@@ -325,7 +325,7 @@ Select.prototype.render = function(name, selectedValue, attrs, choices)
             DOMBuilder.createElement("option", {value: optValue}, optLabel);
         if (optValue === stringValue)
         {
-            option.selected = true;
+            option.selected = "selected";
         }
         options[options.length] = option;
     }
@@ -425,7 +425,7 @@ SelectMultiple.prototype.render = function(name, selectedValues, attrs, choices)
     {
         selectedValues = [];
     }
-    var finalAttrs = this.buildAttrs(attrs, {name: name, multiple: true});
+    var finalAttrs = this.buildAttrs(attrs, {name: name, multiple: "multiple"});
     // Normalise to strings
     var selectedValuesLookup = {};
     for (var i = 0, l = selectedValues.length; i < l; i++)
@@ -442,7 +442,7 @@ SelectMultiple.prototype.render = function(name, selectedValues, attrs, choices)
             DOMBuilder.createElement("option", {value: optValue}, optLabel);
         if (typeof selectedValuesLookup[optValue] != "undefined")
         {
-            option.selected = true;
+            option.selected = "selected";
         }
         options[options.length] = option;
     }
