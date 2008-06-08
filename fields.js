@@ -711,6 +711,7 @@ MultipleChoiceField.prototype.clean = function(value)
  *                       order they're given in.
  * @param {Object} kwargs configuration options, as specified in
  *                        <code>Field</code>.
+ * @constructor
  */
 function ComboField(fields, kwargs)
 {
