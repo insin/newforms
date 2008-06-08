@@ -24,6 +24,7 @@
           name: new CharField({minLength: 1, maxLength: 100, label: "Your name"}),
           age: new IntegerField({minValue: 1, maxValue: 120, label: "Your age"}),
           faveFloat: new FloatField({minValue: 1.5, maxValue: 24.5, label: "Your favourite number between 1.5 and 24.5"}),
+          faveDecimal: new DecimalField({maxDigits: 4, decimalPlaces: 2, label: "Your favourite decimal"}),
           phoneNumber: new RegexField(/\d{3}-\d{5}/, {label: "Your phone number (e.g. 555-12345)", errorMessages: {invalid: "Not a valid phone number"}}),
           email: new EmailField({widget: new TextInput({maxlength: "200"}), label: "Your email address"}),
           zeeMikrofilm: new FileField({label: "Please upload zee mikrofilm"}),

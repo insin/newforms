@@ -211,6 +211,11 @@ function IntegerField(kwargs)
     Field.call(this, kwargs);
 }
 
+/**
+ * Integer validation regular expression.
+ */
+IntegerField.INTEGER_REGEXP = /^[-+]?\d+$/;
+
 IntegerField.prototype = new Field();
 extendObject(IntegerField.prototype.defaultErrorMessages, {
     invalid: "Enter a whole number.",
@@ -221,7 +226,7 @@ extendObject(IntegerField.prototype.defaultErrorMessages, {
 /**
  * Validates that the given value is a valid integer.
  *
- * @param {String} value the value to be validated.
+ * @param value the value to be validated.
  *
  * @return a valid integer, or <code>null</code> for empty values.
  * @type Number
@@ -238,7 +243,7 @@ IntegerField.prototype.clean = function(value)
         }
     }
 
-    if (!(/^[-+]?\d+$/).test(value))
+    if (!IntegerField.INTEGER_REGEXP.test(value))
     {
         throw new ValidationError(this.errorMessages.invalid);
     }
@@ -276,6 +281,11 @@ function FloatField(kwargs)
     Field.call(this, kwargs);
 }
 
+/**
+ * Float validation regular expression.
+ */
+FloatField.FLOAT_REGEXP = /^[-+]?\d+(?:\.\d+)?$/;
+
 FloatField.prototype = new Field();
 extendObject(FloatField.prototype.defaultErrorMessages, {
     invalid: "Enter a number.",
@@ -286,7 +296,7 @@ extendObject(FloatField.prototype.defaultErrorMessages, {
 /**
  * Validates that the given value is a valid float.
  *
- * @param {String} value the value to be validated.
+ * @param value the value to be validated.
  *
  * @return a valid <code>float</code>, or <code>null</code> for empty values.
  * @type Number
@@ -303,7 +313,7 @@ FloatField.prototype.clean = function(value)
         }
     }
 
-    if (!(/^[-+]?\d+(?:\.\d+)?$/).test(value))
+    if (!FloatField.FLOAT_REGEXP.test(value))
     {
         throw new ValidationError(this.errorMessages.invalid);
     }
@@ -322,7 +332,110 @@ FloatField.prototype.clean = function(value)
     return value;
 };
 
-// TODO DecimalField - is there a suitable JavaScript type or library we can use?
+/**
+ * Validates that its input is a decimal number.
+ *
+ * @param {Object} [kwargs] configuration options.
+ * @config {Number} maxValue a maximum value for the input.
+ * @config {Number} minValue a minimum value for the input.
+ * @config {Number} maxDigits the maximum number of digits the input may
+ *                            contain.
+ * @config {Number} decimalPlaces the maximum number of decimal places the input
+ *                                may contain.
+ * @constructor
+ */
+function DecimalField(kwargs)
+{
+    kwargs = extendObject({
+      maxValue: null, minValue: null, maxDigits: null, decimalPlaces: null
+    }, kwargs || {})
+    this.maxValue = kwargs.maxValue;
+    this.minValue = kwargs.minValue;
+    this.maxDigits = kwargs.maxDigits;
+    this.decimalPlaces = kwargs.decimalPlaces;
+    Field.call(this, kwargs);
+}
+
+DecimalField.prototype = new Field();
+extendObject(DecimalField.prototype.defaultErrorMessages, {
+    invalid: "Enter a number.",
+    maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
+    minValue: "Ensure this value is greater than or equal to %(minValue)s.",
+    maxDigits: "Ensure that there are no more than %(maxDigits)s digits in total.",
+    maxDecimalPlaces: "Ensure that there are no more than %(maxDecimalPlaces)s decimal places.",
+    maxWholeDigits: "Ensure that there are no more than %(maxWhileDigits)s digits before the decimal point."
+});
+
+/**
+ * In lieu of a built-in Decimal type for JavaScript, this method casts to a
+ * float and uses that for validation. Validation of decimal attributes is
+ * performed on a <code>String</code> representation of the input value, with
+ * any leading sign trimmed.
+ *
+ * @param value the value to be validated.
+ *
+ * @return a valid <code>float</code>, or <code>null</code> for empty values.
+ * @type Number
+ */
+DecimalField.prototype.clean = function(value)
+{
+    Field.prototype.clean.call(this, value);
+
+    if (!this.required)
+    {
+        for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+        {
+            if (value === Field.EMPTY_VALUES[i])
+            {
+                return null;
+            }
+        }
+    }
+
+    value = ("" + value).trim();
+
+    // TODO We should be attempting to create a Decimal object instead - are
+    //      there any JavaScript equivalents?
+    if (!FloatField.FLOAT_REGEXP.test(value))
+    {
+        throw new ValidationError(this.errorMessages.invalid);
+    }
+
+    if (value.charAt(0) == "+" || value.charAt(0) == "-")
+    {
+        value = value.substr(1);
+    }
+    var pieces = value.split(".");
+    var decimals = (pieces.length == 2 ? pieces[1].length : 0);
+    var digits = pieces[0].length;
+    var floatValue = parseFloat(value);
+    if (this.maxValue !== null && floatValue > this.maxValue)
+    {
+        throw new ValidationError(formatString(this.errorMessages.maxValue,
+                                               {maxValue: this.maxValue}));
+    }
+    if (this.minValue !== null && floatValue < this.minValue)
+    {
+        throw new ValidationError(formatString(this.errorMessages.minValue,
+                                               {minValue: this.minValue}));
+    }
+    if (this.maxDigits !== null && (digits + decimals) > this.maxDigits)
+    {
+        throw new ValidationError(formatString(this.errorMessages.maxDigits,
+                                               {maxDigits: this.maxDigits}));
+    }
+    if (this.decimalPlaces !== null && decimals > this.decimalPlaces)
+    {
+        throw new ValidationError(formatString(this.errorMessages.maxDecimalPlaces,
+                                               {maxDecimalPlaces: this.decimalPlaces}));
+    }
+    if (this.maxDigits !== null && this.decimalPlaces !== null && digits > (this.maxDigits - this.decimalPlaces))
+    {
+        throw new ValidationError(formatString(this.errorMessages.maxWholeDigits,
+                                               {maxWholeDigits: (this.maxDigits - this.decimalPlaces)}));
+    }
+    return floatValue;
+};
 
 // TODO DateField
 
