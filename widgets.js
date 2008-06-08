@@ -332,7 +332,55 @@ Select.prototype.render = function(name, selectedValue, attrs, choices)
     return DOMBuilder.createElement("select", finalAttrs, options);
 };
 
-// TODO NullBooleanSelect
+/**
+ * A <code>Select</code> <code>Widget</code> intended to be used with
+ * <code>NullBooleanField</code>.
+ *
+ * @param {Object} [attrs] HTML attributes for the rendered widget.
+ * @constructor
+ */
+function NullBooleanSelect(attrs)
+{
+    var choices = [["1", "Unknown"], ["2", "Yes"], ["3", "No"]];
+    Select.call(this, {choices: choices, attrs: attrs});
+};
+
+NullBooleanSelect.prototype = new Select();
+
+NullBooleanSelect.prototype.render = function(name, value, attrs, choices)
+{
+    if (value === true || value == "2")
+    {
+        value = "2";
+    }
+    else if (value === false || value == "3")
+    {
+        value = "3";
+    }
+    else
+    {
+        value = "1";
+    }
+    return Select.prototype.render.call(this, name, value, attrs, choices);
+};
+
+NullBooleanSelect.prototype.valueFromData = function(data, files, name)
+{
+    var value = null;
+    if (typeof data[name] != "undefined")
+    {
+        var dataValue = data[name];
+        if (dataValue === true || dataValue == "2")
+        {
+            value = true;
+        }
+        else if (dataValue === false || dataValue == "3")
+        {
+            value = false;
+        }
+    }
+    return value;
+};
 
 /**
  * An HTML <code>&lt;select&gt;</code> widget which allows multiple selections.

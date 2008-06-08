@@ -544,7 +544,30 @@ BooleanField.prototype.clean = function(value)
     return Boolean(value);
 };
 
-// TODO NullBooleanField
+/**
+ * A field whose valid values are <code>null</code>, <code>true</code> and
+ * <code>false</code>. Invalid values are cleaned to <code>null</code>.
+ *
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          <code>BooleanField</code>.
+ * @constructor
+ */
+function NullBooleanField(kwargs)
+{
+    BooleanField.call(this, kwargs);
+}
+
+NullBooleanField.prototype = new BooleanField();
+NullBooleanField.prototype.defaultWidget = NullBooleanSelect;
+
+NullBooleanField.prototype.clean = function(value)
+{
+    if (value === true || value === false)
+    {
+        return value;
+    }
+    return null;
+};
 
 /**
  * Validates that its input is one of a valid list of choices.

@@ -43,7 +43,8 @@
                                                     [5, "Other"]],
                                           attrs: {size: 5},
                                           label: "Pick stuff you like"}),
-          awesome: new BooleanField({label: "Check here if you are awesome!", initial: true})
+          awesome: new BooleanField({label: "Check here if you are awesome!", initial: true}),
+          likeMonkeys: new NullBooleanField({label: "Do you like monkeys?", initial: "2"})
       };
       Form.call(this, kwargs);
   };
