@@ -1,13 +1,15 @@
 /**
  * An HTML form widget.
  *
- * @param {Object} [attrs] HTML attributes for the rendered widget.
+ * @param {Object} [kwargs] configuration options.
+ * @config {Object} [attrs] HTML attributes for the rendered widget.
  * @constructor
  */
-function Widget(attrs)
+function Widget(kwargs)
 {
+    kwargs = extendObject({attrs: null}, kwargs || {})
     // Copy attributes to a new Object
-    this.attrs = extendObject({}, attrs || {});
+    this.attrs = extendObject({}, kwargs.attrs || {});
 }
 
 /**
@@ -70,12 +72,13 @@ Widget.prototype.idForLabel = function(id)
 /**
  * An HTML <code>&lt;input&gt;</code> widget.
  *
- * @param {Object} [attrs] HTML attributes for the rendered widget.
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          <code>Widget</code>.
  * @constructor
  */
-function Input(attrs)
+function Input(kwargs)
 {
-    Widget.call(this, attrs);
+    Widget.call(this, kwargs);
 }
 
 Input.prototype = new Widget();
@@ -100,11 +103,14 @@ Input.prototype.render = function(name, value, attrs)
 
 /**
  * An HTML <code>&lt;input type="text"&gt;</code> widget.
+ *
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          <code>Input</code>.
  * @constructor
  */
-function TextInput(attrs)
+function TextInput(kwargs)
 {
-    Input.call(this, attrs);
+    Input.call(this, kwargs);
 }
 
 TextInput.prototype = new Input();
@@ -113,17 +119,17 @@ TextInput.prototype.inputType = "text";
 /**
  * An HTML <code>&lt;input type="password"&gt;</code> widget.
  *
- * @param {Object} [kwargs] configuration options
- * @config {Object} [attrs] HTML attributes for the rendered widget.
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>Input</code>.
  * @config {Boolean} [renderValue] if <code>false</code> a value will not be
  *                                 rendered for this field - defaults to
- *                                 <code>true</code>
+ *                                 <code>true</code>.
  * @constructor
  */
 function PasswordInput(kwargs)
 {
-    kwargs = extendObject({attrs: null, renderValue: true}, kwargs || {});
-    Input.call(this, kwargs.attrs);
+    kwargs = extendObject({renderValue: true}, kwargs || {});
+    Input.call(this, kwargs);
     this.renderValue = kwargs.renderValue;
 }
 
@@ -142,12 +148,13 @@ PasswordInput.prototype.render = function(name, value, attrs)
 /**
  * An HTML <code>&lt;input type="hidden"&gt;</code> widget.
  *
- * @param {Object} [attrs] HTML attributes for the rendered widget.
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          <code>Input</code>.
  * @constructor
  */
-function HiddenInput(attrs)
+function HiddenInput(kwargs)
 {
-    Input.call(this, attrs);
+    Input.call(this, kwargs);
 }
 
 HiddenInput.prototype = new Input();
@@ -159,12 +166,13 @@ HiddenInput.prototype.isHidden = true;
 /**
  * An HTML <code>&lt;input type="file"&gt;</code> widget.
  *
- * @param {Object} [attrs] HTML attributes for the rendered widget.
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          <code>Input</code>.
  * @constructor
  */
-function FileInput(attrs)
+function FileInput(kwargs)
 {
-    Input.call(this, attrs);
+    Input.call(this, kwargs);
 }
 
 FileInput.prototype = new Input();
@@ -191,13 +199,16 @@ FileInput.prototype.valueFromData = function(data, files, name)
 /**
  * An HTML <code>&lt;textarea&gt;</code> widget.
  *
- * @param {Object} [attrs] HTML attributes for the rendered widget.
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          <code>Widget</code>.
  * @constructor
  */
-function Textarea(attrs)
+function Textarea(kwargs)
 {
-    attrs = extendObject({cols: "40", rows: "10"}, attrs || {});
-    Widget.call(this, attrs);
+    // Provide default "cols" and "rows" attributes
+    kwargs = extendObject({attrs: null}, kwargs || {});
+    kwargs.attrs = extendObject({cols: "40", rows: "10"}, kwargs.attrs || {});
+    Widget.call(this, kwargs);
 }
 
 Textarea.prototype = new Widget();
@@ -213,8 +224,8 @@ Textarea.prototype.render = function(name, value, attrs)
 /**
  * An HTML <code>&lt;input type="checkbox"&gt;</code> widget.
  *
- * @param {Object} [kwargs] configuration options
- * @config {Object} [attrs] HTML attributes for the rendered widget.
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>Widget</code>.
  * @config {Function} [checkTest] a function which takes a value and returns
  *                                <code>true</code> if the checkbox should be
  *                                checked for that value.
@@ -222,10 +233,8 @@ Textarea.prototype.render = function(name, value, attrs)
  */
 function CheckboxInput(kwargs)
 {
-    kwargs = extendObject({
-        attrs: null, checkTest: Boolean
-    }, kwargs || {});
-    Widget.call(this, kwargs.attrs);
+    kwargs = extendObject({checkTest: Boolean}, kwargs || {});
+    Widget.call(this, kwargs);
     this.checkTest = kwargs.checkTest;
 }
 
@@ -274,19 +283,17 @@ CheckboxInput.prototype.valueFromData = function(data, files, name)
 /**
  * An HTML <code>&lt;select&gt;</code> widget.
  *
- * @param {Object} kwargs configuration options.
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>Widget</code>.
  * @config {Array} [choices] choices to be used when rendering the widget,
  *                           with each choice specified as an <code>Array</code>
  *                           in <code>[value, text]</code> format.
- * @config {Object} [attrs] HTML attributes for the rendered widget.
  * @constructor
  */
 function Select(kwargs)
 {
-    kwargs = extendObject({
-        choices: [], attrs: null
-    }, kwargs || {});
-    Widget.call(this, kwargs.attrs);
+    kwargs = extendObject({choices: []}, kwargs || {});
+    Widget.call(this, kwargs);
     this.choices = kwargs.choices;
 }
 
@@ -336,13 +343,16 @@ Select.prototype.render = function(name, selectedValue, attrs, choices)
  * A <code>Select</code> <code>Widget</code> intended to be used with
  * <code>NullBooleanField</code>.
  *
- * @param {Object} [attrs] HTML attributes for the rendered widget.
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          <code>Select</code>.
  * @constructor
  */
-function NullBooleanSelect(attrs)
+function NullBooleanSelect(kwargs)
 {
-    var choices = [["1", "Unknown"], ["2", "Yes"], ["3", "No"]];
-    Select.call(this, {choices: choices, attrs: attrs});
+    kwargs = extendObject({
+        choices: [["1", "Unknown"], ["2", "Yes"], ["3", "No"]]
+    }, kwargs || {});
+    Select.call(this, kwargs);
 };
 
 NullBooleanSelect.prototype = new Select();
@@ -385,19 +395,17 @@ NullBooleanSelect.prototype.valueFromData = function(data, files, name)
 /**
  * An HTML <code>&lt;select&gt;</code> widget which allows multiple selections.
  *
- * @param {Object} kwargs configuration options.
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>Widget</code>.
  * @config {Array} [choices] choices to be used when rendering the widget,
  *                           with each choice specified as an <code>Array</code>
  *                           in <code>[value, text]</code> format.
- * @config {Object} [attrs] HTML attributes for the rendered widget.
  * @constructor
  */
 function SelectMultiple(kwargs)
 {
-    kwargs = extendObject({
-        choices: [], attrs: null
-    }, kwargs || {});
-    Widget.call(this, kwargs.attrs);
+    kwargs = extendObject({choices: []}, kwargs || {});
+    Widget.call(this, kwargs);
     this.choices = kwargs.choices;
 }
 
