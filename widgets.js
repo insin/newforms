@@ -238,9 +238,9 @@ Select.prototype = new Widget();
  *
  * @param {String} name the field name.
  * @param selectedValue the value of an option which should be marked as
- *                      selected, or null if no value is selected - will be
- *                      normalised to a <code>String</code> for comparison with
- *                      choice values.
+ *                      selected, or <code>null</code> if no value is selected -
+ *                      will be normalised to a <code>String</code> for
+ *                      comparison with choice values.
  * @param {Object} [attrs] additional HTML attributes for the rendered widget.
  * @param {Array} [choices] choices to be used when rendering the widget, in
  *                          addition to those already held by the widget itself.
@@ -255,7 +255,7 @@ Select.prototype.render = function(name, selectedValue, attrs, choices)
     }
     var finalAttrs = this.buildAttrs(attrs, {name: name});
     // Normalise to string
-    var strValue = "" + selectedValue;
+    var stringValue = "" + selectedValue;
     var options = [];
     var finalChoices = this.choices.concat(choices || []);
     for (var i = 0, l = finalChoices.length; i < l; i++)
@@ -264,7 +264,7 @@ Select.prototype.render = function(name, selectedValue, attrs, choices)
         var optLabel = "" + finalChoices[i][1];
         var option =
             DOMBuilder.createElement("option", {value: optValue}, optLabel);
-        if (optValue === strValue)
+        if (optValue === stringValue)
         {
             option.selected = true;
         }
@@ -275,7 +275,91 @@ Select.prototype.render = function(name, selectedValue, attrs, choices)
 
 // TODO NullBooleanSelect
 
-// TODO SelectMultiple
+/**
+ * An HTML <code>&lt;select&gt;</code> widget which allows multiple selections.
+ *
+ * @param {Object} kwargs configuration options.
+ * @config {Array} [choices] choices to be used when rendering the widget,
+ *                           with each choice specified as an <code>Array</code>
+ *                           in <code>[value, text]</code> format.
+ * @config {Object} [attrs] HTML attributes for the rendered widget.
+ * @constructor
+ */
+function SelectMultiple(kwargs)
+{
+    kwargs = extendObject({
+        choices: [], attrs: null
+    }, kwargs || {});
+    Widget.call(this, kwargs.attrs);
+    this.choices = kwargs.choices;
+}
+
+SelectMultiple.prototype = new Widget();
+
+/**
+ * Renders the widget.
+ *
+ * @param {String} name the field name.
+ * @param {Array} selectedValues the values of options which should be marked as
+ *                               selected, or <code>null</code> if no values
+ *                               are selected - these will be normalised to
+ *                               <code>String</code>s for comparison with choice
+ *                               values.
+ * @param {Object} [attrs] additional HTML attributes for the rendered widget.
+ * @param {Array} [choices] choices to be used when rendering the widget, in
+ *                          addition to those already held by the widget itself.
+ *
+ * @return a <code>&lt;select&gt;</code> element which allows multiple
+ *         selections.
+ */
+SelectMultiple.prototype.render = function(name, selectedValues, attrs, choices)
+{
+    if (selectedValues === null)
+    {
+        selectedValues = [];
+    }
+    var finalAttrs = this.buildAttrs(attrs, {name: name, multiple: true});
+    // Normalise to strings
+    var selectedValuesLookup = {};
+    for (var i = 0, l = selectedValues.length; i < l; i++)
+    {
+        selectedValuesLookup["" + selectedValues[i]] = true;
+    }
+    var options = [];
+    var finalChoices = this.choices.concat(choices || []);
+    for (var i = 0, l = finalChoices.length; i < l; i++)
+    {
+        var optValue = "" + finalChoices[i][0];
+        var optLabel = "" + finalChoices[i][1];
+        var option =
+            DOMBuilder.createElement("option", {value: optValue}, optLabel);
+        if (typeof selectedValuesLookup[optValue] != "undefined")
+        {
+            option.selected = true;
+        }
+        options[options.length] = option;
+    }
+    return DOMBuilder.createElement("select", finalAttrs, options);
+};
+
+/**
+ * Retrieves values for this widget from the given data.
+ *
+ * @param {Object} data form data.
+ * @param {Object} files file data.
+ * @param {String} name the field name to be used to retrieve data.
+ *
+ * @return {Array} values for this widget, or <code>null</code> if no values
+ *                 were provided.
+ */
+SelectMultiple.prototype.valueFromData = function(data, files, name)
+{
+    if (typeof data[name] != "undefined")
+    {
+        return [].concat(data[name]);
+    }
+    return null;
+};
 
 // TODO RadioInput
 

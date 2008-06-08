@@ -581,7 +581,70 @@ ChoiceField.prototype.clean = function(value)
     throw new ValidationError(this.errorMessages.invalidChoice);
 };
 
-// TODO MultipleChoiceField
+/**
+ * Validates that its input is one or more of a valid list of choices.
+ *
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          <code>ChoiceField</code>.
+ * @constructor
+ */
+function MultipleChoiceField(kwargs)
+{
+    ChoiceField.call(this, kwargs);
+}
+
+MultipleChoiceField.prototype = new ChoiceField();
+MultipleChoiceField.prototype.defaultWidget = SelectMultiple;
+extendObject(MultipleChoiceField.prototype.defaultErrorMessages, {
+    invalidChoice: "Select a valid choice. %(value)s is not one of the available choices.",
+    invalidList: "Enter a list of values."
+});
+
+/**
+ * Validates that the input is a list and that each item is in this field's
+ * choices.
+ *
+ * @param value the input to be validated.
+ *
+ * @return a list of valid values, which have been normalised to
+ *         <code>String</code>s.
+ * @type Array
+ */
+MultipleChoiceField.prototype.clean = function(value)
+{
+    if (this.required && !value)
+    {
+        throw new ValidationError(this.errorMessages.required);
+    }
+    else if (!this.required && !value)
+    {
+        return [];
+    }
+
+    if (!(value instanceof Array))
+    {
+        throw new ValidationError(this.errorMessages.invalidList);
+    }
+
+    var validValuesLookup = {};
+    for (var i = 0, l = this.choices.length; i < l; i++)
+    {
+        validValuesLookup["" + this.choices[i]] = true;
+    }
+
+    var stringValues = [];
+    for (var i = 0, l = values.length; i < l; i++)
+    {
+        var stringValue = "" + values[i];
+        if (typeof validValuesLookup[stringValue] == "undefined")
+        {
+            throw new ValidationError(formatString(
+                this.errorMessages.invalidChoice, {value: stringValue}));
+        }
+        stringValues[stringValues.length] = stringValue;
+    }
+    return stringValues;
+};
 
 // TODO ComboField
 

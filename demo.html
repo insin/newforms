@@ -35,7 +35,14 @@
                                              [1, "In a specialist catalogue"],
                                              [2, "On the internet"],
                                              [3, "Other"]],
-                                   label: "Where did you hear about us?"})
+                                   label: "Where did you hear about us?"}),
+          stuff: new MultipleChoiceField({choices: [[1, "Specialist catalogues"],
+                                                    [2, "The internet"],
+                                                    [3, "The catalogues"],
+                                                    [4, "Special internets"],
+                                                    [5, "Other"]],
+                                          attrs: {size: 5},
+                                          label: "Pick stuff you like"})
       };
       Form.call(this, kwargs);
   };
@@ -57,7 +64,13 @@
 
       var form = new ContactForm({
           prefix: "test",
-          initial: {name: "Test", email: "test@test.com", body: "Testing\n\nTesting", source: 2}
+          initial: {
+              name: "Test",
+              email: "test@test.com",
+              body: "Testing\n\nTesting",
+              source: 2,
+              stuff: [1,3]
+          }
       });
 
       var boundFields = form.boundFields();
@@ -71,7 +84,7 @@
       }
       rows[rows.length] = TR(
                             TD({colspan: 2, style: "text-align: right;"},
-                              INPUT({type: "submit", value: "Contact Me"})));
+                              INPUT({type: "submit", value: "Submit"})));
 
       document.body.appendChild(
         DIV(
