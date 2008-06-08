@@ -42,7 +42,8 @@
                                                     [4, "Special internets"],
                                                     [5, "Other"]],
                                           attrs: {size: 5},
-                                          label: "Pick stuff you like"})
+                                          label: "Pick stuff you like"}),
+          awesome: new BooleanField({label: "Check here if you are awesome!", initial: true})
       };
       Form.call(this, kwargs);
   };

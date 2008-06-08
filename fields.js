@@ -439,7 +439,7 @@ extendObject(ImageField.prototype.defaultErrorMessages, {
  * Validates that its input appears to be a valid URL.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>RegexField</code>
+ *                          in <code>RegexField</code>.
  * @config {Boolean} [verifyExists] should the field attempt to verify if the
  *                                  address exists by accessing it? Defaults to
  *                                  <code>false</code>.
@@ -508,7 +508,41 @@ URLField.prototype.clean = function(value)
     return value
 };
 
-// TODO BooleanField
+/**
+ * Normalises its input to a <code>Boolean</code> primitive.
+ *
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          <code>Field</code>.
+ * @constructor
+ */
+function BooleanField(kwargs)
+{
+    Field.call(this, kwargs);
+}
+
+BooleanField.prototype = new Field();
+BooleanField.prototype.defaultWidget = CheckboxInput;
+
+/**
+ * Normalises the given value to a <code>Boolean</code> primitive.
+ *
+ * @param {String} value the value to be validated.
+ *
+ * @return the value's normalised boolean representation.
+ * @type Boolean
+ */
+BooleanField.prototype.clean = function(value)
+{
+    Field.prototype.clean.call(this, value);
+    // Explicitly check for the string "False", which is what a hidden field
+    // will submit for false. Because Boolean("True") == true, we don't need to
+    // handle that explicitly.
+    if (value == "False")
+    {
+        return false;
+    }
+    return Boolean(value);
+};
 
 // TODO NullBooleanField
 

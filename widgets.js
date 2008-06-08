@@ -93,7 +93,7 @@ Input.prototype.render = function(name, value, attrs)
     if (value != "")
     {
         // Only add the "value" attribute if value is non-empty
-        finalAttrs["value"] = value;
+        finalAttrs.value = value;
     }
     return DOMBuilder.createElement("input", finalAttrs);
 };
@@ -210,7 +210,66 @@ Textarea.prototype.render = function(name, value, attrs)
 
 // TODO DateTimeInput
 
-// TODO CheckboxInput
+/**
+ * An HTML <code>&lt;input type="checkbox"&gt;</code> widget.
+ *
+ * @param {Object} [kwargs] configuration options
+ * @config {Object} [attrs] HTML attributes for the rendered widget.
+ * @config {Function} [checkTest] a function which takes a value and returns
+ *                                <code>true</code> if the checkbox should be
+ *                                checked for that value.
+ * @constructor
+ */
+function CheckboxInput(kwargs)
+{
+    kwargs = extendObject({
+        args: null, checkTest: Boolean
+    }, kwargs || {});
+    Widget.call(this, kwargs);
+    this.checkTest = kwargs.checkTest;
+}
+
+CheckboxInput.prototype = new Widget();
+
+CheckboxInput.prototype.render = function(name, value, attrs)
+{
+    var result;
+    try
+    {
+        result = this.checkTest(value);
+    }
+    catch (e)
+    {
+        // Silently catch exceptions
+        result = false;
+    }
+
+    var finalAttrs = this.buildAttrs(attrs, {type: "checkbox", name: name});
+    if (result)
+    {
+        finalAttrs.checked = true;
+    }
+    if (value !== "" && value !== true && value !== false && value !== null &&
+        value !== undefined)
+    {
+        // Only add the "value" attribute if value is non-empty
+        finalAttrs.value = value;
+    }
+
+    return DOMBuilder.createElement("input", finalAttrs);
+};
+
+CheckboxInput.prototype.valueFromData = function(data, files, name)
+{
+    if (typeof data[name] == "undefined")
+    {
+        // A missing value results in false because nothing is sent for
+        // unchecked checkboxes when submitting HTML forms. See
+        // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.3.1
+        return false;
+    }
+    return Widget.prototype.valueFromData.call(this, data, files, name);
+};
 
 /**
  * An HTML <code>&lt;select&gt;</code> widget.
