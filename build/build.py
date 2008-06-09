@@ -3,6 +3,7 @@ import os
 
 from jsmin import jsmin
 
+DIRNAME = os.path.dirname(__file__)
 SOURCE_FILES = ('../util.js', '../widgets.js', '../fields.js', '../forms.js')
 MODULE_DEFINITION = 'module.js'
 CODE_TEMPLATE = """var forms = function()
@@ -19,16 +20,19 @@ def main(generate_api=False, jsdoc_dir=None):
         'modules': open(MODULE_DEFINITION).read(),
     }
 
-    open('js-forms.js', 'w').write(js)
-    open('js-forms-min.js', 'w').write(jsmin(js))
+    if not os.path.isdir('out'):
+        os.mkdir('out')
+
+    open('out/js-forms.js', 'w').write(js)
+    open('out/js-forms-min.js', 'w').write(jsmin(js))
 
     if generate_api and jsdoc_dir:
         os.system('java -jar %(jsdoc_jar)s %(jsdoc_app)s -a -t=%(jsdoc_templates)s -d=%(api_dir)s %(js_dir)s' % {
             'jsdoc_jar': os.path.normpath(os.path.join(jsdoc_dir, 'jsrun.jar')),
             'jsdoc_app': os.path.normpath(os.path.join(jsdoc_dir, 'app/run.js')),
             'jsdoc_templates': os.path.normpath(os.path.join(jsdoc_dir, 'templates/jsdoc')),
-            'api_dir': os.path.normpath(os.path.join(os.path.dirname(__file__), 'api')),
-            'js_dir': os.path.normpath(os.path.join(os.path.dirname(__file__), '..')),
+            'api_dir': os.path.normpath(os.path.join(DIRNAME, 'out/api')),
+            'js_dir': os.path.normpath(os.path.join(DIRNAME, '..')),
         })
 
 if __name__ == '__main__':
