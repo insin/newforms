@@ -1,5 +1,12 @@
 /**
+ * @fileOverview Form Widgets, which render an HTML representation of a Field.
+ */
+
+/**
  * An HTML form widget.
+ * <p>
+ * A widget handles the rendering of HTML, and the extraction of data from an
+ * object that corresponds to the widget.
  *
  * @param {Object} [kwargs] configuration options.
  * @config {Object} [attrs] HTML attributes for the rendered widget.
@@ -75,6 +82,7 @@ Widget.prototype.idForLabel = function(id)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          <code>Widget</code>.
  * @constructor
+ * @augments Widget
  */
 function Input(kwargs)
 {
@@ -107,6 +115,7 @@ Input.prototype.render = function(name, value, attrs)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          <code>Input</code>.
  * @constructor
+ * @augments Input
  */
 function TextInput(kwargs)
 {
@@ -125,6 +134,7 @@ TextInput.prototype.inputType = "text";
  *                                 rendered for this field - defaults to
  *                                 <code>true</code>.
  * @constructor
+ * @augments Input
  */
 function PasswordInput(kwargs)
 {
@@ -151,6 +161,7 @@ PasswordInput.prototype.render = function(name, value, attrs)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          <code>Input</code>.
  * @constructor
+ * @augments Input
  */
 function HiddenInput(kwargs)
 {
@@ -169,6 +180,7 @@ HiddenInput.prototype.isHidden = true;
  * @param {Object} [kwargs] configuration options, as specified in
  *                          <code>Input</code>.
  * @constructor
+ * @augments Input
  */
 function FileInput(kwargs)
 {
@@ -202,6 +214,7 @@ FileInput.prototype.valueFromData = function(data, files, name)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          <code>Widget</code>.
  * @constructor
+ * @augments Widget
  */
 function Textarea(kwargs)
 {
@@ -230,6 +243,7 @@ Textarea.prototype.render = function(name, value, attrs)
  *                                <code>true</code> if the checkbox should be
  *                                checked for that value.
  * @constructor
+ * @augments Widget
  */
 function CheckboxInput(kwargs)
 {
@@ -289,6 +303,7 @@ CheckboxInput.prototype.valueFromData = function(data, files, name)
  *                           with each choice specified as an <code>Array</code>
  *                           in <code>[value, text]</code> format.
  * @constructor
+ * @augments Widget
  */
 function Select(kwargs)
 {
@@ -346,6 +361,7 @@ Select.prototype.render = function(name, selectedValue, attrs, choices)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          <code>Select</code>.
  * @constructor
+ * @augments Select
  */
 function NullBooleanSelect(kwargs)
 {
@@ -401,6 +417,7 @@ NullBooleanSelect.prototype.valueFromData = function(data, files, name)
  *                           with each choice specified as an <code>Array</code>
  *                           in <code>[value, text]</code> format.
  * @constructor
+ * @augments Widget
  */
 function SelectMultiple(kwargs)
 {

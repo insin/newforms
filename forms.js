@@ -1,4 +1,9 @@
 /**
+ * @fileOverview Forms, which manage input and validation of input using a
+ *               collection of Fields.
+ */
+
+/**
  * A field and its associated data.
  *
  * @param {Form} form a form.

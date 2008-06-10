@@ -1,4 +1,8 @@
 /**
+ * @fileOverview Miscellaneous utility functions and objects.
+ */
+
+/**
  * Updates an object's properties with another object's properties.
  *
  * @param {Object} destination the object to be updated.

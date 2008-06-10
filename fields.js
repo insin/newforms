@@ -1,6 +1,12 @@
 /**
- * An object that is responsible for doing validation, for example: an
- * <code>EmailField</code> makes sure its data is a valid e-mail address.
+ * @fileOverview Form Fields, which validate and normalise (or "clean") data.
+ */
+
+/**
+ * An object that is responsible for doing validation and normalisation, or
+ * "cleaning", for example: an <code>EmailField</code> makes sure its data is
+ * a valid e-mail address and makes sure that acceptable "blank" values all have
+ * the same representation.
  *
  * @param {Object} [kwargs] configuration options.
  * @config {Boolean} [required] determines if the field is required - defaults
@@ -117,6 +123,7 @@ Field.prototype.widgetAttrs = function(widget)
  * @config {Number} [maxLength] a maximum valid length for the input string.
  * @config {Number} [minLength] a minimum valid length for the input string.
  * @constructor
+ * @augments Field
  */
 function CharField(kwargs)
 {
@@ -200,6 +207,7 @@ CharField.prototype.widgetAttrs = function(widget)
  * @config {Number} [maxValue] a maximum value for the input.
  * @config {Number} [minValue] a minimum value for the input.
  * @constructor
+ * @augments Field
  */
 function IntegerField(kwargs)
 {
@@ -270,6 +278,7 @@ IntegerField.prototype.clean = function(value)
  * @config {Number} [maxValue] a maximum value for the input.
  * @config {Number} [minValue] a minimum value for the input.
  * @constructor
+ * @augments Field
  */
 function FloatField(kwargs)
 {
@@ -343,6 +352,7 @@ FloatField.prototype.clean = function(value)
  * @config {Number} decimalPlaces the maximum number of decimal places the input
  *                                may contain.
  * @constructor
+ * @augments Field
  */
 function DecimalField(kwargs)
 {
@@ -452,6 +462,7 @@ DecimalField.prototype.clean = function(value)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          <code>Field</code> and <code>CharField</code>.
  * @constructor
+ * @augments CharField
  */
 function RegexField(regex, kwargs)
 {
@@ -488,6 +499,7 @@ RegexField.prototype.clean = function(value)
  * Validates that its input appears to be a valid e-mail address.
  *
  * @constructor
+ * @augments RegexField
  */
 function EmailField(kwargs)
 {
@@ -516,6 +528,7 @@ extendObject(EmailField.prototype.defaultErrorMessages, {
  * future use in any future server-side implementation.
  *
  * @constructor
+ * @augments Field
  */
 function FileField(kwargs)
 {
@@ -537,6 +550,7 @@ extendObject(FileField.prototype.defaultErrorMessages, {
  * future use in any future server-side implementation.
  *
  * @constructor
+ * @augments FileField
  */
 function ImageField(kwargs)
 {
@@ -559,6 +573,7 @@ extendObject(ImageField.prototype.defaultErrorMessages, {
  * @config {String} [userAgent] the user agent string to use when attempting URL
  *                              verification.
  * @constructor
+ * @augments RegexField
  */
 function URLField(kwargs)
 {
@@ -627,6 +642,7 @@ URLField.prototype.clean = function(value)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          <code>Field</code>.
  * @constructor
+ * @augments Field
  */
 function BooleanField(kwargs)
 {
@@ -664,6 +680,7 @@ BooleanField.prototype.clean = function(value)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          <code>BooleanField</code>.
  * @constructor
+ * @augments BooleanField
  */
 function NullBooleanField(kwargs)
 {
@@ -695,6 +712,7 @@ NullBooleanField.prototype.clean = function(value)
  *                           <code>{choices: [[1, "One"], [2, "Two"]]}</code>.
  *                           Defaults to an empty <code>Array</code>.
  * @constructor
+ * @augments Field
  */
 function ChoiceField(kwargs)
 {
@@ -757,6 +775,7 @@ ChoiceField.prototype.clean = function(value)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          <code>ChoiceField</code>.
  * @constructor
+ * @augments ChoiceField
  */
 function MultipleChoiceField(kwargs)
 {
@@ -825,6 +844,7 @@ MultipleChoiceField.prototype.clean = function(value)
  * @param {Object} kwargs configuration options, as specified in
  *                        <code>Field</code>.
  * @constructor
+ * @augments Field
  */
 function ComboField(fields, kwargs)
 {
@@ -861,6 +881,7 @@ ComboField.prototype.clean = function(value)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          <code>Field</code> and <code>CharField</code>.
  * @constructor
+ * @augments RegexField
  */
 function IPAddressField(kwargs)
 {

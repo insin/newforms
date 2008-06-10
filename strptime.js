@@ -1,7 +1,8 @@
 /**
- * A partial implementation of <code>strptime</code>, as required to support the
- * default valid date and time formats used by Django's newforms library.
- * <p>
+ * @fileOverview A partial implementation of <code>strptime</code>, as required
+ *               to support the default valid date and time formats used by
+ *               Django's newforms library.
+ *
  * This implementation is based on a sample implementation found at
  * http://effbot.org/librarybook/time.htm and largely takes its cue from the
  * documentation for Python's <code>time</code> module, as documented at
