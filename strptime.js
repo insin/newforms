@@ -82,9 +82,10 @@ function TimeParser(format, locale)
     format = format.split(/(?:\s|%t|%n)+/).join(" ");
     var pattern = [];
     var expected = [];
+    var directiveRegExp = /%\w|%%|./g;
     var matches;
 
-    while ((matches = (/%\w|%%|./g).exec(format)) !== null)
+    while ((matches = directiveRegExp.exec(format)) !== null)
     {
         if (matches[0].charAt(0) == "%")
         {
