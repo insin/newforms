@@ -252,7 +252,7 @@ TimeParser.prototype =
      * @return a list of 9 integers, each corresponding to a time field.
      * @type Array
      */
-    match: function(input)
+    parse: function(input)
     {
         var matches = this.pattern.exec(input);
         if (matches === null)
@@ -377,7 +377,7 @@ TimeParser.prototype =
  * See <code>TimeParser</code> for further details on the <code>format</code>
  * and <code>locale</code> arguments.
  * <p>
- * See <code>TimeParser.match()</code> for further details on this function's
+ * See <code>TimeParser.parse()</code> for further details on this function's
  * result.
  *
  * @param {String} input the string to be parsed.
@@ -390,5 +390,5 @@ TimeParser.prototype =
 function strptime(input, format, locale)
 {
     return new TimeParser(format,
-                          locale || TimeParser.DEFAULT_LOCALE).match(input);
+                          locale || TimeParser.DEFAULT_LOCALE).parse(input);
 }
