@@ -43,8 +43,7 @@ function Field(kwargs)
 
     // Copy error messages for this instance into a new object
     this.errorMessages =
-        extendObject(extendObject({}, this.defaultErrorMessages),
-                     kwargs.errorMessages || {});
+        extendObject({}, this.defaultErrorMessages, kwargs.errorMessages || {});
 }
 
 /**
@@ -136,11 +135,11 @@ function CharField(kwargs)
 }
 
 CharField.prototype = new Field();
-
-extendObject(CharField.prototype.defaultErrorMessages, {
-    maxLength: "Ensure this value has at most %(max)s characters (it has %(length)s).",
-    minLength: "Ensure this value has at least %(min)s characters (it has %(length)s)."
-});
+CharField.prototype.defaultErrorMessages =
+    extendObject({}, CharField.prototype.defaultErrorMessages, {
+        maxLength: "Ensure this value has at most %(max)s characters (it has %(length)s).",
+        minLength: "Ensure this value has at least %(min)s characters (it has %(length)s)."
+    });
 
 /**
  * Validates max length and min length of the input, if configured to do so.
@@ -161,6 +160,8 @@ CharField.prototype.clean = function(value)
             return "";
         }
     }
+
+    value = "" + value;
 
     if (this.maxLength !== null && value.length > this.maxLength)
     {
@@ -222,14 +223,15 @@ function IntegerField(kwargs)
 /**
  * Integer validation regular expression.
  */
-IntegerField.INTEGER_REGEXP = /^[-+]?\d+$/;
+IntegerField.INTEGER_REGEXP = /^ *[-+]? *\d+ *$/;
 
 IntegerField.prototype = new Field();
-extendObject(IntegerField.prototype.defaultErrorMessages, {
-    invalid: "Enter a whole number.",
-    maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
-    minValue: "Ensure this value is greater than or equal to %(minValue)s.",
-});
+IntegerField.prototype.defaultErrorMessages =
+    extendObject({}, IntegerField.prototype.defaultErrorMessages, {
+        invalid: "Enter a whole number.",
+        maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
+        minValue: "Ensure this value is greater than or equal to %(minValue)s."
+    });
 
 /**
  * Validates that the given value is a valid integer.
@@ -296,11 +298,12 @@ function FloatField(kwargs)
 FloatField.FLOAT_REGEXP = /^[-+]?\d+(?:\.\d+)?$/;
 
 FloatField.prototype = new Field();
-extendObject(FloatField.prototype.defaultErrorMessages, {
-    invalid: "Enter a number.",
-    maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
-    minValue: "Ensure this value is greater than or equal to %(minValue)s.",
-});
+FloatField.prototype.defaultErrorMessages =
+    extendObject({}, FloatField.prototype.defaultErrorMessages, {
+        invalid: "Enter a number.",
+        maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
+        minValue: "Ensure this value is greater than or equal to %(minValue)s.",
+    });
 
 /**
  * Validates that the given value is a valid float.
@@ -368,14 +371,15 @@ function DecimalField(kwargs)
 }
 
 DecimalField.prototype = new Field();
-extendObject(DecimalField.prototype.defaultErrorMessages, {
-    invalid: "Enter a number.",
-    maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
-    minValue: "Ensure this value is greater than or equal to %(minValue)s.",
-    maxDigits: "Ensure that there are no more than %(maxDigits)s digits in total.",
-    maxDecimalPlaces: "Ensure that there are no more than %(maxDecimalPlaces)s decimal places.",
-    maxWholeDigits: "Ensure that there are no more than %(maxWhileDigits)s digits before the decimal point."
-});
+DecimalField.prototype.defaultErrorMessages =
+    extendObject({}, DecimalField.prototype.defaultErrorMessages, {
+        invalid: "Enter a number.",
+        maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
+        minValue: "Ensure this value is greater than or equal to %(minValue)s.",
+        maxDigits: "Ensure that there are no more than %(maxDigits)s digits in total.",
+        maxDecimalPlaces: "Ensure that there are no more than %(maxDecimalPlaces)s decimal places.",
+        maxWholeDigits: "Ensure that there are no more than %(maxWhileDigits)s digits before the decimal point."
+    });
 
 /**
  * In lieu of a built-in Decimal type for JavaScript, this method casts to a
@@ -480,9 +484,10 @@ DateField.DEFAULT_DATE_INPUT_FORMATS = [
 ];
 
 DateField.prototype = new Field();
-extendObject(DateField.prototype.defaultErrorMessages, {
-    invalid: "Enter a valid date."
-});
+DateField.prototype.defaultErrorMessages =
+    extendObject({}, DateField.prototype.defaultErrorMessages, {
+        invalid: "Enter a valid date."
+    });
 
 /**
  * Validates that the input can be converted to a date.
@@ -559,9 +564,10 @@ TimeField.DEFAULT_TIME_INPUT_FORMATS = [
 ];
 
 TimeField.prototype = new Field();
-extendObject(TimeField.prototype.defaultErrorMessages, {
-    invalid: "Enter a valid time."
-});
+TimeField.prototype.defaultErrorMessages =
+    extendObject({}, TimeField.prototype.defaultErrorMessages, {
+        invalid: "Enter a valid time."
+    });
 
 /**
  * Validates that the input can be converted to a time.
@@ -650,9 +656,10 @@ DateTimeField.DEFAULT_DATETIME_INPUT_FORMATS = [
 
 DateTimeField.prototype = new Field();
 DateTimeField.prototype.defaultWidget = DateTimeInput;
-extendObject(TimeField.prototype.defaultErrorMessages, {
-    invalid: "Enter a valid date/time."
-});
+TimeField.prototype.defaultErrorMessages =
+    extendObject({}, TimeField.prototype.defaultErrorMessages, {
+        invalid: "Enter a valid date/time."
+    });
 
 /**
  * Validates that the input can be converted to a date/time.
@@ -776,9 +783,10 @@ EmailField.EMAIL_REGEXP = new RegExp(
 
 EmailField.prototype = new RegexField();
 
-extendObject(EmailField.prototype.defaultErrorMessages, {
-    invalid: "Enter a valid e-mail address"
-});
+EmailField.prototype.defaultErrorMessages =
+    extendObject({}, EmailField.prototype.defaultErrorMessages, {
+        invalid: "Enter a valid e-mail address"
+    });
 
 /**
  * Validates that its input is a valid uploaded file.
@@ -796,11 +804,12 @@ function FileField(kwargs)
 
 FileField.prototype = new Field();
 FileField.prototype.defaultWidget = FileInput;
-extendObject(FileField.prototype.defaultErrorMessages, {
-    invalid: "No file was submitted. Check the encoding type on the form.",
-    missing: "No file was submitted.",
-    empty: "The submitted file is empty."
-});
+FileField.prototype.defaultErrorMessages =
+    extendObject({}, FileField.prototype.defaultErrorMessages, {
+        invalid: "No file was submitted. Check the encoding type on the form.",
+        missing: "No file was submitted.",
+        empty: "The submitted file is empty."
+    });
 
 /**
  * Validates that its input is a valid uploaded image.
@@ -817,9 +826,10 @@ function ImageField(kwargs)
 }
 
 ImageField.prototype = new FileField();
-extendObject(ImageField.prototype.defaultErrorMessages, {
-    invalidImage: "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
-});
+ImageField.prototype.defaultErrorMessages =
+    extendObject({}, ImageField.prototype.defaultErrorMessages, {
+        invalidImage: "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
+    });
 
 /**
  * Validates that its input appears to be a valid URL.
@@ -863,10 +873,11 @@ URLField.URL_VALIDATOR_USER_AGENT =
     "js-forms (http://code.google.com/p/js-forms/)";
 
 URLField.prototype = new RegexField();
-extendObject(URLField.prototype.defaultErrorMessages, {
-    invalid: "Enter a valid URL.",
-    invalidLink: "This URL appears to be a broken link."
-});
+URLField.prototype.defaultErrorMessages =
+    extendObject({}, URLField.prototype.defaultErrorMessages, {
+        invalid: "Enter a valid URL.",
+        invalidLink: "This URL appears to be a broken link."
+    });
 
 /**
  * Validates that the given value appears to be a valid URL.
@@ -993,9 +1004,10 @@ function ChoiceField(kwargs)
 
 ChoiceField.prototype = new Field();
 ChoiceField.prototype.defaultWidget = Select;
-extendObject(ChoiceField.prototype.defaultErrorMessages, {
-    invalidChoice: "Select a valid choice. That choice is not one of the available choices."
-});
+ChoiceField.prototype.defaultErrorMessages =
+    extendObject({}, ChoiceField.prototype.defaultErrorMessages, {
+        invalidChoice: "Select a valid choice. That choice is not one of the available choices."
+    });
 
 /**
  * Validates that the given value is in this field's choices.
@@ -1043,10 +1055,11 @@ function MultipleChoiceField(kwargs)
 
 MultipleChoiceField.prototype = new ChoiceField();
 MultipleChoiceField.prototype.defaultWidget = SelectMultiple;
-extendObject(MultipleChoiceField.prototype.defaultErrorMessages, {
-    invalidChoice: "Select a valid choice. %(value)s is not one of the available choices.",
-    invalidList: "Enter a list of values."
-});
+MultipleChoiceField.prototype.defaultErrorMessages =
+    extendObject({}, MultipleChoiceField.prototype.defaultErrorMessages, {
+        invalidChoice: "Select a valid choice. %(value)s is not one of the available choices.",
+        invalidList: "Enter a list of values."
+    });
 
 /**
  * Validates that the input is a list and that each item is in this field's
@@ -1154,6 +1167,7 @@ IPAddressField.IPV4_REGEXP =
     /^(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}$/;
 
 IPAddressField.prototype = new RegexField();
-extendObject(IPAddressField.prototype.defaultErrorMessages, {
-    invalid: "Enter a valid IPv4 address."
-});
+IPAddressField.prototype.defaultErrorMessages =
+    extendObject({}, IPAddressField.prototype.defaultErrorMessages, {
+        invalid: "Enter a valid IPv4 address."
+    });

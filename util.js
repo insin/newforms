@@ -3,21 +3,27 @@
  */
 
 /**
- * Updates an object's properties with another object's properties.
+ * Updates an object's properties with other objects' properties.
  *
  * @param {Object} destination the object to be updated.
- * @param {Object} source the object providing the updated properties.
+ * @param {Object} [source] all further arguments will have their properties
+ *                          copied to the <code>destination</code> object in the
+ *                          order given.
  *
  * @return the <code>destination</code> object.
  * @type Object
  */
-function extendObject(destination, source)
+function extendObject(destination)
 {
-    for (var property in source)
+    for (var i = 1, l = arguments.length; i < l; i++)
     {
-        if (source.hasOwnProperty(property))
+        var source = arguments[i];
+        for (var property in source)
         {
-            destination[property] = source[property];
+            if (source.hasOwnProperty(property))
+            {
+                destination[property] = source[property];
+            }
         }
     }
     return destination;
