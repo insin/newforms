@@ -344,7 +344,8 @@ FloatField.prototype.clean = function(value)
 /**
  * Validates that its input is a decimal number.
  *
- * @param {Object} [kwargs] configuration options.
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>Field</code>.
  * @config {Number} maxValue a maximum value for the input.
  * @config {Number} minValue a minimum value for the input.
  * @config {Number} maxDigits the maximum number of digits the input may
@@ -391,14 +392,11 @@ DecimalField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    if (!this.required)
-    {
-        for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    {s
+        if (value === Field.EMPTY_VALUES[i])
         {
-            if (value === Field.EMPTY_VALUES[i])
-            {
-                return null;
-            }
+            return null;
         }
     }
 
@@ -447,11 +445,272 @@ DecimalField.prototype.clean = function(value)
     return floatValue;
 };
 
-// TODO DateField
+/**
+ * Validates that its input is a date.
+ *
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>Field</code>.
+ * @config {Array} [inputFormats] a list of <code>strptime</code> input formats
+ *                                which are considered valid - if not provided,
+ *                                <code>DateField.DEFAULT_DATE_INPUT_FORMATS</code>
+ *                                will be used.
+ * @constructor
+ * @augments Field
+ */
+function DateField(kwargs)
+{
+    kwargs = extendObject({
+        inputFormats: null,
+    }, kwargs || {});
+    Field.call(this, kwargs);
+    this.inputFormats =
+        kwargs.inputFormats || DateField.DEFAULT_DATE_INPUT_FORMATS;
+}
 
-// TODO TimeField
+/**
+ * Default <code>strptime</code> input formats which are considered valid.
+ */
+DateField.DEFAULT_DATE_INPUT_FORMATS = [
+    "%Y-%m-%d",              // "2006-10-25"
+    "%m/%d/%Y", "%m/%d/%y",  // "10/25/2006", "10/25/06"
+    "%b %d %Y", "%b %d, %Y", // "Oct 25 2006", "Oct 25, 2006"
+    "%d %b %Y", "%d %b, %Y", // "25 Oct 2006", "25 Oct, 2006"
+    "%B %d %Y", "%B %d, %Y", // "October 25 2006", "October 25, 2006"
+    "%d %B %Y", "%d %B, %Y"  // "25 October 2006", "25 October, 2006"
+];
 
-// TODO DateTimeField
+DateField.prototype = new Field();
+extendObject(DateField.prototype.defaultErrorMessages, {
+    invalid: "Enter a valid date."
+});
+
+/**
+ * Validates that the input can be converted to a date.
+ *
+ * @param value the value to be validated.
+ *
+ * @return a <code>Date</code> object with its year, month and day attributes
+ *         set, or <code>null</code> for empty values.
+ * @type Date
+ */
+DateField.prototype.clean = function(value)
+{
+    Field.prototype.clean.call(this, value);
+
+    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    {
+        if (value === Field.EMPTY_VALUES[i])
+        {
+            return null;
+        }
+    }
+
+    if (value instanceof Date)
+    {
+        return new Date(value.getFullYear(),
+                        value.getMonth(),
+                        value.getDate());
+    }
+
+    for (var i = 0, l = this.inputFormats.length; i < l; i++)
+    {
+        try
+        {
+            var time = strptime(value, this.inputFormats[i]);
+            return new Date(time[0], time[1] - 1, time[2]);
+        }
+        catch (e)
+        {
+            continue;
+        }
+    }
+
+    throw new ValidationError(this.errorMessages.invalid);
+};
+
+/**
+ * Validates that its input is a time.
+ *
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>Field</code>.
+ * @config {Array} [inputFormats] a list of <code>strptime</code> input formats
+ *                                which are considered valid - if not provided,
+ *                                <code>TimeField.DEFAULT_TIME_INPUT_FORMATS</code>
+ *                                will be used.
+ * @constructor
+ * @augments Field
+ */
+function TimeField(kwargs)
+{
+    kwargs = extendObject({
+        inputFormats: null,
+    }, kwargs || {});
+    Field.call(this, kwargs);
+    this.inputFormats =
+        kwargs.inputFormats || TimeField.DEFAULT_TIME_INPUT_FORMATS;
+}
+
+/**
+ * Default <code>strptime</code> input formats which are considered valid.
+ */
+TimeField.DEFAULT_TIME_INPUT_FORMATS = [
+    "%H:%M:%S", // "14:30:59"
+    "%H:%M"     // "14:30"
+];
+
+TimeField.prototype = new Field();
+extendObject(TimeField.prototype.defaultErrorMessages, {
+    invalid: "Enter a valid time."
+});
+
+/**
+ * Validates that the input can be converted to a time.
+ *
+ * @param value the value to be validated.
+ *
+ * @return a <code>Date</code> object with its date set to 1st January, 1900 and
+ *         its hour, minute and second attributes set to the given time, or
+ *         <code>null</code> for empty values.
+ * @type Date
+ */
+TimeField.prototype.clean = function(value)
+{
+    Field.prototype.clean.call(this, value);
+
+    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    {
+        if (value === Field.EMPTY_VALUES[i])
+        {
+            return null;
+        }
+    }
+
+    if (value instanceof Date)
+    {
+        return new Date(1900,
+                        0,
+                        1,
+                        value.getHours(),
+                        value.getMinutes(),
+                        value.getSeconds());
+    }
+
+    for (var i = 0, l = this.inputFormats.length; i < l; i++)
+    {
+        try
+        {
+            var time = strptime(value, this.inputFormats[i]);
+            return new Date(1900, 0, 1, time[3], time[4], time[5]);
+        }
+        catch (e)
+        {
+            continue;
+        }
+    }
+
+    throw new ValidationError(this.errorMessages.invalid);
+};
+
+/**
+ * Validates that its input is a date/time.
+ *
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>Field</code>.
+ * @config {Array} [inputFormats] a list of <code>strptime</code> input formats
+ *                                which are considered valid - if not provided,
+ *                                <code>DateTimeField.DEFAULT_TIME_INPUT_FORMATS</code>
+ *                                will be used.
+ * @constructor
+ * @augments Field
+ */
+function DateTimeField(kwargs)
+{
+    kwargs = extendObject({
+        inputFormats: null,
+    }, kwargs || {});
+    Field.call(this, kwargs);
+    this.inputFormats =
+        kwargs.inputFormats || DateTimeField.DEFAULT_DATETIME_INPUT_FORMATS;
+}
+
+/**
+ * Default <code>strptime</code> input formats which are considered valid.
+ */
+DateTimeField.DEFAULT_DATETIME_INPUT_FORMATS = [
+    "%Y-%m-%d %H:%M:%S", // "2006-10-25 14:30:59"
+    "%Y-%m-%d %H:%M",    // "2006-10-25 14:30"
+    "%Y-%m-%d",          // "2006-10-25"
+    "%m/%d/%Y %H:%M:%S", // "10/25/2006 14:30:59"
+    "%m/%d/%Y %H:%M",    // "10/25/2006 14:30"
+    "%m/%d/%Y",          // "10/25/2006"
+    "%m/%d/%y %H:%M:%S", // "10/25/06 14:30:59"
+    "%m/%d/%y %H:%M",    // "10/25/06 14:30"
+    "%m/%d/%y"           // "10/25/06"
+]
+
+DateTimeField.prototype = new Field();
+DateTimeField.prototype.defaultWidget = DateTimeInput;
+extendObject(TimeField.prototype.defaultErrorMessages, {
+    invalid: "Enter a valid date/time."
+});
+
+/**
+ * Validates that the input can be converted to a date/time.
+ *
+ * @param value the value to be validated.
+ *
+ * @return a <code>Date</code> object, or <code>null</code> for empty values.
+ * @type Date
+ */
+DateTimeField.prototype.clean = function(value)
+{
+    Field.prototype.clean.call(this, value);
+
+    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    {
+        if (value === Field.EMPTY_VALUES[i])
+        {
+            return null;
+        }
+    }
+
+    if (value instanceof Date)
+    {
+        return new Date(value.getFullYear(),
+                        value.getMonth(),
+                        value.getDate(),
+                        value.getHours(),
+                        value.getMinutes(),
+                        value.getSeconds());
+    }
+
+    if (value instanceof Array)
+    {
+        // Input comes from a SplitDateTimeWidget, for example, so it's two
+        // components: date and time.
+        if (value.length != 2)
+        {
+            throw new ValidationError(this.errorMessages.invalid);
+        }
+        value = value.join(" ");
+    }
+
+    for (var i = 0, l = this.inputFormats.length; i < l; i++)
+    {
+        try
+        {
+            var time = strptime(value, this.inputFormats[i]);
+            return new Date(time[0], time[1] - 1, time[2],
+                            time[3], time[4], time[5]);
+        }
+        catch (e)
+        {
+            continue;
+        }
+    }
+
+    throw new ValidationError(this.errorMessages.invalid);
+};
 
 /**
  * Validates that its input matches a given regular expression.

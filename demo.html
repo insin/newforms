@@ -13,6 +13,7 @@
   </style>
   <script type="text/javascript" src="http://dombuilder.googlecode.com/svn/trunk/DOMBuilder.js"></script>
   <script type="text/javascript" src="util.js"></script>
+  <script type="text/javascript" src="strftime.js"></script>
   <script type="text/javascript" src="strptime.js"></script>
   <script type="text/javascript" src="widgets.js"></script>
   <script type="text/javascript" src="fields.js"></script>
@@ -48,7 +49,11 @@
           awesome: new BooleanField({label: "Check here if you are awesome!", initial: true}),
           likeMonkeys: new NullBooleanField({label: "Do you like monkeys?", initial: "2"}),
           intBeginningWith5: new ComboField([new RegexField(/^[-+]?5/), new IntegerField()],
-                                            {label: "Type an integer begining with 5"})
+                                            {label: "Type an integer begining with 5"}),
+          birthday: new DateField({label: "Your birthday"}),
+          wokeUpAt: new TimeField({label: "What time did you wake up at today?"}),
+          howSoonIsNow: new DateTimeField({initial: new Date(),
+                                           label: "What time was it when this page was rendered?"})
       };
       Form.call(this, kwargs);
   };

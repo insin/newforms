@@ -232,7 +232,42 @@ Textarea.prototype.render = function(name, value, attrs)
         "textarea", extendObject(attrs, {name: name}), [value || ""]);
 };
 
-// TODO DateTimeInput
+/**
+ * A <code>&lt;input type="text"&gt;</code> which, if given a <code>Date</code>
+ * object to display, formats it as an appropriate <code>String</code>.
+ *
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>Input</code>.
+ * @config {String} [format] a <code>strftime</code> format string.
+ * @constructor
+ * @augments Input
+ */
+function DateTimeInput(kwargs)
+{
+    kwargs = extendObject({format: null}, kwargs || {});
+    Input.call(this, kwargs);
+    if (kwargs.format !== null)
+    {
+        this.format = kwargs.format;
+    }
+}
+
+DateTimeInput.prototype = new Input();
+DateTimeInput.prototype.inputType = "text";
+DateTimeInput.prototype.format = "%Y-%m-%d %H:%M:%S"; // "2006-10-25 14:30:59"
+
+DateTimeInput.prototype.render = function(name, value, attrs)
+{
+    if (value === null)
+    {
+        value = "";
+    }
+    else if (value instanceof Date)
+    {
+        value = strftime(value, this.format);
+    }
+    return Input.prototype.render.call(this, name, value, attrs);
+};
 
 /**
  * An HTML <code>&lt;input type="checkbox"&gt;</code> widget.
