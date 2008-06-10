@@ -41,7 +41,7 @@ var formatString = function()
          * <p>
          * See http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:String:replace#Specifying_a_function_as_a_parameter
          *
-         * @param {String} s the string undergoing replacement.
+         * @param {String} s the matched substring to be replaced.
          * @param {String} name the name of a placeholder.
          *
          * @return the replacement for the placeholder with the given name.

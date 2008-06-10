@@ -4,7 +4,7 @@
  * <p>
  * This implementation is based on a sample implementation found at
  * http://effbot.org/librarybook/time.htm and largely takes its cue from the
- * documentation from Python's <code>time</code> module, as documented at
+ * documentation for Python's <code>time</code> module, as documented at
  * http://docs.python.org/lib/module-time.html - with the exception of seconds
  * formatting, which is restricted to the range [00,59] rather than Python's
  * [00,61].
@@ -270,7 +270,7 @@ TimeParser.prototype =
                 case TimeParser.DATA_TYPES.ABBREVIATED_MONTH_NAME:
                     if (typeof this.locale.ABBREVIATED_MONTHS[match] == "undefined")
                     {
-                        throw new Error("Unkown abbreviated month name for " +
+                        throw new Error("Unknown abbreviated month name for " +
                                         this.locale.NAME + " locale: " + match);
                     }
                     time[1] = this.locale.ABBREVIATED_MONTHS[match];
@@ -283,7 +283,7 @@ TimeParser.prototype =
                 case TimeParser.DATA_TYPES.FULL_MONTH_NAME:
                     if (typeof this.locale.FULL_MONTHS[match] == "undefined")
                     {
-                        throw new Error("Unkown full month name for " +
+                        throw new Error("Unknown full month name for " +
                                         this.locale.NAME + " locale: " + match);
                     }
                     time[1] = this.locale.FULL_MONTHS[match];
