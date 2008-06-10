@@ -6,6 +6,46 @@
 
 /**
  * Formats a date according to a format string.
+ * <p>
+ * Supported formatting directives are:
+ * <table>
+ * <thead>
+ *   <tr>
+ *     <th>Directive</th>
+ *     <th>Meaning</th>
+ *   </tr>
+ * </thead>
+ * <tbody>
+ *   <tr>
+ *     <td><code>%d</code></td>
+ *     <td>Day of the month as a decimal number [01,31].</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>%H</code></td>
+ *     <td>Hour (24-hour clock) as a decimal number [00,23].</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>%m</code></td>
+ *     <td>Month as a decimal number [01,12].</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>%M</code></td>
+ *     <td>Minute as a decimal number [00,59].</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>%S</code></td>
+ *     <td>Second as a decimal number [00,59].</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>%Y</code></td>
+ *     <td>Year with century as a decimal number.</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>%%</code></td>
+ *     <td>A literal "<tt class="character">%</tt>" character.</td>
+ *   </tr>
+ * </tbody>
+ * </table>
  *
  * @param {Date} date the date to be formatted.
  * @param {String} format the format string.
@@ -13,6 +53,7 @@
  *
  * @return a formatted version of the given date.
  * @type String
+ * @function
  */
 var strftime = function()
 {

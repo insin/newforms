@@ -231,17 +231,17 @@ TimeParser.prototype =
      *   </tr>
      *   <tr>
      *     <td><code>6</code></td>
-     *     <td>Day of week (not implmented - always <code>0</code>)</td>
+     *     <td>Day of week (not implemented - always <code>0</code>)</td>
      *     <td>range [0,6], Monday is 0</td>
      *   </tr>
      *   <tr>
      *     <td><code>7</code></td>
-     *     <td>Day of year (not implmented - always <code>1</code>)</td>
+     *     <td>Day of year (not implemented - always <code>1</code>)</td>
      *     <td>range [1,366]</td>
      *   </tr>
      *   <tr>
      *     <td><code>8</code></td>
-     *     <td>Daylight savings flag (not implmented - always <code>-1</code>)</td>
+     *     <td>Daylight savings flag (not implemented - always <code>-1</code>)</td>
      *     <td>0, 1 or -1</td>
      *   </tr>
      * </tbody>
