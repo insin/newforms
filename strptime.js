@@ -115,16 +115,16 @@ function TimeParser(format, locale)
  */
 TimeParser.DIRECTIVE_FORMATS =
 {
-    "%b": "(.+)",                      // Locale's abbreviated month name
-    "%B": "(.+)",                      // Locale's full month name
-    "%d": "(0?[1-9]|[12][0-9]|3[01])", // Day of the month as a decimal number [01,31]
-    "%H": "([01]?[0-9]|2[0-3])",       // Hour (24-hour clock) as a decimal number [00,23]
-    "%m": "(0?[1-9]|1[0-2])",          // Month as a decimal number [01,12]
-    "%M": "([0-5]?[0-9])",             // Minute as a decimal number [00,59]
-    "%S": "([0-5]?[0-9])",             // Second as a decimal number [00,59]
-    "%y": "(\\d\\d?)",                 // Year without century as a decimal number [00,99]
-    "%Y": "(\\d\\d\\d\\d)",            // Year with century as a decimal number
-    "%%": "%"                          // A literal "%" character
+    "%b": "(.+)",           // Locale's abbreviated month name
+    "%B": "(.+)",           // Locale's full month name
+    "%d": "(\\d\\d?)",      // Day of the month as a decimal number [01,31]
+    "%H": "(\\d\\d?)",      // Hour (24-hour clock) as a decimal number [00,23]
+    "%m": "(\\d\\d?)",      // Month as a decimal number [01,12]
+    "%M": "(\\d\\d?)",      // Minute as a decimal number [00,59]
+    "%S": "(\\d\\d?)",      // Second as a decimal number [00,59]
+    "%y": "(\\d\\d?)",      // Year without century as a decimal number [00,99]
+    "%Y": "(\\d\\d\\d\\d)", // Year with century as a decimal number
+    "%%": "%"               // A literal "%" character
 };
 
 /**
@@ -170,15 +170,15 @@ TimeParser.DEFAULT_LOCALE =
 
     ABBREVIATED_MONTHS:
     {
-        "Jan": 0, "Feb": 1, "Mar": 2, "Apr": 3, "May": 4, "Jun": 5, "Jul": 6,
-        "Aug": 7, "Sep": 8, "Oct": 9, "Nov": 10, "Dec": 11
+        "Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7,
+        "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12
     },
 
     FULL_MONTHS:
     {
-        "January": 0, "February": 1, "March": 2, "April": 3, "May": 4,
-        "June": 5, "July": 6, "August": 7, "September": 8, "October": 9,
-        "November": 10, "December": 11
+        "January": 1, "February": 2, "March": 3, "April": 4, "May": 5,
+        "June": 6, "July": 7, "August": 8, "September": 9, "October": 10,
+        "November": 11, "December": 12
     }
 };
 
@@ -277,7 +277,12 @@ TimeParser.prototype =
                     break;
 
                 case TimeParser.DATA_TYPES.DAY_OF_MONTH:
-                    time[2] = parseInt(match, 10);
+                    var day = parseInt(match, 10);
+                    if (day < 1 || day > 31)
+                    {
+                        throw new Error("Day is out of range: " + day);
+                    }
+                    time[2] = day;
                     break;
 
                 case TimeParser.DATA_TYPES.FULL_MONTH_NAME:
@@ -290,19 +295,39 @@ TimeParser.prototype =
                     break;
 
                 case TimeParser.DATA_TYPES.HOUR24:
-                    time[3] = parseInt(match, 10);
+                    var hour = parseInt(match, 10);
+                    if (hour > 23)
+                    {
+                        throw new Error("Hour is out of range: " + hour);
+                    }
+                    time[3] = hour;
                     break;
 
                 case TimeParser.DATA_TYPES.MINUTE:
-                    time[4] = parseInt(match, 10);
+                    var minute = parseInt(match, 10);
+                    if (minute > 59)
+                    {
+                        throw new Error("Minute is out of range: " + minute);
+                    }
+                    time[4] = minute;
                     break;
 
                 case TimeParser.DATA_TYPES.MONTH:
-                    time[1] = parseInt(match, 10);
+                    var month = parseInt(match, 10);
+                    if (month < 1 || month > 12)
+                    {
+                        throw new Error("Month is out of range: " + month);
+                    }
+                    time[1] = month;
                     break;
 
                 case TimeParser.DATA_TYPES.SECOND:
-                    time[5] = parseInt(match, 10);
+                    var second = parseInt(match, 10);
+                    if (second > 59)
+                    {
+                        throw new Error("Second is out of range: " + second);
+                    }
+                    time[5] = second;
                     break;
 
                 case TimeParser.DATA_TYPES.YEAR:
