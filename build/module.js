@@ -7,6 +7,10 @@ return {
     "ErrorList": ErrorList,
     "ValidationError": ValidationError,
 
+    // strptime
+    "TimeParser": TimeParser,
+    "strptime": strptime,
+
     // widgets
     "Widget": Widget,
     "Input": Input,

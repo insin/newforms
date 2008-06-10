@@ -4,7 +4,8 @@ import os
 from jsmin import jsmin
 
 DIRNAME = os.path.dirname(__file__)
-SOURCE_FILES = ('../util.js', '../widgets.js', '../fields.js', '../forms.js')
+SOURCE_FILES = ('../util.js', '../strptime.js', '../widgets.js', '../fields.js',
+                '../forms.js')
 MODULE_DEFINITION = 'module.js'
 CODE_TEMPLATE = """var forms = function()
 {
