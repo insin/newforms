@@ -7,6 +7,9 @@ return {
     "ErrorList": ErrorList,
     "ValidationError": ValidationError,
 
+    // strftime
+    "strftime": strftime,
+
     // strptime
     "TimeParser": TimeParser,
     "strptime": strptime,
