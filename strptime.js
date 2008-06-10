@@ -80,53 +80,58 @@
 function TimeParser(format, locale)
 {
     this.format = format;
+    // Normalise whitespace before further processing
     format = format.split(/(?:\s|%t|%n)+/).join(" ");
     var pattern = [];
     var expected = [];
-    var directiveRegExp = /%\w|%%|./g;
-    var matches;
+    var c;
 
-    while ((matches = directiveRegExp.exec(format)) !== null)
+    for (var i = 0, l = format.length; i < l; i++)
     {
-        if (matches[0].charAt(0) == "%")
+        c = format.charAt(i);
+        if (c == "%")
         {
-            if (typeof TimeParser.DIRECTIVE_FORMATS[matches[0]] != "undefined")
+            if (i == l - 1)
             {
-                pattern[pattern.length] = TimeParser.DIRECTIVE_FORMATS[matches[0]];
-                expected = expected.concat(TimeParser.EXPECTED_DATA_TYPES[matches[0]]);
+                throw new Error("stray % in format '" + format + "'");
             }
-            else
+
+            c = format.charAt(++i);
+            if (typeof TimeParser.DIRECTIVE_PATTERNS[c] == "undefined")
             {
-                throw new Error("Unknown directive: " + matches[0]);
+                throw new Error(c + " is a bad directive in format %" + c);
             }
+
+            pattern[pattern.length] = TimeParser.DIRECTIVE_PATTERNS[c];
+            expected = expected.concat(TimeParser.EXPECTED_DATA_TYPES[c]);
         }
         else
         {
-            pattern[pattern.length] = matches[0];
+            pattern[pattern.length] = c;
         }
     }
 
     this.locale = locale || TimeParser.DEFAULT_LOCALE;
-    this.pattern = new RegExp(pattern.join(""), "i");
+    this.pattern = new RegExp(pattern.join(""));
     this.expected = expected;
 }
 
 /**
- * Maps directive codes to regular expression fragments which will capture the
- * data the directive corresponds to.
+ * Maps directive codes to regular expression pattern fragments which will
+ * capture the data the directive corresponds to.
  */
-TimeParser.DIRECTIVE_FORMATS =
+TimeParser.DIRECTIVE_PATTERNS =
 {
-    "%b": "(.+)",           // Locale's abbreviated month name
-    "%B": "(.+)",           // Locale's full month name
-    "%d": "(\\d\\d?)",      // Day of the month as a decimal number [01,31]
-    "%H": "(\\d\\d?)",      // Hour (24-hour clock) as a decimal number [00,23]
-    "%m": "(\\d\\d?)",      // Month as a decimal number [01,12]
-    "%M": "(\\d\\d?)",      // Minute as a decimal number [00,59]
-    "%S": "(\\d\\d?)",      // Second as a decimal number [00,59]
-    "%y": "(\\d\\d?)",      // Year without century as a decimal number [00,99]
-    "%Y": "(\\d\\d\\d\\d)", // Year with century as a decimal number
-    "%%": "%"               // A literal "%" character
+    "b": "(.+)",           // Locale's abbreviated month name
+    "B": "(.+)",           // Locale's full month name
+    "d": "(\\d\\d?)",      // Day of the month as a decimal number [01,31]
+    "H": "(\\d\\d?)",      // Hour (24-hour clock) as a decimal number [00,23]
+    "m": "(\\d\\d?)",      // Month as a decimal number [01,12]
+    "M": "(\\d\\d?)",      // Minute as a decimal number [00,59]
+    "S": "(\\d\\d?)",      // Second as a decimal number [00,59]
+    "y": "(\\d\\d?)",      // Year without century as a decimal number [00,99]
+    "Y": "(\\d\\d\\d\\d)", // Year with century as a decimal number
+    "%": "%"               // A literal "%" character
 };
 
 /**
@@ -151,16 +156,16 @@ TimeParser.DATA_TYPES =
  */
 TimeParser.EXPECTED_DATA_TYPES =
 {
-    "%b": [TimeParser.DATA_TYPES.ABBREVIATED_MONTH_NAME],
-    "%B": [TimeParser.DATA_TYPES.FULL_MONTH_NAME],
-    "%d": [TimeParser.DATA_TYPES.DAY_OF_MONTH],
-    "%H": [TimeParser.DATA_TYPES.HOUR24],
-    "%m": [TimeParser.DATA_TYPES.MONTH],
-    "%M": [TimeParser.DATA_TYPES.MINUTE],
-    "%S": [TimeParser.DATA_TYPES.SECOND],
-    "%y": [TimeParser.DATA_TYPES.YEAR_NO_CENTURY],
-    "%Y": [TimeParser.DATA_TYPES.YEAR],
-    "%%": []
+    "b": [TimeParser.DATA_TYPES.ABBREVIATED_MONTH_NAME],
+    "B": [TimeParser.DATA_TYPES.FULL_MONTH_NAME],
+    "d": [TimeParser.DATA_TYPES.DAY_OF_MONTH],
+    "H": [TimeParser.DATA_TYPES.HOUR24],
+    "m": [TimeParser.DATA_TYPES.MONTH],
+    "M": [TimeParser.DATA_TYPES.MINUTE],
+    "S": [TimeParser.DATA_TYPES.SECOND],
+    "y": [TimeParser.DATA_TYPES.YEAR_NO_CENTURY],
+    "Y": [TimeParser.DATA_TYPES.YEAR],
+    "%": []
 };
 
 /**
@@ -170,18 +175,12 @@ TimeParser.DEFAULT_LOCALE =
 {
     NAME: "English",
 
-    ABBREVIATED_MONTHS:
-    {
-        "Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7,
-        "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12
-    },
+    ABBREVIATED_MONTHS: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+                         "Sep", "Oct", "Nov", "Dec"],
 
-    FULL_MONTHS:
-    {
-        "January": 1, "February": 2, "March": 3, "April": 4, "May": 5,
-        "June": 6, "July": 7, "August": 8, "September": 9, "October": 10,
-        "November": 11, "December": 12
-    }
+    FULL_MONTHS: ["January", "February", "March", "April", "May", "June",
+                  "July", "August", "September", "October", "November",
+                  "December"]
 };
 
 TimeParser.prototype =
@@ -270,12 +269,14 @@ TimeParser.prototype =
             switch (this.expected[i - 1])
             {
                 case TimeParser.DATA_TYPES.ABBREVIATED_MONTH_NAME:
-                    if (typeof this.locale.ABBREVIATED_MONTHS[match] == "undefined")
+                    var month = this._indexOf(match,
+                                              this.locale.ABBREVIATED_MONTHS);
+                    if (month == -1)
                     {
                         throw new Error("Unknown abbreviated month name for " +
                                         this.locale.NAME + " locale: " + match);
                     }
-                    time[1] = this.locale.ABBREVIATED_MONTHS[match];
+                    time[1] = month + 1;
                     break;
 
                 case TimeParser.DATA_TYPES.DAY_OF_MONTH:
@@ -288,12 +289,13 @@ TimeParser.prototype =
                     break;
 
                 case TimeParser.DATA_TYPES.FULL_MONTH_NAME:
-                    if (typeof this.locale.FULL_MONTHS[match] == "undefined")
+                    var month = this._indexOf(match, this.locale.FULL_MONTHS);
+                    if (month == -1)
                     {
                         throw new Error("Unknown full month name for " +
                                         this.locale.NAME + " locale: " + match);
                     }
-                    time[1] = this.locale.FULL_MONTHS[match];
+                    time[1] = month + 1;
                     break;
 
                 case TimeParser.DATA_TYPES.HOUR24:
@@ -355,9 +357,7 @@ TimeParser.prototype =
         }
 
         // Validate day of month
-        var day = time[2];
-        var month = time[1];
-        var year = time[0];
+        var day = time[2], month = time[1], year = time[0];
         if (((month == 4 || month == 6 || month == 9 || month == 11) &&
             day > 30)
             ||
@@ -368,6 +368,18 @@ TimeParser.prototype =
         }
 
         return time;
+    },
+
+    _indexOf: function(item, list)
+    {
+        for (var i = 0, l = list.length; i < l; i++)
+        {
+            if (item === list[i])
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 };
 

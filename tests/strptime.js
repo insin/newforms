@@ -123,3 +123,25 @@ test("Boundary tests", function()
         }
     }
 });
+
+test("Invalid format strings", function()
+{
+    expect(2);
+    try
+    {
+        strptime("2006-10-25", "%Y-%m-%d%");
+    }
+    catch (e)
+    {
+        ok(true, "Hanging % throws an Error");
+    }
+
+    try
+    {
+        strptime("2006-10-25", "%Y-%m-%d%q");
+    }
+    catch (e)
+    {
+        ok(true, "Invalid directive throws an Error");
+    }
+});
