@@ -66,6 +66,7 @@ var strftime = function()
      *                           defaults to <code>"0"</code>.
      *
      * @return a padded version of the given number.
+     * @type String
      */
     function pad(number, size, padding)
     {
@@ -78,45 +79,46 @@ var strftime = function()
         return padded;
     };
 
+    /**
+     * Maps directive codes to functions which take the date to be formatted and
+     * locale details (if required), returning an appropriate formatted value.
+     */
+    var DIRECTIVES =
+    {
+        "d": function(d) { return pad(d.getDate(), 2); },
+        "H": function(d) { return pad(d.getHours(), 2); },
+        "M": function(d) { return pad(d.getMinutes(), 2); },
+        "m": function(d) { return pad(d.getMonth() + 1, 2); },
+        "S": function(d) { return pad(d.getSeconds(), 2); },
+        "Y": function(d) { return d.getFullYear(); },
+        "%": function(d) { return "%"; }
+    };
+
     return function(date, format, locale)
     {
-        var directiveRegExp = /%\w|%%|./g;
         var formatted = [];
+        var c;
 
-        while ((matches = directiveRegExp.exec(format)) !== null)
+        for (var i = 0, l = format.length; i < l; i++)
         {
-            var part;
-            switch (matches[0])
+            c = format.charAt(i);
+            if (c == "%")
             {
-                case "%d":
-                    part = pad(date.getDate(), 2);
-                    break;
+                if (i == l - 1)
+                {
+                    throw new Error("strftime format ends with raw %");
+                }
 
-                case "%H":
-                    part = pad(date.getHours(), 2);
-                    break;
-
-                case "%M":
-                    part = pad(date.getMinutes(), 2);
-                    break;
-
-                case "%m":
-                    part = pad(date.getMonth() + 1, 2);
-                    break;
-
-                case "%S":
-                    part = pad(date.getSeconds(), 2);
-                    break;
-
-                case "%Y":
-                    part = date.getFullYear();
-                    break;
-
-                default:
-                    part = matches[0];
-                    break
+                c = format.charAt(++i);
+                if (typeof DIRECTIVES[c] == "function")
+                {
+                    formatted[formatted.length] = DIRECTIVES[c](date, locale);
+                }
             }
-            formatted[formatted.length] = part;
+            else
+            {
+                formatted[formatted.length] = c;
+            }
         }
 
         return formatted.join("");
