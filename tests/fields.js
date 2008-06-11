@@ -172,3 +172,42 @@ test("DecimalField", function()
     equals(f.clean(".5"), 0.5);
     equals(f.clean("00.50"), 0.5);
 });
+
+test("DateField", function()
+{
+    expect(24);
+    var f = new DateField();
+    var expected = new Date(2006, 9, 25).valueOf();
+    equals(f.clean(new Date(2006, 9, 25)).valueOf(), expected);
+    equals(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), expected);
+    equals(f.clean(new Date(2006, 9, 25, 14, 30, 59)).valueOf(), expected);
+    equals(f.clean(new Date(2006, 9, 25, 14, 30, 59, 200)).valueOf(), expected);
+    equals(f.clean("2006-10-25").valueOf(), expected);
+    equals(f.clean("10/25/2006").valueOf(), expected);
+    equals(f.clean("10/25/06").valueOf(), expected);
+    equals(f.clean("Oct 25 2006").valueOf(), expected);
+    equals(f.clean("October 25 2006").valueOf(), expected);
+    equals(f.clean("October 25, 2006").valueOf(), expected);
+    equals(f.clean("25 October 2006").valueOf(), expected);
+    equals(f.clean("25 October, 2006").valueOf(), expected);
+    try { f.clean("2006-4-31"); } catch (e) { equals(ve(e), "Enter a valid date."); }
+    try { f.clean("200a-10-25"); } catch (e) { equals(ve(e), "Enter a valid date."); }
+    try { f.clean("25/10/06"); } catch (e) { equals(ve(e), "Enter a valid date."); }
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+
+    var f = new DateField({required: false});
+    equals(f.clean(null), null);
+    equals(f.clean(""), null);
+
+    // DateField accepts an optional inputFormats parameter
+    var f = new DateField({inputFormats: ["%Y %m %d"]});
+    equals(f.clean(new Date(2006, 9, 25)).valueOf(), expected);
+    equals(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), expected);
+    equals(f.clean("2006 10 25").valueOf(), expected);
+
+    // The input_formats parameter overrides all default input formats, so the
+    // default formats won't work unless you specify them
+    try { f.clean("2006-10-25"); } catch (e) { equals(ve(e), "Enter a valid date."); }
+    try { f.clean("10/25/2006"); } catch (e) { equals(ve(e), "Enter a valid date."); }
+    try { f.clean("10/25/06"); } catch (e) { equals(ve(e), "Enter a valid date."); }
+});
