@@ -87,15 +87,9 @@ Field.prototype.defaultErrorMessages =
  */
 Field.prototype.clean = function(value)
 {
-    if (this.required)
+    if (this.required && contains(Field.EMPTY_VALUES, value))
     {
-        for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
-        {
-            if (value === Field.EMPTY_VALUES[i])
-            {
-                throw new ValidationError(this.errorMessages.required);
-            }
-        }
+        throw new ValidationError(this.errorMessages.required);
     }
     return value;
 };
@@ -153,12 +147,9 @@ CharField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    if (contains(Field.EMPTY_VALUES, value))
     {
-        if (value === Field.EMPTY_VALUES[i])
-        {
-            return "";
-        }
+        return "";
     }
 
     value = "" + value;
@@ -245,12 +236,9 @@ IntegerField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    if (contains(Field.EMPTY_VALUES, value))
     {
-        if (value === Field.EMPTY_VALUES[i])
-        {
-            return null;
-        }
+        return null;
     }
 
     if (!IntegerField.INTEGER_REGEXP.test(value))
@@ -317,12 +305,9 @@ FloatField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    if (contains(Field.EMPTY_VALUES, value))
     {
-        if (value === Field.EMPTY_VALUES[i])
-        {
-            return null;
-        }
+        return null;
     }
 
     if (!FloatField.FLOAT_REGEXP.test(value))
@@ -396,12 +381,9 @@ DecimalField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
-    {s
-        if (value === Field.EMPTY_VALUES[i])
-        {
-            return null;
-        }
+    if (contains(Field.EMPTY_VALUES, value))
+    {
+        return null;
     }
 
     value = ("" + value).trim();
@@ -502,12 +484,9 @@ DateField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    if (contains(Field.EMPTY_VALUES, value))
     {
-        if (value === Field.EMPTY_VALUES[i])
-        {
-            return null;
-        }
+        return null;
     }
 
     if (value instanceof Date)
@@ -583,12 +562,9 @@ TimeField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    if (contains(Field.EMPTY_VALUES, value))
     {
-        if (value === Field.EMPTY_VALUES[i])
-        {
-            return null;
-        }
+        return null;
     }
 
     if (value instanceof Date)
@@ -673,12 +649,9 @@ DateTimeField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    if (contains(Field.EMPTY_VALUES, value))
     {
-        if (value === Field.EMPTY_VALUES[i])
-        {
-            return null;
-        }
+        return null;
     }
 
     if (value instanceof Date)
@@ -1021,12 +994,9 @@ ChoiceField.prototype.clean = function(value)
 {
     value = Field.prototype.clean.call(this, value);
 
-    for (var i = 0, l = Field.EMPTY_VALUES.length; i < l; i++)
+    if (contains(Field.EMPTY_VALUES, value))
     {
-        if (value === Field.EMPTY_VALUES[i])
-        {
-            return "";
-        }
+        return "";
     }
 
     for (var i = 0, l = this.choices.length; i < l; i++)
@@ -1111,22 +1081,23 @@ MultipleChoiceField.prototype.clean = function(value)
  * A Field whose <code>clean()</code> method calls multiple Field
  * <code>clean()</code> methods.
  *
- * @param {Array} fields fields which will be used to perform cleaning in the
- *                       order they're given in.
- * @param {Object} kwargs configuration options, as specified in
- *                        <code>Field</code>.
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in <code>Field</code>.
+ * @config {Array} [fields] fields which will be used to perform cleaning in the
+ *                          order they're given in.
  * @constructor
  * @augments Field
  */
-function ComboField(fields, kwargs)
+function ComboField(kwargs)
 {
+    kwargs = extendObject({fields: []}, kwargs || {});
     Field.call(this, kwargs);
 
-    for (var i = 0, l = fields.length; i < l; i++)
+    for (var i = 0, l = kwargs.fields.length; i < l; i++)
     {
-        fields[i].required = false;
+        kwargs.fields[i].required = false;
     }
-    this.fields = fields;
+    this.fields = kwargs.fields;
 }
 
 ComboField.prototype = new Field();
