@@ -130,3 +130,45 @@ test("FloatField", function()
     equals(f.clean("1.5"), 1.5);
     equals(f.clean("0.5"), 0.5);
 });
+
+test("DecimalField", function()
+{
+    expect(31);
+    var f = new DecimalField({maxDigits: 4, decimalPlaces: 2});
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    equals(f.clean("1"), 1);
+    equals(f.clean("23"), 23);
+    equals(f.clean("3.14"), 3.1400000000000001);
+    equals(f.clean(3.14), 3.1400000000000001);
+    try { f.clean("a"); } catch (e) { equals(ve(e), "Enter a number."); }
+    equals(f.clean("1.0 "), 1.0);
+    equals(f.clean(" 1.0"), 1.0);
+    equals(f.clean(" 1.0 "), 1.0);
+    try { f.clean("1.0a"); } catch (e) { equals(ve(e), "Enter a number."); }
+    try { f.clean("123.45"); } catch(e) { equals(ve(e), "Ensure that there are no more than 4 digits in total."); }
+    try { f.clean("1.234"); } catch(e) { equals(ve(e), "Ensure that there are no more than 2 decimal places."); }
+    try { f.clean("123.4"); } catch(e) { equals(ve(e), "Ensure that there are no more than 2 digits before the decimal point."); }
+    equals(f.clean("-12.34"), -12.34);
+    try { f.clean("-123.45"); } catch(e) { equals(ve(e), "Ensure that there are no more than 4 digits in total."); }
+    equals(f.clean("-.12"), -0.12);
+    equals(f.clean("-00.12"), -0.12);
+    equals(f.clean("-000.12"), -0.12);
+    try { f.clean("-000.123"); } catch(e) { equals(ve(e), "Ensure that there are no more than 2 decimal places."); }
+    try { f.clean("-000.1234"); } catch(e) { equals(ve(e), "Ensure that there are no more than 4 digits in total."); }
+    try { f.clean("--0.12"); } catch (e) { equals(ve(e), "Enter a number."); }
+
+    var f = new DecimalField({maxDigits: 4, decimalPlaces: 2, required: false});
+    equals(f.clean(""), null);
+    equals(f.clean(null), null);
+    equals(f.clean(1), 1);
+
+    // DecimalField accepts min_value and max_value just like IntegerField
+    var f = new DecimalField({maxDigits: 4, decimalPlaces: 2, maxValue: 1.5, minValue: 0.5});
+    try { f.clean("1.6"); } catch (e) { equals(ve(e), "Ensure this value is less than or equal to 1.5."); }
+    try { f.clean("0.4"); } catch (e) { equals(ve(e), "Ensure this value is greater than or equal to 0.5."); }
+    equals(f.clean("1.5"), 1.5);
+    equals(f.clean("0.5"), 0.5);
+    equals(f.clean(".5"), 0.5);
+    equals(f.clean("00.50"), 0.5);
+});

@@ -355,6 +355,11 @@ function DecimalField(kwargs)
     Field.call(this, kwargs);
 }
 
+/**
+ * Decimal validation regular expression.
+ */
+DecimalField.DECIMAL_REGEXP = /^ *[-+]? *(?:\d+(?:\.\d+)?|(?:\d+)?\.\d+) *$/;
+
 DecimalField.prototype = new Field();
 DecimalField.prototype.defaultErrorMessages =
     extendObject({}, DecimalField.prototype.defaultErrorMessages, {
@@ -363,7 +368,7 @@ DecimalField.prototype.defaultErrorMessages =
         minValue: "Ensure this value is greater than or equal to %(minValue)s.",
         maxDigits: "Ensure that there are no more than %(maxDigits)s digits in total.",
         maxDecimalPlaces: "Ensure that there are no more than %(maxDecimalPlaces)s decimal places.",
-        maxWholeDigits: "Ensure that there are no more than %(maxWhileDigits)s digits before the decimal point."
+        maxWholeDigits: "Ensure that there are no more than %(maxWholeDigits)s digits before the decimal point."
     });
 
 /**
@@ -386,23 +391,34 @@ DecimalField.prototype.clean = function(value)
         return null;
     }
 
-    value = ("" + value).trim();
+    value = ("" + value).replace(/(^\s+|\s+$)/g, "");
 
     // TODO We should be attempting to create a Decimal object instead - are
     //      there any JavaScript equivalents?
-    if (!FloatField.FLOAT_REGEXP.test(value))
+    if (!DecimalField.DECIMAL_REGEXP.test(value))
     {
         throw new ValidationError(this.errorMessages.invalid);
     }
 
+    var floatValue = parseFloat(value);
+    // Django's DecimalField validates against a string representation of a
+    // decimalDecimal, in which:
+    // * Any leading sign has been stripped
     if (value.charAt(0) == "+" || value.charAt(0) == "-")
     {
         value = value.substr(1);
     }
+    // * Leading zeros have been stripped from digits before the decimal point,
+    //   but trailing digits are retained after the decimal point.
+    value = value.replace(/^0+/, "");
+    // * Values which did not have a leading zero gain a single leading zero.
+    if (value.charAt(0) == ".")
+    {
+        value = "0" + value;
+    }
     var pieces = value.split(".");
     var decimals = (pieces.length == 2 ? pieces[1].length : 0);
     var digits = pieces[0].length;
-    var floatValue = parseFloat(value);
     if (this.maxValue !== null && floatValue > this.maxValue)
     {
         throw new ValidationError(formatString(this.errorMessages.maxValue,
