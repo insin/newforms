@@ -402,7 +402,7 @@ DecimalField.prototype.clean = function(value)
 
     var floatValue = parseFloat(value);
     // Django's DecimalField validates against a string representation of a
-    // decimalDecimal, in which:
+    // decimal.Decimal, in which:
     // * Any leading sign has been stripped
     if (value.charAt(0) == "+" || value.charAt(0) == "-")
     {
@@ -648,8 +648,8 @@ DateTimeField.DEFAULT_DATETIME_INPUT_FORMATS = [
 
 DateTimeField.prototype = new Field();
 DateTimeField.prototype.defaultWidget = DateTimeInput;
-TimeField.prototype.defaultErrorMessages =
-    extendObject({}, TimeField.prototype.defaultErrorMessages, {
+DateTimeField.prototype.defaultErrorMessages =
+    extendObject({}, DateTimeField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid date/time."
     });
 

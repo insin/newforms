@@ -1,14 +1,10 @@
 /**
- * @fileOverview A partial implementation of <code>strptime</code>, as required
- *               to support the default valid date and time formats used by
- *               Django's newforms library.
+ * @fileOverview A partial implementation of <code>strptime</code>.
  *
- * This implementation is based on a sample implementation found at
- * http://effbot.org/librarybook/time.htm and largely takes its cue from the
- * documentation for Python's <code>time</code> module, as documented at
+ * This implementation largely takes its cue from the documentation for Python's
+ * <code>time</code> module, as documented at
  * http://docs.python.org/lib/module-time.html - with the exception of seconds
- * formatting, which is restricted to the range [00,59] rather than Python's
- * [00,61].
+ * formatting, which is restricted to the range [00,59] rather than [00,61].
  */
 
 /**
@@ -41,12 +37,23 @@
  *     <td>Hour (24-hour clock) as a decimal number [00,23].</td>
  *   </tr>
  *   <tr>
+ *     <td><code>%I</code></td>
+ *     <td>Hour (12-hour clock) as a decimal number [00,12].</td>
+ *   </tr>
+ *   <tr>
  *     <td><code>%m</code></td>
  *     <td>Month as a decimal number [01,12].</td>
  *   </tr>
  *   <tr>
  *     <td><code>%M</code></td>
  *     <td>Minute as a decimal number [00,59].</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>%p</code></td>
+ *     <td>
+ *       Locale's equivalent of either AM or PM (only affects the output hour
+ *       field if the <code>%I</code> directive is used to parse the hour).
+ *     </td>
  *   </tr>
  *   <tr>
  *     <td><code>%S</code></td>
@@ -79,6 +86,7 @@
  */
 function TimeParser(format, locale)
 {
+    locale = locale || TimeParser.DEFAULT_LOCALE;
     this.format = format;
     // Normalise whitespace before further processing
     format = format.split(/(?:\s|%t|%n)+/).join(" ");
@@ -97,12 +105,20 @@ function TimeParser(format, locale)
             }
 
             c = format.charAt(++i);
-            if (typeof TimeParser.DIRECTIVE_PATTERNS[c] == "undefined")
+            var directiveType = typeof TimeParser.DIRECTIVE_PATTERNS[c];
+            if (directiveType == "undefined")
             {
                 throw new Error(c + " is a bad directive in format %" + c);
             }
-
-            pattern[pattern.length] = TimeParser.DIRECTIVE_PATTERNS[c];
+            else if (directiveType == "function")
+            {
+                pattern[pattern.length] =
+                    TimeParser.DIRECTIVE_PATTERNS[c](locale);
+            }
+            else
+            {
+                pattern[pattern.length] = TimeParser.DIRECTIVE_PATTERNS[c];
+            }
             expected = expected.concat(TimeParser.EXPECTED_DATA_TYPES[c]);
         }
         else
@@ -111,21 +127,29 @@ function TimeParser(format, locale)
         }
     }
 
-    this.locale = locale || TimeParser.DEFAULT_LOCALE;
-    this.pattern = new RegExp(pattern.join(""));
+    this.locale = locale;
+    this.pattern = new RegExp("^" + pattern.join("") + "$");
     this.expected = expected;
 }
 
 /**
  * Maps directive codes to regular expression pattern fragments which will
- * capture the data the directive corresponds to.
+ * capture the data the directive corresponds to, or in the case of
+ * locale-dependent directives, a function which takes a locale and generates
+ * a regular expression pattern fragment.
  */
 TimeParser.DIRECTIVE_PATTERNS =
 {
-    "b": "(.+)",           // Locale's abbreviated month name
-    "B": "(.+)",           // Locale's full month name
+    // Locale's abbreviated month name
+    "b": function(l) { return "(" + l.ABBREVIATED_MONTHS.join("|") + ")"; },
+    // Locale's full month name
+    "B": function(l) { return "(" + l.FULL_MONTHS.join("|") + ")"; },
+    // Locale's equivalent of either AM or PM.
+    "p": function(l) { return "(" + l.AM + "|" + l.PM + ")"; },
+
     "d": "(\\d\\d?)",      // Day of the month as a decimal number [01,31]
     "H": "(\\d\\d?)",      // Hour (24-hour clock) as a decimal number [00,23]
+    "I": "(\\d\\d?)",      // Hour (12-hour clock) as a decimal number [01,12]
     "m": "(\\d\\d?)",      // Month as a decimal number [01,12]
     "M": "(\\d\\d?)",      // Minute as a decimal number [00,59]
     "S": "(\\d\\d?)",      // Second as a decimal number [00,59]
@@ -140,14 +164,16 @@ TimeParser.DIRECTIVE_PATTERNS =
 TimeParser.DATA_TYPES =
 {
     ABBREVIATED_MONTH_NAME: 0,
-    DAY_OF_MONTH: 1,
-    FULL_MONTH_NAME: 2,
-    HOUR24: 3,
-    MINUTE: 4,
-    MONTH: 5,
-    SECOND: 6,
-    YEAR: 7,
-    YEAR_NO_CENTURY: 8
+    AMPM: 1,
+    DAY_OF_MONTH: 2,
+    FULL_MONTH_NAME: 3,
+    HOUR12: 4,
+    HOUR24: 5,
+    MINUTE: 6,
+    MONTH: 7,
+    SECOND: 8,
+    YEAR: 9,
+    YEAR_NO_CENTURY: 10
 };
 
 /**
@@ -160,8 +186,10 @@ TimeParser.EXPECTED_DATA_TYPES =
     "B": [TimeParser.DATA_TYPES.FULL_MONTH_NAME],
     "d": [TimeParser.DATA_TYPES.DAY_OF_MONTH],
     "H": [TimeParser.DATA_TYPES.HOUR24],
+    "I": [TimeParser.DATA_TYPES.HOUR12],
     "m": [TimeParser.DATA_TYPES.MONTH],
     "M": [TimeParser.DATA_TYPES.MINUTE],
+    "p": [TimeParser.DATA_TYPES.AMPM],
     "S": [TimeParser.DATA_TYPES.SECOND],
     "y": [TimeParser.DATA_TYPES.YEAR_NO_CENTURY],
     "Y": [TimeParser.DATA_TYPES.YEAR],
@@ -174,13 +202,13 @@ TimeParser.EXPECTED_DATA_TYPES =
 TimeParser.DEFAULT_LOCALE =
 {
     NAME: "English",
-
+    AM: "AM",
     ABBREVIATED_MONTHS: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
                          "Sep", "Oct", "Nov", "Dec"],
-
     FULL_MONTHS: ["January", "February", "March", "April", "May", "June",
                   "July", "August", "September", "October", "November",
-                  "December"]
+                  "December"],
+    PM: "PM"
 };
 
 TimeParser.prototype =
@@ -260,100 +288,126 @@ TimeParser.prototype =
                             ", format=" + this.format);
         }
 
+        // Collect matches in an object under properties corresponding to their
+        // data types.
+        var data = {};
+        for (var i = 1, l = matches.length; i < l; i++)
+        {
+            data[this.expected[i -1]] = matches[i];
+        }
+
         // Default values for when more accurate values cannot be inferred
         var time = [1900, 1, 1, 0, 0, 0, 0, 1, -1];
 
-        for (var i = 1; i < matches.length; i++)
+        // Extract year
+        if (typeof data[TimeParser.DATA_TYPES.YEAR] != "undefined")
         {
-            var match = matches[i];
-            switch (this.expected[i - 1])
+            time[0] = parseInt(data[TimeParser.DATA_TYPES.YEAR], 10);
+        }
+        else if (typeof data[TimeParser.DATA_TYPES.YEAR_NO_CENTURY] != "undefined")
+        {
+            var year = parseInt(data[TimeParser.DATA_TYPES.YEAR_NO_CENTURY], 10);
+            if (year < 68)
             {
-                case TimeParser.DATA_TYPES.ABBREVIATED_MONTH_NAME:
-                    var month = this._indexOf(match,
-                                              this.locale.ABBREVIATED_MONTHS);
-                    if (month == -1)
-                    {
-                        throw new Error("Unknown abbreviated month name for " +
-                                        this.locale.NAME + " locale: " + match);
-                    }
-                    time[1] = month + 1;
-                    break;
-
-                case TimeParser.DATA_TYPES.DAY_OF_MONTH:
-                    var day = parseInt(match, 10);
-                    if (day < 1 || day > 31)
-                    {
-                        throw new Error("Day is out of range: " + day);
-                    }
-                    time[2] = day;
-                    break;
-
-                case TimeParser.DATA_TYPES.FULL_MONTH_NAME:
-                    var month = this._indexOf(match, this.locale.FULL_MONTHS);
-                    if (month == -1)
-                    {
-                        throw new Error("Unknown full month name for " +
-                                        this.locale.NAME + " locale: " + match);
-                    }
-                    time[1] = month + 1;
-                    break;
-
-                case TimeParser.DATA_TYPES.HOUR24:
-                    var hour = parseInt(match, 10);
-                    if (hour > 23)
-                    {
-                        throw new Error("Hour is out of range: " + hour);
-                    }
-                    time[3] = hour;
-                    break;
-
-                case TimeParser.DATA_TYPES.MINUTE:
-                    var minute = parseInt(match, 10);
-                    if (minute > 59)
-                    {
-                        throw new Error("Minute is out of range: " + minute);
-                    }
-                    time[4] = minute;
-                    break;
-
-                case TimeParser.DATA_TYPES.MONTH:
-                    var month = parseInt(match, 10);
-                    if (month < 1 || month > 12)
-                    {
-                        throw new Error("Month is out of range: " + month);
-                    }
-                    time[1] = month;
-                    break;
-
-                case TimeParser.DATA_TYPES.SECOND:
-                    var second = parseInt(match, 10);
-                    if (second > 59)
-                    {
-                        throw new Error("Second is out of range: " + second);
-                    }
-                    time[5] = second;
-                    break;
-
-                case TimeParser.DATA_TYPES.YEAR:
-                    time[0] = parseInt(match, 10);
-                    break;
-
-                case TimeParser.DATA_TYPES.YEAR_NO_CENTURY:
-                    var year = parseInt(match, 10);
-                    if (year < 68)
-                    {
-                        year = 2000 + year;
-                    }
-                    else if (year < 100)
-                    {
-                        year = 1900 + year;
-                    }
-                    time[0] = year;
-                    break;
-
-                default:
-                    throw new Error("Unknown data type: " + this.expected[i - 1]);
+                year = 2000 + year;
             }
+            else if (year < 100)
+            {
+                year = 1900 + year;
+            }
+            time[0] = year;
+        }
+
+        // Extract month
+        if (typeof data[TimeParser.DATA_TYPES.MONTH] != "undefined")
+        {
+            var month = parseInt(data[TimeParser.DATA_TYPES.MONTH], 10);
+            if (month < 1 || month > 12)
+            {
+                throw new Error("Month is out of range: " + month);
+            }
+            time[1] = month;
+        }
+        else if (typeof data[TimeParser.DATA_TYPES.FULL_MONTH_NAME] != "undefined")
+        {
+            time[1] = this._indexOf(data[TimeParser.DATA_TYPES.FULL_MONTH_NAME],
+                                    this.locale.FULL_MONTHS) + 1;
+        }
+        else if (typeof data[TimeParser.DATA_TYPES.ABBREVIATED_MONTH_NAME] != "undefined")
+        {
+            time[1] = this._indexOf(data[TimeParser.DATA_TYPES.ABBREVIATED_MONTH_NAME],
+                                    this.locale.ABBREVIATED_MONTHS) + 1;
+        }
+
+        // Extract day of month
+        if (typeof data[TimeParser.DATA_TYPES.DAY_OF_MONTH] != "undefined")
+        {
+            var day = parseInt(data[TimeParser.DATA_TYPES.DAY_OF_MONTH], 10);
+            if (day < 1 || day > 31)
+            {
+                throw new Error("Day is out of range: " + day);
+            }
+            time[2] = day;
+        }
+
+        // Extract hour
+        if (typeof data[TimeParser.DATA_TYPES.HOUR24] != "undefined")
+        {
+            var hour = parseInt(data[TimeParser.DATA_TYPES.HOUR24], 10);
+            if (hour > 23)
+            {
+                throw new Error("Hour is out of range: " + hour);
+            }
+            time[3] = hour;
+        }
+        else if (typeof data[TimeParser.DATA_TYPES.HOUR12] != "undefined")
+        {
+            var hour = parseInt(data[TimeParser.DATA_TYPES.HOUR12], 10);
+            if (hour < 1 || hour > 12)
+            {
+                throw new Error("Hour is out of range: " + hour);
+            }
+
+            // If we don't get any more information, we'll assume this time is
+            // a.m. - 12 a.m. is midnight.
+            if (hour == 12)
+            {
+                hour = 0;
+            }
+
+            time[3] = hour;
+
+            if (typeof data[TimeParser.DATA_TYPES.AMPM] != "undefined")
+            {
+                if (data[TimeParser.DATA_TYPES.AMPM] == this.locale.PM)
+                {
+                    // We've already handled the midnight special case, so it's
+                    // safe to bump the time by 12 hours without further checks.
+                    time[3] = time[3] + 12;
+                }
+            }
+        }
+
+        // Extract minute
+        if (typeof data[TimeParser.DATA_TYPES.MINUTE] != "undefined")
+        {
+            var minute = parseInt(data[TimeParser.DATA_TYPES.MINUTE], 10);
+            if (minute > 59)
+            {
+                throw new Error("Minute is out of range: " + minute);
+            }
+            time[4] = minute;
+        }
+
+        // Extract seconds
+        if (typeof data[TimeParser.DATA_TYPES.SECOND] != "undefined")
+        {
+            var second = parseInt(data[TimeParser.DATA_TYPES.SECOND], 10);
+            if (second > 59)
+            {
+                throw new Error("Second is out of range: " + second);
+            }
+            time[5] = second;
         }
 
         // Validate day of month

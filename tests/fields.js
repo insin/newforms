@@ -211,3 +211,26 @@ test("DateField", function()
     try { f.clean("10/25/2006"); } catch (e) { equals(ve(e), "Enter a valid date."); }
     try { f.clean("10/25/06"); } catch (e) { equals(ve(e), "Enter a valid date."); }
 });
+
+test("TimeField", function()
+{
+    expect(11);
+    var f = new TimeField();
+    equals(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
+    equals(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
+    equals(f.clean("14:25").valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
+    equals(f.clean("14:25:59").valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
+    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a valid time."); }
+    try { f.clean("1:24 p.m."); } catch (e) { equals(ve(e), "Enter a valid time."); }
+
+    // TimeField accepts an optional inputFormats parameter:
+    var f = new TimeField({inputFormats: ["%I:%M %p"]});
+    equals(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
+    equals(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
+    equals(f.clean("4:25 AM").valueOf(), new Date(1900, 0, 1, 4, 25).valueOf());
+    equals(f.clean("4:25 PM").valueOf(), new Date(1900, 0, 1, 16, 25).valueOf());
+
+    // The inputFormats parameter overrides all default input formats, so the
+    // default formats won't work unless you specify them.
+    try { f.clean("14:30:45"); } catch (e) { equals(ve(e), "Enter a valid time."); }
+});
