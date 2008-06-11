@@ -8,8 +8,8 @@
  */
 
 /**
- * Parses time details from a string using a given strptime format string and
- * optionally, an object specifying locale details.
+ * Parses time details from a string using a given format string and optionally,
+ * an object specifying locale details.
  * <p>
  * Supported formatting directives are:
  * <table>
@@ -76,12 +76,10 @@
  *
  * @param {String} a strptime format string.
  * @param {Object} [locale] an object containing locale-specific settings.
- * @config {String} NAME the locale's name.
- * @config {Object} ABBREVIATED_MONTHS an object mapping abbreviated locale
- *                                     month names to corresponding month
- *                                     numbers [1-12].
- * @config {Object} FULL_MONTHS an object mapping full locale month names to
- *                              corresponding month numbers [1-12].
+ * @config {String} AM the locale's equivalent of <code>"AM"</code>.
+ * @config {Array} b a list of abbreviated month names.
+ * @config {Array} B a list of full month names.
+ * @config {String} PM the locale's equivalent of <code>"PM"</code>.
  * @constructor
  */
 function TimeParser(format, locale)
@@ -108,7 +106,8 @@ function TimeParser(format, locale)
             var directiveType = typeof TimeParser.DIRECTIVE_PATTERNS[c];
             if (directiveType == "undefined")
             {
-                throw new Error(c + " is a bad directive in format %" + c);
+                throw new Error("'" + c + "' is a bad directive in format '%" +
+                                c + "'");
             }
             else if (directiveType == "function")
             {
@@ -141,9 +140,9 @@ function TimeParser(format, locale)
 TimeParser.DIRECTIVE_PATTERNS =
 {
     // Locale's abbreviated month name
-    "b": function(l) { return "(" + l.ABBREVIATED_MONTHS.join("|") + ")"; },
+    "b": function(l) { return "(" + l.b.join("|") + ")"; },
     // Locale's full month name
-    "B": function(l) { return "(" + l.FULL_MONTHS.join("|") + ")"; },
+    "B": function(l) { return "(" + l.B.join("|") + ")"; },
     // Locale's equivalent of either AM or PM.
     "p": function(l) { return "(" + l.AM + "|" + l.PM + ")"; },
 
@@ -159,40 +158,22 @@ TimeParser.DIRECTIVE_PATTERNS =
 };
 
 /**
- * Data types identified by directives.
- */
-TimeParser.DATA_TYPES =
-{
-    ABBREVIATED_MONTH_NAME: 0,
-    AMPM: 1,
-    DAY_OF_MONTH: 2,
-    FULL_MONTH_NAME: 3,
-    HOUR12: 4,
-    HOUR24: 5,
-    MINUTE: 6,
-    MONTH: 7,
-    SECOND: 8,
-    YEAR: 9,
-    YEAR_NO_CENTURY: 10
-};
-
-/**
  * Maps directive codes to expected captured data types for each directive -
  * specified as lists as some directives can contain multiple data items.
  */
 TimeParser.EXPECTED_DATA_TYPES =
 {
-    "b": [TimeParser.DATA_TYPES.ABBREVIATED_MONTH_NAME],
-    "B": [TimeParser.DATA_TYPES.FULL_MONTH_NAME],
-    "d": [TimeParser.DATA_TYPES.DAY_OF_MONTH],
-    "H": [TimeParser.DATA_TYPES.HOUR24],
-    "I": [TimeParser.DATA_TYPES.HOUR12],
-    "m": [TimeParser.DATA_TYPES.MONTH],
-    "M": [TimeParser.DATA_TYPES.MINUTE],
-    "p": [TimeParser.DATA_TYPES.AMPM],
-    "S": [TimeParser.DATA_TYPES.SECOND],
-    "y": [TimeParser.DATA_TYPES.YEAR_NO_CENTURY],
-    "Y": [TimeParser.DATA_TYPES.YEAR],
+    "b": ["b"],
+    "B": ["B"],
+    "d": ["d"],
+    "H": ["H"],
+    "I": ["I"],
+    "m": ["m"],
+    "M": ["M"],
+    "p": ["p"],
+    "S": ["S"],
+    "y": ["y"],
+    "Y": ["Y"],
     "%": []
 };
 
@@ -201,13 +182,11 @@ TimeParser.EXPECTED_DATA_TYPES =
  */
 TimeParser.DEFAULT_LOCALE =
 {
-    NAME: "English",
     AM: "AM",
-    ABBREVIATED_MONTHS: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
-                         "Sep", "Oct", "Nov", "Dec"],
-    FULL_MONTHS: ["January", "February", "March", "April", "May", "June",
-                  "July", "August", "September", "October", "November",
-                  "December"],
+    b: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+        "Nov", "Dec"],
+    B: ["January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December"],
     PM: "PM"
 };
 
@@ -300,13 +279,13 @@ TimeParser.prototype =
         var time = [1900, 1, 1, 0, 0, 0, 0, 1, -1];
 
         // Extract year
-        if (typeof data[TimeParser.DATA_TYPES.YEAR] != "undefined")
+        if (typeof data["Y"] != "undefined")
         {
-            time[0] = parseInt(data[TimeParser.DATA_TYPES.YEAR], 10);
+            time[0] = parseInt(data["Y"], 10);
         }
-        else if (typeof data[TimeParser.DATA_TYPES.YEAR_NO_CENTURY] != "undefined")
+        else if (typeof data["y"] != "undefined")
         {
-            var year = parseInt(data[TimeParser.DATA_TYPES.YEAR_NO_CENTURY], 10);
+            var year = parseInt(data["y"], 10);
             if (year < 68)
             {
                 year = 2000 + year;
@@ -319,30 +298,28 @@ TimeParser.prototype =
         }
 
         // Extract month
-        if (typeof data[TimeParser.DATA_TYPES.MONTH] != "undefined")
+        if (typeof data["m"] != "undefined")
         {
-            var month = parseInt(data[TimeParser.DATA_TYPES.MONTH], 10);
+            var month = parseInt(data["m"], 10);
             if (month < 1 || month > 12)
             {
                 throw new Error("Month is out of range: " + month);
             }
             time[1] = month;
         }
-        else if (typeof data[TimeParser.DATA_TYPES.FULL_MONTH_NAME] != "undefined")
+        else if (typeof data["B"] != "undefined")
         {
-            time[1] = this._indexOf(data[TimeParser.DATA_TYPES.FULL_MONTH_NAME],
-                                    this.locale.FULL_MONTHS) + 1;
+            time[1] = this._indexOf(data["B"], this.locale.B) + 1;
         }
-        else if (typeof data[TimeParser.DATA_TYPES.ABBREVIATED_MONTH_NAME] != "undefined")
+        else if (typeof data["b"] != "undefined")
         {
-            time[1] = this._indexOf(data[TimeParser.DATA_TYPES.ABBREVIATED_MONTH_NAME],
-                                    this.locale.ABBREVIATED_MONTHS) + 1;
+            time[1] = this._indexOf(data["b"], this.locale.b) + 1;
         }
 
         // Extract day of month
-        if (typeof data[TimeParser.DATA_TYPES.DAY_OF_MONTH] != "undefined")
+        if (typeof data["d"] != "undefined")
         {
-            var day = parseInt(data[TimeParser.DATA_TYPES.DAY_OF_MONTH], 10);
+            var day = parseInt(data["d"], 10);
             if (day < 1 || day > 31)
             {
                 throw new Error("Day is out of range: " + day);
@@ -351,18 +328,18 @@ TimeParser.prototype =
         }
 
         // Extract hour
-        if (typeof data[TimeParser.DATA_TYPES.HOUR24] != "undefined")
+        if (typeof data["H"] != "undefined")
         {
-            var hour = parseInt(data[TimeParser.DATA_TYPES.HOUR24], 10);
+            var hour = parseInt(data["H"], 10);
             if (hour > 23)
             {
                 throw new Error("Hour is out of range: " + hour);
             }
             time[3] = hour;
         }
-        else if (typeof data[TimeParser.DATA_TYPES.HOUR12] != "undefined")
+        else if (typeof data["I"] != "undefined")
         {
-            var hour = parseInt(data[TimeParser.DATA_TYPES.HOUR12], 10);
+            var hour = parseInt(data["I"], 10);
             if (hour < 1 || hour > 12)
             {
                 throw new Error("Hour is out of range: " + hour);
@@ -377,9 +354,9 @@ TimeParser.prototype =
 
             time[3] = hour;
 
-            if (typeof data[TimeParser.DATA_TYPES.AMPM] != "undefined")
+            if (typeof data["p"] != "undefined")
             {
-                if (data[TimeParser.DATA_TYPES.AMPM] == this.locale.PM)
+                if (data["p"] == this.locale.PM)
                 {
                     // We've already handled the midnight special case, so it's
                     // safe to bump the time by 12 hours without further checks.
@@ -389,9 +366,9 @@ TimeParser.prototype =
         }
 
         // Extract minute
-        if (typeof data[TimeParser.DATA_TYPES.MINUTE] != "undefined")
+        if (typeof data["M"] != "undefined")
         {
-            var minute = parseInt(data[TimeParser.DATA_TYPES.MINUTE], 10);
+            var minute = parseInt(data["M"], 10);
             if (minute > 59)
             {
                 throw new Error("Minute is out of range: " + minute);
@@ -400,9 +377,9 @@ TimeParser.prototype =
         }
 
         // Extract seconds
-        if (typeof data[TimeParser.DATA_TYPES.SECOND] != "undefined")
+        if (typeof data["S"] != "undefined")
         {
-            var second = parseInt(data[TimeParser.DATA_TYPES.SECOND], 10);
+            var second = parseInt(data["S"], 10);
             if (second > 59)
             {
                 throw new Error("Second is out of range: " + second);
