@@ -153,6 +153,52 @@ function formData(form)
 }
 
 /**
+ * Utility method for determining if:
+ * <ul>
+ * <li>an item is contained in an <code>Array</code></li>
+ * <li>a substring is contained within a <code>String</code></li>
+ * <li>an <code>Object</code> has a given named property.</li>
+ * </ul>
+ *
+ * @param container an <code>Array</code>, <code>String</code> or
+ *                  <code>Object</code>.
+ * @param item an item which might be contained in an <code>Array</code>, or a
+ *             <code>String</code>.
+ *
+ * @return <code>true</code> if the container contains the item,
+ *         <code>false</code> otherwise.
+ * @type Boolean
+ */
+function contains(container, item)
+{
+    if (container instanceof Array)
+    {
+        for (var i = 0, l = container.length; i < l; i++)
+        {
+            if (item === container[i])
+            {
+                return true;
+            }
+        }
+    }
+    else if (typeof container == "string")
+    {
+        return (container.indexOf(item) != -1);
+    }
+    else
+    {
+        for (var prop in container)
+        {
+            if (container.hasOwnProperty(prop) && item === prop)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/**
  * A collection of errors that knows how to display itself in various formats.
  * <p>
  * This object's properties are the field names, and corresponding values are
