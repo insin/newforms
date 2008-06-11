@@ -80,7 +80,7 @@ Widget.prototype.idForLabel = function(id)
  * An HTML <code>&lt;input&gt;</code> widget.
  *
  * @param {Object} [kwargs] configuration options, as specified in
- *                          <code>Widget</code>.
+ *                          {@link Widget}.
  * @constructor
  * @augments Widget
  */
@@ -113,7 +113,7 @@ Input.prototype.render = function(name, value, attrs)
  * An HTML <code>&lt;input type="text"&gt;</code> widget.
  *
  * @param {Object} [kwargs] configuration options, as specified in
- *                          <code>Input</code>.
+ *                          {@link Input}.
  * @constructor
  * @augments Input
  */
@@ -129,7 +129,7 @@ TextInput.prototype.inputType = "text";
  * An HTML <code>&lt;input type="password"&gt;</code> widget.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Input</code>.
+ *                          in {@link Input}.
  * @config {Boolean} [renderValue] if <code>false</code> a value will not be
  *                                 rendered for this field - defaults to
  *                                 <code>true</code>.
@@ -159,7 +159,7 @@ PasswordInput.prototype.render = function(name, value, attrs)
  * An HTML <code>&lt;input type="hidden"&gt;</code> widget.
  *
  * @param {Object} [kwargs] configuration options, as specified in
- *                          <code>Input</code>.
+ *                          {@link Input}.
  * @constructor
  * @augments Input
  */
@@ -178,7 +178,7 @@ HiddenInput.prototype.isHidden = true;
  * An HTML <code>&lt;input type="file"&gt;</code> widget.
  *
  * @param {Object} [kwargs] configuration options, as specified in
- *                          <code>Input</code>.
+ *                          {@link Input}.
  * @constructor
  * @augments Input
  */
@@ -212,7 +212,7 @@ FileInput.prototype.valueFromData = function(data, files, name)
  * An HTML <code>&lt;textarea&gt;</code> widget.
  *
  * @param {Object} [kwargs] configuration options, as specified in
- *                          <code>Widget</code>.
+ *                          {@link Widget}.
  * @constructor
  * @augments Widget
  */
@@ -237,8 +237,8 @@ Textarea.prototype.render = function(name, value, attrs)
  * object to display, formats it as an appropriate <code>String</code>.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Input</code>.
- * @config {String} [format] a <code>strftime</code> format string.
+ *                          in {@link Input}.
+ * @config {String} [format] a {@link strftime} format string.
  * @constructor
  * @augments Input
  */
@@ -273,7 +273,7 @@ DateTimeInput.prototype.render = function(name, value, attrs)
  * An HTML <code>&lt;input type="checkbox"&gt;</code> widget.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Widget</code>.
+ *                          in {@link Widget}.
  * @config {Function} [checkTest] a function which takes a value and returns
  *                                <code>true</code> if the checkbox should be
  *                                checked for that value.
@@ -333,7 +333,7 @@ CheckboxInput.prototype.valueFromData = function(data, files, name)
  * An HTML <code>&lt;select&gt;</code> widget.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Widget</code>.
+ *                          in {@link Widget}.
  * @config {Array} [choices] choices to be used when rendering the widget,
  *                           with each choice specified as an <code>Array</code>
  *                           in <code>[value, text]</code> format.
@@ -390,11 +390,11 @@ Select.prototype.render = function(name, selectedValue, attrs, choices)
 };
 
 /**
- * A <code>Select</code> <code>Widget</code> intended to be used with
- * <code>NullBooleanField</code>.
+ * A <code>&lt;select&gt;</code> widget intended to be used with
+ * {@link NullBooleanField}.
  *
  * @param {Object} [kwargs] configuration options, as specified in
- *                          <code>Select</code>.
+ *                          {@link Select}.
  * @constructor
  * @augments Select
  */
@@ -447,7 +447,7 @@ NullBooleanSelect.prototype.valueFromData = function(data, files, name)
  * An HTML <code>&lt;select&gt;</code> widget which allows multiple selections.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Widget</code>.
+ *                          in {@link Widget}.
  * @config {Array} [choices] choices to be used when rendering the widget,
  *                           with each choice specified as an <code>Array</code>
  *                           in <code>[value, text]</code> format.

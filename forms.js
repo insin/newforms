@@ -219,7 +219,7 @@ BoundField.prototype.labelTag = function(kwargs)
  *                            rendering field widgets.
  * @config {Function} [errorConstructor] the constructor function to be used
  *                                       when creating error details - defaults
- *                                       to <code>ErrorList</code>.
+ *                                       to {@link ErrorList}.
  * @config {String} [labelSuffix] a suffix to be used when generating labels
  *                                in one of the convenience method which renders
  *                                the entire Form - defaults to
@@ -297,7 +297,7 @@ Form.prototype =
 //        yield BoundField(self, field, name)
 
 /**
- * Creates a <code>BoundField</code> for the field with the given name.
+ * Creates a {@link BoundField} for the field with the given name.
  *
  * @param {String} name a field name.
  *
@@ -315,7 +315,7 @@ Form.prototype.boundField = function(name)
 };
 
 /**
- * Creates a <code>BoundField</code> for each field in the form, ordering them
+ * Creates a {@link BoundField} for each field in the form, ordering them
  * by the order in which the fields were created.
  *
  * @return a list of <code>BoundField</code> object - one for each field in the
@@ -485,8 +485,8 @@ Form.prototype.fullClean = function()
 
 /**
  * Hook for doing any extra form-wide cleaning after each Field's
- * <code>clean()</code> has been called. Any <code>ValidationError</code> raised
- * by this method will not be associated with a particular field; it will have a
+ * <code>clean()</code> has been called. Any {@link ValidationError} raised by
+ * this method will not be associated with a particular field; it will have a
  * special-case association with the field named <code>"__all__"</code>.
  *
  * @return validated, cleaned data.
@@ -499,7 +499,7 @@ Form.prototype.clean = function()
 
 /**
  * Determines if the form needs to be multipart-encrypted, in other words, if it
- * has a <code>FileInput</code>.
+ * has a {@link FileInput}.
  *
  * @return <code>true</code> if the form needs to be multipart-encrypted,
  *         <code>false</code> otherwise.

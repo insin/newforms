@@ -4,9 +4,9 @@
 
 /**
  * An object that is responsible for doing validation and normalisation, or
- * "cleaning", for example: an <code>EmailField</code> makes sure its data is
- * a valid e-mail address and makes sure that acceptable "blank" values all have
- * the same representation.
+ * "cleaning", for example: an {@link EmailField} makes sure its data is a valid
+ * e-mail address and makes sure that acceptable "blank" values all have the
+ * same representation.
  *
  * @param {Object} [kwargs] configuration options.
  * @config {Boolean} [required] determines if the field is required - defaults
@@ -112,7 +112,7 @@ Field.prototype.widgetAttrs = function(widget)
  * Validates that its input is a valid string.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Field</code>.
+ *                          in {@link Field}.
  * @config {Number} [maxLength] a maximum valid length for the input string.
  * @config {Number} [minLength] a minimum valid length for the input string.
  * @constructor
@@ -195,7 +195,7 @@ CharField.prototype.widgetAttrs = function(widget)
  * Validates that its input is a valid integer.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Field</code>.
+ *                          in {@link Field}.
  * @config {Number} [maxValue] a maximum value for the input.
  * @config {Number} [minValue] a minimum value for the input.
  * @constructor
@@ -264,7 +264,7 @@ IntegerField.prototype.clean = function(value)
  * Validates that its input is a valid float.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Field</code>.
+ *                          in {@link Field}.
  * @config {Number} [maxValue] a maximum value for the input.
  * @config {Number} [minValue] a minimum value for the input.
  * @constructor
@@ -333,7 +333,7 @@ FloatField.prototype.clean = function(value)
  * Validates that its input is a decimal number.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Field</code>.
+ *                          in {@link Field}.
  * @config {Number} maxValue a maximum value for the input.
  * @config {Number} minValue a minimum value for the input.
  * @config {Number} maxDigits the maximum number of digits the input may
@@ -435,10 +435,10 @@ DecimalField.prototype.clean = function(value)
  * Validates that its input is a date.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Field</code>.
- * @config {Array} [inputFormats] a list of <code>strptime</code> input formats
- *                                which are considered valid - if not provided,
- *                                <code>DateField.DEFAULT_DATE_INPUT_FORMATS</code>
+ *                          in {@link Field}.
+ * @config {Array} [inputFormats] a list of {@link strptime} input formats which
+ *                                are considered valid - if not provided,
+ *                                {@link DateField.DEFAULT_DATE_INPUT_FORMATS}
  *                                will be used.
  * @constructor
  * @augments Field
@@ -454,7 +454,7 @@ function DateField(kwargs)
 }
 
 /**
- * Default <code>strptime</code> input formats which are considered valid.
+ * Default {@link strptime} input formats which are considered valid.
  */
 DateField.DEFAULT_DATE_INPUT_FORMATS = [
     "%Y-%m-%d",              // "2006-10-25"
@@ -516,10 +516,10 @@ DateField.prototype.clean = function(value)
  * Validates that its input is a time.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Field</code>.
- * @config {Array} [inputFormats] a list of <code>strptime</code> input formats
+ *                          in {@link Field}.
+ * @config {Array} [inputFormats] a list of {@link strptime} input formats
  *                                which are considered valid - if not provided,
- *                                <code>TimeField.DEFAULT_TIME_INPUT_FORMATS</code>
+ *                                {@link TimeField.DEFAULT_TIME_INPUT_FORMATS}
  *                                will be used.
  * @constructor
  * @augments Field
@@ -535,7 +535,7 @@ function TimeField(kwargs)
 }
 
 /**
- * Default <code>strptime</code> input formats which are considered valid.
+ * Default {@link strptime} input formats which are considered valid.
  */
 TimeField.DEFAULT_TIME_INPUT_FORMATS = [
     "%H:%M:%S", // "14:30:59"
@@ -597,10 +597,10 @@ TimeField.prototype.clean = function(value)
  * Validates that its input is a date/time.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Field</code>.
- * @config {Array} [inputFormats] a list of <code>strptime</code> input formats
+ *                          in {@link Field}.
+ * @config {Array} [inputFormats] a list of {@link strptime} input formats
  *                                which are considered valid - if not provided,
- *                                <code>DateTimeField.DEFAULT_TIME_INPUT_FORMATS</code>
+ *                                {@link DateTimeField.DEFAULT_TIME_INPUT_FORMATS}
  *                                will be used.
  * @constructor
  * @augments Field
@@ -616,7 +616,7 @@ function DateTimeField(kwargs)
 }
 
 /**
- * Default <code>strptime</code> input formats which are considered valid.
+ * Default {@link strptime} input formats which are considered valid.
  */
 DateTimeField.DEFAULT_DATETIME_INPUT_FORMATS = [
     "%Y-%m-%d %H:%M:%S", // "2006-10-25 14:30:59"
@@ -699,7 +699,7 @@ DateTimeField.prototype.clean = function(value)
  *              pattern. If a <code>String</code> is given, it will be compiled
  *              to a <code>RegExp</code>.
  * @param {Object} [kwargs] configuration options, as specified in
- *                          <code>Field</code> and <code>CharField</code>.
+ *                          {@link Field} and {@link CharField}.
  * @constructor
  * @augments CharField
  */
@@ -808,7 +808,7 @@ ImageField.prototype.defaultErrorMessages =
  * Validates that its input appears to be a valid URL.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>RegexField</code>.
+ *                          in {@link RegexField}.
  * @config {Boolean} [verifyExists] should the field attempt to verify if the
  *                                  address exists by accessing it? Defaults to
  *                                  <code>false</code>.
@@ -883,7 +883,7 @@ URLField.prototype.clean = function(value)
  * Normalises its input to a <code>Boolean</code> primitive.
  *
  * @param {Object} [kwargs] configuration options, as specified in
- *                          <code>Field</code>.
+ *                          {@link Field}.
  * @constructor
  * @augments Field
  */
@@ -921,7 +921,7 @@ BooleanField.prototype.clean = function(value)
  * <code>false</code>. Invalid values are cleaned to <code>null</code>.
  *
  * @param {Object} [kwargs] configuration options, as specified in
- *                          <code>BooleanField</code>.
+ *                          {@link BooleanField}.
  * @constructor
  * @augments BooleanField
  */
@@ -946,7 +946,7 @@ NullBooleanField.prototype.clean = function(value)
  * Validates that its input is one of a valid list of choices.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Field</code>.
+ *                          in {@link Field}.
  * @config {Array} [choices] a list of choices - each choice should be specified
  *                           as a list containing two items; the first item is
  *                           a value which should be validated against, the
@@ -1014,7 +1014,7 @@ ChoiceField.prototype.clean = function(value)
  * Validates that its input is one or more of a valid list of choices.
  *
  * @param {Object} [kwargs] configuration options, as specified in
- *                          <code>ChoiceField</code>.
+ *                          {@link ChoiceField}.
  * @constructor
  * @augments ChoiceField
  */
@@ -1082,7 +1082,7 @@ MultipleChoiceField.prototype.clean = function(value)
  * <code>clean()</code> methods.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
- *                          in <code>Field</code>.
+ *                          in {@link Field}.
  * @config {Array} [fields] fields which will be used to perform cleaning in the
  *                          order they're given in.
  * @constructor
@@ -1126,10 +1126,10 @@ ComboField.prototype.clean = function(value)
  * must implement <code>compress()</code>, which takes a list of valid values
  * and returns a "compressed" version of those values -- a single value.
  * <p>
- * You'll probably want to use this with <code>MultiWidget</code>.
+ * You'll probably want to use this with {@link MultiWidget}.
  *
  * @param {Object} [kwargs] configuration options additional to those supplied
- *                          in <code>Field</code>.
+ *                          in {@link Field}.
  * @config {Array} [fields] a list of fields to be used to clean a
  *                          "decompressed" list of values.
  * @constructor
@@ -1268,7 +1268,7 @@ MultiValueField.prototype.compress = function(dataList)
  * Validates that its input is a valid IPv4 address.
  *
  * @param {Object} [kwargs] configuration options, as specified in
- *                          <code>Field</code> and <code>CharField</code>.
+ *                          {@link Field} and {@link CharField}.
  * @constructor
  * @augments RegexField
  */

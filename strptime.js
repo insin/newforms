@@ -385,18 +385,15 @@ TimeParser.prototype =
 
 /**
  * Parse a string representing a time according to a format.
- * <p>
- * See <code>TimeParser</code> for further details on the <code>format</code>
- * and <code>locale</code> arguments.
- * <p>
- * See <code>TimeParser.parse()</code> for further details on this function's
- * result.
  *
  * @param {String} input the string to be parsed.
- * @param {String} format the format to attempt to parse.
- * @param {Object} [locale] an object containing locale-specific settings.
+ * @param {String} format the format to attempt to parse - see
+ *                        {@link TimeParser} for further details.
+ * @param {Object} [locale] an object containing locale-specific settings - see
+ *                          {@link TimeParser} for further details.
  *
- * @return a list of 9 integers, each corresponding to a time field.
+ * @return a list of 9 integers, each corresponding to a time field - see
+ *         {@link TimeParser#parse()} for further details.
  * @type Array
  */
 function strptime(input, format, locale)
