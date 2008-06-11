@@ -295,7 +295,7 @@ function FloatField(kwargs)
 /**
  * Float validation regular expression.
  */
-FloatField.FLOAT_REGEXP = /^[-+]?\d+(?:\.\d+)?$/;
+FloatField.FLOAT_REGEXP = /^ *[-+]? *\d+(?:\.\d+)? *$/;
 
 FloatField.prototype = new Field();
 FloatField.prototype.defaultErrorMessages =

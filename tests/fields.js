@@ -100,3 +100,33 @@ test("IntegerField", function()
     equals(f.clean(20), 20);
     try { f.clean(21); } catch (e) { equals(ve(e), "Ensure this value is less than or equal to 20."); }
 });
+
+test("FloatField", function()
+{
+    expect(19);
+    var f = new FloatField();
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    equals(f.clean(1), 1.0);
+    equals(f.clean(23), 23.0);
+    equals(f.clean("3.14"), 3.1400000000000001);
+    equals(f.clean(3.14), 3.1400000000000001);
+    equals(f.clean(42), 42.0);
+    try { f.clean("a"); } catch (e) { equals(ve(e), "Enter a number."); }
+    equals(f.clean("1.0 "), 1.0);
+    equals(f.clean(" 1.0"), 1.0);
+    equals(f.clean(" 1.0 "), 1.0);
+    try { f.clean("1.0a"); } catch (e) { equals(ve(e), "Enter a number."); }
+
+    f = new FloatField({required: false});
+    equals(f.clean(""), null);
+    equals(f.clean(null), null);
+    equals(f.clean("1"), 1.0);
+
+    // FloatField accepts minValue and maxValue just like IntegerField
+    f = new FloatField({maxValue: 1.5, minValue: 0.5});
+    try { f.clean("1.6"); } catch (e) { equals(ve(e), "Ensure this value is less than or equal to 1.5."); }
+    try { f.clean("0.4"); } catch (e) { equals(ve(e), "Ensure this value is greater than or equal to 0.5."); }
+    equals(f.clean("1.5"), 1.5);
+    equals(f.clean("0.5"), 0.5);
+});
