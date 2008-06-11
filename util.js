@@ -277,6 +277,16 @@ function ErrorList(errors)
 }
 
 /**
+ * Adds errors from another ErrorList.
+ *
+ * @param {ErrorList} errorList an ErrorList whose errors should be added.
+ */
+ErrorList.prototype.extend = function(errorList)
+{
+    this.errors = this.errors.concat(errorList.errors);
+};
+
+/**
  * Displays errors as a list.
  */
 ErrorList.prototype.asUL = function()
@@ -300,6 +310,17 @@ ErrorList.prototype.asText = function()
         items[items.length] = "* " + this.errors[i]
     }
     return items.join("\n");
+};
+
+/**
+ * Determines if any errors are present.
+ *
+ * @return {Boolean} <code>true</code> if this object contains any errors
+ *                   <code>false</code> otherwise.
+ */
+ErrorList.prototype.isPopulated = function()
+{
+    return this.errors.length > 0;
 };
 
 /**

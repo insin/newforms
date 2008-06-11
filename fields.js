@@ -1141,7 +1141,153 @@ ComboField.prototype.clean = function(value)
     return value;
 };
 
-// TODO MultiValueField
+/**
+ * A Field that aggregates the logic of multiple Fields.
+ * <p>
+ * Its <code>clean()</code> method takes a "decompressed" list of values, which
+ * are then cleaned into a single value according to <code>this.fields</code>.
+ * Each value in this list is cleaned by the corresponding field -- the first
+ * value is cleaned by the first field, the second value is cleaned by the
+ * second field, etc. Once all fields are cleaned, the list of clean values is
+ * "compressed" into a single value.
+ * <p>
+ * Subclasses should not have to implement <code>clean()</code>. Instead, they
+ * must implement <code>compress()</code>, which takes a list of valid values
+ * and returns a "compressed" version of those values -- a single value.
+ * <p>
+ * You'll probably want to use this with <code>MultiWidget</code>.
+ *
+ * @param {Object} [kwargs] configuration options additional to those supplied
+ *                          in <code>Field</code>.
+ * @config {Array} [fields] a list of fields to be used to clean a
+ *                          "decompressed" list of values.
+ * @constructor
+ * @augments Field
+ */
+function MultiValueField(kwargs)
+{
+    kwargs = extendObject({fields: []}, kwargs || {});
+    Field.call(this, kwargs);
+    // Set required to false on the individual fields, because the required
+    // validation will be handled by MultiValueField, not by those individual
+    // fields.
+    for (var i = 0, l = kwargs.fields.length; i < l; i++)
+    {
+        kwargs.fields[i].required = false;
+    }
+    this.fields = kwargs.fields;
+}
+
+MultiValueField.prototype = new Field();
+MultiValueField.prototype.defaultErrorMessages =
+    extendObject({}, MultiValueField.prototype.defaultErrorMessages, {
+        invalid: "Enter a list of values."
+    });
+
+/**
+ * Validates every value in the given list. A value is validated against the
+ * corresponding Field in <code>this.fields</code>.
+ * <p>
+ * For example, if this MultiValueField was instantiated with
+ * <code>{fields: [new DateField(), new TimeField()]}, <code>clean()</code>
+ * would call <code>DateField.clean(value[0])</code> and
+ * <code>TimeField.clean(value[1])<code>.
+ *
+ * @param {Array} value the input to be validated.
+ *
+ * @return the result of calling <code>compress()</code> on the cleaned input.
+ */
+MultiValueField.prototype.clean = function(value)
+{
+    var cleanData = [];
+    var errors = new ErrorList();
+
+    if (!value || value instanceof Array)
+    {
+        var allValuesEmpty = true;
+        if (value instanceof Array)
+        {
+            for (var i = 0, l = value.length; i < l; i++)
+            {
+                if (value[i])
+                {
+                    allValuesEmpty = false;
+                    break;
+                }
+            }
+        }
+
+        if (!value || allValuesEmpty)
+        {
+            if (this.required)
+            {
+                throw new ValidationError(this.errorMessages.required);
+            }
+            else
+            {
+                return this.compress([]);
+            }
+        }
+    }
+    else
+    {
+        throw new ValidationError(this.errorMessages.invalid);
+    }
+
+    for (var i = 0, l = this.fields.length; i < l; i++)
+    {
+        var field = this.fields[i];
+        var fieldValue = values[i];
+        if (fieldValue === undefined)
+        {
+            fieldValue = null;
+        }
+
+        if (this.required && contains(Field.EMPTY_VALUES, fieldValue))
+        {
+            throw new ValidationError(this.erroMessages.required);
+        }
+
+        try
+        {
+            cleanData[cleanData.length] = field.clean(fieldValue);
+        }
+        catch (e)
+        {
+            if (e instanceof ValidationError)
+            {
+                errors.extend(e.messages);
+            }
+            else
+            {
+                throw e;
+            }
+        }
+    }
+
+    if (errors.isPopulated())
+    {
+        throw new ValidationError(errors);
+    }
+
+    return this.compress(cleanData);
+};
+
+/**
+ * Returns a single value for the given list of values. The values can be
+ * assumed to be valid.
+ * <p>
+ * For example, if this MultiValueField was instantiated with
+ * <code>{fields: [new DateField(), new TimeField()]}</code>, this might return
+ * a <code>Date</code> object created by combining the date and time in
+ * <code>dataList</code>.
+ *
+ * @param {Array} dataList
+ */
+MultiValueField.prototype.compress = function(dataList)
+{
+    throw new Error("Subclasses must implement this method.");
+};
 
 // TODO FilePathField
 
