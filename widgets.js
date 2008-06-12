@@ -238,7 +238,7 @@ Textarea.prototype.render = function(name, value, attrs)
  *
  * @param {Object} [kwargs] configuration options additional to those specified
  *                          in {@link Input}.
- * @config {String} [format] a {@link strftime} format string.
+ * @config {String} [format] a {@link time.strftime} format string.
  * @constructor
  * @augments Input
  */
@@ -264,7 +264,7 @@ DateTimeInput.prototype.render = function(name, value, attrs)
     }
     else if (value instanceof Date)
     {
-        value = strftime(value, this.format);
+        value = time.strftime(value, this.format);
     }
     return Input.prototype.render.call(this, name, value, attrs);
 };

@@ -452,8 +452,8 @@ DecimalField.prototype.clean = function(value)
  *
  * @param {Object} [kwargs] configuration options additional to those specified
  *                          in {@link Field}.
- * @config {Array} [inputFormats] a list of {@link strptime} input formats which
- *                                are considered valid - if not provided,
+ * @config {Array} [inputFormats] a list of {@link time.strptime} input formats
+ *                                which are considered valid - if not provided,
  *                                {@link DateField.DEFAULT_DATE_INPUT_FORMATS}
  *                                will be used.
  * @constructor
@@ -470,7 +470,7 @@ function DateField(kwargs)
 }
 
 /**
- * Default {@link strptime} input formats which are considered valid.
+ * Default {@link time.strptime} input formats which are considered valid.
  */
 DateField.DEFAULT_DATE_INPUT_FORMATS = [
     "%Y-%m-%d",              // "2006-10-25"
@@ -516,8 +516,8 @@ DateField.prototype.clean = function(value)
     {
         try
         {
-            var time = strptime(value, this.inputFormats[i]);
-            return new Date(time[0], time[1] - 1, time[2]);
+            var t = time.strptime(value, this.inputFormats[i]);
+            return new Date(t[0], t[1] - 1, t[2]);
         }
         catch (e)
         {
@@ -533,7 +533,7 @@ DateField.prototype.clean = function(value)
  *
  * @param {Object} [kwargs] configuration options additional to those specified
  *                          in {@link Field}.
- * @config {Array} [inputFormats] a list of {@link strptime} input formats
+ * @config {Array} [inputFormats] a list of {@link time.strptime} input formats
  *                                which are considered valid - if not provided,
  *                                {@link TimeField.DEFAULT_TIME_INPUT_FORMATS}
  *                                will be used.
@@ -551,7 +551,7 @@ function TimeField(kwargs)
 }
 
 /**
- * Default {@link strptime} input formats which are considered valid.
+ * Default {@link time.strptime} input formats which are considered valid.
  */
 TimeField.DEFAULT_TIME_INPUT_FORMATS = [
     "%H:%M:%S", // "14:30:59"
@@ -597,8 +597,8 @@ TimeField.prototype.clean = function(value)
     {
         try
         {
-            var time = strptime(value, this.inputFormats[i]);
-            return new Date(1900, 0, 1, time[3], time[4], time[5]);
+            var t = time.strptime(value, this.inputFormats[i]);
+            return new Date(1900, 0, 1, t[3], t[4], t[5]);
         }
         catch (e)
         {
@@ -614,7 +614,7 @@ TimeField.prototype.clean = function(value)
  *
  * @param {Object} [kwargs] configuration options additional to those specified
  *                          in {@link Field}.
- * @config {Array} [inputFormats] a list of {@link strptime} input formats
+ * @config {Array} [inputFormats] a list of {@link time.strptime} input formats
  *                                which are considered valid - if not provided,
  *                                {@link DateTimeField.DEFAULT_TIME_INPUT_FORMATS}
  *                                will be used.
@@ -632,7 +632,7 @@ function DateTimeField(kwargs)
 }
 
 /**
- * Default {@link strptime} input formats which are considered valid.
+ * Default {@link time.strptime} input formats which are considered valid.
  */
 DateTimeField.DEFAULT_DATETIME_INPUT_FORMATS = [
     "%Y-%m-%d %H:%M:%S", // "2006-10-25 14:30:59"
@@ -695,9 +695,8 @@ DateTimeField.prototype.clean = function(value)
     {
         try
         {
-            var time = strptime(value, this.inputFormats[i]);
-            return new Date(time[0], time[1] - 1, time[2],
-                            time[3], time[4], time[5]);
+            var t = time.strptime(value, this.inputFormats[i]);
+            return new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
         }
         catch (e)
         {
