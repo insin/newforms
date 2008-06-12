@@ -4,22 +4,12 @@ import os
 from jsmin import jsmin
 
 DIRNAME = os.path.dirname(__file__)
-SOURCE_FILES = ('../util.js', '../strftime.js', '../strptime.js',
-                '../widgets.js', '../fields.js', '../forms.js')
-MODULE_DEFINITION = 'module.js'
-CODE_TEMPLATE = """var forms = function()
-{
-
-%(code)s
-%(modules)s
-}();"""
+SOURCE_FILES = ('../time.js', '../util.js', '../widgets.js', '../fields.js',
+                '../forms.js')
 
 def main(generate_api=False, jsdoc_dir=None):
-    js = CODE_TEMPLATE % {
-        'code': '\n'.join([open(os.path.normpath(f), 'r').read()
-                           for f in SOURCE_FILES]),
-        'modules': open(MODULE_DEFINITION).read(),
-    }
+    js = '\n'.join([open(os.path.normpath(f), 'r').read()
+                    for f in SOURCE_FILES])
 
     if not os.path.isdir('out'):
         os.mkdir('out')
