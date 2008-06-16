@@ -1277,7 +1277,67 @@ MultiValueField.prototype.compress = function(dataList)
 
 // TODO FilePathField
 
-// TODO SplitDateTimeField
+/**
+ * A {@link MultiValueField} consisting of a {@link DateField} and a
+ * {@link TimeField}.
+ *
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          {@link Field} and {@link MultiValueField}.
+ * @constructor
+ * @augments MultiValueField
+ */
+function SplitDateTimeField(kwargs)
+{
+    kwargs = extendObject({}, kwargs || {});
+    var errors = extendObject({}, this.prototype.defaultErrorMessages);
+    if (typeof kwargs.errorMessages != "undefined")
+    {
+        extendObject(errors, kwargs.errorMessages);
+    }
+    kwargs.fields =
+        [new DateField({errorMessages: {invalid: errors.invalidDate}}),
+         new TimeField({errorMessages: {invalid: errors.invalidTime}})];
+    MultiValueField.call(this, kwargs);
+}
+
+SplitDateTimeField.prototype = new MultiValueField();
+SplitDateTimeField.prototype.defaultErrorMessages =
+    extendObject({}, SplitDateTimeField.prototype.defaultErrorMessages, {
+        invalidDate: "Enter a valid date.",
+        invalidTime: "Enter a valid time."
+    });
+
+/**
+ * Validates that, if given, its input does not contain empty values.
+ *
+ * @param {Array} [dataList] a two-item list consisting of two <code>Date</code>
+ *                           objects, the first of which represents a date, the
+ *                           second a time.
+ *
+ * @return a <code>Date</code> object representing the given date and time, or
+ *         <code>null</code> for empty values.
+ * @type Date
+ */
+SplitDateTimeField.prototype.compress = function(dataList)
+{
+    if (dataList)
+    {
+        var d = dataList[0], t = dataList[1];
+        // Raise a validation error if date or time is empty (possible if
+        // SplitDateTimeField has required=false.
+        if (contains(Field.EMPTY_VALUES, d))
+        {
+           throw new ValidationError(this.errorMessages.invalidDate);
+        }
+        else if (contains(Field.EMPTY_VALUES, t))
+        {
+           throw new ValidationError(this.errorMessages.invalidTime);
+        }
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate(),
+                        t.getHours(), t.getMinutes(), t.getSeconds());
+    }
+    return null;
+};
 
 /**
  * Validates that its input is a valid IPv4 address.
