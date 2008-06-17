@@ -340,3 +340,23 @@ test("EmailField", function()
     equals(f.clean("alf@foo.com"), "alf@foo.com");
     try { f.clean("alf123456788@foo.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 15 characters (it has 20)."); }
 });
+
+test("FileField", function()
+{
+    expect(14);
+    var f = new FileField();
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean("", ""); } catch (e) { equals(ve(e), "This field is required."); }
+    equals(f.clean("", "files/test1.pdf"), "files/test1.pdf");
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(null, ""); } catch (e) { equals(ve(e), "This field is required."); }
+    equals(f.clean("", "files/test2.pdf"), "files/test2.pdf");
+    try { f.clean({}); } catch (e) { equals(ve(e), "No file was submitted."); }
+    try { f.clean({}, ""); } catch (e) { equals(ve(e), "No file was submitted."); }
+    equals(f.clean({}, "files/test3.pdf"), "files/test3.pdf");
+    try { f.clean("some content that is not a file"); } catch (e) { equals(ve(e), "No file was submitted. Check the encoding type on the form."); }
+    try { f.clean({filename: "name", content: null}); } catch (e) { equals(ve(e), "The submitted file is empty."); }
+    try { f.clean({filename: "name", content: ""}); } catch (e) { equals(ve(e), "The submitted file is empty."); }
+    ok(f.clean({filename: "name", content: "Some file content"}) instanceof UploadedFile, "Valid uploaded file details result in UploadedFile object");
+    ok(f.clean({filename: "name", content: "Some file content"}, "files/test4.pdf") instanceof UploadedFile, "Valid uploaded file details and initial data result in UploadedFile object");
+});

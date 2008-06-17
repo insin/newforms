@@ -747,6 +747,8 @@ RegexField.prototype.clean = function(value)
 /**
  * Validates that its input appears to be a valid e-mail address.
  *
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          {@link RegexField}.
  * @constructor
  * @augments RegexField
  */
@@ -772,11 +774,31 @@ EmailField.prototype.defaultErrorMessages =
     });
 
 /**
+ * A wrapper for files uploaded in a {@link FileField}.
+ *
+ * @param {String} filename the file's name.
+ * @param {String} content the file's contents.
+ * @constructor
+ */
+function UploadedFile(filename, content)
+{
+    this.filename = filename;
+    this.content = content;
+}
+
+UploadedFile.prototype.toString = function()
+{
+    return this.filename;
+};
+
+/**
  * Validates that its input is a valid uploaded file.
  * <p>
  * This field is mostly meaningless on the client-side, but is included for
  * future use in any future server-side implementation.
  *
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          {@link Field}.
  * @constructor
  * @augments Field
  */
@@ -795,11 +817,62 @@ FileField.prototype.defaultErrorMessages =
     });
 
 /**
+ * Validates that the given data appears to be a valid uploaded file.
+ *
+ * @param {Object} data uploaded file data.
+ * @config {String} filename the file's name.
+ * @config {String} content the file's content.
+ * @param {String} [initial] the path of an existing file.
+ *
+ * @return an object representing uploaded file data, or <code>null</code> for
+ *         empty values.
+ * @type UploadedFile
+ */
+FileField.prototype.clean = function(data, initial)
+{
+    Field.prototype.clean.call(this, initial || data);
+    if (!this.required && contains(Field.EMPTY_VALUES, data))
+    {
+        return null;
+    }
+
+    // Weird return logic owing to the fact that an empty Python dict is falsy
+    // but a JavaScript object which has no properties is not.
+    if (typeof data != "object")
+    {
+        if (initial)
+        {
+            return initial;
+        }
+        throw new ValidationError(this.errorMessages.invalid);
+    }
+    else if (typeof data.filename == "undefined" ||
+             typeof data.content == "undefined")
+    {
+        if (initial)
+        {
+            return initial;
+        }
+        throw new ValidationError(this.errorMessages.missing);
+    }
+
+    var f = new UploadedFile(data.filename, data.content);
+    if (!f.content)
+    {
+        throw new ValidationError(this.errorMessages.empty);
+    }
+
+    return f;
+};
+
+/**
  * Validates that its input is a valid uploaded image.
  * <p>
  * This field is mostly meaningless on the client-side, but is included for
  * future use in any future server-side implementation.
  *
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          {@link FileField}.
  * @constructor
  * @augments FileField
  */
