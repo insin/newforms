@@ -274,3 +274,43 @@ test("DateTimeField", function()
     equals(f.clean(null), null);
     equals(f.clean(""), null);
 });
+
+test("RegexField", function()
+{
+    expect(24);
+    var f = new RegexField("^\\d[A-F]\\d$");
+    equals(f.clean("2A2"), "2A2");
+    equals(f.clean("3F3"), "3F3");
+    try { f.clean("3G3"); } catch (e) { equals(ve(e), "Enter a valid value."); }
+    try { f.clean(" 2A2"); } catch (e) { equals(ve(e), "Enter a valid value."); }
+    try { f.clean("2A2 "); } catch (e) { equals(ve(e), "Enter a valid value."); }
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+
+    f = new RegexField("^\\d[A-F]\\d$", {required: false});
+    equals(f.clean("2A2"), "2A2");
+    equals(f.clean("3F3"), "3F3");
+    try { f.clean("3G3"); } catch (e) { equals(ve(e), "Enter a valid value."); }
+    equals(f.clean(""), "");
+
+    // Alternatively, RegexField can take a compiled regular expression
+    f = new RegexField(/^\d[A-F]\d$/);
+    equals(f.clean("2A2"), "2A2");
+    equals(f.clean("3F3"), "3F3");
+    try { f.clean("3G3"); } catch (e) { equals(ve(e), "Enter a valid value."); }
+    try { f.clean(" 2A2"); } catch (e) { equals(ve(e), "Enter a valid value."); }
+    try { f.clean("2A2 "); } catch (e) { equals(ve(e), "Enter a valid value."); }
+
+    f = new RegexField("^\\d\\d\\d\\d$", {errorMessages: {invalid: 'Enter a four-digit number.'}});
+    equals(f.clean("1234"), "1234");
+    try { f.clean("123"); } catch (e) { equals(ve(e), "Enter a four-digit number."); }
+    try { f.clean("abcd"); } catch (e) { equals(ve(e), "Enter a four-digit number."); }
+
+    // RegexField also has minLength and maxLength parameters, for convenience.
+    f = new RegexField("^\\d+$", {minLength: 5, maxLength: 10});
+    try { f.clean("123"); } catch (e) { equals(ve(e), "Ensure this value has at least 5 characters (it has 3)."); }
+    try { f.clean("abc"); } catch (e) { equals(ve(e), "Ensure this value has at least 5 characters (it has 3)."); }
+    equals(f.clean("12345"), "12345");
+    equals(f.clean("1234567890"), "1234567890");
+    try { f.clean("12345678901"); } catch (e) { equals(ve(e), "Ensure this value has at most 10 characters (it has 11)."); }
+    try { f.clean("12345a"); } catch (e) { equals(ve(e), "Enter a valid value."); }
+});

@@ -716,7 +716,7 @@ DateTimeField.prototype.clean = function(value)
 function RegexField(regex, kwargs)
 {
     CharField.call(this, kwargs);
-    if (regex instanceof String)
+    if (typeof regex == "string")
     {
         regex = new RegExp(regex);
     }
@@ -736,7 +736,7 @@ RegexField.prototype = new CharField();
  */
 RegexField.prototype.clean = function(value)
 {
-    value = CharField.clean.call(this, value);
+    value = CharField.prototype.clean.call(this, value);
     if (value !== "" && !this.regex.test(value))
     {
         throw new ValidationError(this.errorMessages.invalid);
