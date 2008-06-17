@@ -481,3 +481,29 @@ test("NullBooleanField", function()
     equals(f.clean("3"), null);
     equals(f.clean("hello"), null);
 });
+
+test("MultipleChoiceField", function()
+{
+    expect(18);
+    var f = new MultipleChoiceField({choices: [["1", "1"], ["2", "2"]]});
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    isSet(f.clean([1]), ["1"]);
+    isSet(f.clean(["1"]), ["1"]);
+    isSet(f.clean(["1", "2"]), ["1", "2"]);
+    isSet(f.clean([1, "2"]), ["1", "2"]);
+    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
+    try { f.clean([]); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(["3"]); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
+
+    var f = new MultipleChoiceField({choices: [["1", "1"], ["2", "2"]], required: false});
+    isSet(f.clean(""), []);
+    isSet(f.clean(null), []);
+    isSet(f.clean([1]), ["1"]);
+    isSet(f.clean(["1"]), ["1"]);
+    isSet(f.clean(["1", "2"]), ["1", "2"]);
+    isSet(f.clean([1, "2"]), ["1", "2"]);
+    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
+    isSet(f.clean([]), []);
+    try { f.clean(["3"]); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
+});

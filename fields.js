@@ -1141,21 +1141,34 @@ MultipleChoiceField.prototype.clean = function(value)
         return [];
     }
 
+    // The similar else branch below is required due to empty Arrays not being
+    // falsy in JavaScript.
     if (!(value instanceof Array))
     {
         throw new ValidationError(this.errorMessages.invalidList);
+    }
+    else if (value.length == 0)
+    {
+        if (this.required)
+        {
+            throw new ValidationError(this.errorMessages.required);
+        }
+        else
+        {
+            return [];
+        }
     }
 
     var validValuesLookup = {};
     for (var i = 0, l = this.choices.length; i < l; i++)
     {
-        validValuesLookup["" + this.choices[i]] = true;
+        validValuesLookup["" + this.choices[i][0]] = true;
     }
 
     var stringValues = [];
-    for (var i = 0, l = values.length; i < l; i++)
+    for (var i = 0, l = value.length; i < l; i++)
     {
-        var stringValue = "" + values[i];
+        var stringValue = "" + value[i];
         if (typeof validValuesLookup[stringValue] == "undefined")
         {
             throw new ValidationError(formatString(
