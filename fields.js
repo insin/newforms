@@ -957,7 +957,7 @@ URLField.prototype.clean = function(value)
     }
     if (this.verifyExists === true)
     {
-        // TODO Can URL verification be reliably implemented on the client-side?
+        // TODO Implement URL verification
     }
     return value
 };

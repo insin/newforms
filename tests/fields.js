@@ -206,7 +206,7 @@ test("DateField", function()
     equals(f.clean("2006 10 25").valueOf(), expected);
 
     // The input_formats parameter overrides all default input formats, so the
-    // default formats won't work unless you specify them
+    // default formats won't work unless you specify them.
     try { f.clean("2006-10-25"); } catch (e) { equals(ve(e), "Enter a valid date."); }
     try { f.clean("10/25/2006"); } catch (e) { equals(ve(e), "Enter a valid date."); }
     try { f.clean("10/25/06"); } catch (e) { equals(ve(e), "Enter a valid date."); }
@@ -223,7 +223,7 @@ test("TimeField", function()
     try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a valid time."); }
     try { f.clean("1:24 p.m."); } catch (e) { equals(ve(e), "Enter a valid time."); }
 
-    // TimeField accepts an optional inputFormats parameter:
+    // TimeField accepts an optional inputFormats parameter
     var f = new TimeField({inputFormats: ["%I:%M %p"]});
     equals(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
     equals(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
@@ -267,7 +267,7 @@ test("DateTimeField", function()
     equals(f.clean("2006 10 25 2:30 PM").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
 
     // The inputFormats parameter overrides all default input formats, so the
-    // default formats won't work unless you specify them:
+    // default formats won't work unless you specify them
     try { f.clean("2006-10-25 14:30:45"); } catch (e) { equals(ve(e), "Enter a valid date/time."); }
 
     f = new DateTimeField({required: false});
@@ -305,7 +305,7 @@ test("RegexField", function()
     try { f.clean("123"); } catch (e) { equals(ve(e), "Enter a four-digit number."); }
     try { f.clean("abcd"); } catch (e) { equals(ve(e), "Enter a four-digit number."); }
 
-    // RegexField also has minLength and maxLength parameters, for convenience.
+    // RegexField also has minLength and maxLength parameters, for convenience
     f = new RegexField("^\\d+$", {minLength: 5, maxLength: 10});
     try { f.clean("123"); } catch (e) { equals(ve(e), "Ensure this value has at least 5 characters (it has 3)."); }
     try { f.clean("abc"); } catch (e) { equals(ve(e), "Ensure this value has at least 5 characters (it has 3)."); }
@@ -359,4 +359,63 @@ test("FileField", function()
     try { f.clean({filename: "name", content: ""}); } catch (e) { equals(ve(e), "The submitted file is empty."); }
     ok(f.clean({filename: "name", content: "Some file content"}) instanceof UploadedFile, "Valid uploaded file details result in UploadedFile object");
     ok(f.clean({filename: "name", content: "Some file content"}, "files/test4.pdf") instanceof UploadedFile, "Valid uploaded file details and initial data result in UploadedFile object");
+});
+
+test("URLField", function()
+{
+    var validURLs = ["http://localhost", "http://example.com",
+        "http://www.example.com:8000/test", "http://200.8.9.10",
+        "http://200.8.9.10:8000/test"];
+
+    var invalidURLs =
+        ["foo", "http://", "http://example", "http://example.", "http://.com"];
+
+    expect(33);
+    var f = new URLField();
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    for (var i = 0, url; url = validURLs[i]; i++)
+    {
+        equals(f.clean(url), url);
+    }
+    for (var i = 0, url; url = invalidURLs[i]; i++)
+    {
+        try { f.clean(url); } catch (e) { equals(ve(e), "Enter a valid URL."); }
+    }
+
+    f = new URLField({required: false});
+    equals(f.clean(""), "");
+    equals(f.clean(null), "");
+    for (var i = 0, url; url = validURLs[i]; i++)
+    {
+        equals(f.clean(url), url);
+    }
+    for (var i = 0, url; url = invalidURLs[i]; i++)
+    {
+        try { f.clean(url); } catch (e) { equals(ve(e), "Enter a valid URL."); }
+    }
+
+    // URLField takes an optional verifyExists parameter, which is false by
+    // default. This verifies that the URL is live on the Internet and doesn't
+    // return a 404 or 500:
+    f = new URLField({verifyExists: true});
+    equals(f.clean("http://www.google.com"), "http://www.google.com");
+    try { f.clean("http://example"); } catch (e) { equals(ve(e), "Enter a valid URL."); }
+    try { f.clean("http://www.jfoiwjfoi23jfoijoaijfoiwjofiwjefewl.com") } catch (e) { equals(ve(e), "This URL appears to be a broken link.", "Bad domain"); }
+    try { f.clean("http://google.com/we-love-microsoft.html") } catch (e) { equals(ve(e), "This URL appears to be a broken link.", "Good domain, bad page"); }
+
+    f = new URLField({verifyExists: true, required: false});
+    equals(f.clean(""), "");
+    equals(f.clean("http://www.google.com"), "http://www.google.com");
+
+    // URLField also has minLength and maxLength parameters, for convenience
+    f = new URLField({minLength: 15, maxLength: 20});
+    try { f.clean("http://f.com"); } catch (e) { equals(ve(e), "Ensure this value has at least 15 characters (it has 12)."); }
+    equals(f.clean("http://example.com"), "http://example.com");
+    try { f.clean("http://abcdefghijklmnopqrstuvwxyz.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 20 characters (it has 37)."); }
+
+    // URLField should prepend "http://" if no scheme was given
+    f = new URLField({required: false});
+    equals(f.clean("example.com"), "http://example.com");
+    equals(f.clean("https://example.com"), "https://example.com");
 });
