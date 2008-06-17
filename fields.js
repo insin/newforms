@@ -1310,7 +1310,7 @@ MultiValueField.prototype.clean = function(value)
     for (var i = 0, l = this.fields.length; i < l; i++)
     {
         var field = this.fields[i];
-        var fieldValue = values[i];
+        var fieldValue = value[i];
         if (fieldValue === undefined)
         {
             fieldValue = null;
@@ -1340,7 +1340,7 @@ MultiValueField.prototype.clean = function(value)
 
     if (errors.isPopulated())
     {
-        throw new ValidationError(errors);
+        throw new ValidationError(errors.errors);
     }
 
     return this.compress(cleanData);
@@ -1376,7 +1376,7 @@ MultiValueField.prototype.compress = function(dataList)
 function SplitDateTimeField(kwargs)
 {
     kwargs = extendObject({}, kwargs || {});
-    var errors = extendObject({}, this.prototype.defaultErrorMessages);
+    var errors = extendObject({}, this.defaultErrorMessages);
     if (typeof kwargs.errorMessages != "undefined")
     {
         extendObject(errors, kwargs.errorMessages);
@@ -1407,11 +1407,11 @@ SplitDateTimeField.prototype.defaultErrorMessages =
  */
 SplitDateTimeField.prototype.compress = function(dataList)
 {
-    if (dataList)
+    if (dataList instanceof Array && dataList.length > 0)
     {
         var d = dataList[0], t = dataList[1];
         // Raise a validation error if date or time is empty (possible if
-        // SplitDateTimeField has required=false.
+        // SplitDateTimeField has required == false).
         if (contains(Field.EMPTY_VALUES, d))
         {
            throw new ValidationError(this.errorMessages.invalidDate);

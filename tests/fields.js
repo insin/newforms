@@ -530,4 +530,33 @@ test("ComboField", function()
 
 // TODO FilePathField
 
-// TODO SplitDateTimeField
+test("SplitDateTimeField", function()
+{
+    expect(20);
+    var f = new SplitDateTimeField();
+    equals(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
+           new Date(2006, 0, 10, 7, 30).valueOf());
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
+    try { f.clean(["hello", "there"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date.", "Enter a valid time."]); }
+    try { f.clean(["2006-01-10", "there"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid time."]); }
+    try { f.clean(["hello", "07:30"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date."]); }
+
+    var f = new SplitDateTimeField({required: false});
+    equals(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
+           new Date(2006, 0, 10, 7, 30).valueOf());
+    equals(f.clean(["2006-01-10", "07:30"]).valueOf(),
+           new Date(2006, 0, 10, 7, 30).valueOf());
+    equals(f.clean(null), null);
+    equals(f.clean(""), null);
+    equals(f.clean([""]), null);
+    equals(f.clean(["", ""]), null);
+    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
+    try { f.clean(["hello", "there"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date.", "Enter a valid time."]); }
+    try { f.clean(["2006-01-10", "there"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid time."]); }
+    try { f.clean(["hello", "07:30"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date."]); }
+    try { f.clean(["2006-01-10", ""]); } catch (e) { isSet(e.messages.errors, ["Enter a valid time."]); }
+    try { f.clean(["2006-01-10"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid time."]); }
+    try { f.clean(["", "07:30"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date."]); }
+});
