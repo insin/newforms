@@ -507,3 +507,27 @@ test("MultipleChoiceField", function()
     isSet(f.clean([]), []);
     try { f.clean(["3"]); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
 });
+
+test("ComboField", function()
+{
+    expect(10);
+    // ComboField takes a list of fields that should be used to validate a
+    // value, in that order.
+    var f = new ComboField({fields: [new CharField({maxLength: 20}), new EmailField()]});
+    equals(f.clean("test@example.com"), "test@example.com");
+    try { f.clean("longemailaddress@example.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 20 characters (it has 28)."); }
+    try { f.clean("not an e-mail"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+
+    var f = new ComboField({fields: [new CharField({maxLength: 20}), new EmailField()], required: false});
+    equals(f.clean("test@example.com"), "test@example.com");
+    try { f.clean("longemailaddress@example.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 20 characters (it has 28)."); }
+    try { f.clean("not an e-mail"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    equals(f.clean(""), "");
+    equals(f.clean(null), "");
+});
+
+// TODO FilePathField
+
+// TODO SplitDateTimeField
