@@ -1,8 +1,10 @@
-module("time.strptime");
+module("time");
 
-test("Default date formats from django.newforms.fields", function()
+test("strptime", function()
 {
-    expect(11);
+    expect(58);
+
+    // Default date formats from django.newforms.fields
     var expected = [2006, 10, 25, 0, 0, 0, 0, 1, -1].join(",");
     equals(time.strptime("2006-10-25", "%Y-%m-%d").join(","), expected);
     equals(time.strptime("10/25/2006", "%m/%d/%Y").join(","), expected);
@@ -15,20 +17,14 @@ test("Default date formats from django.newforms.fields", function()
     equals(time.strptime("October 25, 2006", "%B %d, %Y").join(","), expected);
     equals(time.strptime("25 October 2006", "%d %B %Y").join(","), expected);
     equals(time.strptime("25 October, 2006", "%d %B, %Y").join(","), expected);
-});
 
-test("Default time formats from django.newforms.fields", function()
-{
-    expect(2);
+    // Default time formats from django.newforms.fields
     equals(time.strptime("14:30:59", "%H:%M:%S").join(","),
            [1900, 1, 1, 14, 30, 59, 0, 1, -1].join(","));
     equals(time.strptime("14:30", "%H:%M").join(","),
            [1900, 1, 1, 14, 30, 0, 0, 1, -1].join(","));
-});
 
-test("Default datetime formats from django.newforms.fields", function()
-{
-    expect(9);
+    // Default datetime formats from django.newforms.fields
     equals(time.strptime("2006-10-25 14:30:59", "%Y-%m-%d %H:%M:%S").join(","),
            [2006, 10, 25, 14, 30, 59, 0, 1, -1].join(","));
     equals(time.strptime("2006-10-25 14:30", "%Y-%m-%d %H:%M").join(","),
@@ -47,11 +43,8 @@ test("Default datetime formats from django.newforms.fields", function()
            [2006, 10, 25, 14, 30, 0, 0, 1, -1].join(","));
     equals(time.strptime("10/25/06", "%m/%d/%y").join(","),
            [2006, 10, 25, 0, 0, 0, 0, 1, -1].join(","));
-});
 
-test("Leap years", function()
-{
-    expect(3);
+    // Leap years
     equals(time.strptime("2004-02-29", "%Y-%m-%d").join(","),
            [2004, 2, 29, 0, 0, 0, 0, 1, -1].join(","),
            "Divisibile by 4, but not by 100");
@@ -66,11 +59,8 @@ test("Leap years", function()
     {
         ok(true, "Divisible by 4 and 100, but not by 400, so not a leap year");
     }
-});
 
-test("Boundary tests", function()
-{
-    expect(31);
+    // Boundary tests
     var months = [
         ["January", "01", "31", "32"],
         ["February", "02", "28", "29"],
@@ -122,11 +112,8 @@ test("Boundary tests", function()
             ok(true, boundary[0] + " is not a valid " + boundary[2]);
         }
     }
-});
 
-test("Invalid format strings", function()
-{
-    expect(2);
+    // Invalid format strings
     try
     {
         time.strptime("2006-10-25", "%Y-%m-%d%");
@@ -146,18 +133,15 @@ test("Invalid format strings", function()
     }
 });
 
-module("time.strftime");
-
-test("Default date/time format", function()
+test("strftime", function()
 {
-    expect(1);
+    expect(3);
+
+    // Default date/time format
     equals(time.strftime(new Date(2006, 9 ,25, 14, 30, 59), "%Y-%m-%d %H:%M:%S"),
            "2006-10-25 14:30:59");
-});
 
-test("Invalid format strings", function()
-{
-    expect(2);
+    // Invalid format strings
     equals(time.strftime(new Date(2006, 9 ,25, 14, 30, 59), "%Y-%m-%d %q %H:%M:%S"),
            "2006-10-25  14:30:59",
            "Invalid directives are silently dropped");
