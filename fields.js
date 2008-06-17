@@ -672,12 +672,7 @@ DateTimeField.prototype.clean = function(value)
 
     if (value instanceof Date)
     {
-        return new Date(value.getFullYear(),
-                        value.getMonth(),
-                        value.getDate(),
-                        value.getHours(),
-                        value.getMinutes(),
-                        value.getSeconds());
+        return value;
     }
 
     if (value instanceof Array)

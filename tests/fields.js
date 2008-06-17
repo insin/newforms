@@ -234,3 +234,43 @@ test("TimeField", function()
     // default formats won't work unless you specify them.
     try { f.clean("14:30:45"); } catch (e) { equals(ve(e), "Enter a valid time."); }
 });
+
+test("DateTimeField", function()
+{
+    expect(26);
+    var f = new DateTimeField();
+    equals(f.clean(new Date(2006, 9, 25)).valueOf(), new Date(2006, 9, 25).valueOf());
+    equals(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    equals(f.clean(new Date(2006, 9, 25, 14, 30, 59)).valueOf(), new Date(2006, 9, 25, 14, 30, 59).valueOf());
+    equals(f.clean(new Date(2006, 9, 25, 14, 30, 59, 200)).valueOf(), new Date(2006, 9, 25, 14, 30, 59, 200).valueOf());
+    equals(f.clean("2006-10-25 14:30:45").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
+    equals(f.clean("2006-10-25 14:30:00").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    equals(f.clean("2006-10-25 14:30").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    equals(f.clean("2006-10-25").valueOf(), new Date(2006, 9, 25).valueOf());
+    equals(f.clean("10/25/2006 14:30:45").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
+    equals(f.clean("10/25/2006 14:30:00").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    equals(f.clean("10/25/2006 14:30").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    equals(f.clean("10/25/2006").valueOf(), new Date(2006, 9, 25).valueOf());
+    equals(f.clean("10/25/06 14:30:45").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
+    equals(f.clean("10/25/06 14:30:00").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    equals(f.clean("10/25/06 14:30").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    equals(f.clean("10/25/06").valueOf(), new Date(2006, 9, 25).valueOf());
+    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a valid date/time."); }
+    try { f.clean("2006-10-25 4:30 p.m."); } catch (e) { equals(ve(e), "Enter a valid date/time."); }
+
+    // DateField accepts an optional input_formats parameter
+    f = new DateTimeField({inputFormats: ["%Y %m %d %I:%M %p"]});
+    equals(f.clean(new Date(2006, 9, 25)).valueOf(), new Date(2006, 9, 25).valueOf());
+    equals(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    equals(f.clean(new Date(2006, 9, 25, 14, 30, 59)).valueOf(), new Date(2006, 9, 25, 14, 30, 59).valueOf());
+    equals(f.clean(new Date(2006, 9, 25, 14, 30, 59, 200)).valueOf(), new Date(2006, 9, 25, 14, 30, 59, 200).valueOf());
+    equals(f.clean("2006 10 25 2:30 PM").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+
+    // The inputFormats parameter overrides all default input formats, so the
+    // default formats won't work unless you specify them:
+    try { f.clean("2006-10-25 14:30:45"); } catch (e) { equals(ve(e), "Enter a valid date/time."); }
+
+    f = new DateTimeField({required: false});
+    equals(f.clean(null), null);
+    equals(f.clean(""), null);
+});
