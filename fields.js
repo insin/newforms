@@ -1082,6 +1082,12 @@ ChoiceField.prototype.clean = function(value)
         return "";
     }
 
+    value = "" + value;
+    if (value === "")
+    {
+        return value;
+    }
+
     for (var i = 0, l = this.choices.length; i < l; i++)
     {
         if (value === ("" + this.choices[i][0]))

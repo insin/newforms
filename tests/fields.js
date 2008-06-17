@@ -419,3 +419,65 @@ test("URLField", function()
     equals(f.clean("example.com"), "http://example.com");
     equals(f.clean("https://example.com"), "https://example.com");
 });
+
+test("BooleanField", function()
+{
+    expect(16);
+    var f = new BooleanField();
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    equals(f.clean(true), true);
+    equals(f.clean(false), false);
+    equals(f.clean(1), true);
+    equals(f.clean(0), false);
+    equals(f.clean("Django rocks"), true);
+    equals(f.clean("True"), true);
+    // A form's BooleanField with a hidden widget will output the string
+    // "False", so that should clean to the boolean value false.
+    equals(f.clean("False"), false);
+
+    f = new BooleanField({required: false});
+    equals(f.clean(""), false);
+    equals(f.clean(null), false);
+    equals(f.clean(true), true);
+    equals(f.clean(false), false);
+    equals(f.clean(1), true);
+    equals(f.clean(0), false);
+    equals(f.clean("Django rocks"), true);
+});
+
+test("ChoiceField", function()
+{
+    expect(12);
+    var f = new ChoiceField({choices: [["1", "1"], ["2", "2"]]});
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    equals(f.clean(1), "1");
+    equals(f.clean("1"), "1");
+    try { f.clean("3"); } catch (e) { equals(ve(e), "Select a valid choice. That choice is not one of the available choices."); }
+
+    var f = new ChoiceField({choices: [["1", "1"], ["2", "2"]], required: false});
+    equals(f.clean(""), "");
+    equals(f.clean(null), "");
+    equals(f.clean(1), "1");
+    equals(f.clean("1"), "1");
+    try { f.clean("3"); } catch (e) { equals(ve(e), "Select a valid choice. That choice is not one of the available choices."); }
+
+    f = new ChoiceField({choices: [["J", "John"], ["P", "Paul"]]});
+    equals(f.clean("J"), "J");
+    try { f.clean("John"); } catch (e) { equals(ve(e), "Select a valid choice. That choice is not one of the available choices."); }
+});
+
+test("NullBooleanField", function()
+{
+    expect(8);
+    var f = new NullBooleanField();
+    equals(f.clean(""), null);
+    equals(f.clean(true), true);
+    equals(f.clean(false), false);
+    equals(f.clean(null), null);
+    equals(f.clean("1"), null);
+    equals(f.clean("2"), null);
+    equals(f.clean("3"), null);
+    equals(f.clean("hello"), null);
+});
