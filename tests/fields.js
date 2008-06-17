@@ -314,3 +314,29 @@ test("RegexField", function()
     try { f.clean("12345678901"); } catch (e) { equals(ve(e), "Ensure this value has at most 10 characters (it has 11)."); }
     try { f.clean("12345a"); } catch (e) { equals(ve(e), "Enter a valid value."); }
 });
+
+test("EmailField", function()
+{
+    expect(15);
+    var f = new EmailField();
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    equals(f.clean("person@example.com"), "person@example.com");
+    try { f.clean("foo"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    try { f.clean("foo@"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    try { f.clean("foo@bar"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+
+    f = new EmailField({required: false});
+    equals(f.clean(""), "");
+    equals(f.clean(null), "");
+    equals(f.clean("person@example.com"), "person@example.com");
+    try { f.clean("foo"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    try { f.clean("foo@"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    try { f.clean("foo@bar"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+
+    // EmailField also has minLength and maxLength parameters, for convenience.
+    f = new EmailField({minLength: 10, maxLength: 15});
+    try { f.clean("a@foo.com"); } catch (e) { equals(ve(e), "Ensure this value has at least 10 characters (it has 9)."); }
+    equals(f.clean("alf@foo.com"), "alf@foo.com");
+    try { f.clean("alf123456788@foo.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 15 characters (it has 20)."); }
+});

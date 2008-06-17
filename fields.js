@@ -768,7 +768,7 @@ EmailField.prototype = new RegexField();
 
 EmailField.prototype.defaultErrorMessages =
     extendObject({}, EmailField.prototype.defaultErrorMessages, {
-        invalid: "Enter a valid e-mail address"
+        invalid: "Enter a valid e-mail address."
     });
 
 /**
