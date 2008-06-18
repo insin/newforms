@@ -172,7 +172,49 @@ HiddenInput.prototype = new Input();
 HiddenInput.prototype.inputType = "hidden";
 HiddenInput.prototype.isHidden = true;
 
-// TODO MultipleHiddenInput
+/**
+ * A widget that handles <code>&lt;input type="hidden"&gt;</code> for fields
+ * that have a list of values.
+ *
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          {@link HiddenInput}.
+ * @constructor
+ * @augments HiddenInput
+ */
+function MultipleHiddenInput(kwargs)
+{
+    HiddenInput.call(this, kwargs);
+}
+
+MultipleHiddenInput.prototype = new HiddenInput();
+
+MultipleHiddenInput.prototype.render = function(name, value, attrs)
+{
+    if (value === null)
+    {
+        value = [];
+    }
+
+    var finalAttrs = this.buildAttrs(attrs, {type: this.inputType, name: name});
+    var inputs = [];
+    for (var i = 0, l = value.length; i < l; i++)
+    {
+        inputs[inputs.length] =
+            DOMBuilder.createElement("input", extendObject({},
+                                                           finalAttrs,
+                                                           {value: value[i]}));
+    }
+    return DOMBuilder.createElement("span", {}, inputs);
+};
+
+MultipleHiddenInput.prototype.valueFromData = function(data, files, name)
+{
+    if (typeof data[name] != "undefined")
+    {
+        return [].concat(data[name]);
+    }
+    return null;
+};
 
 /**
  * An HTML <code>&lt;input type="file"&gt;</code> widget.
