@@ -199,6 +199,29 @@ function contains(container, item)
 }
 
 /**
+ * Escapes the given HTML.
+ *
+ * @param {String} html the HTML to be escaped.
+ *
+ * @return the given HTML with ampersands, quotes and carets encoded.
+ * @type String
+ * @function
+ */
+var escapeHTML = function()
+{
+    var ampRe = /&/g;
+    var ltRe = /</g;
+    var gtRe = />/g;
+    var quoteRe1 = /"/g;
+    var quoteRe2 = /'/g;
+
+    return function(html)
+    {
+        return html.replace(ampRe, "&amp;").replace(ltRe, "&lt;").replace(gtRe, "&gt;").replace(quoteRe1, "&quot;").replace(quoteRe2, "&#39;");
+    };
+}();
+
+/**
  * A collection of errors that knows how to display itself in various formats.
  * <p>
  * This object's properties are the field names, and corresponding values are
