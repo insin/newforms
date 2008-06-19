@@ -576,7 +576,74 @@ SelectMultiple.prototype.valueFromData = function(data, files, name)
 
 // TODO RadioSelect
 
-// TODO CheckboxSelectMultiple
+/**
+ * Multiple selections represented as a list of
+ * <code>&lt;input type="checkbox"&gt;</code> widgets.
+ *
+ * @param {Object} [kwargs] configuration parameters, as specified in
+ *                          {@link SelectMultiple}.
+ * @constructor
+ * @augments SelectMultiple
+ */
+function CheckboxSelectMultiple(kwargs)
+{
+    SelectMultiple.call(this, kwargs);
+}
+
+CheckboxSelectMultiple.prototype = new SelectMultiple();
+
+CheckboxSelectMultiple.prototype.render = function(name, selectedValues, attrs, choices)
+{
+    if (selectedValues === null)
+    {
+        selectedValues = [];
+    }
+    var hasId = (attrs && typeof attrs.id != "undefined");
+    var finalAttrs = this.buildAttrs(attrs, {name: name});
+    // Normalise to strings
+    var selectedValuesLookup = {};
+    for (var i = 0, l = selectedValues.length; i < l; i++)
+    {
+        selectedValuesLookup["" + selectedValues[i]] = true;
+    }
+    var checkTest = function(value)
+    {
+        return (typeof selectedValuesLookup["" + value] != "undefined");
+    };
+    var items = [];
+    var finalChoices = this.choices.concat(choices || []);
+    for (var i = 0, l = finalChoices.length; i < l; i++)
+    {
+        var optValue = "" + finalChoices[i][0];
+        var optLabel = "" + finalChoices[i][1];
+
+        var checkboxAttrs = extendObject({}, finalAttrs);
+        var labelAttrs = {};
+        // If an ID attribute was given, add a numeric index as a suffix, so
+        // that the checkboxes don't all have the same ID attribute.
+        if (hasId)
+        {
+            extendObject(checkboxAttrs, {id: attrs.id + "_" + i});
+            labelAttrs["for"] = checkboxAttrs.id;
+        }
+
+        var cb = new CheckboxInput({attrs: checkboxAttrs, checkTest: checkTest});
+        items[items.length] =
+            DOMBuilder.createElement("li", {},
+                [DOMBuilder.createElement("label", labelAttrs,
+                                          [cb.render(name, optValue), " ", optLabel])]);
+    }
+    return DOMBuilder.createElement("ul", {}, items);
+};
+
+CheckboxSelectMultiple.prototype.idForLabel = function(id)
+{
+    if (id)
+    {
+        id += "_0";
+    }
+    return id;
+};
 
 // TODO MultiWidget
 

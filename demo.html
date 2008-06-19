@@ -52,7 +52,15 @@
           birthday: new DateField({label: "Your birthday"}),
           wokeUpAt: new TimeField({label: "What time did you wake up at today?"}),
           howSoonIsNow: new DateTimeField({initial: new Date(),
-                                           label: "What time was it when this page was rendered?"})
+                                           label: "What time was it when this page was rendered?"}),
+          checkTheBoxes: new MultipleChoiceField({choices: [[1, "Specialist catalogues"],
+                                                    [2, "The internet"],
+                                                    [3, "The catalogues"],
+                                                    [4, "Special internets"],
+                                                    [5, "Other"]],
+                                                  attrs: {size: 5},
+                                                  label: "Check stuff you like",
+                                                  widget: new CheckboxSelectMultiple()})
       };
       Form.call(this, kwargs);
   };
@@ -79,7 +87,8 @@
               email: "test@test.com",
               body: "Testing\n\nTesting",
               source: 2,
-              stuff: [1,3]
+              stuff: [1,3],
+              checkTheBoxes: [1,5]
           }
       });
 
