@@ -53,6 +53,7 @@
           wokeUpAt: new TimeField({label: "What time did you wake up at today?"}),
           howSoonIsNow: new DateTimeField({initial: new Date(),
                                            label: "What time was it when this page was rendered?"}),
+          againWithFeeling: new SplitDateTimeField({initial: new Date(), label: "Once again"}),
           checkTheBoxes: new MultipleChoiceField({choices: [[1, "Specialist catalogues"],
                                                     [2, "The internet"],
                                                     [3, "The catalogues"],

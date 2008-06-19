@@ -1388,6 +1388,7 @@ function SplitDateTimeField(kwargs)
 }
 
 SplitDateTimeField.prototype = new MultiValueField();
+SplitDateTimeField.prototype.defaultWidget = SplitDateTimeWidget;
 SplitDateTimeField.prototype.defaultErrorMessages =
     extendObject({}, SplitDateTimeField.prototype.defaultErrorMessages, {
         invalidDate: "Enter a valid date.",

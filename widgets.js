@@ -645,6 +645,154 @@ CheckboxSelectMultiple.prototype.idForLabel = function(id)
     return id;
 };
 
-// TODO MultiWidget
+/**
+ * A widget that is composed of multiple widgets.
+ * <p>
+ * You'll probably want to use this class with {@link MultiValueField}.
+ *
+ * @param {Array} widgets the list of widgets composing this widget.
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          {@link Widget}.
+ * @constructor
+ * @augments Widget
+ */
+function MultiWidget(widgets, kwargs)
+{
+    this.widgets = widgets;
+    Widget.call(this.kwargs);
+}
 
-// TODO SplitDateTimeWidget
+MultiWidget.prototype = new Widget();
+
+/**
+ * This method is different than other widgets', because it has to figure out
+ * how to split a single value for display in multiple widgets.
+ * <p>
+ * If the given value is NOT a list, it will first be "decompressed" into a list
+ * before it is rendered by calling the {@link MultiWidget#decompress} method.
+ * <p>
+ * Each value in the list is rendered  with the corresponding widget -- the
+ * first value is rendered in the first widget, the second value is rendered in
+ * the second widget, and so on.
+ *
+ * @param {String} name the field name.
+ * @param value a list of values, or a normal value (e.g., a <code>String</code>
+ *              that has been "compressed" from a list of values.
+ * @param {Object} [attrs] additional HTML attributes for the rendered widget.
+ *
+ * @return a rendered collection of widgets.
+ */
+MultiWidget.prototype.render = function(name, value, attrs)
+{
+    if (!(value instanceof Array))
+    {
+        value = this.decompress(value);
+    }
+    var finalAttrs = this.buildAttrs(attrs);
+    var id = finalAttrs.id || null;
+    var renderedWidgets = [];
+    for (var i = 0, l = this.widgets.length, widget; i < l; i++)
+    {
+        widget = this.widgets[i];
+        var widgetValue = null;
+        if (typeof value[i] != "undefined")
+        {
+            widgetValue = value[i];
+        }
+        if (id)
+        {
+            extendObject(finalAttrs, {"id": id + "_" + i});
+        }
+        renderedWidgets[renderedWidgets.length] =
+            widget.render(name + "_" + i, widgetValue, finalAttrs);
+    }
+    return this.formatOutput(renderedWidgets);
+};
+
+MultiWidget.prototype.idForLabel = function(id)
+{
+    if (id)
+    {
+        id += "_0";
+    }
+    return id;
+}
+
+MultiWidget.prototype.valueFromData = function(data, files, name)
+{
+    var values = [];
+    for (var i = 0, l = this.widgets.length, widget; i < l; i++)
+    {
+        widget = this.widgets[i];
+        values[i] = widget.valueFromData(data, files, name + "_" + i);
+    }
+    return values;
+};
+
+/**
+ * Creates an element containing a given list of rendered widgets.
+ * <p>
+ * This hook allows you to format the HTML design of the widgets, if needed.
+ *
+ * @param {Array} renderedWidgets a list of rendered widgets.
+ *
+ * @return an element containing the rendered widgets.
+ */
+MultiWidget.prototype.formatOutput = function(renderedWidgets)
+{
+    return DOMBuilder.createElement("span", {}, renderedWidgets);
+};
+
+/**
+ * Creates a list of decompressed values for the given compressed value.
+ *
+ * @param value a compressed value, which can be assumed to be valid, but not
+ *              necessarily non-empty.
+ *
+ * @return a list of decompressed values for the given compressed value.
+ * @type Array.
+ */
+MultiWidget.prototype.decompress = function(value)
+{
+    throw new Error("Subclasses must implement this method.");
+};
+
+/**
+ * Splits <code>Date</code> input into two
+ * <code>&lt;input type="text"&gt;</code> elements.
+ *
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in {@link MultiWidget}.
+ * @param {String} [dateFormat] a {@link time.strftime} format string for
+ *                              formatting the date.
+ * @param {String} [timeFormat] a {@link time.strftime} format string for
+ *                              formatting the time.
+ * @constructor
+ * @augments MultiWidget
+ */
+function SplitDateTimeWidget(kwargs)
+{
+    kwargs = extendObject({
+        dateFormat: this.dateFormat, timeFormat: this.timeFormat
+    }, kwargs || {});
+    var widgets = [
+        new DateTimeInput(extendObject({}, kwargs, {format: kwargs.dateFormat})),
+        new DateTimeInput(extendObject({}, kwargs, {format: kwargs.timeFormat}))];
+    MultiWidget.call(this, widgets, kwargs);
+}
+
+SplitDateTimeWidget.prototype = new MultiWidget();
+SplitDateTimeWidget.prototype.dateFormat = "%Y-%m-%d";
+SplitDateTimeWidget.prototype.timeFormat = "%H:%M:%S";
+
+SplitDateTimeWidget.prototype.decompress = function(value)
+{
+    if (value)
+    {
+        return [
+            new Date(value.getFullYear(), value.getMonth(), value.getDate()),
+            new Date(1900, 0, 1, value.getHours(), value.getMinutes(),
+                     value.getSeconds())];
+    }
+    return [null, null];
+};
