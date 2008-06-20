@@ -38,18 +38,40 @@ time.locales =
 };
 
 /**
- * Retrieves the locale with the given name, falling back to the default locale
- * if it can't be found; retrieves the default locale when called without
- * arguments.
+ * Retrieves the locale with the given name, falling back to just the language
+ * code finally to the default locale if a locale can't be found; retrieves the
+ * default locale when called without arguments.
  *
- * @param {String} [locale] a locale name.
+ * @param {String} [locale] a locale name, which can consist of a language code
+ *                          (such as <code>"en"</code>) or a language code and
+ *                          region code (such as <code>"en-GB"</code>).
  *
  * @return a locale object.
  * @type Object
  */
 time.getLocale = function(locale)
 {
-    return time.locales[locale || time.locale] || time.locales[time.locale];
+    if (locale)
+    {
+        // Happy path - the given locale exists
+        if (typeof time.locales[locale] != "undefined")
+        {
+            return time.locales[locale];
+        }
+        else if (locale.length > 2)
+        {
+            // If we appear to have more than a language code, try the language
+            // code on its own.
+            var languageCode = locale.substring(0, 2);
+            if (typeof time.locales[languageCode] != "undefined")
+            {
+                return time.locales[languageCode];
+            }
+        }
+    }
+
+    // Default is to fall back to the locale specified in time.locale
+    return time.locales[time.locale];
 };
 
 /**

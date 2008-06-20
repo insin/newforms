@@ -1,5 +1,18 @@
 module("time");
 
+test("getLocale", function()
+{
+    expect(6);
+    time.locales["en-GB"] = {name: "en-GB"};
+    time.locales["fr"] = {name: "fr"};
+    equals(time.locale, "en", "Default locale name as expected");
+    equals(time.getLocale().name, "en", "Default locale retrieved without arguments");
+    equals(time.getLocale("en").name, "en", "Locale retrieved by language code");
+    equals(time.getLocale("en-GB").name, "en-GB", "Locale retrieved by language and region code");
+    equals(time.getLocale("de").name, "en", "Unknown language code falls back to default");
+    equals(time.getLocale("fr-BE").name, "fr", "Unknown language and region code falls back to language code");
+});
+
 test("strptime", function()
 {
     expect(58);
