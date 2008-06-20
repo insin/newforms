@@ -508,6 +508,14 @@ time.strptime = function(input, format, locale)
  * </thead>
  * <tbody>
  *   <tr>
+ *     <td><code>%a</code></td>
+ *     <td>Locale's abbreviated weekday name.</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>%A</code></td>
+ *     <td>Locale's full weekday name.</td>
+ *   </tr>
+ *   <tr>
  *     <td><code>%b</code></td>
  *     <td>Locale's abbreviated month name.</td>
  *   </tr>
@@ -534,6 +542,10 @@ time.strptime = function(input, format, locale)
  *   <tr>
  *     <td><code>%S</code></td>
  *     <td>Second as a decimal number [00,59].</td>
+ *   </tr>
+ *   <tr>
+ *     <td><code>%w</code></td>
+ *     <td>Weekday as a decimal number [0(Sunday),6].</td>
  *   </tr>
  *   <tr>
  *     <td><code>%Y</code></td>
@@ -594,6 +606,7 @@ time.strftime = function()
         "M": function(d) { return pad(d.getMinutes(), 2); },
         "m": function(d) { return pad(d.getMonth() + 1, 2); },
         "S": function(d) { return pad(d.getSeconds(), 2); },
+        "w": function(d) { return d.getDay(); },
         "Y": function(d) { return d.getFullYear(); },
         "%": function(d) { return "%"; }
     };

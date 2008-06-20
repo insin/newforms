@@ -135,22 +135,26 @@ test("strptime", function()
 
 test("strftime", function()
 {
-    expect(3);
+    expect(6);
 
     // Default date/time format
-    equals(time.strftime(new Date(2006, 9 ,25, 14, 30, 59), "%Y-%m-%d %H:%M:%S"),
+    equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%Y-%m-%d %H:%M:%S"),
            "2006-10-25 14:30:59");
 
     // Invalid format strings
-    equals(time.strftime(new Date(2006, 9 ,25, 14, 30, 59), "%Y-%m-%d %q %H:%M:%S"),
+    equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%Y-%m-%d %q %H:%M:%S"),
            "2006-10-25  14:30:59",
            "Invalid directives are silently dropped");
     try
     {
-        time.strftime(new Date(2006, 9 ,25, 14, 30, 59), "%Y-%m-%d %H:%M:%S%")
+        time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%Y-%m-%d %H:%M:%S%")
     }
     catch(e)
     {
         ok(true, "Hanging % throws an Error");
     }
+
+    equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%a %d %b"), "Wed 25 Oct");
+    equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%A %d %B"), "Wednesday 25 October");
+    equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%w"), "3");
 });
