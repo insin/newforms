@@ -570,11 +570,148 @@ SelectMultiple.prototype.valueFromData = function(data, files, name)
     return null;
 };
 
-// TODO RadioInput
+/**
+ * An object used by {@link RadioFieldRenderer} that represents a single
+ * <code>&lt;input type="radio"&gt;</code>.
+ *
+ * @param {String} name the field name.
+ * @param {String} value the selected value.
+ * @param {Object} attrs HTML attributes for the widget.
+ * @param {Array} choice choice details to be used when rendering the widget,
+ *                specified as an <code>Array</code> in
+ *                <code>[value, text]</code> format.
+ * @param {Number} index
+ * @constructor
+ */
+function RadioInput(name, value, attrs, choice, index)
+{
+    this.name = name;
+    this.value = value;
+    this.attrs = attrs;
+    this.choiceValue = "" + choice[0];
+    this.choiceLabel = "" + choice[1];
+    this.index = index;
+}
 
-// TODO RadioFieldRenderer
+/**
+ * Renders a <code>&lt;label&gt;</code> enclosing the radio widget and its label
+ * text.
+ */
+RadioInput.prototype.labelTag = function()
+{
+    var labelAttrs = {};
+    if (typeof this.attrs.id != "undefined")
+    {
+        labelAttrs["for"] = this.attrs.id + "_" + this.index;
+    }
+    return DOMBuilder.createElement("label", labelAttrs,
+                                    [this.tag(), " ", this.choiceLabel]);
+};
 
-// TODO RadioSelect
+RadioInput.prototype.isChecked = function()
+{
+    return this.value === this.choiceValue;
+};
+
+/**
+ * Renders the <code>&lt;input type="radio"&gt;</code> portion of the widget.
+ */
+RadioInput.prototype.tag = function()
+{
+    var finalAttrs = extendObject({}, this.attrs,
+                                  {type: "radio", name: this.name,
+                                   value: this.choiceValue});
+    if (typeof finalAttrs.id != "undefined")
+    {
+        finalAttrs.id = finalAttrs.id + "_" + this.index;
+    }
+    var radio = DOMBuilder.createElement("input", finalAttrs);
+    radio.checked = this.isChecked();
+    return radio;
+};
+
+/**
+ * An object used by {@link RadioSelect} to enable customisation of radio
+ * widgets.
+ *
+ * @param {String} name the field name.
+ * @param {String} value the selected value.
+ * @param {Object} attrs HTML attributes for the widget.
+ * @param {Array} choices choices to be used when rendering the widget, with
+ *                        each choice specified as an <code>Array</code> in
+ *                        <code>[value, text]</code> format.
+ * @constructor
+ */
+function RadioFieldRenderer(name, value, attrs, choices)
+{
+    this.name = name;
+    this.value = value;
+    this.attrs = attrs;
+    this.choices = choices;
+}
+
+RadioFieldRenderer.prototype.render = function()
+{
+    var items = [];
+    for (var i = 0, l = this.choices.length, radio; i < l; i++)
+    {
+        radio = new RadioInput(this.name, this.value, this.attrs,
+                               this.choices[i], i);
+        items[items.length] =
+            DOMBuilder.createElement("li", {}, [radio.labelTag()]);
+    }
+    return DOMBuilder.createElement("ul", {}, items);
+};
+
+/**
+ * Renders a single select as a list of <code>&lt;input type="radio"&gt;</code>
+ * elements.
+ *
+ * @constructor
+ * @augments Select
+ */
+function RadioSelect(kwargs)
+{
+    kwargs = extendObject({renderer: null}, kwargs || {});
+    // Override the default renderer if we were passed one
+    if (kwargs.renderer)
+    {
+        this.renderer = kwargs.renderer;
+    }
+    Select.call(this, kwargs);
+}
+
+RadioSelect.prototype = new Select();
+RadioSelect.prototype.renderer = RadioFieldRenderer;
+
+/**
+ * @return an instance of the renderer to be used to render this widget.
+ */
+RadioSelect.prototype.getRenderer = function(name, value, attrs, choices)
+{
+    if (value === null)
+    {
+        value = "";
+    }
+    value = "" + value;
+    var finalAttrs = this.buildAttrs(attrs);
+    choices = this.choices.concat(choices || []);
+    return new this.renderer(name, value, finalAttrs, choices);
+};
+
+RadioSelect.prototype.render = function(name, value, attrs, choices)
+{
+    return this.getRenderer(name, value, attrs, choices).render();
+};
+
+RadioSelect.prototype.idForLabel = function(id)
+{
+    if (id)
+    {
+        id += "_0";
+    }
+    return id;
+};
 
 /**
  * Multiple selections represented as a list of
