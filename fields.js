@@ -994,9 +994,19 @@ BooleanField.prototype.clean = function(value)
     // handle that explicitly.
     if (value == "False")
     {
-        return false;
+        value = false;
     }
-    return Boolean(value);
+    else
+    {
+        value = Boolean(value);
+    }
+
+    Field.prototype.clean.call(this, value);
+    if (!value && this.required)
+    {
+        throw new ValidationError(this.errorMessages.required);
+    }
+    return value;
 };
 
 /**

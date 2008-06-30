@@ -427,14 +427,14 @@ test("BooleanField", function()
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
     equals(f.clean(true), true);
-    equals(f.clean(false), false);
+    try { f.clean(false); } catch (e) { equals(ve(e), "This field is required."); }
     equals(f.clean(1), true);
-    equals(f.clean(0), false);
+    try { f.clean(0); } catch (e) { equals(ve(e), "This field is required."); }
     equals(f.clean("Django rocks"), true);
     equals(f.clean("True"), true);
     // A form's BooleanField with a hidden widget will output the string
     // "False", so that should clean to the boolean value false.
-    equals(f.clean("False"), false);
+    try { f.clean("False"); } catch (e) { equals(ve(e), "This field is required."); }
 
     f = new BooleanField({required: false});
     equals(f.clean(""), false);
