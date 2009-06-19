@@ -1072,7 +1072,7 @@ ChoiceField.prototype = new Field();
 ChoiceField.prototype.defaultWidget = Select;
 ChoiceField.prototype.defaultErrorMessages =
     extendObject({}, ChoiceField.prototype.defaultErrorMessages, {
-        invalidChoice: "Select a valid choice. That choice is not one of the available choices."
+        invalidChoice: "Select a valid choice. %(value)s is not one of the available choices."
     });
 
 /**
@@ -1098,15 +1098,44 @@ ChoiceField.prototype.clean = function(value)
         return value;
     }
 
-    for (var i = 0, l = this.choices.length; i < l; i++)
+    if (!this.validValue(value))
     {
-        if (value === ("" + this.choices[i][0]))
-        {
-            return value;
-        }
+        throw new ValidationError(formatString(
+            this.errorMessages.invalidChoice, {value: value}));
     }
 
-    throw new ValidationError(this.errorMessages.invalidChoice);
+    return value;
+};
+
+/**
+ * Checks to see if the provided value is a valid choice.
+ *
+ * @param {String} value the value to be validated.
+ *
+ * @type Boolean
+ */
+ChoiceField.prototype.validValue = function(value)
+{
+    for (var i = 0, l = this.choices.length; i < l; i++)
+    {
+        if (this.choices[i][1] instanceof Array)
+        {
+            // This is an optgroup, so look inside the group for options
+            var optgroupChoices = this.choices[i][1];
+            for (var j = 0, k = optgroupChoices.length; j < k; j++)
+            {
+                if (value === ("" + optgroupChoices[j][0]))
+                {
+                    return true;
+                }
+            }
+        }
+        else if (value === ("" + this.choices[i][0]))
+        {
+            return true;
+        }
+    }
+    return false;
 };
 
 /**
@@ -1169,17 +1198,11 @@ MultipleChoiceField.prototype.clean = function(value)
         }
     }
 
-    var validValuesLookup = {};
-    for (var i = 0, l = this.choices.length; i < l; i++)
-    {
-        validValuesLookup["" + this.choices[i][0]] = true;
-    }
-
     var stringValues = [];
     for (var i = 0, l = value.length; i < l; i++)
     {
         var stringValue = "" + value[i];
-        if (typeof validValuesLookup[stringValue] == "undefined")
+        if (!this.validValue(stringValue))
         {
             throw new ValidationError(formatString(
                 this.errorMessages.invalidChoice, {value: stringValue}));

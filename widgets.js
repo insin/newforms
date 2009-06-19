@@ -412,23 +412,52 @@ Select.prototype.render = function(name, selectedValue, attrs, choices)
         selectedValue = "";
     }
     var finalAttrs = this.buildAttrs(attrs, {name: name});
-    // Normalise to string
-    var stringValue = "" + selectedValue;
+    var options = this.renderOptions(choices, [selectedValue]);
+    return DOMBuilder.createElement("select", finalAttrs, options);
+};
+
+Select.prototype.renderOptions = function(choices, selectedValues)
+{
+    // Normalise to strings
+    var selectedValuesLookup = {};
+    for (var i = 0, l = selectedValues.length; i < l; i++)
+    {
+        selectedValuesLookup["" + selectedValues[i]] = true;
+    }
+
+    var renderOption = function(optValue, optLabel)
+    {
+        optValue = "" + optValue;
+        var option =
+            DOMBuilder.createElement("option", {value: optValue}, optLabel);
+        if (typeof selectedValuesLookup[optValue] != "undefined")
+        {
+            option.selected = "selected";
+        }
+        return option;
+    };
+
     var options = [];
     var finalChoices = this.choices.concat(choices || []);
     for (var i = 0, l = finalChoices.length; i < l; i++)
     {
-        var optValue = "" + finalChoices[i][0];
-        var optLabel = "" + finalChoices[i][1];
-        var option =
-            DOMBuilder.createElement("option", {value: optValue}, optLabel);
-        if (optValue === stringValue)
+        if (finalChoices[i][1] instanceof Array)
         {
-            option.selected = "selected";
+            var optgroupOptions = [];
+            var optgroupChoices = finalChoices[i][1];
+            for (var j = 0, k = optgroupChoices.length; j < k; j++)
+            {
+                optgroupOptions.push(renderOption(optgroupChoices[j][0], optgroupChoices[j][1]));
+            }
+            options.push(DOMBuilder.createElement(
+                "optgroup", {label: finalChoices[i][0]}, optgroupOptions));
         }
-        options[options.length] = option;
+        else
+        {
+            options.push(renderOption(finalChoices[i][0], finalChoices[i][1]));
+        }
     }
-    return DOMBuilder.createElement("select", finalAttrs, options);
+    return options;
 };
 
 /**
@@ -488,22 +517,17 @@ NullBooleanSelect.prototype.valueFromData = function(data, files, name)
 /**
  * An HTML <code>&lt;select&gt;</code> widget which allows multiple selections.
  *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Widget}.
- * @config {Array} [choices] choices to be used when rendering the widget,
- *                           with each choice specified as an <code>Array</code>
- *                           in <code>[value, text]</code> format.
+ * @param {Object} [kwargs] configuration parameters, as specified in
+ *                          {@link Select}.
  * @constructor
  * @augments Widget
  */
 function SelectMultiple(kwargs)
 {
-    kwargs = extendObject({choices: []}, kwargs || {});
-    Widget.call(this, kwargs);
-    this.choices = kwargs.choices;
+    Select.call(this, kwargs);
 }
 
-SelectMultiple.prototype = new Widget();
+SelectMultiple.prototype = new Select();
 
 /**
  * Renders the widget.
@@ -528,26 +552,7 @@ SelectMultiple.prototype.render = function(name, selectedValues, attrs, choices)
         selectedValues = [];
     }
     var finalAttrs = this.buildAttrs(attrs, {name: name, multiple: "multiple"});
-    // Normalise to strings
-    var selectedValuesLookup = {};
-    for (var i = 0, l = selectedValues.length; i < l; i++)
-    {
-        selectedValuesLookup["" + selectedValues[i]] = true;
-    }
-    var options = [];
-    var finalChoices = this.choices.concat(choices || []);
-    for (var i = 0, l = finalChoices.length; i < l; i++)
-    {
-        var optValue = "" + finalChoices[i][0];
-        var optLabel = "" + finalChoices[i][1];
-        var option =
-            DOMBuilder.createElement("option", {value: optValue}, optLabel);
-        if (typeof selectedValuesLookup[optValue] != "undefined")
-        {
-            option.selected = "selected";
-        }
-        options[options.length] = option;
-    }
+    var options = this.renderOptions(choices, selectedValues);
     return DOMBuilder.createElement("select", finalAttrs, options);
 };
 

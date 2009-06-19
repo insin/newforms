@@ -38,6 +38,17 @@
                                              [2, "On the internet"],
                                              [3, "Other"]],
                                    label: "Where did you hear about us?"}),
+          catSource: new ChoiceField({choices: [["Physical Locations", [
+          											[1, "In a specialist catalogue"]
+          										]],
+                                                ["Virtual Locations", [
+                                                	[2, "On the internet"],
+                                                ]],
+                                                ["Somewhere Else Entirely", [
+                                                	[3, "Other"]
+                                                ]]
+                                               ],
+                                       label: "Where did you hear about us again, with feeling?"}),
           moreSource: new ChoiceField({choices: [["", "----------"],
                                                 [1, "In a specialist catalogue"],
                                                 [2, "On the internet"],
@@ -51,6 +62,16 @@
                                                     [5, "Other"]],
                                           attrs: {size: 5},
                                           label: "Pick stuff you like"}),
+          catStuff: new MultipleChoiceField({choices: [["Animals", [
+          											[1, "Cats"],
+          											[2, "Dogs"],
+          										]],
+                                                ["Food", [
+                                                	[3, "Pizza"],
+                                                	[4, "Bananas"],
+                                                ]]
+                                               ],
+                                       label: "Pick more stuff you like"}),
           awesome: new BooleanField({label: "Check here if you are awesome!", initial: true}),
           likeMonkeys: new NullBooleanField({label: "Do you like monkeys?", initial: "2"}),
           intBeginningWith5: new ComboField({fields: [new RegexField(/^[-+]?5/), new IntegerField()],

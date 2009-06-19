@@ -448,24 +448,33 @@ test("BooleanField", function()
 
 test("ChoiceField", function()
 {
-    expect(12);
+    expect(19);
     var f = new ChoiceField({choices: [["1", "1"], ["2", "2"]]});
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
     equals(f.clean(1), "1");
     equals(f.clean("1"), "1");
-    try { f.clean("3"); } catch (e) { equals(ve(e), "Select a valid choice. That choice is not one of the available choices."); }
+    try { f.clean("3"); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
 
     var f = new ChoiceField({choices: [["1", "1"], ["2", "2"]], required: false});
     equals(f.clean(""), "");
     equals(f.clean(null), "");
     equals(f.clean(1), "1");
     equals(f.clean("1"), "1");
-    try { f.clean("3"); } catch (e) { equals(ve(e), "Select a valid choice. That choice is not one of the available choices."); }
+    try { f.clean("3"); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
 
     f = new ChoiceField({choices: [["J", "John"], ["P", "Paul"]]});
     equals(f.clean("J"), "J");
-    try { f.clean("John"); } catch (e) { equals(ve(e), "Select a valid choice. That choice is not one of the available choices."); }
+    try { f.clean("John"); } catch (e) { equals(ve(e), "Select a valid choice. John is not one of the available choices."); }
+
+    f = new ChoiceField({choices: [["Numbers", [["1", "One"], ["2", "Two"]]], ["Letters", [["3", "A"],["4", "B"]]], ["5", "Other"]]});
+    equals(f.clean(1), "1");
+    equals(f.clean("1"), "1");
+    equals(f.clean(3), "3");
+    equals(f.clean("3"), "3");
+    equals(f.clean(5), "5");
+    equals(f.clean("5"), "5");
+    try { f.clean("6"); } catch (e) { equals(ve(e), "Select a valid choice. 6 is not one of the available choices."); }
 });
 
 test("NullBooleanField", function()
@@ -484,7 +493,7 @@ test("NullBooleanField", function()
 
 test("MultipleChoiceField", function()
 {
-    expect(18);
+    expect(25);
     var f = new MultipleChoiceField({choices: [["1", "1"], ["2", "2"]]});
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
@@ -506,6 +515,15 @@ test("MultipleChoiceField", function()
     try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
     isSet(f.clean([]), []);
     try { f.clean(["3"]); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
+
+    f = new MultipleChoiceField({choices: [["Numbers", [["1", "One"], ["2", "Two"]]], ["Letters", [["3", "A"],["4", "B"]]], ["5", "Other"]]});
+    isSet(f.clean([1]), ["1"]);
+    isSet(f.clean([1, 5]), ["1", "5"]);
+    isSet(f.clean([1, "5"]), ["1", "5"]);
+    isSet(f.clean(["1", 5]), ["1", "5"]);
+    isSet(f.clean(["1", "5"]), ["1", "5"]);
+    try { f.clean(["6"]); } catch (e) { equals(ve(e), "Select a valid choice. 6 is not one of the available choices."); }
+    try { f.clean(["1", "6"]); } catch (e) { equals(ve(e), "Select a valid choice. 6 is not one of the available choices."); }
 });
 
 test("ComboField", function()
