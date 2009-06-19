@@ -1,0 +1,57 @@
+TODO
+====
+
+These are not exhaustive lists. They're for quick reference when I have a bit of
+time free to port more of the changes which have been made since the original
+port was done in June 2008 (of which there are many!)
+
+Change histories for the most relevant Django modules can be found here:
+
+* http://code.djangoproject.com/log/django/trunk/django/forms/fields.py?mode=follow_copy
+* http://code.djangoproject.com/log/django/trunk/django/forms/forms.py?mode=follow_copy
+* http://code.djangoproject.com/log/django/trunk/django/forms/formsets.py?mode=follow_copy
+* http://code.djangoproject.com/log/django/trunk/django/forms/widgets.py?mode=follow_copy
+
+
+Changesets which need to be ported
+----------------------------------
+
+http://code.djangoproject.com/changeset/7967 (partially)
+
+   * has_changed - changes to forms.js and widgets.js.
+   * Formsets - new feature, create in formsets.js.
+
+http://code.djangoproject.com/changeset/8491
+
+   Adds a TimeInput widget to be used as the default for TimeField.
+
+http://code.djangoproject.com/changeset/8616
+
+   Adds a SlugField field.
+
+http://code.djangoproject.com/changeset/8661
+
+   Fix for NullBooleanField when used with HiddenInput.
+
+http://code.djangoproject.com/changeset/8771
+
+   Adds a TypedChoiceField field.
+
+http://code.djangoproject.com/changeset/8816 (partial)
+
+   * Adds a SplitHiddenDateTimeWidget widget.
+   * Adds support for dynamic initial values.
+
+
+Changesets which won't/can't be ported yet
+------------------------------------------
+
+http://code.djangoproject.com/changeset/7967 (partially)
+
+   Media classes - changes to forms.js and widgets.js, but won't be ported until
+   js-forms is capable of being used to generate HTML.
+
+http://code.djangoproject.com/changeset/8391
+
+   DecimalField cleaning fix which can't really be ported until js-forms is
+   working with a real implementation of Decimal.
