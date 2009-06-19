@@ -363,10 +363,6 @@ test("FileField", function()
 
 test("URLField", function()
 {
-    var validURLs = ["http://localhost", "http://example.com",
-        "http://www.example.com:8000/test", "http://200.8.9.10",
-        "http://200.8.9.10:8000/test"];
-
     var invalidURLs =
         ["foo", "http://", "http://example", "http://example.", "http://.com"];
 
@@ -374,10 +370,11 @@ test("URLField", function()
     var f = new URLField();
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    for (var i = 0, url; url = validURLs[i]; i++)
-    {
-        equals(f.clean(url), url);
-    }
+    equals(f.clean("http://localhost"), "http://localhost/");
+    equals(f.clean("http://example.com"), "http://example.com/");
+    equals(f.clean("http://www.example.com:8000/test"), "http://www.example.com:8000/test");
+    equals(f.clean("http://200.8.9.10"), "http://200.8.9.10/");
+    equals(f.clean("http://200.8.9.10:8000/test"), "http://200.8.9.10:8000/test");
     for (var i = 0, url; url = invalidURLs[i]; i++)
     {
         try { f.clean(url); } catch (e) { equals(ve(e), "Enter a valid URL."); }
@@ -386,10 +383,11 @@ test("URLField", function()
     f = new URLField({required: false});
     equals(f.clean(""), "");
     equals(f.clean(null), "");
-    for (var i = 0, url; url = validURLs[i]; i++)
-    {
-        equals(f.clean(url), url);
-    }
+    equals(f.clean("http://localhost"), "http://localhost/");
+    equals(f.clean("http://example.com"), "http://example.com/");
+    equals(f.clean("http://www.example.com:8000/test"), "http://www.example.com:8000/test");
+    equals(f.clean("http://200.8.9.10"), "http://200.8.9.10/");
+    equals(f.clean("http://200.8.9.10:8000/test"), "http://200.8.9.10:8000/test");
     for (var i = 0, url; url = invalidURLs[i]; i++)
     {
         try { f.clean(url); } catch (e) { equals(ve(e), "Enter a valid URL."); }
@@ -399,25 +397,25 @@ test("URLField", function()
     // default. This verifies that the URL is live on the Internet and doesn't
     // return a 404 or 500:
     f = new URLField({verifyExists: true});
-    equals(f.clean("http://www.google.com"), "http://www.google.com");
+    equals(f.clean("http://www.google.com"), "http://www.google.com/");
     try { f.clean("http://example"); } catch (e) { equals(ve(e), "Enter a valid URL."); }
     try { f.clean("http://www.jfoiwjfoi23jfoijoaijfoiwjofiwjefewl.com") } catch (e) { equals(ve(e), "This URL appears to be a broken link.", "Bad domain"); }
     try { f.clean("http://google.com/we-love-microsoft.html") } catch (e) { equals(ve(e), "This URL appears to be a broken link.", "Good domain, bad page"); }
 
     f = new URLField({verifyExists: true, required: false});
     equals(f.clean(""), "");
-    equals(f.clean("http://www.google.com"), "http://www.google.com");
+    equals(f.clean("http://www.google.com"), "http://www.google.com/");
 
     // URLField also has minLength and maxLength parameters, for convenience
     f = new URLField({minLength: 15, maxLength: 20});
-    try { f.clean("http://f.com"); } catch (e) { equals(ve(e), "Ensure this value has at least 15 characters (it has 12)."); }
-    equals(f.clean("http://example.com"), "http://example.com");
-    try { f.clean("http://abcdefghijklmnopqrstuvwxyz.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 20 characters (it has 37)."); }
+    try { f.clean("http://f.com"); } catch (e) { equals(ve(e), "Ensure this value has at least 15 characters (it has 13)."); }
+    equals(f.clean("http://example.com"), "http://example.com/");
+    try { f.clean("http://abcdefghijklmnopqrstuvwxyz.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 20 characters (it has 38)."); }
 
     // URLField should prepend "http://" if no scheme was given
     f = new URLField({required: false});
-    equals(f.clean("example.com"), "http://example.com");
-    equals(f.clean("https://example.com"), "https://example.com");
+    equals(f.clean("example.com"), "http://example.com/");
+    equals(f.clean("https://example.com"), "https://example.com/");
 });
 
 test("BooleanField", function()

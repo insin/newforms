@@ -950,6 +950,11 @@ URLField.prototype.clean = function(value)
     {
         value = "http://" + value;
     }
+    // If no URL path given, assume /
+    if (value && !parseUri(value).path)
+    {
+        value += "/";
+    }
     value = RegexField.prototype.clean.call(this, value);
     if (value === "")
     {
