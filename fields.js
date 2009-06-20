@@ -559,6 +559,7 @@ TimeField.DEFAULT_TIME_INPUT_FORMATS = [
 ];
 
 TimeField.prototype = new Field();
+TimeField.prototype.defaultWidget = TimeInput;
 TimeField.prototype.defaultErrorMessages =
     extendObject({}, TimeField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid time."
