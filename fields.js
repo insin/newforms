@@ -1034,11 +1034,21 @@ NullBooleanField.prototype.defaultWidget = NullBooleanSelect;
 
 NullBooleanField.prototype.clean = function(value)
 {
-    if (value === true || value === false)
+    // Explicitly checks for the string 'True' and 'False', which is what a
+    // hidden field will submit for true and false. Unlike the  Booleanfield we
+    // also need to check for true, because we are not using Boolean() function.
+    if (value === true || value == "True")
     {
-        return value;
+        return true;
     }
-    return null;
+    else if (value === false || value == "False")
+    {
+        return false;
+    }
+    else
+    {
+        return null;
+    }
 };
 
 /**

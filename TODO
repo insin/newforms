@@ -24,10 +24,6 @@ http://code.djangoproject.com/changeset/8616
 
    Adds a SlugField field.
 
-http://code.djangoproject.com/changeset/8661
-
-   Fix for NullBooleanField when used with HiddenInput.
-
 http://code.djangoproject.com/changeset/8771
 
    Adds a TypedChoiceField field.
