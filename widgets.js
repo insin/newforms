@@ -59,6 +59,21 @@ Widget.prototype.valueFromData = function(data, files, name)
 };
 
 /**
+ * Determines if data has changed from initial.
+ *
+ * @type Boolean
+ */
+Widget.prototype._hasChanged = function(initial, data)
+{
+    // For purposes of seeing whether something has changed, null is the same
+    // as an empty string, if the data or inital value we get is null, replace
+    // it with "".
+    var data_value = (data === null ? "" : data);
+    var initial_value = (initial === null ? "" : initial);
+    return ("" + initial_value != "" + data_value);
+};
+
+/**
  * Determines the HTML <code>id</code> attribute of this Widget for use by a
  * <code>&lt;label&gt;</code>, given the id of the field.
  *
@@ -276,7 +291,55 @@ Textarea.prototype.render = function(name, value, attrs)
 
 /**
  * A <code>&lt;input type="text"&gt;</code> which, if given a <code>Date</code>
- * object to display, formats it as an appropriate <code>String</code>.
+ * object to display, formats it as an appropriate date <code>String</code>.
+ *
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in {@link Input}.
+ * @config {String} [format] a {@link time.strftime} format string.
+ * @constructor
+ * @augments Input
+ */
+function DateInput(kwargs)
+{
+    kwargs = extendObject({format: null}, kwargs || {});
+    Input.call(this, kwargs);
+    if (kwargs.format !== null)
+    {
+        this.format = kwargs.format;
+    }
+}
+
+DateInput.prototype = new Input();
+DateInput.prototype.inputType = "text";
+DateInput.prototype.format = "%Y-%m-%d"; // "2006-10-25"
+
+DateInput.prototype._formatValue = function(value)
+{
+    if (value === null)
+    {
+        return "";
+    }
+    else if (value instanceof Date)
+    {
+        return time.strftime(value, this.format);
+    }
+    return value;
+};
+
+DateInput.prototype.render = function(name, value, attrs)
+{
+    value = this._formatValue(value);
+    return Input.prototype.render.call(this, name, value, attrs);
+};
+
+DateInput.prototype._hasChanged = function(initial, data)
+{
+    return Input.prototype._hasChanged.call(this, this._formatValue(initial), data);
+};
+
+/**
+ * A <code>&lt;input type="text"&gt;</code> which, if given a <code>Date</code>
+ * object to display, formats it as an appropriate datetime <code>String</code>.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
  *                          in {@link Input}.
@@ -298,17 +361,76 @@ DateTimeInput.prototype = new Input();
 DateTimeInput.prototype.inputType = "text";
 DateTimeInput.prototype.format = "%Y-%m-%d %H:%M:%S"; // "2006-10-25 14:30:59"
 
-DateTimeInput.prototype.render = function(name, value, attrs)
+DateTimeInput.prototype._formatValue = function(value)
 {
     if (value === null)
     {
-        value = "";
+        return "";
     }
     else if (value instanceof Date)
     {
-        value = time.strftime(value, this.format);
+        return time.strftime(value, this.format);
     }
+    return value;
+};
+
+DateTimeInput.prototype.render = function(name, value, attrs)
+{
+    value = this._formatValue(value);
     return Input.prototype.render.call(this, name, value, attrs);
+};
+
+DateTimeInput.prototype._hasChanged = function(initial, data)
+{
+    return Input.prototype._hasChanged.call(this, this._formatValue(initial), data);
+};
+
+/**
+ * A <code>&lt;input type="text"&gt;</code> which, if given a <code>Date</code>
+ * object to display, formats it as an appropriate time <code>String</code>.
+ *
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in {@link Input}.
+ * @config {String} [format] a {@link time.strftime} format string.
+ * @constructor
+ * @augments Input
+ */
+function TimeInput(kwargs)
+{
+    kwargs = extendObject({format: null}, kwargs || {});
+    Input.call(this, kwargs);
+    if (kwargs.format !== null)
+    {
+        this.format = kwargs.format;
+    }
+}
+
+TimeInput.prototype = new Input();
+TimeInput.prototype.inputType = "text";
+TimeInput.prototype.format = "%H:%M:%S" // "14:30:59"
+
+TimeInput.prototype._formatValue = function(value)
+{
+    if (value === null)
+    {
+        return "";
+    }
+    else if (value instanceof Date)
+    {
+        return time.strftime(value, this.format);
+    }
+    return value;
+};
+
+TimeInput.prototype.render = function(name, value, attrs)
+{
+    value = this._formatValue(value);
+    return Input.prototype.render.call(this, name, value, attrs);
+};
+
+TimeInput.prototype._hasChanged = function(initial, data)
+{
+    return Input.prototype._hasChanged.call(this, this._formatValue(initial), data);
 };
 
 /**
@@ -369,6 +491,13 @@ CheckboxInput.prototype.valueFromData = function(data, files, name)
         return false;
     }
     return Widget.prototype.valueFromData.call(this, data, files, name);
+};
+
+CheckboxInput.prototype._hasChanged = function(initial, data)
+{
+    // Sometimes data or initial could be null or "" which should be the same
+    // thing as false.
+    return (Boolean(initial) != Boolean(data));
 };
 
 /**
@@ -502,16 +631,23 @@ NullBooleanSelect.prototype.valueFromData = function(data, files, name)
     if (typeof data[name] != "undefined")
     {
         var dataValue = data[name];
-        if (dataValue === true || dataValue == "2")
+        if (dataValue === true || dataValue == "True" || dataValue == "2")
         {
             value = true;
         }
-        else if (dataValue === false || dataValue == "3")
+        else if (dataValue === false || dataValue == "False" || dataValue == "3")
         {
             value = false;
         }
     }
     return value;
+};
+
+NullBooleanSelect.prototype._hasChanged = function(initial, data)
+{
+    // Sometimes data or initial could be null or "" which should be the same
+    // thing as false.
+    return (Boolean(initial) != Boolean(data));
 };
 
 /**
@@ -573,6 +709,34 @@ SelectMultiple.prototype.valueFromData = function(data, files, name)
         return [].concat(data[name]);
     }
     return null;
+};
+
+SelectMultiple.prototype._hasChanged = function(initial, data)
+{
+    if (initial === null)
+    {
+        initial = [];
+    }
+
+    if (data === null)
+    {
+        data = [];
+    }
+
+    if (initial.length != data.length)
+    {
+        return true;
+    }
+
+    for (var i = 0, l = initial.length; i < l; i++)
+    {
+        if ("" + initial[i] != "" + data[i])
+        {
+            return true;
+        }
+    }
+
+    return false;
 };
 
 /**
@@ -871,6 +1035,31 @@ MultiWidget.prototype.valueFromData = function(data, files, name)
     return values;
 };
 
+MultiWidget.prototype._hasChanged = function(initial, data)
+{
+    if (initial === null)
+    {
+        initial = [];
+        for (var i = 0, l = data.length; i < l; i++)
+        {
+            initial.push("");
+        }
+    }
+    else if (!(initial instanceof Array))
+    {
+        initial = this.decompress(initial);
+    }
+
+    for (var i = 0, l = this.widgets.length; i < l; i++)
+    {
+        if (this.widgets[i]._hasChanged(initial[i], data[i]))
+        {
+            return true;
+        }
+    }
+    return false;
+};
+
 /**
  * Creates an element containing a given list of rendered widgets.
  * <p>
@@ -915,17 +1104,25 @@ MultiWidget.prototype.decompress = function(value)
 function SplitDateTimeWidget(kwargs)
 {
     kwargs = extendObject({
-        dateFormat: this.dateFormat, timeFormat: this.timeFormat
+        attrs: null, dateFormat: null, timeFormat: null
     }, kwargs || {});
+    if (kwargs.dateFormat)
+    {
+        this.dateFormat = kwargs.dateFormat;
+    }
+    if (kwargs.timeFormat)
+    {
+        this.timeFormat = kwargs.timeFormat;
+    }
     var widgets = [
-        new DateTimeInput(extendObject({}, kwargs, {format: kwargs.dateFormat})),
-        new DateTimeInput(extendObject({}, kwargs, {format: kwargs.timeFormat}))];
+        new DateInput({attrs: kwargs.attrs, format: this.dateFormat}),
+        new TimeInput({attrs: kwargs.attrs, format: this.timeFormat})];
     MultiWidget.call(this, widgets, kwargs);
 }
 
 SplitDateTimeWidget.prototype = new MultiWidget();
-SplitDateTimeWidget.prototype.dateFormat = "%Y-%m-%d";
-SplitDateTimeWidget.prototype.timeFormat = "%H:%M:%S";
+SplitDateTimeWidget.prototype.dateFormat = DateInput.prototype.format;
+SplitDateTimeWidget.prototype.timeFormat = TimeInput.prototype.format;
 
 SplitDateTimeWidget.prototype.decompress = function(value)
 {
@@ -938,3 +1135,20 @@ SplitDateTimeWidget.prototype.decompress = function(value)
     }
     return [null, null];
 };
+
+/**
+ * Splits <code>Date</code> input into two
+ * <code>&lt;input type="hidden"&gt;</code> elements.
+ *
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          {@link MultiWidget}.
+ * @constructor
+ * @augments SplitDateTimeWidget
+ */
+function SplitHiddenDateTimeWidget(kwargs)
+{
+    var widgets = [new HiddenInput(kwargs), new HiddenInput(kwargs)];
+    MultiWidget.call(this, widgets, kwargs);
+}
+
+SplitHiddenDateTimeWidget.prototype = new SplitDateTimeWidget();
