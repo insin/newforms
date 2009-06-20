@@ -224,13 +224,16 @@ BoundField.prototype.labelTag = function(kwargs)
  *                                in one of the convenience method which renders
  *                                the entire Form - defaults to
  *                                <code>":"</code>.
+ * @config {Boolean} [emptyPermitted] if <code>true</code>, the form is allowed
+ *                                    to be empty - defaults to
+ *                                    <code>false</code>.
  * @constructor
  */
 function Form(kwargs)
 {
     kwargs = extendObject({
         data: null, files: null, autoId: "id_%(name)s", prefix: null, initial: null,
-        errorConstructor: ErrorList, labelSuffix: ":"
+        errorConstructor: ErrorList, labelSuffix: ":", emptyPermitted: false
     }, kwargs || {});
     this.isBound = kwargs.data !== null || kwargs.files !== null;
     this.data = kwargs.data || {};
@@ -240,7 +243,9 @@ function Form(kwargs)
     this.initial = kwargs.initial || {};
     this.errorConstructor = kwargs.errorConstructor;
     this.labelSuffix = kwargs.labelSuffix;
+    this.emptyPermitted = kwargs.emptyPermitted;
     this._errors = null; // Stores errors after clean() has been called
+    this._changedData = null;
 
     // TODO Basefields/deep copying? Assume subclasses will set fields in their
     //      constructor for now, but is there a nice way to get anything like
@@ -288,6 +293,48 @@ Form.prototype =
             this.fullClean();
         }
         return this._errors;
+    },
+
+    get changedData()
+    {
+        if (this._changedData === null)
+        {
+            this._changedData = [];
+            // XXX: For now we're asking the individual widgets whether or not
+            // the data has changed. It would probably be more efficient to hash
+            // the initial data, store it in a hidden field, and compare a hash
+            // of the submitted data, but we'd need a way to easily get the
+            // string value for a given field. Right now, that logic is embedded
+            // in the render method of each widget.
+            for (var name in this.fields)
+            {
+                if (!this.fields.hasOwnProperty(name))
+                {
+                    continue;
+                }
+
+                var field = this.fields[name];
+                var prefixedName = this.addPrefix(name);
+                var dataValue = field.widget.valueFromData(this.data,
+                                                           this.files,
+                                                           prefixedName);
+                var initialValue;
+                if (typeof this.initial[name] != "undefined")
+                {
+                    initialValue = this.initial[name];
+                }
+                else
+                {
+                    initialValue = field.initial;
+                }
+
+                if (field.widget._hasChanged(initialValue, dataValue))
+                {
+                    this._changedData.push(name);
+                }
+            }
+        }
+        return this._changedData;
     }
 };
 
@@ -407,6 +454,14 @@ Form.prototype.fullClean = function()
     }
 
     this.cleanedData = {};
+
+    // If the form is permitted to be empty, and none of the form data has
+    // changed from the initial data, short circuit any validation.
+    if (this.emptyPermitted && !this.hasChanged())
+    {
+        return;
+    }
+
     for (var name in this.fields)
     {
         if (!this.fields.hasOwnProperty(name))
@@ -495,6 +550,16 @@ Form.prototype.fullClean = function()
 Form.prototype.clean = function()
 {
     return this.cleanedData;
+};
+
+/**
+ * Determines if data differs from initial.
+ *
+ * @type Boolean
+ */
+Form.prototype.hasChanged = function()
+{
+    return (this.changedData.length != 0);
 };
 
 /**
