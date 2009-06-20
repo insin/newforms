@@ -18,12 +18,7 @@ Changesets which need to be ported
 
 http://code.djangoproject.com/changeset/7967 (partially)
 
-   * has_changed - changes to forms.js and widgets.js.
    * Formsets - new feature, create in formsets.js.
-
-http://code.djangoproject.com/changeset/8491
-
-   Adds a TimeInput widget to be used as the default for TimeField.
 
 http://code.djangoproject.com/changeset/8616
 
@@ -39,8 +34,11 @@ http://code.djangoproject.com/changeset/8771
 
 http://code.djangoproject.com/changeset/8816 (partial)
 
-   * Adds a SplitHiddenDateTimeWidget widget.
-   * Adds support for dynamic initial values.
+   Adds support for dynamic initial values.
+
+http://code.djangoproject.com/changeset/9569
+
+   Adds methods to iterate over hidden/visible fields.
 
 
 Changesets which won't/can't be ported yet
