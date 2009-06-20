@@ -252,6 +252,7 @@ function Form(kwargs)
     //      the more declarative syntax Python's metaclassing gives Django?
 
     // TODO Is there any hope of ever replacing __getitem__ properly?
+    /*
     if (typeof this.fields != "undefined")
     {
         for (var name in this.fields)
@@ -272,6 +273,7 @@ function Form(kwargs)
             })(name));
         }
     }
+    */
 }
 
 /** Property under which non-field-specific errors are stored. */
@@ -343,6 +345,31 @@ Form.prototype =
 //    for name, field in self.fields.items():
 //        yield BoundField(self, field, name)
 
+/* The yield keyword is only available in Firefox - adding the necessary
+   ;version=1.7 to the script tag breaks other browsers, so leave be for now.
+Form.prototype.__iterator__ = function()
+{
+    var fields = [];
+    for (var name in this.fields)
+    {
+        if (this.fields.hasOwnProperty(name))
+        {
+            fields[fields.length] =
+                new BoundField(this, this.fields[name], name);
+        }
+    }
+    fields.sort(function(a, b)
+    {
+        return a.field.creationCounter - b.field.creationCounter;
+    });
+
+    for (var i = 0, l = fields.length; i < l; i++)
+    {
+        yield fields[i];
+    }
+};
+*/
+
 /**
  * Creates a {@link BoundField} for the field with the given name.
  *
@@ -365,8 +392,8 @@ Form.prototype.boundField = function(name)
  * Creates a {@link BoundField} for each field in the form, ordering them
  * by the order in which the fields were created.
  *
- * @return a list of <code>BoundField</code> object - one for each field in the
- *         form, in the order in which the fields were created.
+ * @return a list of <code>BoundField</code> objects - one for each field in
+ *         the form, in the order in which the fields were created.
  * @type Array
  */
 Form.prototype.boundFields = function()
@@ -583,6 +610,44 @@ Form.prototype.isMultipart = function()
         }
     }
     return false;
+};
+
+/**
+ * Returns a list of all the {@link BoundField} objects that correspond to
+ * hidden fields. Useful for manual form layout.
+ *
+ * @type Array
+ */
+Form.prototype.hiddenFields = function()
+{
+    var boundFields = this.boundFields();
+    for (var i = boundFields.length - 1; i >= 0; i--)
+    {
+        if (!boundFields[i].isHidden)
+        {
+            boundFields.splice(i, 1);
+        }
+    }
+    return boundFields;
+};
+
+/**
+ * Returns a list of {@link BoundField} objects that do not correspond to
+ * hidden fields. The opposite of the hiddenFields() method.
+ *
+ * @type Array
+ */
+Form.prototype.visibleFields = function()
+{
+    var boundFields = this.boundFields();
+    for (var i = boundFields.length - 1; i >= 0; i--)
+    {
+        if (boundFields[i].isHidden)
+        {
+            boundFields.splice(i, 1);
+        }
+    }
+    return boundFields;
 };
 
 // TODO Form.prototype.asTable

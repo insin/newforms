@@ -36,10 +36,6 @@ http://code.djangoproject.com/changeset/8816 (partial)
 
    Adds support for dynamic initial values.
 
-http://code.djangoproject.com/changeset/9569
-
-   Adds methods to iterate over hidden/visible fields.
-
 
 Changesets which won't/can't be ported yet
 ------------------------------------------
