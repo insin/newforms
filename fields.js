@@ -1500,3 +1500,27 @@ IPAddressField.prototype.defaultErrorMessages =
     extendObject({}, IPAddressField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid IPv4 address."
     });
+
+/**
+ * Validates that its input is a valid slug.
+ *
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          {@link Field} and {@link CharField}.
+ * @constructor
+ * @augments RegexField
+ */
+function SlugField(kwargs)
+{
+    RegexField.call(this, SlugField.SLUG_REGEXP, kwargs);
+};
+
+/**
+ * Slug validation regular expression.
+ */
+SlugField.SLUG_REGEXP = /^[-\w]+$'/;
+
+SlugField.prototype = new RegexField();
+SlugField.prototype.defaultErrorMessages =
+    extendObject({}, SlugField.prototype.defaultErrorMessages, {
+        invalid: "Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."
+    });
