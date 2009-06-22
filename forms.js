@@ -338,6 +338,8 @@ Form.prototype =
         }
         return this._changedData;
     }
+
+    // TODO get media()
 };
 
 // TODO Come up with a suitable replacement for __iter__
@@ -432,7 +434,7 @@ Form.prototype.isValid = function()
 };
 
 /**
- * Creates a field name with a prefix appended, if this Form has a prefix set.
+ * Returns the field name with a prefix appended, if this Form has a prefix set.
  *
  * @param {String} fieldName a field name.
  *
@@ -450,6 +452,12 @@ Form.prototype.addPrefix = function(fieldName)
     return fieldName;
 };
 
+// TODO Form.addInitialPrefix
+// TODO Form._htmlOutput
+// TODO Form.prototype.asTable
+// TODO Form.prototype.asUL
+// TODO Form.prototype.asP
+
 /**
  * Returns errors that aren't associated with a particular field.
  *
@@ -465,6 +473,17 @@ Form.prototype.nonFieldErrors = function()
         return errors[Form.NON_FIELD_ERRORS];
     }
     return new this.errorConstructor();
+};
+
+/**
+ * Returns the raw value for a particular field name. This is just a convenient
+ * wrapper around widget.valueFromData.
+ */
+Form.prototype._rawValue = function(fieldname)
+{
+    var field = this.fields[fieldname];
+    var prefix = this.addPrefix(fieldname);
+    return field.widget.valueDromData(this.data, this.files, prefix);
 };
 
 /**
@@ -649,7 +668,3 @@ Form.prototype.visibleFields = function()
     }
     return boundFields;
 };
-
-// TODO Form.prototype.asTable
-// TODO Form.prototype.asUL
-// TODO Form.prototype.asP

@@ -17,6 +17,7 @@
   <script type="text/javascript" src="widgets.js"></script>
   <script type="text/javascript" src="fields.js"></script>
   <script type="text/javascript" src="forms.js"></script>
+  <script type="text/javascript" src="formsets.js"></script>
   <script type="text/javascript">
   function ContactForm(kwargs)
   {
@@ -39,13 +40,13 @@
                                              [3, "Other"]],
                                    label: "Where did you hear about us?"}),
           catSource: new ChoiceField({choices: [["Physical Locations", [
-          											[1, "In a specialist catalogue"]
-          										]],
+                                [1, "In a specialist catalogue"]
+                              ]],
                                                 ["Virtual Locations", [
-                                                	[2, "On the internet"],
+                                                  [2, "On the internet"],
                                                 ]],
                                                 ["Somewhere Else Entirely", [
-                                                	[3, "Other"]
+                                                  [3, "Other"]
                                                 ]]
                                                ],
                                        label: "Where did you hear about us again, with feeling?"}),
@@ -63,12 +64,12 @@
                                           attrs: {size: 5},
                                           label: "Pick stuff you like"}),
           catStuff: new MultipleChoiceField({choices: [["Animals", [
-          											[1, "Cats"],
-          											[2, "Dogs"],
-          										]],
+                                [1, "Cats"],
+                                [2, "Dogs"],
+                              ]],
                                                 ["Food", [
-                                                	[3, "Pizza"],
-                                                	[4, "Bananas"],
+                                                  [3, "Pizza"],
+                                                  [4, "Bananas"],
                                                 ]]
                                                ],
                                        label: "Pick more stuff you like"}),
@@ -104,22 +105,10 @@
       }
   });
 
-  DOMBuilder.addEvent(window, "load", function()
+  var ContactFormFormSet = formsetFactory(ContactForm);
+
+  function createFormTable(form, title)
   {
-      DOMBuilder.apply(window);
-
-      form = new ContactForm({
-          prefix: "test",
-          initial: {
-              name: "Test",
-              email: "test@test.com",
-              body: "Testing\n\nTesting",
-              source: 2,
-              stuff: [1,3],
-              checkTheBoxes: [1,5]
-          }
-      });
-
       var boundFields = form.boundFields();
       var rows = [];
       for (var i = 0, l = boundFields.length; i < l; i++)
@@ -129,18 +118,34 @@
                                  TH(field.labelTag()),
                                  TD(field.asWidget()));
       }
-      rows[rows.length] = TR(
-                            TD({colspan: 2, style: "text-align: right;"},
-                              INPUT({type: "submit", value: "Submit"})));
 
-      document.body.appendChild(
-        DIV(
-          H2("Contact Form"),
-          TABLE(
-            rows
-          )
+      return DIV(
+        H2(title),
+        TABLE(
+          rows
         )
       );
+  }
+
+  DOMBuilder.addEvent(window, "load", function()
+  {
+      DOMBuilder.apply(window);
+
+      var formset = new ContactFormFormSet({
+          initial: [{
+              name: "Test",
+              email: "test@test.com",
+              body: "Testing\n\nTesting",
+              source: 2,
+              stuff: [1,3],
+              checkTheBoxes: [1,5]
+          }]
+      });
+
+      for (var i = 0, l = formset.forms.length; i < l; i++)
+      {
+          document.body.appendChild(createFormTable(formset.forms[i], "Contact Form " + (i + 1)));
+      }
   });
   </script>
 </head>
