@@ -19,93 +19,110 @@
   <script type="text/javascript" src="forms.js"></script>
   <script type="text/javascript" src="formsets.js"></script>
   <script type="text/javascript">
-  function ContactForm(kwargs)
-  {
-      this.fields =
-      {
-          name: new CharField({minLength: 1, maxLength: 100, label: "Your name"}),
-          age: new IntegerField({minValue: 1, maxValue: 120, label: "Your age"}),
-          faveFloat: new FloatField({minValue: 1.5, maxValue: 24.5, label: "Your favourite number between 1.5 and 24.5"}),
-          faveDecimal: new DecimalField({maxDigits: 4, decimalPlaces: 2, label: "Your favourite decimal"}),
-          phoneNumber: new RegexField(/\d{3}-\d{5}/, {label: "Your phone number (e.g. 555-12345)", errorMessages: {invalid: "Not a valid phone number"}}),
-          email: new EmailField({widget: new TextInput({attrs: {maxlength: "200"}}), label: "Your email address"}),
-          zeeMikrofilm: new FileField({label: "Please upload zee mikrofilm"}),
-          photo: new ImageField({label: "Photo or it didn't happen"}),
-          website: new URLField({widget: new TextInput({attrs: {size: "50"}}), label: "Your website URL"}),
-          faveIPAddress: new IPAddressField({label: "Your favourite IP address... you freak"}),
-          body: new CharField({widget: new Textarea(), label: "Your message"}),
-          source: new ChoiceField({choices: [["", "----------"],
-                                             [1, "In a specialist catalogue"],
-                                             [2, "On the internet"],
-                                             [3, "Other"]],
-                                   label: "Where did you hear about us?"}),
-          catSource: new ChoiceField({choices: [["Physical Locations", [
-                                                  [1, "In a specialist catalogue"]
-                                                ]],
-                                                ["Virtual Locations", [
-                                                  [2, "On the internet"],
-                                                ]],
-                                                ["Somewhere Else Entirely", [
-                                                  [3, "Other"]
-                                                ]]
-                                               ],
-                                       label: "Where did you hear about us again, with feeling?"}),
-          moreSource: new ChoiceField({choices: [["", "----------"],
-                                                [1, "In a specialist catalogue"],
-                                                [2, "On the internet"],
-                                                [3, "Other"]],
-                                       label: "Where did you hear about us again?",
-                                       widget: new RadioSelect()}),
-          stuff: new MultipleChoiceField({choices: [[1, "Specialist catalogues"],
-                                                    [2, "The internet"],
-                                                    [3, "The catalogues"],
-                                                    [4, "Special internets"],
-                                                    [5, "Other"]],
-                                          attrs: {size: 5},
-                                          label: "Pick stuff you like"}),
-          catStuff: new MultipleChoiceField({choices: [["Animals", [
-                                                         [1, "Cats"],
-                                                         [2, "Dogs"],
-                                                       ]],
-                                                       ["Food", [
-                                                         [3, "Pizza"],
-                                                         [4, "Bananas"],
-                                                       ]]
-                                                      ],
-                                             label: "Pick more stuff you like"}),
-          awesome: new BooleanField({label: "Check here if you are awesome!", initial: true}),
-          likeMonkeys: new NullBooleanField({label: "Do you like monkeys?", initial: "2"}),
-          intBeginningWith5: new ComboField({fields: [new RegexField(/^[-+]?5/), new IntegerField()],
-                                             label: "Type an integer begining with 5"}),
-          birthday: new DateField({label: "Your birthday"}),
-          wokeUpAt: new TimeField({label: "What time did you wake up at today?"}),
-          howSoonIsNow: new DateTimeField({initial: new Date(),
-                                           label: "What time was it when this page was rendered?"}),
-          againWithFeeling: new SplitDateTimeField({initial: new Date(), label: "Once again"}),
-          checkTheBoxes: new MultipleChoiceField({choices: [[1, "Specialist catalogues"],
-                                                    [2, "The internet"],
-                                                    [3, "The catalogues"],
-                                                    [4, "Special internets"],
-                                                    [5, "Other"]],
-                                                  attrs: {size: 5},
-                                                  label: "Check stuff you like",
-                                                  widget: new CheckboxSelectMultiple()})
-      };
-      Form.call(this, kwargs);
-  };
+  SOURCE_CHOICES = [
+      ["", "----------"],
+      [1, "In a specialist catalogue"],
+      [2, "On the internet"],
+      [3, "Other"]
+  ];
 
-  ContactForm.prototype = extendObject(new Form(), {
+  CAT_SOURCE_CHOICES = [
+      ["Physical Locations", [
+          [1, "In a specialist catalogue"]
+      ]],
+      ["Virtual Locations", [
+          [2, "On the internet"],
+      ]],
+      ["Somewhere Else Entirely", [
+          [3, "Other"]
+      ]]
+  ];
+
+  STUFF_CHOICES = [
+      [1, "Specialist catalogues"],
+      [2, "The internet"],
+      [3, "The catalogues"],
+      [4, "Special internets"],
+      [5, "Other"]
+  ];
+
+  CAT_STUFF_CHOICES = [
+      ["Animals", [
+          [1, "Cats"],
+          [2, "Dogs"],
+      ]],
+      ["Food", [
+          [3, "Pizza"],
+          [4, "Bananas"],
+      ]]
+  ];
+
+  ContactForm = formFactory({
+      fields: function()
+      {
+          return {
+            name:
+              new CharField({minLength: 1, maxLength: 100, label: "Your name"}),
+            age:
+              new IntegerField({minValue: 1, maxValue: 120, label: "Your age"}),
+            faveFloat:
+              new FloatField({minValue: 1.5, maxValue: 24.5, label: "Your favourite number between 1.5 and 24.5"}),
+            faveDecimal:
+              new DecimalField({maxDigits: 4, decimalPlaces: 2, label: "Your favourite decimal"}),
+            phoneNumber:
+              new RegexField(/\d{3}-\d{5}/, {label: "Your phone number (e.g. 555-12345)", errorMessages: {invalid: "Not a valid phone number"}}),
+            email:
+              new EmailField({widget: new TextInput({attrs: {maxlength: "200"}}), label: "Your email address"}),
+            zeeMikrofilm:
+              new FileField({label: "Please upload zee mikrofilm"}),
+            photo:
+              new ImageField({label: "Photo or it didn't happen"}),
+            website:
+              new URLField({widget: new TextInput({attrs: {size: "50"}}), label: "Your website URL"}),
+            faveIPAddress:
+              new IPAddressField({label: "Your favourite IP address... you freak"}),
+            body:
+              new CharField({widget: new Textarea(), label: "Your message"}),
+            source:
+              new ChoiceField({choices: SOURCE_CHOICES, label: "Where did you hear about us?"}),
+            catSource:
+              new ChoiceField({choices: CAT_SOURCE_CHOICES, label: "Where did you hear about us again, with feeling?"}),
+            moreSource:
+              new ChoiceField({choices: SOURCE_CHOICES, label: "Where did you hear about us again?", widget: new RadioSelect()}),
+            stuff:
+              new MultipleChoiceField({choices: STUFF_CHOICES, attrs: {size: 5}, label: "Pick stuff you like"}),
+            catStuff:
+              new MultipleChoiceField({choices: CAT_STUFF_CHOICES, label: "Pick more stuff you like"}),
+            awesome:
+              new BooleanField({label: "Check here if you are awesome!", initial: true}),
+            likeMonkeys:
+              new NullBooleanField({label: "Do you like monkeys?", initial: "2"}),
+            intBeginningWith5:
+              new ComboField({fields: [new RegexField(/^[-+]?5/), new IntegerField()], label: "Type an integer begining with 5"}),
+            birthday:
+              new DateField({label: "Your birthday"}),
+            wokeUpAt:
+              new TimeField({label: "What time did you wake up at today?"}),
+            howSoonIsNow:
+              new DateTimeField({initial: new Date(), label: "What time was it when this page was rendered?"}),
+            againWithFeeling:
+              new SplitDateTimeField({initial: new Date(), label: "Once again"}),
+            checkTheBoxes:
+              new MultipleChoiceField({choices: STUFF_CHOICES, attrs: {size: 5}, label: "Check stuff you like", widget: new CheckboxSelectMultiple()})
+          };
+      },
+
       cleanName: function()
       {
           if (this.cleanedData.name != "Cheese")
           {
-              throw new ValidationError("Your name must be cheese.");
+              throw new ValidationError("Your name must be Cheese.");
           }
           return this.cleanedData.name;
       }
   });
 
-  var ContactFormFormSet = formsetFactory(ContactForm);
+  ContactFormFormSet = formsetFactory(ContactForm, {extra: 1, canDelete: true});
 
   function createFormTable(form, title)
   {

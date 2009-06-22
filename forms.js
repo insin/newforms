@@ -668,3 +668,81 @@ Form.prototype.visibleFields = function()
     }
     return boundFields;
 };
+
+/**
+ * Creates a new form constructor, eliminating some of the steps required when
+ * manually defining a new form class and wiring up convenience hooks into the
+ * form initialisation process.
+ *
+ * @param {Object} kwargs arguments defining options for the created Form
+ *                        constructor - all arguments other than those defined
+ *                        below will be added to the new form constructor's
+ *                        prototype, so this object can also be used to define
+ *                        new methods on the resulting form, such as custom
+ *                        <code>clean</code> and <code>cleanFIELD_NAME</code>
+ *                        methods.
+ * @config {Function} fields a function which returns an object containing form
+ *                           fields, which will be invoked each time a new form
+ *                           instance is created - an Error will be thrown if
+ *                           this Function is not provided.
+ * @config {Function} [form] the Form constructor which will provide the
+ *                           prototype for the new Form constructor - defaults
+ *                           to {@link Form}.
+ * @config {Function} [preInit] if provided, this function will be invoked with
+ *                              any keyword arguments which are passed when a
+ *                              new instance of the form is being created,
+ *                              before fields have been created and the
+ *                              prototype constructor called - typlical usage of
+ *                              this function would be to pop and store kwargs
+ *                              as properties of the form object being created.
+ * @config {Function} [postInit] if provided, this function will be invoked with
+ *                               any keyword arguments which are passed when a
+ *                               new instance of the form is being created,
+ *                               after fields have been created and the
+ *                               prototype constructor called - typical usage of
+ *                               this function would be to dynamically alter the
+ *                               form fields which have just been created or to
+ *                               add/remove fields.
+ * @type Function
+ */
+function formFactory(kwargs)
+{
+    if (typeof kwargs.fields != "function")
+    {
+        throw new Error("You must provide a function named 'fields'");
+    }
+
+    kwargs = extendObject({
+       form: Form, preInit: null, postInit: null
+    }, kwargs || {});
+
+    // Create references to special functions which will be closed over by the
+    // new form constructor.
+    var form = kwargs.form;
+    var createFields = kwargs.fields;
+    var preInit = kwargs.preInit;
+    var postInit = kwargs.postInit;
+
+    var formConstructor = function(kwargs)
+    {
+        if (preInit !== null)
+        {
+            preInit.call(this, kwargs);
+        }
+        this.fields = createFields.call(this);
+        form.call(this, kwargs);
+        if (postInit !== null)
+        {
+            postInit.call(this, kwargs);
+        }
+    };
+
+    // Remove special functions from kwargs, as they will now be used to add
+    // properties to the prototype.
+    delete kwargs.form;
+    delete kwargs.fields;
+    delete kwargs.preInit;
+    delete kwargs.postInit;
+    formConstructor.prototype = extendObject(new form(), kwargs);
+    return formConstructor;
+}

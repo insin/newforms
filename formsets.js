@@ -537,7 +537,7 @@ function formsetFactory(form, kwargs)
 
     var formsetConstructor = function(formsetKwargs)
     {
-        this.fauxClassName = form.name + "FormSet";
+        this.fauxClassName = (form.name || "Anonymous") + "FormSet";
         this.form = form;
         this.extra = kwargs.extra;
         this.canOrder = kwargs.canOrder;
