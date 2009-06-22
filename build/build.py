@@ -4,12 +4,26 @@ import os
 from jsmin import jsmin
 
 DIRNAME = os.path.dirname(__file__)
-SOURCE_FILES = ('../time.js', '../util.js', '../widgets.js', '../fields.js',
-                '../forms.js', '../formsets.js')
+TIME_SOURCE_FILES = ('../time.js',)
+FORMS_SOURCE_FILES = ('../util.js', '../widgets.js', '../fields.js',
+                      '../forms.js', '../formsets.js')
+FORMS_NAMESPACE = 'formsnamespace.js'
+CODE_TEMPLATE = """%(timenamespace)s
+
+var forms = (function()
+{
+%(formscode)s
+%(formsnamepace)s
+})();"""
 
 def main(generate_api=False, jsdoc_dir=None):
-    js = '\n'.join([open(os.path.normpath(f), 'r').read()
-                    for f in SOURCE_FILES])
+    js = CODE_TEMPLATE % {
+        'timenamespace': '\n'.join([open(os.path.normpath(f), 'r').read()
+                                    for f in TIME_SOURCE_FILES]),
+        'formscode': '\n'.join([open(os.path.normpath(f), 'r').read()
+                                for f in FORMS_SOURCE_FILES]),
+        'formsnamepace': open(os.path.normpath(FORMS_NAMESPACE), 'r').read(),
+    }
 
     if not os.path.isdir('out'):
         os.mkdir('out')
