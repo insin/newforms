@@ -723,6 +723,7 @@ function formFactory(kwargs)
     var preInit = kwargs.preInit;
     var postInit = kwargs.postInit;
 
+    /** @ignore */
     var formConstructor = function(kwargs)
     {
         if (preInit !== null)
