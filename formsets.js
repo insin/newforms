@@ -112,7 +112,7 @@ BaseFormSet.prototype =
     {
         if (!this.isValid())
         {
-            throw new Error(this.fauxClassName + " object has no attribute 'cleanedData'");
+            throw new Error(this.constructor.name + " object has no attribute 'cleanedData'");
         }
         var cleaned = [];
         for (var i = 0, l = this.forms.length; i < l; i++)
@@ -130,7 +130,7 @@ BaseFormSet.prototype =
     {
         if (!this.isValid() || !this.canDelete)
         {
-            throw new Error(this.fauxClassName + " object has no attribute 'deletedForms'");
+            throw new Error(this.constructor.name + " object has no attribute 'deletedForms'");
         }
 
         // Construct _deletedFormIndexes, which is just a list of form indexes
@@ -170,7 +170,7 @@ BaseFormSet.prototype =
     {
         if (!this.isValid() || !this.canOrder)
         {
-            throw new Error(this.fauxClassName + " object has no attribute 'orderedForms'");
+            throw new Error(this.constructor.name + " object has no attribute 'orderedForms'");
         }
 
         // Construct _ordering, which is a list of [form index, orderFieldValue]
@@ -547,6 +547,7 @@ function formsetFactory(form, kwargs)
     };
 
     formsetConstructor.prototype = new kwargs.formset();
+    formsetConstructor.name = (form.name || "Anonymous") + "FormSet";
 
     return formsetConstructor;
 }
