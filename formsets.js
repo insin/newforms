@@ -1,3 +1,13 @@
+/**
+ * @fileOverview Formsets are a layer of abstraction to working with multiple
+ *               forms on the same page. They can be best compared to data grids.
+ */
+
+/**
+ * A form which defines fields related to formset management.
+ * @constructor
+ * @augments Form
+ */
 function ManagementForm(kwargs)
 {
     this.fields = {};
@@ -13,6 +23,28 @@ ManagementForm.prototype = new Form();
 
 /**
  * A collection of instances of the same Form.
+ *
+ * @param {Object} [kwargs] configuration options.
+ * @config {Object} [data] input form data, where property names are field
+ *                         names.
+ * @config {Object} [files] input file data - this is meaningless on the
+ *                          client-side, but is included for future use in any
+ *                          future server-side implementation.
+ * @config {String} [autoId] a template for use when automatically generating
+ *                           <code>id</code> attributes for fields, which should
+ *                           contain a <code>"%(name)s"</code> placeholder for
+ *                           the field name - defaults to
+ *                           <code>"id_%(name)s"</code>.
+ * @config {String} [prefix] a prefix to be applied to the name of each field in
+ *                           each form instance.
+ * @config {Object} [initial] a list of initial form data objects, where property
+ *                            names are field names - if a field's value is not
+ *                            specified in <code>data</code>, these values will be
+ *                            used when rendering field widgets.
+ * @config {Function} [errorConstructor] the constructor function to be used
+ *                                       when creating error details - defaults
+ *                                       to {@link ErrorList}.
+ * @constructor
  */
 function BaseFormSet(kwargs)
 {
@@ -202,6 +234,12 @@ BaseFormSet.prototype =
     }
 };
 
+/**
+ * Determines the number of form instances this formset contains, based on
+ * either submitted management data or initial configuration, as appropriate.
+ *
+ * @type Number
+ */
 BaseFormSet.prototype.totalFormCount = function()
 {
     if (this.data || this.files)
@@ -219,6 +257,12 @@ BaseFormSet.prototype.totalFormCount = function()
     }
 };
 
+/**
+ * Determines the number of initial form instances this formset contains, based
+ * on either submitted management data or initial configuration, as appropriate.
+ *
+ * @type Number
+ */
 BaseFormSet.prototype.initialFormCount = function()
 {
     if (this.data || this.files)
@@ -238,7 +282,7 @@ BaseFormSet.prototype.initialFormCount = function()
 };
 
 /**
- * Instantiates all the forms and put them in this.forms.
+ * Instantiates all the forms and put them in <code>this.forms</code>.
  */
 BaseFormSet.prototype._constructForms = function()
 {
@@ -251,7 +295,7 @@ BaseFormSet.prototype._constructForms = function()
 };
 
 /**
- * Instantiates and returns the i-th form instance in a formset.
+ * Instantiates and returns the <code>i</code>th form instance in the formset.
  */
 BaseFormSet.prototype._constructForm = function(i, kwargs)
 {
@@ -285,8 +329,10 @@ BaseFormSet.prototype._constructForm = function(i, kwargs)
 
 /**
  * Returns an ErrorList of errors that aren't associated with a particular
- * form -- i.e., from formset.clean(). Returns an empty ErrorList if there
- * are none.
+ * form -- i.e., from <code>formset.clean()</code>. Returns an empty ErrorList
+ * if there are none.
+ *
+ * @type ErrorList
  */
 BaseFormSet.prototype.nonFormErrors = function()
 {
@@ -298,7 +344,10 @@ BaseFormSet.prototype.nonFormErrors = function()
 };
 
 /**
- * Returns true if form.errors is empty for every form in this.forms.
+ * Returns <code>true</code> if <code>form.errors</code> is empty for every form
+ * in <code>this.forms</code>
+ *
+ * @type Boolean
  */
 BaseFormSet.prototype.isValid = function()
 {
@@ -340,7 +389,7 @@ BaseFormSet.prototype.isValid = function()
 };
 
 /**
- * Cleans all of this.data and populates this._errors.
+ * Cleans all of <code>this.data</code> and populates <code>this._errors</code>.
  */
 BaseFormSet.prototype.fullClean = function()
 {
@@ -378,6 +427,9 @@ BaseFormSet.prototype.fullClean = function()
 
 /**
  * A hook for adding extra fields on to each form instance.
+ *
+ * @param {Form} form the form fields are to be added to.
+ * @param {Number} index the index of the given form in the formset.
  */
 BaseFormSet.prototype.addFields = function(form, index)
 {
@@ -387,7 +439,7 @@ BaseFormSet.prototype.addFields = function(form, index)
         if (index < this.initialFormCount())
         {
             form.fields[BaseFormSet.ORDERING_FIELD_NAME] =
-                new IntegerField({label: "Order", initial: index+1, required: false});
+                new IntegerField({label: "Order", initial: index + 1, required: false});
         }
         else
         {
@@ -403,6 +455,13 @@ BaseFormSet.prototype.addFields = function(form, index)
     }
 };
 
+/**
+ * Returns the formset prefix with the form index appended.
+ *
+ * @param {Number} index the index of a form in the formset.
+ *
+ * @type String
+ */
 BaseFormSet.prototype.addPrefix = function(index)
 {
     return this.prefix + "-" + index;
@@ -417,8 +476,10 @@ BaseFormSet.prototype.addPrefix = function(index)
 BaseFormSet.prototype.clean = function() {};
 
 /**
- * Returns true if the formset needs to be multipart-encrypted, i.e. it has
- * FileInput. Otherwise, false.
+ * Returns <code>true</code> if the formset needs to be multipart-encrypted, i.e. it has
+ * FileInput. Otherwise, <code>false</code>.
+ *
+ * @type Boolean
  */
 BaseFormSet.prototype.isMultipart = function()
 {
@@ -450,6 +511,23 @@ class BaseFormSet(StrAndUnicode):
 
 /**
  * Returns a FormSet constructor for the given Form constructor.
+ *
+ * @param {Form} form the constructor for the Form to be managed.
+ * @param {Object} [kwargs] arguments defining options for the created FormSet
+ *                          constructor.
+ * @config {Function} [formset] the constructuer which will provide the
+ *                              prototype for the created FormSet constructor
+ *                              - defaults to {@link BaseFormSet}.
+ * @config {Number} [extra] the number of extra forms to be displayed - defaults
+ *                          to <code>1</code>.
+ * @config {Boolean} [canOrder] if <code>true</code>, forms can be ordered -
+ *                              defaults to <code>false</code>.
+ * @config {Boolean} [canDelete] if <code>true</code>, forms can be deleted -
+ *                               defaults to <code>false</code>.
+ * @config {Number} [maxNum] the maximum number of forms to be displayed -
+ *                           defaults to <code>0</code>.
+ *
+ * @type Function
  */
 function formsetFactory(form, kwargs)
 {
@@ -473,6 +551,11 @@ function formsetFactory(form, kwargs)
     return formsetConstructor;
 }
 
+/**
+ * Returns <code>true</code> if every formset in formsets is valid.
+ *
+ * @Boolean
+ */
 function allValid(formsets)
 {
     var valid = true;

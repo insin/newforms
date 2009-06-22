@@ -5,7 +5,7 @@ from jsmin import jsmin
 
 DIRNAME = os.path.dirname(__file__)
 SOURCE_FILES = ('../time.js', '../util.js', '../widgets.js', '../fields.js',
-                '../forms.js')
+                '../forms.js', '../formsets.js')
 
 def main(generate_api=False, jsdoc_dir=None):
     js = '\n'.join([open(os.path.normpath(f), 'r').read()
