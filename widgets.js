@@ -113,10 +113,13 @@ Input.prototype.inputType = null;
 
 Input.prototype.render = function(name, value, attrs)
 {
-    value = value || "";
+    if (value === null)
+    {
+        value = "";
+    }
     var finalAttrs = this.buildAttrs(attrs, {type: this.inputType,
                                              name: name});
-    if (value != "")
+    if (value !== "")
     {
         // Only add the "value" attribute if value is non-empty
         finalAttrs.value = value;
@@ -265,6 +268,15 @@ FileInput.prototype.valueFromData = function(data, files, name)
     return null;
 };
 
+FileInput.prototype._hasChanged = function(initial, data)
+{
+    if (data === null)
+    {
+        return false;
+    }
+    return true;
+};
+
 /**
  * An HTML <code>&lt;textarea&gt;</code> widget.
  *
@@ -277,7 +289,7 @@ function Textarea(kwargs)
 {
     // Provide default "cols" and "rows" attributes
     kwargs = extendObject({attrs: null}, kwargs || {});
-    kwargs.attrs = extendObject({cols: "40", rows: "10"}, kwargs.attrs || {});
+    kwargs.attrs = extendObject({rows: "10", cols: "40"}, kwargs.attrs || {});
     Widget.call(this, kwargs);
 }
 
@@ -285,8 +297,12 @@ Textarea.prototype = new Widget();
 
 Textarea.prototype.render = function(name, value, attrs)
 {
-    return DOMBuilder.createElement(
-        "textarea", extendObject(attrs, {name: name}), [value || ""]);
+    if (value === null)
+    {
+        value = "";
+    }
+    var finalAttrs = this.buildAttrs(attrs, {name: name});
+    return DOMBuilder.createElement("textarea", finalAttrs, [value]);
 };
 
 /**
@@ -631,11 +647,11 @@ NullBooleanSelect.prototype.valueFromData = function(data, files, name)
     if (typeof data[name] != "undefined")
     {
         var dataValue = data[name];
-        if (dataValue === true || dataValue == "True" || dataValue == "2")
+        if (dataValue === true || dataValue == "True" || dataValue == "true" || dataValue == "2")
         {
             value = true;
         }
-        else if (dataValue === false || dataValue == "False" || dataValue == "3")
+        else if (dataValue === false || dataValue == "False" || dataValue == "false" || dataValue == "3")
         {
             value = false;
         }

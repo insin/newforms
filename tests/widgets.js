@@ -15,22 +15,210 @@ test("TextInput", function()
     equals(""+w.render("email", "test@example.com", {"class": "fun"}),
            "<input type=\"text\" name=\"email\" value=\"test@example.com\" class=\"fun\">");
 
-    // You can also pass 'attrs' to the constructor:
-    var w = new TextInput({attrs: {"class": "fun"}});
+    // You can also pass "attrs" to the constructor
+    w = new TextInput({attrs: {"class": "fun"}});
     equals(""+w.render("email", ""),
            "<input class=\"fun\" type=\"text\" name=\"email\">");
     equals(""+w.render("email", "foo@example.com"),
            "<input class=\"fun\" type=\"text\" name=\"email\" value=\"foo@example.com\">");
 
-    // Attributes passed to render() get precedence over those passed to the constructor:
-    var w = new TextInput({attrs: {"class": "pretty"}});
+    // Attributes passed to render() get precedence over those passed to the constructor
+    w = new TextInput({attrs: {"class": "pretty"}});
     equals(""+w.render("email", "", {"class": "special"}),
            "<input class=\"special\" type=\"text\" name=\"email\">");
 
-    // Attributes can be safe-strings if needed
-    var w = new TextInput({attrs: {"onblur": DOMBuilder.markSafe("function('foo')")}});
+    // Attributes can be safe strings if needed
+    w = new TextInput({attrs: {"onblur": DOMBuilder.markSafe("function('foo')")}});
     equals(""+w.render("email", ""),
            "<input onblur=\"function('foo')\" type=\"text\" name=\"email\">");
+});
+
+test("PasswordInput", function()
+{
+    expect(13);
+    var w = new PasswordInput();
+    equals(""+w.render("email", ""),
+           "<input type=\"password\" name=\"email\">");
+    equals(""+w.render("email", null),
+           "<input type=\"password\" name=\"email\">");
+    equals(""+w.render("email", "test@example.com"),
+           "<input type=\"password\" name=\"email\" value=\"test@example.com\">");
+    equals(""+w.render("email", "some \"quoted\" & ampersanded value"),
+           "<input type=\"password\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">");
+    equals(""+w.render("email", "test@example.com", {"class": "fun"}),
+           "<input type=\"password\" name=\"email\" value=\"test@example.com\" class=\"fun\">");
+
+    // You can also pass "attrs" to the constructor
+    w = new PasswordInput({attrs: {"class": "fun"}});
+    equals(""+w.render("email", ""),
+           "<input class=\"fun\" type=\"password\" name=\"email\">");
+    equals(""+w.render("email", "foo@example.com"),
+           "<input class=\"fun\" type=\"password\" name=\"email\" value=\"foo@example.com\">");
+
+    // Attributes passed to render() get precedence over those passed to the constructor
+    w = new PasswordInput({attrs: {"class": "pretty"}});
+    equals(""+w.render("email", "", {"class": "special"}),
+           "<input class=\"special\" type=\"password\" name=\"email\">");
+
+    // The renderValue argument lets you specify whether the widget should
+    // render its value. You may want to do this for security reasons.
+    w = new PasswordInput({renderValue: true});
+    equals(""+w.render("email", "secret"),
+           "<input type=\"password\" name=\"email\" value=\"secret\">");
+    w = new PasswordInput({renderValue: false});
+    equals(""+w.render("email", ""),
+           "<input type=\"password\" name=\"email\">");
+    equals(""+w.render("email", null),
+           "<input type=\"password\" name=\"email\">");
+    equals(""+w.render("email", "secret"),
+           "<input type=\"password\" name=\"email\">");
+    w = new PasswordInput({attrs: {"class": "fun"}, renderValue: false});
+    equals(""+w.render("email", "secret"),
+           "<input class=\"fun\" type=\"password\" name=\"email\">");
+});
+
+test("HiddenInput", function()
+{
+    expect(10);
+    var w = new HiddenInput();
+    equals(""+w.render("email", ""),
+           "<input type=\"hidden\" name=\"email\">");
+    equals(""+w.render("email", null),
+           "<input type=\"hidden\" name=\"email\">");
+    equals(""+w.render("email", "test@example.com"),
+           "<input type=\"hidden\" name=\"email\" value=\"test@example.com\">");
+    equals(""+w.render("email", "some \"quoted\" & ampersanded value"),
+           "<input type=\"hidden\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">");
+    equals(""+w.render("email", "test@example.com", {"class": "fun"}),
+           "<input type=\"hidden\" name=\"email\" value=\"test@example.com\" class=\"fun\">");
+
+    // You can also pass "attrs" to the constructor
+    w = new HiddenInput({attrs: {"class": "fun"}});
+    equals(""+w.render("email", ""),
+           "<input class=\"fun\" type=\"hidden\" name=\"email\">");
+    equals(""+w.render("email", "foo@example.com"),
+           "<input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\">");
+
+    // Attributes passed to render() get precedence over those passed to the constructor
+    w = new HiddenInput({attrs: {"class": "pretty"}});
+    equals(""+w.render("email", "", {"class": "special"}),
+           "<input class=\"special\" type=\"hidden\" name=\"email\">");
+
+    // Boolean values are rendered to their string forms ("true" and "false")
+    w = new HiddenInput();
+    equals(""+w.render('get_spam', false),
+           "<input type=\"hidden\" name=\"get_spam\" value=\"false\">");
+    equals(""+w.render('get_spam', true),
+           "<input type=\"hidden\" name=\"get_spam\" value=\"true\">");
+});
+
+test("MultipleHiddenInput", function()
+{
+    expect(11);
+    var w = new MultipleHiddenInput();
+    equals(""+w.render("email", []),
+           "<span></span>");
+    equals(""+w.render("email", null),
+           "<span></span>");
+    equals(""+w.render("email", ["test@example.com"]),
+           "<span><input type=\"hidden\" name=\"email\" value=\"test@example.com\"></span>");
+    equals(""+w.render("email", ["some \"quoted\" & ampersanded value"]),
+           "<span><input type=\"hidden\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\"></span>");
+    equals(""+w.render("email", ["test@example.com", "foo@example.com"]),
+           "<span><input type=\"hidden\" name=\"email\" value=\"test@example.com\"><input type=\"hidden\" name=\"email\" value=\"foo@example.com\"></span>");
+    equals(""+w.render("email", ["test@example.com"], {"class": "fun"}),
+           "<span><input type=\"hidden\" name=\"email\" class=\"fun\" value=\"test@example.com\"></span>");
+    equals(""+w.render("email", ["test@example.com", "foo@example.com"], {"class": "fun"}),
+           "<span><input type=\"hidden\" name=\"email\" class=\"fun\" value=\"test@example.com\"><input type=\"hidden\" name=\"email\" class=\"fun\" value=\"foo@example.com\"></span>");
+
+    // You can also pass "attrs" to the constructor
+    w = new MultipleHiddenInput({attrs: {"class": "fun"}});
+    equals(""+w.render("email", []),
+           "<span></span>");
+    equals(""+w.render("email", ["foo@example.com"]),
+           "<span><input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\"></span>");
+    equals(""+w.render("email", ["foo@example.com", "test@example.com",]),
+           "<span><input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\"><input class=\"fun\" type=\"hidden\" name=\"email\" value=\"test@example.com\"></span>");
+
+    // Attributes passed to render() get precedence over those passed to the constructor
+    w = new MultipleHiddenInput({attrs: {"class": "pretty"}});
+    equals(""+w.render("email", ["foo@example.com"], {"class": "special"}),
+           "<span><input class=\"special\" type=\"hidden\" name=\"email\" value=\"foo@example.com\"></span>");
+});
+
+test("FileInput", function()
+{
+    expect(11);
+    // FileInput widgets don't ever show the value, because the old value is of
+    // no use if you are updating the form or if the provided file generated an
+    // error.
+    var w = new FileInput();
+    equals(""+w.render("email", ""),
+           "<input type=\"file\" name=\"email\">");
+    equals(""+w.render("email", null),
+           "<input type=\"file\" name=\"email\">");
+    equals(""+w.render("email", "test@example.com"),
+           "<input type=\"file\" name=\"email\">");
+    equals(""+w.render("email", "some \"quoted\" & ampersanded value"),
+           "<input type=\"file\" name=\"email\">");
+    equals(""+w.render("email", "test@example.com", {"class": "fun"}),
+           "<input type=\"file\" name=\"email\" class=\"fun\">");
+
+    // You can also pass "attrs" to the constructor
+    w = new FileInput({attrs: {"class": "fun"}});
+    equals(""+w.render("email", ""),
+           "<input class=\"fun\" type=\"file\" name=\"email\">");
+    equals(""+w.render("email", "foo@example.com"),
+           "<input class=\"fun\" type=\"file\" name=\"email\">");
+
+    // Test for the behavior of _has_changed for FileInput. The value of data
+    // will more than likely come from request.FILES. The value of initial data
+    // will likely be a filename stored in the database. Since its value is of
+    // no use to a FileInput it is ignored.
+    w = new FileInput();
+
+    // No file was uploaded and no initial data.
+    equals(w._hasChanged("", null), false);
+
+    // A file was uploaded and no initial data.
+    equals(w._hasChanged("", {filename: "resume.txt", content: "My resume"}), true);
+
+    // A file was not uploaded, but there is initial data
+    equals(w._hasChanged("resume.txt", null), false);
+
+    // A file was uploaded and there is initial data (file identity is not dealt
+    // with here).
+    equals(w._hasChanged("resume.txt", {filename: "resume.txt", content: "My resume"}), true);
+});
+
+test("Textarea", function()
+{
+    expect(9);
+    var w = new Textarea();
+    equals(""+w.render("msg", ""),
+           "<textarea rows=\"10\" cols=\"40\" name=\"msg\"></textarea>");
+    equals(""+w.render("msg", null),
+           "<textarea rows=\"10\" cols=\"40\" name=\"msg\"></textarea>");
+    equals(""+w.render("msg", "value"),
+           "<textarea rows=\"10\" cols=\"40\" name=\"msg\">value</textarea>");
+    equals(""+w.render("msg", "some \"quoted\" & ampersanded value"),
+           "<textarea rows=\"10\" cols=\"40\" name=\"msg\">some &quot;quoted&quot; &amp; ampersanded value</textarea>");
+    equals(""+w.render("msg", DOMBuilder.markSafe("pre &quot;quoted&quot; value")),
+           "<textarea rows=\"10\" cols=\"40\" name=\"msg\">pre &quot;quoted&quot; value</textarea>");
+    equals(""+w.render("msg", "value", {"class": "pretty", rows: 20}),
+           "<textarea rows=\"20\" cols=\"40\" name=\"msg\" class=\"pretty\">value</textarea>");
+
+    // You can also pass "attrs" to the constructor:
+    w = new Textarea({attrs: {"class": "pretty"}});
+    equals(""+w.render("msg", ""),
+           "<textarea rows=\"10\" cols=\"40\" class=\"pretty\" name=\"msg\"></textarea>");
+    equals(""+w.render("msg", "example"),
+           "<textarea rows=\"10\" cols=\"40\" class=\"pretty\" name=\"msg\">example</textarea>");
+
+    // Attributes passed to render() get precedence over those passed to the constructor
+    w = new Textarea({attrs: {"class": "pretty"}});
+    equals(""+w.render("msg", "", {"class": "special"}),
+           "<textarea rows=\"10\" cols=\"40\" class=\"special\" name=\"msg\"></textarea>");
 });
 
 test("CheckboxInput", function()
