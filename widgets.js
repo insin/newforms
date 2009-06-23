@@ -992,7 +992,7 @@ CheckboxSelectMultiple.prototype.idForLabel = function(id)
 function MultiWidget(widgets, kwargs)
 {
     this.widgets = widgets;
-    Widget.call(this.kwargs);
+    Widget.call(this, kwargs);
 }
 
 MultiWidget.prototype = new Widget();
@@ -1024,9 +1024,9 @@ MultiWidget.prototype.render = function(name, value, attrs)
     var finalAttrs = this.buildAttrs(attrs);
     var id = finalAttrs.id || null;
     var renderedWidgets = [];
-    for (var i = 0, l = this.widgets.length, widget; i < l; i++)
+    for (var i = 0, l = this.widgets.length; i < l; i++)
     {
-        widget = this.widgets[i];
+        var widget = this.widgets[i];
         var widgetValue = null;
         if (typeof value[i] != "undefined")
         {
@@ -1049,7 +1049,7 @@ MultiWidget.prototype.idForLabel = function(id)
         id += "_0";
     }
     return id;
-}
+};
 
 MultiWidget.prototype.valueFromData = function(data, files, name)
 {

@@ -575,9 +575,20 @@ test("MultiWidget", function()
         return ["", ""];
     };
 
-    expect(4);
-    var w = new MyMultiWidget([new TextInput(), new TextInput()])
+    expect(8);
+    var w = new MyMultiWidget([new TextInput({attrs: {"class": "big"}}), new TextInput({attrs: {"class": "small"}})]);
+    equals(""+w.render("name", ["john", "lennon"]),
+           "<span><input class=\"big\" type=\"text\" name=\"name_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" value=\"lennon\"></span>");
+    equals(""+w.render("name", "john__lennon"),
+           "<span><input class=\"big\" type=\"text\" name=\"name_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" value=\"lennon\"></span>");
+    equals(""+w.render("name", "john__lennon", {id: "foo"}),
+           "<span><input class=\"big\" type=\"text\" name=\"name_0\" id=\"foo_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"foo_1\" value=\"lennon\"></span>");
 
+    w = new MyMultiWidget([new TextInput({attrs: {"class": "big"}}), new TextInput({attrs: {"class": "small"}})], {attrs: {id: "bar"}});
+    equals(""+w.render("name", ["john", "lennon"]),
+           "");
+
+    w = new MyMultiWidget([new TextInput(), new TextInput()])
     // Test with no initial data
     equals(w._hasChanged(null, ["john", "lennon"]), true);
     // Test when data is the same as initial
