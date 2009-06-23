@@ -470,29 +470,28 @@ CheckboxInput.prototype = new Widget();
 
 CheckboxInput.prototype.render = function(name, value, attrs)
 {
-    var result;
+    var checked;
     try
     {
-        result = this.checkTest(value);
+        checked = this.checkTest(value);
     }
     catch (e)
     {
         // Silently catch exceptions
-        result = false;
+        checked = false;
     }
 
     var finalAttrs = this.buildAttrs(attrs, {type: "checkbox", name: name});
-    if (result)
-    {
-        finalAttrs.checked = "checked";
-    }
     if (value !== "" && value !== true && value !== false && value !== null &&
         value !== undefined)
     {
         // Only add the "value" attribute if value is non-empty
         finalAttrs.value = value;
     }
-
+    if (checked)
+    {
+        finalAttrs.checked = "checked";
+    }
     return DOMBuilder.createElement("input", finalAttrs);
 };
 
@@ -933,7 +932,7 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, attrs, 
         selectedValues = [];
     }
     var hasId = (attrs && typeof attrs.id != "undefined");
-    var finalAttrs = this.buildAttrs(attrs, {name: name});
+    var finalAttrs = this.buildAttrs(attrs);
     // Normalise to strings
     var selectedValuesLookup = {};
     for (var i = 0, l = selectedValues.length; i < l; i++)
@@ -949,7 +948,7 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, attrs, 
     for (var i = 0, l = finalChoices.length; i < l; i++)
     {
         var optValue = "" + finalChoices[i][0];
-        var optLabel = "" + finalChoices[i][1];
+        var optLabel = finalChoices[i][1];
 
         var checkboxAttrs = extendObject({}, finalAttrs);
         var labelAttrs = {};
