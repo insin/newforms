@@ -311,12 +311,12 @@ test("Select", function()
     equals(""+w.render("num", 2, {}, [[1, 1], [2, 2], [3, 3]]),
            "<select name=\"num\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
 
-    // You can also pass 'choices' to the constructor:
+    // You can also pass "choices" to the constructor:
     w = new Select({choices: [[1, 1], [2, 2], [3, 3]]});
     equals(""+w.render("num", 2),
            "<select name=\"num\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
 
-    // If 'choices' is passed to both the constructor and render(), then they'll both be in the output
+    // If "choices" is passed to both the constructor and render(), then they'll both be in the output
     equals(""+w.render("num", 2, {}, [[4, 4], [5, 5]]),
            "<select name=\"num\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option><option value=\"4\">4</option><option value=\"5\">5</option></select>");
 
@@ -334,16 +334,176 @@ test("Select", function()
            "<select name=\"nestchoice\"><option value=\"outer1\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\" selected=\"selected\">Inner 1</option><option value=\"inner2\">Inner 2</option></optgroup></select>");
 });
 
+test("NullBooleanSelect", function()
+{
+    expect(5);
+    var w = new NullBooleanSelect();
+    equals(""+w.render("is_cool", true),
+           "<select name=\"is_cool\"><option value=\"1\">Unknown</option><option value=\"2\" selected=\"selected\">Yes</option><option value=\"3\">No</option></select>");
+    equals(""+w.render("is_cool", false),
+           "<select name=\"is_cool\"><option value=\"1\">Unknown</option><option value=\"2\">Yes</option><option value=\"3\" selected=\"selected\">No</option></select>");
+    equals(""+w.render("is_cool", null),
+           "<select name=\"is_cool\"><option value=\"1\" selected=\"selected\">Unknown</option><option value=\"2\">Yes</option><option value=\"3\">No</option></select>");
+    equals(""+w.render("is_cool", "2"),
+           "<select name=\"is_cool\"><option value=\"1\">Unknown</option><option value=\"2\" selected=\"selected\">Yes</option><option value=\"3\">No</option></select>");
+    equals(""+w.render("is_cool", "3"),
+           "<select name=\"is_cool\"><option value=\"1\">Unknown</option><option value=\"2\">Yes</option><option value=\"3\" selected=\"selected\">No</option></select>");
+});
+
 test("SelectMultiple", function()
 {
-    expect(6);
+    expect(22);
     var w = new SelectMultiple();
+    equals(""+w.render("beatles", ["J"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\" selected=\"selected\">John</option><option value=\"P\">Paul</option><option value=\"G\">George</option><option value=\"R\">Ringo</option></select>");
+    equals(""+w.render("beatles", ["J", "P"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\" selected=\"selected\">John</option><option value=\"P\" selected=\"selected\">Paul</option><option value=\"G\">George</option><option value=\"R\">Ringo</option></select>");
+    equals(""+w.render("beatles", ["J", "P", "R"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\" selected=\"selected\">John</option><option value=\"P\" selected=\"selected\">Paul</option><option value=\"G\">George</option><option value=\"R\" selected=\"selected\">Ringo</option></select>");
+
+    // If the value is null, none of the options are selected
+    equals(""+w.render("beatles", null, {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\">John</option><option value=\"P\">Paul</option><option value=\"G\">George</option><option value=\"R\">Ringo</option></select>");
+
+    // If the value corresponds to a label (but not to an option value), none of the options are selected
+    equals(""+w.render("beatles", ["John"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\">John</option><option value=\"P\">Paul</option><option value=\"G\">George</option><option value=\"R\">Ringo</option></select>");
+
+    // If multiple values are given, but some of them are not valid, the valid ones are selected
+    equals(""+w.render("beatles", ["J", "G", "foo"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\" selected=\"selected\">John</option><option value=\"P\">Paul</option><option value=\"G\" selected=\"selected\">George</option><option value=\"R\">Ringo</option></select>");
+
+    // The value is compared to its String representation
+    equals(""+w.render("nums", [2], {}, [['1', '1'], ['2', '2'], ['3', '3']]),
+           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+    equals(""+w.render("nums", ["2"], {}, [[1, 1], [2, 2], [3, 3]]),
+           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+    equals(""+w.render("nums", [2], {}, [[1, 1], [2, 2], [3, 3]]),
+           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+
+    // You can also pass "choices" to the constructor:
+    w = new SelectMultiple({choices: [[1, 1], [2, 2], [3, 3]]});
+    equals(""+w.render("nums", [2]),
+           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+
+    // If "choices" is passed to both the constructor and render(), then they'll both be in the output
+    equals(""+w.render("nums", [2], {}, [[4, 4], [5, 5]]),
+           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option><option value=\"4\">4</option><option value=\"5\">5</option></select>");
+
+    // Choices are escaped correctly
+    equals(""+w.render("nums", null, {}, [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]),
+           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\">2</option><option value=\"3\">3</option><option value=\"bad\">you &amp; me</option><option value=\"good\">you &gt; me</option></select>");
+
+    // Test the usage of _hasChanged
     equals(w._hasChanged(null, null), false);
     equals(w._hasChanged([], null), false);
     equals(w._hasChanged(null, [""]), true);
     equals(w._hasChanged([1, 2], ["1", "2"]), false);
     equals(w._hasChanged([1, 2], ["1"]), true);
     equals(w._hasChanged([1, 2], ["1", "3"]), true);
+
+    // Choices can be nested one level in order to create HTML optgroups
+    w.choices = [['outer1', 'Outer 1'], ['Group "1"', [['inner1', 'Inner 1'], ['inner2', 'Inner 2']]]];
+    equals(""+w.render("nestchoice", null),
+           "<select name=\"nestchoice\" multiple=\"multiple\"><option value=\"outer1\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\">Inner 1</option><option value=\"inner2\">Inner 2</option></optgroup></select>");
+    equals(""+w.render("nestchoice", ["outer1"]),
+           "<select name=\"nestchoice\" multiple=\"multiple\"><option value=\"outer1\" selected=\"selected\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\">Inner 1</option><option value=\"inner2\">Inner 2</option></optgroup></select>");
+    equals(""+w.render("nestchoice", ["inner1"]),
+           "<select name=\"nestchoice\" multiple=\"multiple\"><option value=\"outer1\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\" selected=\"selected\">Inner 1</option><option value=\"inner2\">Inner 2</option></optgroup></select>");
+    equals(""+w.render("nestchoice", ["outer1", "inner2"]),
+           "<select name=\"nestchoice\" multiple=\"multiple\"><option value=\"outer1\" selected=\"selected\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\">Inner 1</option><option value=\"inner2\" selected=\"selected\">Inner 2</option></optgroup></select>");
+});
+
+test("RadioSelect", function()
+{
+    expect(13);
+    var w = new RadioSelect();
+    equals(""+w.render("beatle", "J", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+        "<ul><li><label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li></ul>");
+
+    // If the value is null, none of the options are checked
+    equals(""+w.render("beatle", null, {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+        "<ul><li><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li></ul>");
+
+    // If the value corresponds to a label (but not to an option value), none of the options are checked
+    equals(""+w.render("beatle", "John", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+        "<ul><li><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li></ul>");
+
+    // The value is compared to its String representation
+    equals(""+w.render("num", 2, {}, [['1', '1'], ['2', '2'], ['3', '3']]),
+           "<ul><li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li><li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li></ul>");
+    equals(""+w.render("num", "2", {}, [[1, 1], [2, 2], [3, 3]]),
+           "<ul><li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li><li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li></ul>");
+    equals(""+w.render("num", 2, {}, [[1, 1], [2, 2], [3, 3]]),
+           "<ul><li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li><li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li></ul>");
+
+    // You can also pass "choices" to the constructor:
+    w = new RadioSelect({choices: [[1, 1], [2, 2], [3, 3]]});
+    equals(""+w.render("num", 2),
+           "<ul><li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li><li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li></ul>");
+
+    // If 'choices' is passed to both the constructor and render(), then they'll both be in the output
+    equals(""+w.render("num", 2, {}, [[4, 4], [5, 5]]),
+           "<ul><li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li><li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li><li><label><input type=\"radio\" name=\"num\" value=\"4\"> 4</label></li><li><label><input type=\"radio\" name=\"num\" value=\"5\"> 5</label></li></ul>");
+
+    // TODO RadioSelect uses a RadioFieldRenderer to render the individual radio
+    //      inputs. You can manipulate that object directly to customize the way
+    //      the RadioSelect is rendered.
+
+    // You can create your own custom renderers for RadioSelect to use.
+    function MyRenderer()
+    {
+        RadioFieldRenderer.apply(this, arguments);
+    }
+    MyRenderer.prototype = new RadioFieldRenderer();
+    MyRenderer.prototype.render = function()
+    {
+        var inputs = this.radioInputs();
+        var items = [];
+        for (var i = 0, l = inputs.length; i < l; i++)
+        {
+            items.push(inputs[i].labelTag());
+            if (i != l - 1)
+            {
+                items.push(DOMBuilder.createElement("br"));
+            }
+        }
+        return DOMBuilder.createElement("div", {}, items);
+    };
+
+    w = new RadioSelect({renderer: MyRenderer});
+    equals(""+w.render("beatle", "G", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+           "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked=\"checked\"> George</label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></div>");
+
+    // Or you can use custom RadioSelect fields that use your custom renderer
+    function CustomRadioSelect(kwargs)
+    {
+        kwargs = extendObject({}, kwargs, {renderer: MyRenderer});
+        RadioSelect.call(this, kwargs);
+    }
+    CustomRadioSelect.prototype = new RadioSelect();
+
+    w = new CustomRadioSelect();
+    equals(""+w.render("beatle", "G", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+           "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked=\"checked\"> George</label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></div>");
+
+    // TODO A RadioFieldRenderer object also allows index access to individual
+    //      RadioInput objects.
+
+    // Choices are escaped correctly
+    w = new RadioSelect();
+    equals(""+w.render("escape", null, {}, [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]),
+           "<ul><li><label><input type=\"radio\" name=\"escape\" value=\"bad\"> you &amp; me</label></li><li><label><input type=\"radio\" name=\"escape\" value=\"good\"> you &gt; me</label></li></ul>");
+
+    // Attributes provided at instantiation are passed to the constituent inputs
+    w = new RadioSelect({attrs: {id: "foo"}});
+    equals(""+w.render("beatle", "J", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+           "<ul><li><label for=\"foo_0\"><input id=\"foo_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li><li><label for=\"foo_1\"><input id=\"foo_1\" type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li><li><label for=\"foo_2\"><input id=\"foo_2\" type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li><li><label for=\"foo_3\"><input id=\"foo_3\" type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li></ul>");
+
+    // Attributes provided at render-time are passed to the constituent inputs
+    w = new RadioSelect();
+    equals(""+w.render("beatle", "J", {id: "bar"}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+           "<ul><li><label for=\"bar_0\"><input id=\"bar_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li><li><label for=\"bar_1\"><input id=\"bar_1\" type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li><li><label for=\"bar_2\"><input id=\"bar_2\" type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li><li><label for=\"bar_3\"><input id=\"bar_3\" type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li></ul>");
 });
 
 test("CheckboxSelectMultiple", function()

@@ -772,7 +772,7 @@ function RadioInput(name, value, attrs, choice, index)
     this.value = value;
     this.attrs = attrs;
     this.choiceValue = "" + choice[0];
-    this.choiceLabel = "" + choice[1];
+    this.choiceLabel = choice[1];
     this.index = index;
 }
 
@@ -808,9 +808,11 @@ RadioInput.prototype.tag = function()
     {
         finalAttrs.id = finalAttrs.id + "_" + this.index;
     }
-    var radio = DOMBuilder.createElement("input", finalAttrs);
-    radio.checked = this.isChecked();
-    return radio;
+    if (this.isChecked())
+    {
+        finalAttrs.checked = "checked";
+    }
+    return DOMBuilder.createElement("input", finalAttrs);
 };
 
 /**
@@ -833,15 +835,24 @@ function RadioFieldRenderer(name, value, attrs, choices)
     this.choices = choices;
 }
 
+RadioFieldRenderer.prototype.radioInputs = function()
+{
+    var inputs = [];
+    for (var i = 0, l = this.choices.length; i < l; i++)
+    {
+        inputs.push(new RadioInput(this.name, this.value, this.attrs,
+                                   this.choices[i], i));
+    }
+    return inputs;
+};
+
 RadioFieldRenderer.prototype.render = function()
 {
+    var inputs = this.radioInputs();
     var items = [];
-    for (var i = 0, l = this.choices.length, radio; i < l; i++)
+    for (var i = 0, l = inputs.length; i < l; i++)
     {
-        radio = new RadioInput(this.name, this.value, this.attrs,
-                               this.choices[i], i);
-        items[items.length] =
-            DOMBuilder.createElement("li", {}, [radio.labelTag()]);
+        items.push(DOMBuilder.createElement("li", {}, [inputs[i].labelTag()]));
     }
     return DOMBuilder.createElement("ul", {}, items);
 };
@@ -857,7 +868,7 @@ function RadioSelect(kwargs)
 {
     kwargs = extendObject({renderer: null}, kwargs || {});
     // Override the default renderer if we were passed one
-    if (kwargs.renderer)
+    if (kwargs.renderer !== null)
     {
         this.renderer = kwargs.renderer;
     }
@@ -876,7 +887,10 @@ RadioSelect.prototype.getRenderer = function(name, value, attrs, choices)
     {
         value = "";
     }
-    value = "" + value;
+    else
+    {
+        value = "" + value;
+    }
     var finalAttrs = this.buildAttrs(attrs);
     choices = this.choices.concat(choices || []);
     return new this.renderer(name, value, finalAttrs, choices);
