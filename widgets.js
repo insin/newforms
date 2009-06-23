@@ -34,8 +34,7 @@ Widget.prototype.needsMultipartForm = false;
  */
 Widget.prototype.buildAttrs = function(extraAttrs, kwargs)
 {
-    var attrs = extendObject(extendObject(this.attrs, kwargs || {}),
-                             extraAttrs || {});
+    var attrs = extendObject({}, this.attrs, kwargs || {}, extraAttrs || {});
     return attrs;
 };
 

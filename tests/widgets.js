@@ -13,7 +13,7 @@ test("TextInput", function()
     equals(""+w.render("email", "some \"quoted\" & ampersanded value"),
            "<input type=\"text\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">");
     equals(""+w.render("email", "test@example.com", {"class": "fun"}),
-           "<input type=\"text\" name=\"email\" value=\"test@example.com\" class=\"fun\">");
+           "<input type=\"text\" name=\"email\" class=\"fun\" value=\"test@example.com\">");
 
     // You can also pass "attrs" to the constructor
     w = new TextInput({attrs: {"class": "fun"}});
@@ -46,7 +46,7 @@ test("PasswordInput", function()
     equals(""+w.render("email", "some \"quoted\" & ampersanded value"),
            "<input type=\"password\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">");
     equals(""+w.render("email", "test@example.com", {"class": "fun"}),
-           "<input type=\"password\" name=\"email\" value=\"test@example.com\" class=\"fun\">");
+           "<input type=\"password\" name=\"email\" class=\"fun\" value=\"test@example.com\">");
 
     // You can also pass "attrs" to the constructor
     w = new PasswordInput({attrs: {"class": "fun"}});
@@ -90,7 +90,7 @@ test("HiddenInput", function()
     equals(""+w.render("email", "some \"quoted\" & ampersanded value"),
            "<input type=\"hidden\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">");
     equals(""+w.render("email", "test@example.com", {"class": "fun"}),
-           "<input type=\"hidden\" name=\"email\" value=\"test@example.com\" class=\"fun\">");
+           "<input type=\"hidden\" name=\"email\" class=\"fun\" value=\"test@example.com\">");
 
     // You can also pass "attrs" to the constructor
     w = new HiddenInput({attrs: {"class": "fun"}});
@@ -177,10 +177,10 @@ test("FileInput", function()
     // no use to a FileInput it is ignored.
     w = new FileInput();
 
-    // No file was uploaded and no initial data.
+    // No file was uploaded and no initial data
     equals(w._hasChanged("", null), false);
 
-    // A file was uploaded and no initial data.
+    // A file was uploaded and no initial data
     equals(w._hasChanged("", {filename: "resume.txt", content: "My resume"}), true);
 
     // A file was not uploaded, but there is initial data
@@ -208,7 +208,7 @@ test("Textarea", function()
     equals(""+w.render("msg", "value", {"class": "pretty", rows: 20}),
            "<textarea rows=\"20\" cols=\"40\" name=\"msg\" class=\"pretty\">value</textarea>");
 
-    // You can also pass "attrs" to the constructor:
+    // You can also pass "attrs" to the constructor
     w = new Textarea({attrs: {"class": "pretty"}});
     equals(""+w.render("msg", ""),
            "<textarea rows=\"10\" cols=\"40\" class=\"pretty\" name=\"msg\"></textarea>");
@@ -223,8 +223,57 @@ test("Textarea", function()
 
 test("CheckboxInput", function()
 {
-    expect(7);
+    expect(22);
     var w = new CheckboxInput();
+    equals(""+w.render("is_cool", ""),
+           "<input type=\"checkbox\" name=\"is_cool\">");
+    equals(""+w.render("is_cool", null),
+           "<input type=\"checkbox\" name=\"is_cool\">");
+    equals(""+w.render("is_cool", false),
+           "<input type=\"checkbox\" name=\"is_cool\">");
+    equals(""+w.render("is_cool", true),
+           "<input type=\"checkbox\" name=\"is_cool\" checked=\"checked\">");
+
+    // Using any value that's not in ("", null, false, true) will check the
+    // checkbox and set the "value" attribute.
+    equals(""+w.render("is_cool", "foo"),
+           "<input type=\"checkbox\" name=\"is_cool\" checked=\"checked\" value=\"foo\">");
+
+    equals(""+w.render("is_cool", false, {"class": "pretty"}),
+           "<input type=\"checkbox\" name=\"is_cool\" class=\"pretty\">");
+
+    // You can also pass "attrs" to the constructor
+    w = new CheckboxInput({attrs: {"class": "pretty"}});
+    equals(""+w.render("is_cool", ""),
+           "<input class=\"pretty\" type=\"checkbox\" name=\"is_cool\">");
+
+    // Attributes passed to render() get precedence over those passed to the constructor
+    w = new CheckboxInput({attrs: {"class": "pretty"}});
+    equals(""+w.render("is_cool", false, {"class": "special"}),
+           "<input class=\"special\" type=\"checkbox\" name=\"is_cool\">");
+
+    // You can pass "checkTest" to the constructor. This is a function that
+    // takes the value and returns true if the box should be checked.
+    w = new CheckboxInput({checkTest: function(value) { return value.indexOf("hello") == 0; }});
+    equals(""+w.render("greeting", ""),
+           "<input type=\"checkbox\" name=\"greeting\">");
+    equals(""+w.render("greeting", "hello"),
+           "<input type=\"checkbox\" name=\"greeting\" checked=\"checked\" value=\"hello\">");
+    equals(""+w.render("greeting", "hello there"),
+           "<input type=\"checkbox\" name=\"greeting\" checked=\"checked\" value=\"hello there\">");
+    equals(""+w.render("greeting", "hello & goodbye"),
+           "<input type=\"checkbox\" name=\"greeting\" checked=\"checked\" value=\"hello &amp; goodbye\">");
+
+    // A subtlety: If the "checkTest" argument cannot handle a value and throws
+    // an exception,  the exception will be swallowed and the box will not be
+    // checked. In this example, the "checkTest" assumes the value has an
+    // indexOf() method, which fails for the values true, false and null.
+    equals(""+w.render("greeting", true),
+           "<input type=\"checkbox\" name=\"greeting\">");
+    equals(""+w.render("greeting", false),
+           "<input type=\"checkbox\" name=\"greeting\">");
+    equals(""+w.render("greeting", null),
+           "<input type=\"checkbox\" name=\"greeting\">");
 
     // The CheckboxInput widget will return False if the key is not found in
     // the data (because HTML form submission doesn't send any result for
