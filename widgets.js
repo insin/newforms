@@ -572,13 +572,12 @@ Select.prototype.renderOptions = function(choices, selectedValues)
     var renderOption = function(optValue, optLabel)
     {
         optValue = "" + optValue;
-        var option =
-            DOMBuilder.createElement("option", {value: optValue}, optLabel);
+        var attrs = {value: optValue};
         if (typeof selectedValuesLookup[optValue] != "undefined")
         {
-            option.selected = "selected";
+            attrs["selected"] = "selected";
         }
-        return option;
+        return DOMBuilder.createElement("option", attrs, [optLabel]);
     };
 
     var options = [];
