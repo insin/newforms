@@ -561,9 +561,9 @@ test("CheckboxSelectMultiple", function()
 
 test("MultiWidget", function()
 {
-    function MyMultiWidget(widgets)
+    function MyMultiWidget(widgets, kwargs)
     {
-        MultiWidget.call(this, widgets);
+        MultiWidget.call(this, widgets, kwargs);
     }
     MyMultiWidget.prototype = new MultiWidget();
     MyMultiWidget.prototype.decompress = function(value)
@@ -586,7 +586,7 @@ test("MultiWidget", function()
 
     w = new MyMultiWidget([new TextInput({attrs: {"class": "big"}}), new TextInput({attrs: {"class": "small"}})], {attrs: {id: "bar"}});
     equals(""+w.render("name", ["john", "lennon"]),
-           "");
+           "<span><input class=\"big\" type=\"text\" name=\"name_0\" id=\"bar_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"bar_1\" value=\"lennon\"></span>");
 
     w = new MyMultiWidget([new TextInput(), new TextInput()])
     // Test with no initial data
