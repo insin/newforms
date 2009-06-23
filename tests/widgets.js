@@ -1,5 +1,38 @@
 module("widgets");
 
+test("TextInput", function()
+{
+    expect(9);
+    var w = new TextInput();
+    equals(""+w.render("email", ""),
+           "<input type=\"text\" name=\"email\">");
+    equals(""+w.render("email", null),
+           "<input type=\"text\" name=\"email\">");
+    equals(""+w.render("email", "test@example.com"),
+           "<input type=\"text\" name=\"email\" value=\"test@example.com\">");
+    equals(""+w.render("email", "some \"quoted\" & ampersanded value"),
+           "<input type=\"text\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">");
+    equals(""+w.render("email", "test@example.com", {"class": "fun"}),
+           "<input type=\"text\" name=\"email\" value=\"test@example.com\" class=\"fun\">");
+
+    // You can also pass 'attrs' to the constructor:
+    var w = new TextInput({attrs: {"class": "fun"}});
+    equals(""+w.render("email", ""),
+           "<input class=\"fun\" type=\"text\" name=\"email\">");
+    equals(""+w.render("email", "foo@example.com"),
+           "<input class=\"fun\" type=\"text\" name=\"email\" value=\"foo@example.com\">");
+
+    // Attributes passed to render() get precedence over those passed to the constructor:
+    var w = new TextInput({attrs: {"class": "pretty"}});
+    equals(""+w.render("email", "", {"class": "special"}),
+           "<input class=\"special\" type=\"text\" name=\"email\">");
+
+    // Attributes can be safe-strings if needed
+    var w = new TextInput({attrs: {"onblur": DOMBuilder.markSafe("function('foo')")}});
+    equals(""+w.render("email", ""),
+           "<input onblur=\"function('foo')\" type=\"text\" name=\"email\">");
+});
+
 test("CheckboxInput", function()
 {
     expect(7);
