@@ -178,17 +178,17 @@ test("FileInput", function()
     w = new FileInput();
 
     // No file was uploaded and no initial data
-    equals(w._hasChanged("", null), false);
+    same(w._hasChanged("", null), false);
 
     // A file was uploaded and no initial data
-    equals(w._hasChanged("", {filename: "resume.txt", content: "My resume"}), true);
+    same(w._hasChanged("", {filename: "resume.txt", content: "My resume"}), true);
 
     // A file was not uploaded, but there is initial data
-    equals(w._hasChanged("resume.txt", null), false);
+    same(w._hasChanged("resume.txt", null), false);
 
     // A file was uploaded and there is initial data (file identity is not dealt
     // with here).
-    equals(w._hasChanged("resume.txt", {filename: "resume.txt", content: "My resume"}), true);
+    same(w._hasChanged("resume.txt", {filename: "resume.txt", content: "My resume"}), true);
 });
 
 test("Textarea", function()
@@ -278,14 +278,14 @@ test("CheckboxInput", function()
     // The CheckboxInput widget will return False if the key is not found in
     // the data (because HTML form submission doesn't send any result for
     // unchecked checkboxes).
-    equals(w.valueFromData({}, {}, 'testing'), false);
+    same(w.valueFromData({}, {}, 'testing'), false);
 
-    equals(w._hasChanged(null, null), false);
-    equals(w._hasChanged(null, ""), false);
-    equals(w._hasChanged("", ""), false);
-    equals(w._hasChanged(false, "on"), true);
-    equals(w._hasChanged(true, "on"), false);
-    equals(w._hasChanged(true, ""), true);
+    same(w._hasChanged(null, null), false);
+    same(w._hasChanged(null, ""), false);
+    same(w._hasChanged("", ""), false);
+    same(w._hasChanged(false, "on"), true);
+    same(w._hasChanged(true, "on"), false);
+    same(w._hasChanged(true, ""), true);
 });
 
 test("Select", function()
@@ -395,12 +395,12 @@ test("SelectMultiple", function()
            "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\">2</option><option value=\"3\">3</option><option value=\"bad\">you &amp; me</option><option value=\"good\">you &gt; me</option></select>");
 
     // Test the usage of _hasChanged
-    equals(w._hasChanged(null, null), false);
-    equals(w._hasChanged([], null), false);
-    equals(w._hasChanged(null, [""]), true);
-    equals(w._hasChanged([1, 2], ["1", "2"]), false);
-    equals(w._hasChanged([1, 2], ["1"]), true);
-    equals(w._hasChanged([1, 2], ["1", "3"]), true);
+    same(w._hasChanged(null, null), false);
+    same(w._hasChanged([], null), false);
+    same(w._hasChanged(null, [""]), true);
+    same(w._hasChanged([1, 2], ["1", "2"]), false);
+    same(w._hasChanged([1, 2], ["1"]), true);
+    same(w._hasChanged([1, 2], ["1", "3"]), true);
 
     // Choices can be nested one level in order to create HTML optgroups
     w.choices = [['outer1', 'Outer 1'], ['Group "1"', [['inner1', 'Inner 1'], ['inner2', 'Inner 2']]]];
@@ -551,12 +551,12 @@ test("CheckboxSelectMultiple", function()
            "<ul><li><label><input type=\"checkbox\" name=\"escape\" value=\"1\"> 1</label></li><li><label><input type=\"checkbox\" name=\"escape\" value=\"2\"> 2</label></li><li><label><input type=\"checkbox\" name=\"escape\" value=\"3\"> 3</label></li><li><label><input type=\"checkbox\" name=\"escape\" value=\"bad\"> you &amp; me</label></li><li><label><input type=\"checkbox\" name=\"escape\" value=\"good\"> you &gt; me</label></li></ul>");
 
     // Test the usage of _hasChanged
-    equals(w._hasChanged(null, null), false);
-    equals(w._hasChanged([], null), false);
-    equals(w._hasChanged(null, [""]), true);
-    equals(w._hasChanged([1, 2], ["1", "2"]), false);
-    equals(w._hasChanged([1, 2], ["1"]), true);
-    equals(w._hasChanged([1, 2], ["1", "3"]), true);
+    same(w._hasChanged(null, null), false);
+    same(w._hasChanged([], null), false);
+    same(w._hasChanged(null, [""]), true);
+    same(w._hasChanged([1, 2], ["1", "2"]), false);
+    same(w._hasChanged([1, 2], ["1"]), true);
+    same(w._hasChanged([1, 2], ["1", "3"]), true);
 });
 
 test("MultiWidget", function()
@@ -590,14 +590,14 @@ test("MultiWidget", function()
 
     w = new MyMultiWidget([new TextInput(), new TextInput()])
     // Test with no initial data
-    equals(w._hasChanged(null, ["john", "lennon"]), true);
+    same(w._hasChanged(null, ["john", "lennon"]), true);
     // Test when data is the same as initial
-    equals(w._hasChanged("john__lennon", ["john", "lennon"]), false);
+    same(w._hasChanged("john__lennon", ["john", "lennon"]), false);
     // Test when the first widget's data has changed
-    equals(w._hasChanged("john__lennon", ["alfred", "lennon"]), true);
+    same(w._hasChanged("john__lennon", ["alfred", "lennon"]), true);
     // Test when the last widget's data has changed. This ensures that it is
     // not short circuiting while testing the widgets.
-    equals(w._hasChanged("john__lennon", ["john", "denver"]), true);
+    same(w._hasChanged("john__lennon", ["john", "denver"]), true);
 });
 
 test("SplitDateTimeWidget", function()
@@ -622,9 +622,9 @@ test("SplitDateTimeWidget", function()
     equals(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
            "<span><input type=\"text\" name=\"date_0\" value=\"10/01/2006\"><input type=\"text\" name=\"date_1\" value=\"07:30\"></span>");
 
-    equals(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["2008-05-05", "12:40:00"]), true);
-    equals(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:40"]), false);
-    equals(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:41"]), true);
+    same(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["2008-05-05", "12:40:00"]), true);
+    same(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:40"]), false);
+    same(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:41"]), true);
 });
 
 test("DateTimeInput", function()
@@ -644,7 +644,7 @@ test("DateTimeInput", function()
     w = new DateTimeInput({format: "%d/%m/%Y %H:%M"});
     equals(""+w.render("date", d),
            "<input type=\"text\" name=\"date\" value=\"17/09/2007 12:51\">");
-    equals(w._hasChanged(d, "17/09/2007 12:51"), false);
+    same(w._hasChanged(d, "17/09/2007 12:51"), false);
 });
 
 test("DateInput", function()
@@ -666,7 +666,7 @@ test("DateInput", function()
     w = new DateInput({format: "%d/%m/%Y"});
     equals(""+w.render("date", d),
            "<input type=\"text\" name=\"date\" value=\"17/09/2007\">");
-    equals(w._hasChanged(d, "17/09/2007"), false);
+    same(w._hasChanged(d, "17/09/2007"), false);
 });
 
 test("TimeInput", function()
@@ -690,7 +690,7 @@ test("TimeInput", function()
     w = new TimeInput({format: "%H:%M"});
     equals(""+w.render("time", t),
            "<input type=\"text\" name=\"time\" value=\"12:51\">");
-    equals(w._hasChanged(t, "12:51"), false);
+    same(w._hasChanged(t, "12:51"), false);
 });
 
 test("SplitHiddenDateTimeWidget", function()
