@@ -430,7 +430,7 @@ test("URLField", function()
 
 test("BooleanField", function()
 {
-    expect(16);
+    expect(19);
     var f = new BooleanField();
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
@@ -451,20 +451,26 @@ test("BooleanField", function()
     equals(f.clean(false), false);
     equals(f.clean(1), true);
     equals(f.clean(0), false);
+    equals(f.clean("1"), true);
+    equals(f.clean("0"), false);
     equals(f.clean("Django rocks"), true);
+
+    // A form's BooleanField with a hidden widget will output the string
+    // 'false', so that should clean to the boolean value false
+    equals(f.clean("false"), false);
 });
 
 test("ChoiceField", function()
 {
     expect(19);
-    var f = new ChoiceField({choices: [["1", "1"], ["2", "2"]]});
+    var f = new ChoiceField({choices: [["1", "One"], ["2", "Two"]]});
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
     equals(f.clean(1), "1");
     equals(f.clean("1"), "1");
     try { f.clean("3"); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
 
-    var f = new ChoiceField({choices: [["1", "1"], ["2", "2"]], required: false});
+    var f = new ChoiceField({choices: [["1", "One"], ["2", "One"]], required: false});
     equals(f.clean(""), "");
     equals(f.clean(null), "");
     equals(f.clean(1), "1");
@@ -487,16 +493,51 @@ test("ChoiceField", function()
 
 test("NullBooleanField", function()
 {
-    expect(8);
+    expect(14);
     var f = new NullBooleanField();
     equals(f.clean(""), null);
     equals(f.clean(true), true);
     equals(f.clean(false), false);
     equals(f.clean(null), null);
-    equals(f.clean("1"), null);
+    equals(f.clean("0"), false);
+    equals(f.clean("1"), true);
     equals(f.clean("2"), null);
     equals(f.clean("3"), null);
     equals(f.clean("hello"), null);
+
+    // Make sure that the internal value is preserved if using HiddenInput (Django #7753)
+    var HiddenNullBooleanForm = formFactory({
+        fields: function()
+        {
+            return {
+                hidden_nullbool1: new NullBooleanField({widget: HiddenInput, initial: true}),
+                hidden_nullbool2: new NullBooleanField({widget: HiddenInput, initial: false})
+            };
+        }
+    });
+    f = new HiddenNullBooleanForm({data: {hidden_nullbool1: "true", hidden_nullbool2: "false"}});
+    f.fullClean();
+    equals(f.cleanedData.hidden_nullbool1, true);
+    equals(f.cleanedData.hidden_nullbool2, false);
+
+    // Make sure we're compatible with MySQL, which uses 0 and 1 for its boolean
+    // values. (Django #9609)
+    var NULLBOOL_CHOICES = [["1", "Yes"], ["0", "No"], ["", "Unknown"]];
+    var MySQLNullBooleanForm = formFactory({
+        fields: function()
+        {
+            return {
+                nullbool0: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})}),
+                nullbool1: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})}),
+                nullbool2: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})})
+            };
+        }
+    });
+    f = new MySQLNullBooleanForm({data: {nullbool0: "1", nullbool1: "0", nullbool2: ""}});
+    f.fullClean();
+    equals(f.cleanedData.nullbool0, true);
+    equals(f.cleanedData.nullbool1, false);
+    equals(f.cleanedData.nullbool2, null);
 });
 
 test("MultipleChoiceField", function()

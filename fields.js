@@ -32,7 +32,12 @@ function Field(kwargs)
     this.initial = kwargs.initial;
     this.helpText = kwargs.helpText || "";
 
-    var widget = kwargs.widget || new this.defaultWidget();
+    var widget = kwargs.widget || this.defaultWidget;
+    if (!(widget instanceof Widget))
+    {
+        // We must have a Widget constructor, so construct with it
+        widget = new widget();
+    }
     // Hook into this.widgetAttrs() for any Field-specific HTML attributes.
     extendObject(widget.attrs, this.widgetAttrs(widget));
     this.widget = widget;
@@ -996,9 +1001,10 @@ BooleanField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
     // Explicitly check for the strings "False" or "false", which is what a
-    // hidden field will submit for false. Because Boolean("True") == true, we
+    // hidden field will submit for false. Also check for '0', since this is
+    // what RadioSelect will provide. Because Boolean("anything") == true, we
     // don't need to handle that explicitly.
-    if (value == "False" || value == "false")
+    if (value == "False" || value == "false" || value == "0")
     {
         value = false;
     }
@@ -1035,13 +1041,14 @@ NullBooleanField.prototype.defaultWidget = NullBooleanSelect;
 NullBooleanField.prototype.clean = function(value)
 {
     // Explicitly checks for the string 'True' and 'False', which is what a
-    // hidden field will submit for true and false. Unlike the  Booleanfield we
-    // also need to check for true, because we are not using Boolean() function.
-    if (value === true || value == "True" || value == "true")
+    // hidden field will submit for true and false, and for '1' and '0', which
+    // is what a RadioField will submit. Unlike the Booleanfield we also need
+    // to check for true, because we are not using Boolean() function.
+    if (value === true || value == "True" || value == "true" || value == "1")
     {
         return true;
     }
-    else if (value === false || value == "False" || value == "false")
+    else if (value === false || value == "False" || value == "false" || value == "0")
     {
         return false;
     }
