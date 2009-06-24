@@ -317,7 +317,7 @@ test("RegexField", function()
 
 test("EmailField", function()
 {
-    expect(15);
+    expect(21);
     var f = new EmailField();
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
@@ -325,6 +325,12 @@ test("EmailField", function()
     try { f.clean("foo"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
     try { f.clean("foo@"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
     try { f.clean("foo@bar"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    try { f.clean("example@invalid-.com"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    try { f.clean("example@-invalid.com"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    try { f.clean("example@inv-.alid-.com"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    try { f.clean("example@inv-.-alid.com"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    equals(f.clean("example@valid-----hyphens.com"), "example@valid-----hyphens.com");
+    equals(f.clean("example@valid-with-hyphens.com"), "example@valid-with-hyphens.com");
 
     f = new EmailField({required: false});
     equals(f.clean(""), "");
