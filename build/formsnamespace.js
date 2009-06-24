@@ -53,6 +53,7 @@ return {
     BooleanField: BooleanField,
     NullBooleanField: NullBooleanField,
     ChoiceField: ChoiceField,
+    TypedChoiceField: TypedChoiceField,
     MultipleChoiceField: MultipleChoiceField,
     ComboField: ComboField,
     MultiValueField: MultiValueField,
