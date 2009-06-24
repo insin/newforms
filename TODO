@@ -16,10 +16,6 @@ Change histories for the most relevant Django modules can be found here:
 Changesets which need to be ported
 ----------------------------------
 
-http://code.djangoproject.com/changeset/8771
-
-   Adds a TypedChoiceField field.
-
 http://code.djangoproject.com/changeset/8816 (partial)
 
    Adds support for dynamic initial values.

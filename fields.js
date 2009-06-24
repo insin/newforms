@@ -1162,6 +1162,60 @@ ChoiceField.prototype.validValue = function(value)
 };
 
 /**
+ * A {@link ChoiceField} which returns a value coerced by some provided
+ * function.
+ *
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in {@link ChoiceField}.
+ * @config {Function} [coerce] a function which takes the String value output by
+ *                             ChoiceField's clean method and coerces it to
+ *                             another type - defaults to a function which
+ *                             returns the given value unaltered.
+ * @config {Object} [emptyValue] the value which should be returned if the
+ *                               selected value can be validly empty - defaults
+ *                               to an empty string.
+ * @constructor
+ * @augments ChoiceField
+ */
+function TypedChoiceField(kwargs)
+{
+    kwargs = extendObject({
+        coerce: function(val) { return val; }, emptyValue: ""
+    }, kwargs || {});
+    this.coerce = kwargs.coerce;
+    this.emptyValue = kwargs.emptyValue;
+    delete kwargs.coerce;
+    delete kwargs.emptyValue;
+    ChoiceField.call(this, kwargs);
+}
+
+TypedChoiceField.prototype = new ChoiceField();
+
+/**
+ * Validates that the value is in this.choices and can be coerced to the right
+ * type.
+ */
+TypedChoiceField.prototype.clean = function(value)
+{
+    var value = ChoiceField.prototype.clean.call(this, value);
+    if (value === this.emptyValue || contains(this.EMPTY_VALUES, value))
+    {
+        return this.emptyValue;
+    }
+
+    try
+    {
+        value = this.coerce(value)
+    }
+    catch (e)
+    {
+        throw new ValidationError(formatString(
+            this.errorMessages.invalidChoice, {value: value}));
+    }
+    return value;
+};
+
+/**
  * Validates that its input is one or more of a valid list of choices.
  *
  * @param {Object} [kwargs] configuration options, as specified in

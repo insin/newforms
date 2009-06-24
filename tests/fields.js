@@ -491,6 +491,54 @@ test("ChoiceField", function()
     try { f.clean("6"); } catch (e) { equals(ve(e), "Select a valid choice. 6 is not one of the available choices."); }
 });
 
+test("TypedChoiceField", function()
+{
+    expect(9)
+    // TypedChoiceField is just like ChoiceField, except that coerced types wil
+    // be returned.
+    var f = new TypedChoiceField({
+        choices: [[1, "+1"], [-1, "-1"]],
+        coerce: function(val) { return parseInt(val, 10); }
+    });
+    same(f.clean("1"), 1);
+    same(f.clean("-1"), -1);
+    try { f.clean("2"); } catch (e) { equals(ve(e), "Select a valid choice. 2 is not one of the available choices."); }
+
+    // Different coercion, same validation
+    f.coerce = parseFloat;
+    same(f.clean("1"), 1.0);
+
+    // This can also cause weirdness: be careful (Booleanl(-1) == true, remember)
+    f.coerce = Boolean;
+    same(f.clean("-1"), true);
+
+    // Even more weirdness: if you have a valid choice but your coercion
+    // function can't coerce, you'll still get a validation error. Don't do this!
+    f.coerce = function(val) { return val.toFixed(2); }
+    try { f.clean("1"); } catch (e) { equals(ve(e), "Select a valid choice. 1 is not one of the available choices."); }
+
+    // Required fields require values
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+
+    // Non-required fields aren't required
+    f = new TypedChoiceField({
+        choices: [[1, "+1"], [-1, "-1"]],
+        coerce: function(val) { return parseInt(val, 10); },
+        required: false
+    });
+    same(f.clean(""), "");
+
+    // If you want cleaning an empty value to return a different type, tell the
+    // field.
+    f = new TypedChoiceField({
+        choices: [[1, "+1"], [-1, "-1"]],
+        coerce: function(val) { return parseInt(val, 10); },
+        required: false,
+        emptyValue: null
+    });
+    same(f.clean(""), null);
+});
+
 test("NullBooleanField", function()
 {
     expect(14);
