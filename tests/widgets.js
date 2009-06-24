@@ -602,38 +602,106 @@ test("MultiWidget", function()
 
 test("SplitDateTimeWidget", function()
 {
-    expect(2);
+    expect(8);
     var w = new SplitDateTimeWidget();
-    equals(w._hasChanged(new Date(2008, 4, 5, 12, 40, 00), ["2008-05-05", "12:40:00"]), false);
-    equals(w._hasChanged(new Date(2008, 4, 5, 12, 40, 00), ["2008-05-05", "12:41:00"]), true);
+    equals(""+w.render("date", ""),
+           "<span><input type=\"text\" name=\"date_0\"><input type=\"text\" name=\"date_1\"></span>");
+    equals(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
+           "<span><input type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" value=\"07:30:00\"></span>");
+    equals(""+w.render("date", [new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]),
+           "<span><input type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" value=\"07:30:00\"></span>");
+
+    // You can also pass "attrs" to the constructor. In this case, the attrs
+    // will be included on both widgets.
+    w = new SplitDateTimeWidget({attrs: {"class": "pretty"}});
+    equals(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
+           "<span><input class=\"pretty\" type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input class=\"pretty\" type=\"text\" name=\"date_1\" value=\"07:30:00\"></span>");
+
+    // Use "dateFormat" and "timeFormat" to change the way a value is displayed
+    w = new SplitDateTimeWidget({dateFormat: "%d/%m/%Y", timeFormat: "%H:%M"});
+    equals(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
+           "<span><input type=\"text\" name=\"date_0\" value=\"10/01/2006\"><input type=\"text\" name=\"date_1\" value=\"07:30\"></span>");
+
+    equals(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["2008-05-05", "12:40:00"]), true);
+    equals(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:40"]), false);
+    equals(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:41"]), true);
 });
 
 test("DateTimeInput", function()
 {
-    expect(1);
+    expect(5);
+    var w = new DateTimeInput();
+    equals(""+w.render("date", null),
+           "<input type=\"text\" name=\"date\">");
     var d = new Date(2007, 8, 17, 12, 51, 34);
 
+    equals(""+w.render("date", d),
+           "<input type=\"text\" name=\"date\" value=\"2007-09-17 12:51:34\">");
+    equals(""+w.render("date", new Date(2007, 8, 17, 12, 51)),
+           "<input type=\"text\" name=\"date\" value=\"2007-09-17 12:51:00\">");
+
     // Use "format" to change the way a value is displayed
-    var w = new DateTimeInput({format: "%d/%m/%Y %H:%M"});
+    w = new DateTimeInput({format: "%d/%m/%Y %H:%M"});
+    equals(""+w.render("date", d),
+           "<input type=\"text\" name=\"date\" value=\"17/09/2007 12:51\">");
     equals(w._hasChanged(d, "17/09/2007 12:51"), false);
 });
 
 test("DateInput", function()
 {
-    expect(1);
+    expect(5);
+    var w = new DateInput();
+    equals(""+w.render("date", null),
+           "<input type=\"text\" name=\"date\">");
     var d = new Date(2007, 8, 17);
 
+    equals(""+w.render("date", d),
+           "<input type=\"text\" name=\"date\" value=\"2007-09-17\">");
+
+    // We should be able to initialise from a String
+    equals(""+w.render("date", "2007-09-17"),
+           "<input type=\"text\" name=\"date\" value=\"2007-09-17\">");
+
     // Use "format" to change the way a value is displayed
-    var w = new DateInput({format: "%d/%m/%Y"});
+    w = new DateInput({format: "%d/%m/%Y"});
+    equals(""+w.render("date", d),
+           "<input type=\"text\" name=\"date\" value=\"17/09/2007\">");
     equals(w._hasChanged(d, "17/09/2007"), false);
 });
 
 test("TimeInput", function()
 {
-    expect(1);
+    expect(6);
+    var w = new TimeInput();
+    equals(""+w.render("time", null),
+           "<input type=\"text\" name=\"time\">");
     var t = new Date(1900, 0, 1, 12, 51, 34);
 
+    equals(""+w.render("time", t),
+           "<input type=\"text\" name=\"time\" value=\"12:51:34\">");
+    equals(""+w.render("time", new Date(1900, 0, 1, 12, 51)),
+           "<input type=\"text\" name=\"time\" value=\"12:51:00\">");
+
+    // We should be able to initialise from a String
+    equals(""+w.render("time", "13:12:11"),
+           "<input type=\"text\" name=\"time\" value=\"13:12:11\">");
+
     // Use "format" to change the way a value is displayed
-    var w = new TimeInput({format: "%H:%M"});
+    w = new TimeInput({format: "%H:%M"});
+    equals(""+w.render("time", t),
+           "<input type=\"text\" name=\"time\" value=\"12:51\">");
     equals(w._hasChanged(t, "12:51"), false);
+});
+
+test("SplitHiddenDateTimeWidget", function()
+{
+    expect(3);
+    var w = new SplitHiddenDateTimeWidget();
+    equals(""+w.render("date", ""),
+           "<span><input type=\"hidden\" name=\"date_0\"><input type=\"hidden\" name=\"date_1\"></span>");
+    var d = new Date(2007, 8, 17, 12, 51, 34);
+    equals(""+w.render("date", d),
+           "<span><input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:34\"></span>");
+    equals(""+w.render("date", new Date(2007, 8, 17, 12, 51)),
+           "<span><input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:00\"></span>");
 });

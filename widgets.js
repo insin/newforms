@@ -1174,7 +1174,12 @@ SplitDateTimeWidget.prototype.decompress = function(value)
  */
 function SplitHiddenDateTimeWidget(kwargs)
 {
-    var widgets = [new HiddenInput(kwargs), new HiddenInput(kwargs)];
+    kwargs = extendObject({attrs: null}, kwargs || {});
+    var dateInput = new DateInput({attrs: kwargs.attrs, format: this.dateFormat});
+    dateInput.inputType = "hidden";
+    var timeInput = new TimeInput({attrs: kwargs.attrs, format: this.timeFormat});
+    timeInput.inputType = "hidden";
+    var widgets = [dateInput, timeInput];
     MultiWidget.call(this, widgets, kwargs);
 }
 
