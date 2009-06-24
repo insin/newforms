@@ -5,8 +5,6 @@ return {
         formatString: formatString,
         formData: formData,
         contains: contains,
-        escapeHTML: escapeHTML,
-        flatAtt: flatAtt,
         parseUri: parseUri
     },
     ErrorObject: ErrorObject,
