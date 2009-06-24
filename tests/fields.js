@@ -370,15 +370,19 @@ test("FileField", function()
 test("URLField", function()
 {
     var invalidURLs =
-        ["foo", "http://", "http://example", "http://example.", "http://.com"];
+        ["foo", "http://", "http://example", "http://example.", "http://.com",
+         "http://invalid-.com", "http://-invalid.com", "http://inv-.alid-.com",
+         "http://inv-.-alid.com"];
 
-    expect(33);
+    expect(43);
     var f = new URLField();
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
     equals(f.clean("http://localhost"), "http://localhost/");
     equals(f.clean("http://example.com"), "http://example.com/");
     equals(f.clean("http://www.example.com:8000/test"), "http://www.example.com:8000/test");
+    equals(f.clean("valid-with-hyphens.com"), "http://valid-with-hyphens.com/");
+    equals(f.clean("subdomain.domain.com"), "http://subdomain.domain.com/");
     equals(f.clean("http://200.8.9.10"), "http://200.8.9.10/");
     equals(f.clean("http://200.8.9.10:8000/test"), "http://200.8.9.10:8000/test");
     for (var i = 0, url; url = invalidURLs[i]; i++)

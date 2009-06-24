@@ -915,11 +915,11 @@ function URLField(kwargs)
  * URL validation regular expression.
  */
 URLField.URL_REGEXP = new RegExp(
-    "^https?://" +                                 // http:// or https://
-    "(?:(?:[A-Z0-9-]+\\.)+[A-Z]{2,6}|" +           // Domain...
-    "localhost|" +                                 // ...localhost...
-    "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})" + // ...or ip
-    "(?::\\d+)?" +                                 // Optional port
+    "^https?://" +                                      // http:// or https://
+    "(?:(?:[A-Z0-9]+(?:-*[A-Z0-9]+)*\\.)+[A-Z]{2,6}|" + // Domain...
+    "localhost|" +                                      // ...localhost...
+    "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})" +      // ...or ip
+    "(?::\\d+)?" +                                      // Optional port
     "(?:/?|/\\S+)$",
     "i")
 
