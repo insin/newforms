@@ -997,7 +997,8 @@ URLField.prototype.clean = function(value)
     }
     if (this.verifyExists === true)
     {
-        // TODO Implement URL verification
+        // TODO Implement URL verification when js-forms can be run in
+        //      appropriate environments.
     }
     return value
 };
@@ -1104,15 +1105,16 @@ NullBooleanField.prototype.clean = function(value)
  */
 function ChoiceField(kwargs)
 {
-    // TODO Why was the setter not working when defined "normally" in the prototype?
     this.__defineGetter__("choices", function()
     {
         return this._choices;
     });
     this.__defineSetter__("choices", function(choices)
     {
+        // Setting choices also sets the choices on the widget
         this._choices = this.widget.choices = choices;
     });
+
     kwargs = extendObject({
         choices: []
     }, kwargs || {});
@@ -1334,6 +1336,8 @@ function ComboField(kwargs)
     kwargs = extendObject({fields: []}, kwargs || {});
     Field.call(this, kwargs);
 
+    // Set "required" to False on the individual fields, because the required
+    // validation will be handled by ComboField, not by those individual fields.
     for (var i = 0, l = kwargs.fields.length; i < l; i++)
     {
         kwargs.fields[i].required = false;
@@ -1501,7 +1505,60 @@ MultiValueField.prototype.compress = function(dataList)
     throw new Error("Subclasses must implement this method.");
 };
 
-// TODO FilePathField
+/**
+ * Allows choosing from files inside a certain directory.
+ *
+ * @param {String} path The absolute path to the directory whose contents you
+ *                      want listed - this directory must exist.
+ * @param {Object} [kwargs] configuration options additional to those supplied
+ *                          in {@link ChoiceField}.
+ * @config {String} [match] a regular expression pattern - if provided, only
+ *                          files with names matching this expression will be
+ *                          allowed as choices.
+ * @config {Boolean} [recursive] if <code>true</code>, the directory will be
+ *                               descended into recursively and all descendants
+ *                               will be listed as choices - defaults to
+ *                               <code>false</code>.
+ * @constructor
+ * @augments ChoiceField
+ */
+function FilePathField(path, kwargs)
+{
+    kwargs = extendObject({
+        match: null, recursive: false, required: true, widget: null,
+        label: null, initial: null, helpText: null
+    }, kwargs);
+
+    this.path = path;
+    this.match = kwargs.match;
+    this.recursive = kwargs.recursive;
+    delete kwargs.match;
+    delete kwargs.recursive;
+
+    kwargs.choices = [];
+    ChoiceField.call(this, kwargs);
+
+    if (this.required)
+    {
+        this.choices = [];
+    }
+    else
+    {
+        this.choices = [["", "---------"]];
+    }
+
+    if (this.match !== null)
+    {
+        this.matchRE = new RegExp(this.match);
+    }
+
+    // TODO Populate this.choices with file paths when js-forms can be run in
+    //      appropriate environments.
+
+    this.widget.choices = this.choices;
+}
+
+FilePathField.prototype = new ChoiceField();
 
 /**
  * A {@link MultiValueField} consisting of a {@link DateField} and a

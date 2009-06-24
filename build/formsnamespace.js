@@ -57,6 +57,7 @@ return {
     MultipleChoiceField: MultipleChoiceField,
     ComboField: ComboField,
     MultiValueField: MultiValueField,
+    FilePathField: FilePathField,
     SplitDateTimeField: SplitDateTimeField,
     IPAddressField: IPAddressField,
     SlugField: SlugField,
