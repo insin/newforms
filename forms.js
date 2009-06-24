@@ -32,7 +32,7 @@ BoundField.prototype =
 {
     get errors()
     {
-        return this.form.errors[this.name] || this.form.errorConstructor();
+        return this.form.errors[this.name] || new this.form.errorConstructor();
     },
 
     get isHidden()
@@ -453,8 +453,160 @@ Form.prototype.addPrefix = function(fieldName)
 };
 
 // TODO Form.addInitialPrefix
-// TODO Form._htmlOutput
-// TODO Form.prototype.asTable
+
+/**
+ * Helper function for outputting HTML.
+ *
+ * @param {Function} normalRow a function which produces a normal row.
+ * @param {Function} errorRow a function which produces an error row.
+ * @param {Boolean} errorsOnSeparateRow determines if errors are placed in their
+ *                                      own row, or in the row for the field
+ *                                      they are related to.
+ */
+Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
+{
+    var topErrors = this.nonFieldErrors();
+    var rows = []
+    var hiddenFields = [];
+
+    var hiddenBoundFields = this.hiddenFields();
+    for (var i = 0, l = hiddenBoundFields.length; i < l; i++)
+    {
+        var bf = hiddenBoundFields[i];
+        var bfErrors = bf.errors;
+        if (bfErrors.isPopulated())
+        {
+            for (var j = 0, m = bfErrors.errors.length; j < m; j++)
+            {
+                topErrors.errors.push("(Hidden field " + bf.name + ") " +
+                    DOMBuilder.conditionalEscape(bfErrors.errors[j]));
+            }
+        }
+        hiddenFields.push(bf.asWidget());
+    }
+
+    var visibleBoundFields = this.visibleFields();
+    for (var i = 0, l = visibleBoundFields.length; i < l; i++)
+    {
+        var bf = visibleBoundFields[i];
+
+        // Variables which can be optional in each row
+        var errors, label, helpText, extraContent = null;
+
+        var bfErrors = bf.errors;
+        if (bfErrors.isPopulated())
+        {
+            errors = new this.errorConstructor();
+            for (var j = 0, m = bfErrors.errors.length; j < m; j++)
+            {
+                errors.errors.push(
+                    DOMBuilder.conditionalEscape(bfErrors.errors[j]));
+            }
+
+            if (errorsOnSeparateRow === true)
+            {
+                rows.push(errorRow(errors));
+                errors = null;
+            }
+        }
+
+        if (bf.label)
+        {
+            label = DOMBuilder.conditionalEscape(bf.label);
+            // Only add the suffix if the label does not end in punctuation
+            if (this.labelSuffix &&
+                ":?.!".indexOf(label.charAt(label.length - 1)) == -1)
+            {
+                label += this.labelSuffix;
+            }
+            label = bf.labelTag({contents: label}) || "";;
+        }
+
+        if (bf.field.helpText)
+        {
+            helpText = bf.field.helpText;
+        }
+
+        // If this is the last row, it should include any hidden fields
+        if (i == l - 1 && hiddenFields.length > 0)
+        {
+            extraContent = hiddenFields;
+        }
+
+        rows.push(normalRow(label, bf.asWidget(), helpText, errors, extraContent));
+    }
+
+    if (topErrors.isPopulated())
+    {
+        // Add hidden fields to the top error row if it's being displayed and
+        // there are no other rows.
+        var extraContent = null;
+        if (hiddenFields.length > 0 && rows.length == 0)
+        {
+            extraContent = hiddenFields;
+        }
+        rows.splice(0, 0, errorRow(topErrors, extraContent));
+    }
+
+    // Put hidden fields in their own error row if there were no rows to
+    // display.
+    if (hiddenFields.length > 0 && rows.length == 0)
+    {
+        rows.push(errorRow("", hiddenFields));
+    }
+
+    // :-/
+    if (DOMBuilder.mode == "DOM")
+    {
+        return rows;
+    }
+    else
+    {
+        return rows.join("\n");
+    }
+};
+
+Form.prototype.asTable = function()
+{
+    var normalRow = function(label, field, helpText, errors, extraContent)
+    {
+        var contents = [];
+        if (errors)
+        {
+            contents.push(errors);
+        }
+        contents.push(field);
+        if (helpText)
+        {
+            contents.push(DOMBuilder.createElement("br"));
+            contents.push(helpText);
+        }
+        if (extraContent)
+        {
+            contents = contents.concat(extraContent);
+        }
+
+        return DOMBuilder.createElement("tr", {}, [
+          DOMBuilder.createElement("th", {}, [label]),
+          DOMBuilder.createElement("td", {}, contents)
+        ]);
+    };
+
+    var errorRow = function(errors, extraContent)
+    {
+        var contents = [errors];
+        if (extraContent)
+        {
+            contents = contents.concat(extraContent);
+        }
+        return DOMBuilder.createElement("tr", {}, [
+          DOMBuilder.createElement("td", {colSpan: 2}, contents)
+        ]);
+    }
+
+    return this._htmlOutput(normalRow, errorRow, true);
+};
+
 // TODO Form.prototype.asUL
 // TODO Form.prototype.asP
 
