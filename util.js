@@ -199,56 +199,6 @@ function contains(container, item)
 }
 
 /**
- * Escapes the given HTML.
- *
- * @param {String} html the HTML to be escaped.
- *
- * @return the given HTML with ampersands, quotes and carets encoded.
- * @type String
- * @function
- */
-var escapeHTML = function()
-{
-    var ampRe = /&/g;
-    var ltRe = /</g;
-    var gtRe = />/g;
-    var quoteRe1 = /"/g;
-    var quoteRe2 = /'/g;
-
-    return function(html)
-    {
-        return html.replace(ampRe, "&amp;").replace(ltRe, "&lt;").replace(gtRe, "&gt;").replace(quoteRe1, "&quot;").replace(quoteRe2, "&#39;");
-    };
-}();
-
-/**
- * Converts an object defining HTML attributes to a single string containing a
- * leading space followed by key="value" XML-style pairs.
- * <p>
- * It is assumed that the keys do not need to be XML-escaped
- *
- * @param {Object} attributes an object defining HTML attributes.
- *
- * @return a string containing a leading space followed by key="value" XML-style
- *         pairs, or an empty string if the object did not contain any
- *         properties.
- * @type String
- */
-function flatAtt(attrs)
-{
-    var attrPairs = [];
-    for (attr in attrs)
-    {
-        if (attrs.hasOwnProperty(attr))
-        {
-            attrPairs[attrPairs.length] =
-                " " + attr + '="' + escapeHTML(attrs[attr]) + '"';
-        }
-    }
-    return attrPairs.join("");
-}
-
-/**
  * A collection of errors that knows how to display itself in various formats.
  * <p>
  * This object's properties are the field names, and corresponding values are
