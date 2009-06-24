@@ -1198,7 +1198,7 @@ TypedChoiceField.prototype = new ChoiceField();
 TypedChoiceField.prototype.clean = function(value)
 {
     var value = ChoiceField.prototype.clean.call(this, value);
-    if (value === this.emptyValue || contains(this.EMPTY_VALUES, value))
+    if (value === this.emptyValue || contains(Field.EMPTY_VALUES, value))
     {
         return this.emptyValue;
     }
