@@ -810,6 +810,9 @@ UploadedFile.prototype.toString = function()
  */
 function FileField(kwargs)
 {
+    kwargs = extendObject({maxLength: null}, kwargs);
+    this.maxLength = kwargs.maxLength;
+    delete kwargs.maxLength;
     Field.call(this, kwargs);
 }
 
@@ -819,7 +822,8 @@ FileField.prototype.defaultErrorMessages =
     extendObject({}, FileField.prototype.defaultErrorMessages, {
         invalid: "No file was submitted. Check the encoding type on the form.",
         missing: "No file was submitted.",
-        empty: "The submitted file is empty."
+        empty: "The submitted file is empty.",
+        maxLength: "Ensure this filename has at most %(max)s characters (it has %(length)s)."
     });
 
 /**
@@ -841,34 +845,38 @@ FileField.prototype.clean = function(data, initial)
     {
         return null;
     }
-
-    // Weird return logic owing to the fact that an empty Python dict is falsy
-    // but a JavaScript object which has no properties is not.
-    if (typeof data != "object")
+    else if (!data && initial)
     {
-        if (initial)
-        {
-            return initial;
-        }
+        return initial;
+    }
+
+    // UploadedFile objects should have name and size attributes
+    if (typeof data.name == "undefined" || typeof data.size == "undefined")
+    {
         throw new ValidationError(this.errorMessages.invalid);
     }
-    else if (typeof data.filename == "undefined" ||
-             typeof data.content == "undefined")
+
+    var fileName = data.name;
+    var fileSize = data.size;
+
+    if (this.maxLength !== null && fileName.length > this.maxLength)
     {
-        if (initial)
-        {
-            return initial;
-        }
-        throw new ValidationError(this.errorMessages.missing);
+        throw new ValidationError(
+            formatString(this.errorMessages.maxLength,
+                         {max: this.maxLength, length: fileName.length}));
     }
 
-    var f = new UploadedFile(data.filename, data.content);
-    if (!f.content)
+    if (!fileName)
+    {
+        throw new ValidationError(this.errorMessages.invalid);
+    }
+
+    if (!fileSize)
     {
         throw new ValidationError(this.errorMessages.empty);
     }
 
-    return f;
+    return data;
 };
 
 /**
@@ -892,6 +900,27 @@ ImageField.prototype.defaultErrorMessages =
     extendObject({}, ImageField.prototype.defaultErrorMessages, {
         invalidImage: "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
     });
+
+/**
+ * Checks that the file-upload field data contains a valid image.
+ */
+ImageField.prototype.clean = function(data, initial)
+{
+    var f = FileField.prototype.clean.call(this, data, initial);
+    if (f === null)
+    {
+        return null;
+    }
+    else if (!data && initial)
+    {
+        return initial;
+    }
+
+    // TODO Plug in image processing code when js-forms can be run in
+    //           appropriate environments.
+
+    return f;
+};
 
 /**
  * Validates that its input appears to be a valid URL.

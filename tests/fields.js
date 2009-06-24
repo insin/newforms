@@ -349,22 +349,35 @@ test("EmailField", function()
 
 test("FileField", function()
 {
-    expect(14);
+    function SimpleUploadedFile(name, content)
+    {
+        this.name = name;
+        this.content = content;
+        this.size = (content !== null ? content.length : 0);
+    }
+
+    expect(18);
     var f = new FileField();
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean("", ""); } catch (e) { equals(ve(e), "This field is required."); }
     equals(f.clean("", "files/test1.pdf"), "files/test1.pdf");
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null, ""); } catch (e) { equals(ve(e), "This field is required."); }
-    equals(f.clean("", "files/test2.pdf"), "files/test2.pdf");
-    try { f.clean({}); } catch (e) { equals(ve(e), "No file was submitted."); }
-    try { f.clean({}, ""); } catch (e) { equals(ve(e), "No file was submitted."); }
-    equals(f.clean({}, "files/test3.pdf"), "files/test3.pdf");
+    equals(f.clean(null, "files/test2.pdf"), "files/test2.pdf");
+    try { f.clean(new SimpleUploadedFile("", "")); } catch (e) { equals(ve(e), "No file was submitted. Check the encoding type on the form."); }
+    try { f.clean(new SimpleUploadedFile("", ""), ""); } catch (e) { equals(ve(e), "No file was submitted. Check the encoding type on the form."); }
+    equals(f.clean(null, "files/test3.pdf"), "files/test3.pdf");
     try { f.clean("some content that is not a file"); } catch (e) { equals(ve(e), "No file was submitted. Check the encoding type on the form."); }
-    try { f.clean({filename: "name", content: null}); } catch (e) { equals(ve(e), "The submitted file is empty."); }
-    try { f.clean({filename: "name", content: ""}); } catch (e) { equals(ve(e), "The submitted file is empty."); }
-    ok(f.clean({filename: "name", content: "Some file content"}) instanceof UploadedFile, "Valid uploaded file details result in UploadedFile object");
-    ok(f.clean({filename: "name", content: "Some file content"}, "files/test4.pdf") instanceof UploadedFile, "Valid uploaded file details and initial data result in UploadedFile object");
+    try { f.clean(new SimpleUploadedFile("name", null)); } catch (e) { equals(ve(e), "The submitted file is empty."); }
+    try { f.clean(new SimpleUploadedFile("name", "")); } catch (e) { equals(ve(e), "The submitted file is empty."); }
+    ok(f.clean(new SimpleUploadedFile("name", "Some File Content")) instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
+    ok(f.clean(new SimpleUploadedFile("name", "Some File Content"), "files/test4.pdf") instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
+
+    f = new FileField({maxLength: 5});
+    try { f.clean(new SimpleUploadedFile("test_maxlength.txt", "hello world")); } catch (e) { equals(ve(e), "Ensure this filename has at most 5 characters (it has 18)."); }
+    equals(f.clean("", "files/test1.pdf"), "files/test1.pdf");
+    equals(f.clean(null, "files/test2.pdf"), "files/test2.pdf");
+    ok(f.clean(new SimpleUploadedFile("name", "Some File Content")) instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
 });
 
 test("URLField", function()
