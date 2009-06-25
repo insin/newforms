@@ -20,7 +20,8 @@ test("prettyName", function()
 
 test("Form", function()
 {
-    expect(85);
+    expect(97);
+
     var Person = formFactory({fields: function() {
         return {
             first_name: new CharField(),
@@ -420,4 +421,90 @@ test("Form", function()
 "<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
 "</ul>");
+    equals(""+f,
+"<tr><th>Name:</th><td><input type=\"text\" name=\"name\"></td></tr>\n" +
+"<tr><th>Language:</th><td><ul>\n" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+"</ul></td></tr>");
+    equals(""+f.asUL(),
+"<li>Name: <input type=\"text\" name=\"name\"></li>\n" +
+"<li>Language: <ul>\n" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+"</ul></li>");
+
+    // Regarding autoId and <label>, RadioSelect is a special case. Each radio
+    // button gets a distinct ID, formed by appending an underscore plus the
+    // button's zero-based index.
+    f = new FrameworkForm({autoId: "id_%(name)s"});
+    equals(""+f.boundField("language"),
+"<ul>\n" +
+"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
+"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+"</ul>");
+
+    // When RadioSelect is used with autoId, and the whole form is printed using
+    // either asTable() or asUl(), the label for the RadioSelect will point to the
+    // ID of the *first* radio button.
+    equals(""+f,
+"<tr><th><label for=\"id_name\">Name:</label></th><td><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>\n" +
+"<tr><th><label for=\"id_language_0\">Language:</label></th><td><ul>\n" +
+"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
+"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+"</ul></td></tr>");
+    equals(""+f.asUL(),
+"<li><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></li>\n" +
+"<li><label for=\"id_language_0\">Language:</label> <ul>\n" +
+"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
+"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+"</ul></li>");
+    equals(""+f.asP(),
+"<p><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></p>\n" +
+"<p><label for=\"id_language_0\">Language:</label> <ul>\n" +
+"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
+"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+"</ul></p>");
+
+    // MultipleChoiceField is a special case, as its data is required to be a
+    // list.
+    var SongForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            composers: new MultipleChoiceField()
+        }
+    }});
+    f = new SongForm({autoId: false});
+    equals(""+f.boundField("composers"),
+"<select name=\"composers\" multiple=\"multiple\">\n" +
+"</select>")
+    var SongForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
+        }
+    }});
+    f = new SongForm({autoId: false});
+    equals(""+f.boundField("composers"),
+"<select name=\"composers\" multiple=\"multiple\">\n" +
+"<option value=\"J\">John Lennon</option>\n" +
+"<option value=\"P\">Paul McCartney</option>\n" +
+"</select>")
+    f = new SongForm({data: {name: "Yesterday", composers: ["P"]}, autoId: false});
+    equals(""+f.boundField("name"),
+"<input type=\"text\" name=\"name\" value=\"Yesterday\">");
+    equals(""+f.boundField("composers"),
+"<select name=\"composers\" multiple=\"multiple\">\n" +
+"<option value=\"J\">John Lennon</option>\n" +
+"<option value=\"P\" selected=\"selected\">Paul McCartney</option>\n" +
+"</select>")
+
+    // MultipleChoiceField rendered asHidden() is a special case. Because it can
+    // have multiple values, its asHidden() renders multiple
+    // <input type="hidden"> tags.
+    equals(""+f.boundField("composers").asHidden(),
+"<span><input type=\"hidden\" name=\"composers\" value=\"P\"></span>");
+    f = new SongForm({data: {name: "Yesterday", composers: ["P", "J"]}, autoId: false});
+    equals(""+f.boundField("composers").asHidden(),
+"<span><input type=\"hidden\" name=\"composers\" value=\"P\"><input type=\"hidden\" name=\"composers\" value=\"J\"></span>");
 });

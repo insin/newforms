@@ -216,10 +216,9 @@ MultipleHiddenInput.prototype.render = function(name, value, attrs)
     var inputs = [];
     for (var i = 0, l = value.length; i < l; i++)
     {
-        inputs[inputs.length] =
-            DOMBuilder.createElement("input", extendObject({},
-                                                           finalAttrs,
-                                                           {value: value[i]}));
+        inputs.push(
+            DOMBuilder.createElement("input",
+                extendObject({}, finalAttrs, {value: value[i]})));
     }
     return DOMBuilder.createElement("span", {}, inputs);
 };
@@ -969,10 +968,10 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, attrs, 
         }
 
         var cb = new CheckboxInput({attrs: checkboxAttrs, checkTest: checkTest});
-        items[items.length] =
+        items.push(
             DOMBuilder.createElement("li", {},
                 [DOMBuilder.createElement("label", labelAttrs,
-                                          [cb.render(name, optValue), " ", optLabel])]);
+                                          [cb.render(name, optValue), " ", optLabel])]));
     }
     return DOMBuilder.createElement("ul", {}, items);
 };
@@ -1044,8 +1043,8 @@ MultiWidget.prototype.render = function(name, value, attrs)
         {
             extendObject(finalAttrs, {"id": id + "_" + i});
         }
-        renderedWidgets[renderedWidgets.length] =
-            widget.render(name + "_" + i, widgetValue, finalAttrs);
+        renderedWidgets.push(
+            widget.render(name + "_" + i, widgetValue, finalAttrs));
     }
     return this.formatOutput(renderedWidgets);
 };

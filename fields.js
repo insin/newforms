@@ -1261,6 +1261,7 @@ function MultipleChoiceField(kwargs)
 
 MultipleChoiceField.prototype = new ChoiceField();
 MultipleChoiceField.prototype.defaultWidget = SelectMultiple;
+MultipleChoiceField.prototype.hiddenWidget = MultipleHiddenInput;
 MultipleChoiceField.prototype.defaultErrorMessages =
     extendObject({}, MultipleChoiceField.prototype.defaultErrorMessages, {
         invalidChoice: "Select a valid choice. %(value)s is not one of the available choices.",
