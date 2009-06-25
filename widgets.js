@@ -556,6 +556,7 @@ Select.prototype.render = function(name, selectedValue, attrs, choices)
     }
     var finalAttrs = this.buildAttrs(attrs, {name: name});
     var options = this.renderOptions(choices, [selectedValue]);
+    options.push("\n");
     return DOMBuilder.createElement("select", finalAttrs, options);
 };
 
@@ -589,13 +590,17 @@ Select.prototype.renderOptions = function(choices, selectedValues)
             var optgroupChoices = finalChoices[i][1];
             for (var j = 0, k = optgroupChoices.length; j < k; j++)
             {
+                optgroupOptions.push("\n");
                 optgroupOptions.push(renderOption(optgroupChoices[j][0], optgroupChoices[j][1]));
             }
+            options.push("\n");
+            optgroupOptions.push("\n");
             options.push(DOMBuilder.createElement(
                 "optgroup", {label: finalChoices[i][0]}, optgroupOptions));
         }
         else
         {
+            options.push("\n");
             options.push(renderOption(finalChoices[i][0], finalChoices[i][1]));
         }
     }
@@ -702,6 +707,7 @@ SelectMultiple.prototype.render = function(name, selectedValues, attrs, choices)
     }
     var finalAttrs = this.buildAttrs(attrs, {name: name, multiple: "multiple"});
     var options = this.renderOptions(choices, selectedValues);
+    options.push("\n");
     return DOMBuilder.createElement("select", finalAttrs, options);
 };
 

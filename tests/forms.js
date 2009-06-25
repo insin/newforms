@@ -20,7 +20,7 @@ test("prettyName", function()
 
 test("Form", function()
 {
-    expect(70);
+    expect(76);
     var Person = formFactory({fields: function() {
         return {
             first_name: new CharField(),
@@ -275,4 +275,43 @@ test("Form", function()
            "<textarea rows=\"10\" cols=\"40\" name=\"subject\"></textarea>");
     equals(""+f.boundField("subject").asHidden(),
            "<input type=\"hidden\" name=\"subject\">");
+
+    //The "widget" parameter to a Field can also be an instance
+    var ContactForm = formFactory({fields: function() {
+        return {
+            subject: new CharField(),
+            message: new CharField({
+                widget: new Textarea({attrs: {rows: 80, cols: 20}})
+            })
+        };
+    }});
+    f = new ContactForm({autoId: false});
+    equals(""+f.boundField("message"),
+           "<textarea rows=\"80\" cols=\"20\" name=\"message\"></textarea>");
+
+    // Instance-level attrs are *not* carried over to asTextarea(), asText() and
+    // asHidden()
+    equals(""+f.boundField("message").asText(),
+           "<input type=\"text\" name=\"message\">");
+    f = new ContactForm({data: {subject: "Hello", message: "I love you."}, autoId: false});
+    equals(""+f.boundField("subject").asTextarea(),
+           "<textarea rows=\"10\" cols=\"40\" name=\"subject\">Hello</textarea>");
+    equals(""+f.boundField("message").asText(),
+           "<input type=\"text\" name=\"message\" value=\"I love you.\">");
+    equals(""+f.boundField("message").asHidden(),
+           "<input type=\"hidden\" name=\"message\" value=\"I love you.\">");
+
+    // For a form with a <select>, use ChoiceField
+    var FrameworkForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            language: new ChoiceField({choices: [["P", "Python"], ["J", "Java"]]})
+        };
+    }});
+    f = new FrameworkForm({autoId: false});
+    equals(""+f.boundField("language"),
+"<select name=\"language\">\n" +
+"<option value=\"P\">Python</option>\n" +
+"<option value=\"J\">Java</option>\n" +
+"</select>");
 });

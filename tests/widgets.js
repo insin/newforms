@@ -293,45 +293,106 @@ test("Select", function()
     expect(12);
     var w = new Select();
     equals(""+w.render("beatle", "J", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<select name=\"beatle\"><option value=\"J\" selected=\"selected\">John</option><option value=\"P\">Paul</option><option value=\"G\">George</option><option value=\"R\">Ringo</option></select>");
+"<select name=\"beatle\">\n" +
+"<option value=\"J\" selected=\"selected\">John</option>\n" +
+"<option value=\"P\">Paul</option>\n" +
+"<option value=\"G\">George</option>\n" +
+"<option value=\"R\">Ringo</option>\n" +
+"</select>");
 
     // If the value is null, none of the options are selected
     equals(""+w.render("beatle", null, {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<select name=\"beatle\"><option value=\"J\">John</option><option value=\"P\">Paul</option><option value=\"G\">George</option><option value=\"R\">Ringo</option></select>");
+"<select name=\"beatle\">\n" +
+"<option value=\"J\">John</option>\n" +
+"<option value=\"P\">Paul</option>\n" +
+"<option value=\"G\">George</option>\n" +
+"<option value=\"R\">Ringo</option>\n" +
+"</select>");
 
     // If the value corresponds to a label (but not to an option value), none of the options are selected
     equals(""+w.render("beatle", "John", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<select name=\"beatle\"><option value=\"J\">John</option><option value=\"P\">Paul</option><option value=\"G\">George</option><option value=\"R\">Ringo</option></select>");
+"<select name=\"beatle\">\n" +
+"<option value=\"J\">John</option>\n" +
+"<option value=\"P\">Paul</option>\n" +
+"<option value=\"G\">George</option>\n" +
+"<option value=\"R\">Ringo</option>\n" +
+"</select>");
 
     // The value is compared to its String representation
     equals(""+w.render("num", 2, {}, [['1', '1'], ['2', '2'], ['3', '3']]),
-           "<select name=\"num\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+"<select name=\"num\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\" selected=\"selected\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"</select>");
     equals(""+w.render("num", "2", {}, [[1, 1], [2, 2], [3, 3]]),
-           "<select name=\"num\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+"<select name=\"num\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\" selected=\"selected\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"</select>");
     equals(""+w.render("num", 2, {}, [[1, 1], [2, 2], [3, 3]]),
-           "<select name=\"num\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+"<select name=\"num\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\" selected=\"selected\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"</select>");
 
     // You can also pass "choices" to the constructor:
     w = new Select({choices: [[1, 1], [2, 2], [3, 3]]});
     equals(""+w.render("num", 2),
-           "<select name=\"num\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+"<select name=\"num\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\" selected=\"selected\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"</select>");
 
     // If "choices" is passed to both the constructor and render(), then they'll both be in the output
     equals(""+w.render("num", 2, {}, [[4, 4], [5, 5]]),
-           "<select name=\"num\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option><option value=\"4\">4</option><option value=\"5\">5</option></select>");
+"<select name=\"num\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\" selected=\"selected\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"<option value=\"4\">4</option>\n" +
+"<option value=\"5\">5</option>\n" +
+"</select>");
 
     // Choices are escaped correctly
     equals(""+w.render("num", null, {}, [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]),
-           "<select name=\"num\"><option value=\"1\">1</option><option value=\"2\">2</option><option value=\"3\">3</option><option value=\"bad\">you &amp; me</option><option value=\"good\">you &gt; me</option></select>");
+"<select name=\"num\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"<option value=\"bad\">you &amp; me</option>\n" +
+"<option value=\"good\">you &gt; me</option>\n" +
+"</select>");
 
     // Choices can be nested one level in order to create HTML optgroups
     w.choices = [['outer1', 'Outer 1'], ['Group "1"', [['inner1', 'Inner 1'], ['inner2', 'Inner 2']]]];
     equals(""+w.render("nestchoice", null),
-           "<select name=\"nestchoice\"><option value=\"outer1\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\">Inner 1</option><option value=\"inner2\">Inner 2</option></optgroup></select>");
+"<select name=\"nestchoice\">\n" +
+"<option value=\"outer1\">Outer 1</option>\n" +
+"<optgroup label=\"Group &quot;1&quot;\">\n" +
+"<option value=\"inner1\">Inner 1</option>\n" +
+"<option value=\"inner2\">Inner 2</option>\n" +
+"</optgroup>\n" +
+"</select>");
     equals(""+w.render("nestchoice", "outer1"),
-           "<select name=\"nestchoice\"><option value=\"outer1\" selected=\"selected\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\">Inner 1</option><option value=\"inner2\">Inner 2</option></optgroup></select>");
+"<select name=\"nestchoice\">\n" +
+"<option value=\"outer1\" selected=\"selected\">Outer 1</option>\n" +
+"<optgroup label=\"Group &quot;1&quot;\">\n" +
+"<option value=\"inner1\">Inner 1</option>\n" +
+"<option value=\"inner2\">Inner 2</option>\n" +
+"</optgroup>\n" +
+"</select>");
     equals(""+w.render("nestchoice", "inner1"),
-           "<select name=\"nestchoice\"><option value=\"outer1\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\" selected=\"selected\">Inner 1</option><option value=\"inner2\">Inner 2</option></optgroup></select>");
+"<select name=\"nestchoice\">\n" +
+"<option value=\"outer1\">Outer 1</option>\n" +
+"<optgroup label=\"Group &quot;1&quot;\">\n" +
+"<option value=\"inner1\" selected=\"selected\">Inner 1</option>\n" +
+"<option value=\"inner2\">Inner 2</option>\n" +
+"</optgroup>\n" +
+"</select>");
 });
 
 test("NullBooleanSelect", function()
@@ -339,15 +400,35 @@ test("NullBooleanSelect", function()
     expect(5);
     var w = new NullBooleanSelect();
     equals(""+w.render("is_cool", true),
-           "<select name=\"is_cool\"><option value=\"1\">Unknown</option><option value=\"2\" selected=\"selected\">Yes</option><option value=\"3\">No</option></select>");
+"<select name=\"is_cool\">\n" +
+"<option value=\"1\">Unknown</option>\n" +
+"<option value=\"2\" selected=\"selected\">Yes</option>\n" +
+"<option value=\"3\">No</option>\n" +
+"</select>");
     equals(""+w.render("is_cool", false),
-           "<select name=\"is_cool\"><option value=\"1\">Unknown</option><option value=\"2\">Yes</option><option value=\"3\" selected=\"selected\">No</option></select>");
+"<select name=\"is_cool\">\n" +
+"<option value=\"1\">Unknown</option>\n" +
+"<option value=\"2\">Yes</option>\n" +
+"<option value=\"3\" selected=\"selected\">No</option>\n" +
+"</select>");
     equals(""+w.render("is_cool", null),
-           "<select name=\"is_cool\"><option value=\"1\" selected=\"selected\">Unknown</option><option value=\"2\">Yes</option><option value=\"3\">No</option></select>");
+"<select name=\"is_cool\">\n" +
+"<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
+"<option value=\"2\">Yes</option>\n" +
+"<option value=\"3\">No</option>\n" +
+"</select>");
     equals(""+w.render("is_cool", "2"),
-           "<select name=\"is_cool\"><option value=\"1\">Unknown</option><option value=\"2\" selected=\"selected\">Yes</option><option value=\"3\">No</option></select>");
+"<select name=\"is_cool\">\n" +
+"<option value=\"1\">Unknown</option>\n" +
+"<option value=\"2\" selected=\"selected\">Yes</option>\n" +
+"<option value=\"3\">No</option>\n" +
+"</select>");
     equals(""+w.render("is_cool", "3"),
-           "<select name=\"is_cool\"><option value=\"1\">Unknown</option><option value=\"2\">Yes</option><option value=\"3\" selected=\"selected\">No</option></select>");
+"<select name=\"is_cool\">\n" +
+"<option value=\"1\">Unknown</option>\n" +
+"<option value=\"2\">Yes</option>\n" +
+"<option value=\"3\" selected=\"selected\">No</option>\n" +
+"</select>");
 });
 
 test("SelectMultiple", function()
@@ -355,44 +436,102 @@ test("SelectMultiple", function()
     expect(22);
     var w = new SelectMultiple();
     equals(""+w.render("beatles", ["J"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\" selected=\"selected\">John</option><option value=\"P\">Paul</option><option value=\"G\">George</option><option value=\"R\">Ringo</option></select>");
+"<select name=\"beatles\" multiple=\"multiple\">\n" +
+"<option value=\"J\" selected=\"selected\">John</option>\n" +
+"<option value=\"P\">Paul</option>\n" +
+"<option value=\"G\">George</option>\n" +
+"<option value=\"R\">Ringo</option>\n" +
+"</select>");
     equals(""+w.render("beatles", ["J", "P"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\" selected=\"selected\">John</option><option value=\"P\" selected=\"selected\">Paul</option><option value=\"G\">George</option><option value=\"R\">Ringo</option></select>");
+"<select name=\"beatles\" multiple=\"multiple\">\n" +
+"<option value=\"J\" selected=\"selected\">John</option>\n" +
+"<option value=\"P\" selected=\"selected\">Paul</option>\n" +
+"<option value=\"G\">George</option>\n" +
+"<option value=\"R\">Ringo</option>\n" +
+"</select>");
     equals(""+w.render("beatles", ["J", "P", "R"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\" selected=\"selected\">John</option><option value=\"P\" selected=\"selected\">Paul</option><option value=\"G\">George</option><option value=\"R\" selected=\"selected\">Ringo</option></select>");
+"<select name=\"beatles\" multiple=\"multiple\">\n" +
+"<option value=\"J\" selected=\"selected\">John</option>\n" +
+"<option value=\"P\" selected=\"selected\">Paul</option>\n" +
+"<option value=\"G\">George</option>\n" +
+"<option value=\"R\" selected=\"selected\">Ringo</option>\n" +
+"</select>");
 
     // If the value is null, none of the options are selected
     equals(""+w.render("beatles", null, {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\">John</option><option value=\"P\">Paul</option><option value=\"G\">George</option><option value=\"R\">Ringo</option></select>");
+"<select name=\"beatles\" multiple=\"multiple\">\n" +
+"<option value=\"J\">John</option>\n" +
+"<option value=\"P\">Paul</option>\n" +
+"<option value=\"G\">George</option>\n" +
+"<option value=\"R\">Ringo</option>\n" +
+"</select>");
 
     // If the value corresponds to a label (but not to an option value), none of the options are selected
     equals(""+w.render("beatles", ["John"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\">John</option><option value=\"P\">Paul</option><option value=\"G\">George</option><option value=\"R\">Ringo</option></select>");
+"<select name=\"beatles\" multiple=\"multiple\">\n" +
+"<option value=\"J\">John</option>\n" +
+"<option value=\"P\">Paul</option>\n" +
+"<option value=\"G\">George</option>\n" +
+"<option value=\"R\">Ringo</option>\n" +
+"</select>");
 
     // If multiple values are given, but some of them are not valid, the valid ones are selected
     equals(""+w.render("beatles", ["J", "G", "foo"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<select name=\"beatles\" multiple=\"multiple\"><option value=\"J\" selected=\"selected\">John</option><option value=\"P\">Paul</option><option value=\"G\" selected=\"selected\">George</option><option value=\"R\">Ringo</option></select>");
+"<select name=\"beatles\" multiple=\"multiple\">\n" +
+"<option value=\"J\" selected=\"selected\">John</option>\n" +
+"<option value=\"P\">Paul</option>\n" +
+"<option value=\"G\" selected=\"selected\">George</option>\n" +
+"<option value=\"R\">Ringo</option>\n" +
+"</select>");
 
     // The value is compared to its String representation
     equals(""+w.render("nums", [2], {}, [['1', '1'], ['2', '2'], ['3', '3']]),
-           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+"<select name=\"nums\" multiple=\"multiple\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\" selected=\"selected\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"</select>");
     equals(""+w.render("nums", ["2"], {}, [[1, 1], [2, 2], [3, 3]]),
-           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+"<select name=\"nums\" multiple=\"multiple\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\" selected=\"selected\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"</select>");
     equals(""+w.render("nums", [2], {}, [[1, 1], [2, 2], [3, 3]]),
-           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+"<select name=\"nums\" multiple=\"multiple\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\" selected=\"selected\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"</select>");
 
     // You can also pass "choices" to the constructor:
     w = new SelectMultiple({choices: [[1, 1], [2, 2], [3, 3]]});
     equals(""+w.render("nums", [2]),
-           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option></select>");
+"<select name=\"nums\" multiple=\"multiple\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\" selected=\"selected\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"</select>");
 
     // If "choices" is passed to both the constructor and render(), then they'll both be in the output
     equals(""+w.render("nums", [2], {}, [[4, 4], [5, 5]]),
-           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\" selected=\"selected\">2</option><option value=\"3\">3</option><option value=\"4\">4</option><option value=\"5\">5</option></select>");
+"<select name=\"nums\" multiple=\"multiple\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\" selected=\"selected\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"<option value=\"4\">4</option>\n" +
+"<option value=\"5\">5</option>\n" +
+"</select>");
 
     // Choices are escaped correctly
     equals(""+w.render("nums", null, {}, [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]),
-           "<select name=\"nums\" multiple=\"multiple\"><option value=\"1\">1</option><option value=\"2\">2</option><option value=\"3\">3</option><option value=\"bad\">you &amp; me</option><option value=\"good\">you &gt; me</option></select>");
+"<select name=\"nums\" multiple=\"multiple\">\n" +
+"<option value=\"1\">1</option>\n" +
+"<option value=\"2\">2</option>\n" +
+"<option value=\"3\">3</option>\n" +
+"<option value=\"bad\">you &amp; me</option>\n" +
+"<option value=\"good\">you &gt; me</option>\n" +
+"</select>");
 
     // Test the usage of _hasChanged
     same(w._hasChanged(null, null), false);
@@ -405,13 +544,37 @@ test("SelectMultiple", function()
     // Choices can be nested one level in order to create HTML optgroups
     w.choices = [['outer1', 'Outer 1'], ['Group "1"', [['inner1', 'Inner 1'], ['inner2', 'Inner 2']]]];
     equals(""+w.render("nestchoice", null),
-           "<select name=\"nestchoice\" multiple=\"multiple\"><option value=\"outer1\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\">Inner 1</option><option value=\"inner2\">Inner 2</option></optgroup></select>");
+"<select name=\"nestchoice\" multiple=\"multiple\">\n" +
+"<option value=\"outer1\">Outer 1</option>\n" +
+"<optgroup label=\"Group &quot;1&quot;\">\n" +
+"<option value=\"inner1\">Inner 1</option>\n" +
+"<option value=\"inner2\">Inner 2</option>\n" +
+"</optgroup>\n" +
+"</select>");
     equals(""+w.render("nestchoice", ["outer1"]),
-           "<select name=\"nestchoice\" multiple=\"multiple\"><option value=\"outer1\" selected=\"selected\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\">Inner 1</option><option value=\"inner2\">Inner 2</option></optgroup></select>");
+"<select name=\"nestchoice\" multiple=\"multiple\">\n" +
+"<option value=\"outer1\" selected=\"selected\">Outer 1</option>\n" +
+"<optgroup label=\"Group &quot;1&quot;\">\n" +
+"<option value=\"inner1\">Inner 1</option>\n" +
+"<option value=\"inner2\">Inner 2</option>\n" +
+"</optgroup>\n" +
+"</select>");
     equals(""+w.render("nestchoice", ["inner1"]),
-           "<select name=\"nestchoice\" multiple=\"multiple\"><option value=\"outer1\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\" selected=\"selected\">Inner 1</option><option value=\"inner2\">Inner 2</option></optgroup></select>");
+"<select name=\"nestchoice\" multiple=\"multiple\">\n" +
+"<option value=\"outer1\">Outer 1</option>\n" +
+"<optgroup label=\"Group &quot;1&quot;\">\n" +
+"<option value=\"inner1\" selected=\"selected\">Inner 1</option>\n" +
+"<option value=\"inner2\">Inner 2</option>\n" +
+"</optgroup>\n" +
+"</select>");
     equals(""+w.render("nestchoice", ["outer1", "inner2"]),
-           "<select name=\"nestchoice\" multiple=\"multiple\"><option value=\"outer1\" selected=\"selected\">Outer 1</option><optgroup label=\"Group &quot;1&quot;\"><option value=\"inner1\">Inner 1</option><option value=\"inner2\" selected=\"selected\">Inner 2</option></optgroup></select>");
+ "<select name=\"nestchoice\" multiple=\"multiple\">\n" +
+"<option value=\"outer1\" selected=\"selected\">Outer 1</option>\n" +
+"<optgroup label=\"Group &quot;1&quot;\">\n" +
+"<option value=\"inner1\">Inner 1</option>\n" +
+"<option value=\"inner2\" selected=\"selected\">Inner 2</option>\n" +
+"</optgroup>\n" +
+"</select>");
 });
 
 test("RadioSelect", function()
