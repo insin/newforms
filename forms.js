@@ -4,6 +4,49 @@
  */
 
 /**
+ * Converts "firstName" and "first_name" to "First name", and
+ * "SHOUTING_LIKE_THIS" to "SHOUTING LIKE THIS".
+ */
+var prettyName = (function()
+{
+    var capsRE = /([A-Z]+)/g;
+    var splitRE = /[ _]+/;
+    var trimRE = /(^ +| +$)/g;
+    var allCapsRE = /^[A-Z][A-Z0-9]+$/;
+
+    return function(name)
+    {
+        // Prefix sequences of caps with spaces and split on all space
+        // characters.
+        var parts = name.replace(capsRE, " $1").split(splitRE);
+
+        // If we had an initial cap...
+        if (parts[0] === "")
+        {
+            parts.splice(0, 1);
+        }
+
+        // Give the first word an initial cap and all subsequent words an
+        // initial lowercase if not all caps.
+        for (var i = 0, l = parts.length; i < l; i++)
+        {
+            if (i == 0)
+            {
+                parts[0] = parts[0].charAt(0).toUpperCase() +
+                           parts[0].substr(1);
+            }
+            else if (!allCapsRE.test(parts[i]))
+            {
+                parts[i] = parts[i].charAt(0).toLowerCase() +
+                           parts[i].substr(1);
+            }
+        }
+
+        return parts.join(" ");
+    };
+})();
+
+/**
  * A field and its associated data.
  *
  * @param {Form} form a form.
@@ -23,7 +66,7 @@ function BoundField(form, field, name)
     }
     else
     {
-        this.label = name.charAt(0).toUpperCase() + name.substr(1);
+        this.label = prettyName(name);
     }
     this.helpText = field.helpText || "";
 }
@@ -394,25 +437,28 @@ Form.prototype.boundField = function(name)
  * Creates a {@link BoundField} for each field in the form, ordering them
  * by the order in which the fields were created.
  *
+ * @param {Function} [test] if provided, this function will be called with
+ *                          "field" and "name" arguments - BoundFields will
+ *                          only  be generated for fields for which
+ *                          <code>true</code> is returned.
+ *
  * @return a list of <code>BoundField</code> objects - one for each field in
  *         the form, in the order in which the fields were created.
  * @type Array
  */
-Form.prototype.boundFields = function()
+Form.prototype.boundFields = function(test)
 {
+    test = test || function() { return true; };
+
     var fields = [];
     for (var name in this.fields)
     {
-        if (this.fields.hasOwnProperty(name))
+        if (this.fields.hasOwnProperty(name) &&
+            test(this.fields[name], name) === true)
         {
-            fields[fields.length] =
-                new BoundField(this, this.fields[name], name);
+            fields.push(new BoundField(this, this.fields[name], name));
         }
     }
-    fields.sort(function(a, b)
-    {
-        return a.field.creationCounter - b.field.creationCounter;
-    });
     return fields;
 };
 
@@ -791,15 +837,10 @@ Form.prototype.isMultipart = function()
  */
 Form.prototype.hiddenFields = function()
 {
-    var boundFields = this.boundFields();
-    for (var i = boundFields.length - 1; i >= 0; i--)
+    return this.boundFields(function(field)
     {
-        if (!boundFields[i].isHidden)
-        {
-            boundFields.splice(i, 1);
-        }
-    }
-    return boundFields;
+        return field.widget.isHidden;
+    });
 };
 
 /**
@@ -810,15 +851,10 @@ Form.prototype.hiddenFields = function()
  */
 Form.prototype.visibleFields = function()
 {
-    var boundFields = this.boundFields();
-    for (var i = boundFields.length - 1; i >= 0; i--)
+    return this.boundFields(function(field)
     {
-        if (boundFields[i].isHidden)
-        {
-            boundFields.splice(i, 1);
-        }
-    }
-    return boundFields;
+        return !field.widget.isHidden;
+    });
 };
 
 /**
@@ -882,8 +918,16 @@ function formFactory(kwargs)
         {
             preInit.call(this, kwargs);
         }
-        this.fields = createFields.call(this);
+
+        // Any pre-existing fields will have been created by a form which uses
+        // this form as its base. As such, pre-existing fields should overwrite
+        // any fields with the same name and pre-existing fields with new names
+        // should appear after fields created by this form.
+        this.fields = extendObject(createFields.call(this), this.fields || {});
+
+        // Tell our parent to do its instantiation work
         form.call(this, kwargs);
+
         if (postInit !== null)
         {
             postInit.call(this, kwargs);
