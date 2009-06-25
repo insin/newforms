@@ -1006,8 +1006,11 @@ Form.prototype.visibleFields = function()
  *                              any keyword arguments which are passed when a
  *                              new instance of the form is being created,
  *                              before fields have been created and the
- *                              prototype constructor called - typlical usage of
- *                              this function would be to pop and store kwargs
+ *                              prototype constructor called - if a value is
+ *                              returned from the function, it will be used as
+ *                              the kwargs object for further processing, so
+ *                              typical usage of this function would be to set
+ *                              default kwarg arguments or pop and store kwargs
  *                              as properties of the form object being created.
  * @config {Function} [postInit] if provided, this function will be invoked with
  *                               any keyword arguments which are passed when a
@@ -1042,7 +1045,9 @@ function formFactory(kwargs)
     {
         if (preInit !== null)
         {
-            preInit.call(this, kwargs);
+            // If the preInit function returns anything, use the returned value
+            // as the kwargs object for further processing.
+            kwargs = preInit.call(this, kwargs) || kwargs;
         }
 
         // Any pre-existing fields will have been created by a form which uses

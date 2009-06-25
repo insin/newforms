@@ -699,3 +699,91 @@ test("Validating multiple fields in relation to another", function()
     equals(f.cleanedData.password1, "foo");
     equals(f.cleanedData.password2, "foo");
 });
+
+test("Dynamic construction", function()
+{
+    expect(5);
+    // It's possible to construct a Form dynamically by adding to this.fields
+    // during construction. Don't forget to initialise any parent constructors
+    // first. formFactory provides a postInit() hook suitable for this purpose.
+    var Person = formFactory({
+        fields: function() {
+            return {
+                first_name: new CharField(),
+                last_name: new CharField()
+            };
+        },
+
+        postInit: function(kwargs) {
+            this.fields["birthday"] = new DateField();
+        }
+    });
+    var p = new Person({autoId: false});
+    equals(""+p,
+"<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>\n" +
+"<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>\n" +
+"<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\"></td></tr>");
+
+    // Instances of a dynamic Form do not persist fields from one Form instance to
+    // the next.
+    var MyForm = formFactory({
+        fields: function() { return {}; },
+
+        preInit: function(kwargs) {
+            return extendObject({
+                data: null, autoId: false, fieldList: []
+            }, kwargs);
+        },
+
+        postInit: function(kwargs) {
+            for (var i = 0, l = kwargs.fieldList.length; i < l; i++) {
+                this.fields[kwargs.fieldList[i][0]] = kwargs.fieldList[i][1];
+            }
+        }
+    });
+    var fieldList = [["field1", new CharField()], ["field2", new CharField()]];
+    var myForm = new MyForm({fieldList: fieldList});
+    equals(""+myForm,
+"<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
+"<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>");
+    fieldList = [["field3", new CharField()], ["field4", new CharField()]];
+    myForm = new MyForm({fieldList: fieldList});
+    equals(""+myForm,
+"<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
+"<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>");
+
+    MyForm = formFactory({
+        fields: function() {
+            return {
+                default_field_1: new CharField(),
+                default_field_2: new CharField()
+            };
+        },
+
+        preInit: function(kwargs) {
+            return extendObject({
+                data: null, autoId: false, fieldList: []
+            }, kwargs);
+        },
+
+        postInit: function(kwargs) {
+            for (var i = 0, l = kwargs.fieldList.length; i < l; i++) {
+                this.fields[kwargs.fieldList[i][0]] = kwargs.fieldList[i][1];
+            }
+        }
+    });
+    fieldList = [["field1", new CharField()], ["field2", new CharField()]];
+    myForm = new MyForm({fieldList: fieldList});
+    equals(""+myForm,
+"<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>\n" +
+"<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>\n" +
+"<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
+"<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>");
+    fieldList = [["field3", new CharField()], ["field4", new CharField()]];
+    myForm = new MyForm({fieldList: fieldList});
+    equals(""+myForm,
+"<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>\n" +
+"<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>\n" +
+"<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
+"<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>")
+});
