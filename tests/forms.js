@@ -20,7 +20,7 @@ test("prettyName", function()
 
 test("Form", function()
 {
-    expect(6);
+    expect(9);
     var Person = formFactory({
         fields: function() {
             return {
@@ -39,7 +39,12 @@ test("Form", function()
     same(p.errors.asText(), "");
     isSet([p.cleanedData.first_name, p.cleanedData.last_name, p.cleanedData.birthday.valueOf()],
           ["John", "Lennon", new Date(1940, 9, 9).valueOf()]);
-    // TODO BoundField access
+    equals(""+p.boundField("first_name"),
+           "<input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\">");
+    equals(""+p.boundField("last_name"),
+           "<input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\">");
+    equals(""+p.boundField("birthday"),
+           "<input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\">");
     equals(p.asTable(),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\"></td></tr>\n" +

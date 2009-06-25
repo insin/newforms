@@ -237,6 +237,15 @@ BoundField.prototype.labelTag = function(kwargs)
 };
 
 /**
+ * Assuming this method will only be used when DOMBuilder is configured to
+ * generate HTML.
+ */
+BoundField.prototype.toString = function()
+{
+    return ""+this.asWidget();
+};
+
+/**
  * A collection of Fields that knows how to validate and display itself.
  *
  * @param {Object} [kwargs] configuration options.
