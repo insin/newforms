@@ -90,9 +90,10 @@ BoundField.prototype =
     get autoId()
     {
         var autoId = this.form.autoId;
-        if (autoId !== null)
+        if (autoId)
         {
-            if (autoId.indexOf("%(name)s") > -1)
+            autoId = ""+autoId;
+            if (autoId.indexOf("%(name)s") != -1)
             {
                 return formatString(autoId, {name: this.htmlName});
             }
@@ -169,7 +170,7 @@ BoundField.prototype.asWidget = function(kwargs)
  */
 BoundField.prototype.asHidden = function(attrs)
 {
-    return this.asWidget({widget: this.field.hiddenWidget(),
+    return this.asWidget({widget: new this.field.hiddenWidget(),
                           attrs: attrs || {}});
 };
 
@@ -543,7 +544,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
             for (var j = 0, m = bfErrors.errors.length; j < m; j++)
             {
                 topErrors.errors.push("(Hidden field " + bf.name + ") " +
-                    DOMBuilder.conditionalEscape(bfErrors.errors[j]));
+                                      bfErrors.errors[j]);
             }
         }
         hiddenFields.push(bf.asWidget());
@@ -563,8 +564,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
             errors = new this.errorConstructor();
             for (var j = 0, m = bfErrors.errors.length; j < m; j++)
             {
-                errors.errors.push(
-                    DOMBuilder.conditionalEscape(bfErrors.errors[j]));
+                errors.errors.push(bfErrors.errors[j]);
             }
 
             if (errorsOnSeparateRow === true)
@@ -576,7 +576,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
 
         if (bf.label)
         {
-            label = DOMBuilder.conditionalEscape(bf.label);
+            label = bf.label;
             // Only add the suffix if the label does not end in punctuation
             if (this.labelSuffix &&
                 ":?.!".indexOf(label.charAt(label.length - 1)) == -1)

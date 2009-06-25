@@ -238,7 +238,7 @@ ErrorObject.prototype.asUL = function()
     {
         if (this.hasOwnProperty(name))
         {
-            items[items.length] = this[name].asUL();
+            items.push(DOMBuilder.createElement("li", {}, [name, this[name].asUL()]));
         }
     }
     return DOMBuilder.createElement("ul", {"class": "errorlist"}, items);
@@ -254,11 +254,11 @@ ErrorObject.prototype.asText = function()
     {
         if (this.hasOwnProperty(name))
         {
-            items[items.length] = "* " + name;
+            items.push("* " + name);
             var errorList = this[name];
             for (var i = 0, l = errorList.errors.length; i < l; i++)
             {
-                items[items.length] = "  * " + errorList.errors[i];
+                items.push("  * " + errorList.errors[i]);
             }
         }
     }
@@ -294,7 +294,7 @@ ErrorList.prototype.asUL = function()
     var items = [];
     for (var i = 0, l = this.errors.length; i < l; i++)
     {
-        items[items.length] = DOMBuilder.createElement("li", {}, [this.errors[i]])
+        items.push(DOMBuilder.createElement("li", {}, [this.errors[i]]));
     }
     return DOMBuilder.createElement("ul", {"class": "errorlist"}, items);
 };
