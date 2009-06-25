@@ -763,7 +763,7 @@ Form.prototype.asP = function()
         {
             // When provided extraContent is usually hidden fields, so we need
             // to give it a block scope wrapper in this case for HTML validity.
-            return DOMBuilder.createElement("div", {}, [errors, extraContent]);
+            return DOMBuilder.createElement("div", {}, [errors].concat(extraContent));
         }
         // Otherwise, just display errors as they are
         return errors;

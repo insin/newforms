@@ -702,7 +702,7 @@ test("Validating multiple fields in relation to another", function()
 
 test("Dynamic construction", function()
 {
-    expect(5);
+    expect(14);
     // It's possible to construct a Form dynamically by adding to this.fields
     // during construction. Don't forget to initialise any parent constructors
     // first. formFactory provides a postInit() hook suitable for this purpose.
@@ -732,7 +732,7 @@ test("Dynamic construction", function()
         preInit: function(kwargs) {
             return extendObject({
                 data: null, autoId: false, fieldList: []
-            }, kwargs);
+            }, kwargs || {});
         },
 
         postInit: function(kwargs) {
@@ -763,7 +763,7 @@ test("Dynamic construction", function()
         preInit: function(kwargs) {
             return extendObject({
                 data: null, autoId: false, fieldList: []
-            }, kwargs);
+            }, kwargs || {});
         },
 
         postInit: function(kwargs) {
@@ -785,5 +785,160 @@ test("Dynamic construction", function()
 "<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>\n" +
 "<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>\n" +
 "<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
-"<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>")
+"<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>");
+
+    // Similarly, changes to field attributes do not persist from one Form
+    // instance to the next.
+    Person = formFactory({
+        fields: function() {
+            return {
+                first_name: new CharField({required: false}),
+                last_name: new CharField({required: false})
+            };
+        },
+
+        preInit: function(kwargs) {
+            return extendObject({namesRequired: false}, kwargs || {});
+        },
+
+        postInit: function(kwargs) {
+            if (kwargs.namesRequired) {
+                this.fields["first_name"].required = true;
+                this.fields["first_name"].widget.attrs["class"] = "required";
+                this.fields["last_name"].required = true;
+                this.fields["last_name"].widget.attrs["class"] = "required";
+            }
+        }
+    });
+    f = new Person({namesRequired: false});
+    same([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
+         [false, false]);
+    same([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
+         [{}, {}]);
+    f = new Person({namesRequired: true});
+    same([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
+         [true, true]);
+    same([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
+         [{"class": "required"}, {"class": "required"}]);
+    f = new Person({namesRequired: false});
+    same([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
+         [false, false]);
+    same([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
+         [{}, {}]);
+
+    Person = formFactory({
+        fields: function() {
+            return {
+                first_name: new CharField({maxLength: 30}),
+                last_name: new CharField({maxLength: 30})
+            };
+        },
+
+        preInit: function(kwargs) {
+            return extendObject({nameMaxLength: null}, kwargs || {});
+        },
+
+        postInit: function(kwargs) {
+            if (kwargs.nameMaxLength) {
+                this.fields["first_name"].maxLength = kwargs.nameMaxLength;
+                this.fields["last_name"].maxLength = kwargs.nameMaxLength;
+            }
+        }
+    });
+    f = new Person({nameMaxLength: null});
+    same([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
+         [30, 30]);
+    f = new Person({nameMaxLength: 20});
+    same([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
+         [20, 20]);
+    f = new Person({nameMaxLength: null});
+    same([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
+         [30, 30]);
+});
+
+test("Hidden inputs", function()
+{
+    expect(12);
+    // HiddenInput widgets are displayed differently in the asTable(), asUL()
+    // and asP() output of a Form - their verbose names are not displayed, and a
+    // separate row is not displayed. They're displayed in the last row of the
+    // form, directly after that row's form element.
+    var Person = formFactory({fields: function() {
+        return {
+            first_name: new CharField(),
+            last_name: new CharField(),
+            hidden_text: new CharField({widget: HiddenInput}),
+            birthday: new DateField()
+        };
+    }});
+    var p = new Person({autoId: false});
+    equals(""+p,
+"<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>\n" +
+"<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>\n" +
+"<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></td></tr>");
+    equals(p.asUL(),
+"<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
+"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
+"<li>Birthday: <input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></li>");
+    equals(p.asP(),
+"<p>First name: <input type=\"text\" name=\"first_name\"></p>\n" +
+"<p>Last name: <input type=\"text\" name=\"last_name\"></p>\n" +
+"<p>Birthday: <input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></p>");
+
+    // With autoId set, a HiddenInput still gets an id, but it doesn't get a label.
+    p = new Person({autoId: "id_%(name)s"});
+    equals(""+p,
+"<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
+"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
+"<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></td></tr>");
+    equals(""+p.asUL(),
+"<li><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>\n" +
+"<li><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>\n" +
+"<li><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></li>");
+    equals(""+p.asP(),
+"<p><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>\n" +
+"<p><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>\n" +
+"<p><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></p>");
+
+    // If a field with a HiddenInput has errors, the asTable(), asUl() and asP()
+    // output will include the error message(s) with the text
+    // "(Hidden field [fieldname]) " prepended. This message is displayed at the
+    // top of the output, regardless of its field's order in the form.
+    p = new Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}, autoId: false});
+    equals(""+p,
+"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></td></tr>\n" +
+"<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\" value=\"John\"></td></tr>\n" +
+"<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\" value=\"Lennon\"></td></tr>\n" +
+"<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></td></tr>");
+    equals(""+p.asUL(),
+"<li><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></li>\n" +
+"<li>First name: <input type=\"text\" name=\"first_name\" value=\"John\"></li>\n" +
+"<li>Last name: <input type=\"text\" name=\"last_name\" value=\"Lennon\"></li>\n" +
+"<li>Birthday: <input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></li>");
+    equals(""+p.asP(),
+"<ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul>\n" +
+"<p>First name: <input type=\"text\" name=\"first_name\" value=\"John\"></p>\n" +
+"<p>Last name: <input type=\"text\" name=\"last_name\" value=\"Lennon\"></p>\n" +
+"<p>Birthday: <input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></p>");
+
+    // A corner case: It's possible for a form to have only HiddenInputs. Since
+    // we expect that the content of asTable() and asUL() will be held in
+    // appropriate HTML elements within the document and we don't want to end up
+    // with invalid HTML, a row will be created to contain the hidden fields. In
+    // the case of asP(), form inputs must reside inside a block-level container
+    // to qualify as valid HTML, so the inputs will be wrapped in a <div> in
+    // this scenario.
+    var TestForm = formFactory({fields: function() {
+        return {
+            foo: new CharField({widget: HiddenInput}),
+            bar: new CharField({widget: HiddenInput})
+        };
+    }});
+    p = new TestForm({autoId: false});
+    equals(""+p.asTable(),
+"<tr><td colspan=\"2\"><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></td></tr>");
+    equals(""+p.asUL(),
+"<li><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></li>");
+    equals(""+p.asP(),
+"<div><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></div>");
 });
