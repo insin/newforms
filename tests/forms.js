@@ -604,3 +604,98 @@ test("Form", function()
 "<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;\"></td></tr>\n" +
 "<tr><th><em>Special</em> Field:</th><td><ul class=\"errorlist\"><li>'<b><i>Do not escape error message</i></b>' is a safe string</li></ul><input type=\"text\" name=\"specialSafeName\" value=\"&lt;i&gt;Do not escape error message&lt;/i&gt;\"></td></tr>");
 });
+
+test("Validating multiple fields in relation to another", function()
+{
+    expect(20);
+    // There are a couple of ways to do multiple-field validation. If you want
+    // the validation message to be associated with a particular field,
+    // implement the clean_XXX() method on the Form, where XXX is the field
+    // name. As in Field.clean(), the clean_XXX() method should return the
+    // cleaned value. In the clean_XXX() method, you have access to
+    // this.cleanedData, which is an object containing all the data that has
+    // been cleaned *so far*, in order by the fields, including the current
+    // field (e.g., the field XXX if you're in clean_XXX()).
+    var UserRegistration = formFactory({
+        fields: function() {
+            return {
+                username: new CharField({maxLength: 10}),
+                password1: new CharField({widget: PasswordInput}),
+                password2: new CharField({widget: PasswordInput})
+            };
+        },
+
+        clean_password2: function() {
+            if (this.cleanedData.password1 != this.cleanedData.password2)
+            {
+                throw new ValidationError("Please make sure your passwords match.");
+            }
+            return this.cleanedData.password2;
+        }
+    });
+    var f = new UserRegistration({autoId: false});
+    same(f.errors.isPopulated(), false);
+    f = new UserRegistration({data: {}, autoId: false});
+    same(f.errors["username"].errors, ["This field is required."]);
+    same(f.errors["password1"].errors, ["This field is required."]);
+    same(f.errors["password2"].errors, ["This field is required."]);
+    f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false});
+    same(f.errors["password2"].errors, ["Please make sure your passwords match."]);
+    f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false});
+    same(f.errors.isPopulated(), false);
+    equals(f.cleanedData.username, "adrian");
+    equals(f.cleanedData.password1, "foo");
+    equals(f.cleanedData.password2, "foo");
+
+    // Another way of doing multiple-field validation is by implementing the
+    // Form's clean() method. If you do this, any ValidationError raised by that
+    // method will not be associated with a particular field; it will have a
+    // special-case association with the field named '__all__'.
+    // Note that in Form.clean(), you have access to self.cleanedData, an object
+    // containing all the fields/values that have *not* raised a
+    // ValidationError. Also note Form.clean() is required to return a
+    // dictionary of all clean data.
+    UserRegistration = formFactory({
+        fields: function() {
+            return {
+                username: new CharField({maxLength: 10}),
+                password1: new CharField({widget: PasswordInput}),
+                password2: new CharField({widget: PasswordInput})
+            };
+        },
+
+        clean: function() {
+            if (this.cleanedData.password1 && this.cleanedData.password2 &&
+                this.cleanedData.password1 != this.cleanedData.password2)
+            {
+                throw new ValidationError("Please make sure your passwords match.");
+            }
+            return this.cleanedData;
+        }
+    });
+    f = new UserRegistration({data: {}, autoId: false});
+    equals(f.asTable(),
+"<tr><th>Username:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>\n" +
+"<tr><th>Password1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password1\"></td></tr>\n" +
+"<tr><th>Password2:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password2\"></td></tr>")
+    same(f.errors["username"].errors, ["This field is required."]);
+    same(f.errors["password1"].errors, ["This field is required."]);
+    same(f.errors["password2"].errors, ["This field is required."]);
+    f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false});
+    same(f.errors["__all__"].errors, ["Please make sure your passwords match."]);
+    equals(f.asTable(),
+"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
+"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></td></tr>\n" +
+"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\" value=\"foo\"></td></tr>\n" +
+"<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\" value=\"bar\"></td></tr>");
+    equals(f.asUL(),
+"<li><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></li>\n" +
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></li>\n" +
+"<li>Password1: <input type=\"password\" name=\"password1\" value=\"foo\"></li>\n" +
+"<li>Password2: <input type=\"password\" name=\"password2\" value=\"bar\"></li>");
+    f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false});
+    same(f.errors.isPopulated(), false);
+    equals(f.cleanedData.username, "adrian");
+    equals(f.cleanedData.password1, "foo");
+    equals(f.cleanedData.password2, "foo");
+});

@@ -852,7 +852,17 @@ Form.prototype.fullClean = function()
                 value = field.clean(value);
             }
             this.cleanedData[name] = value;
-            var customClean =
+
+            // Try clean_name
+            var customClean = "clean_" + name;
+            if (typeof this[customClean] == "function")
+            {
+                 this.cleanedData[name] = this[customClean]();
+                 continue;
+            }
+
+            // Try cleanName
+            customClean =
                 "clean" + name.charAt(0).toUpperCase() + name.substr(1);
             if (typeof this[customClean] == "function")
             {
