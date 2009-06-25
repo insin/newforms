@@ -857,8 +857,10 @@ RadioFieldRenderer.prototype.render = function()
     var items = [];
     for (var i = 0, l = inputs.length; i < l; i++)
     {
+        items.push("\n");
         items.push(DOMBuilder.createElement("li", {}, [inputs[i].labelTag()]));
     }
+    items.push("\n");
     return DOMBuilder.createElement("ul", {}, items);
 };
 

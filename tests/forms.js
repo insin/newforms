@@ -20,7 +20,7 @@ test("prettyName", function()
 
 test("Form", function()
 {
-    expect(76);
+    expect(85);
     var Person = formFactory({fields: function() {
         return {
             first_name: new CharField(),
@@ -314,4 +314,110 @@ test("Form", function()
 "<option value=\"P\">Python</option>\n" +
 "<option value=\"J\">Java</option>\n" +
 "</select>");
+    f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false});
+    equals(""+f.boundField("language"),
+"<select name=\"language\">\n" +
+"<option value=\"P\" selected=\"selected\">Python</option>\n" +
+"<option value=\"J\">Java</option>\n" +
+"</select>");
+
+    // A subtlety: If one of the choices' value is the empty string and the form
+    // is unbound, then the <option> for the empty-string choice will get
+    // selected="selected".
+    FrameworkForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            language: new ChoiceField({choices: [["", "------"],["P", "Python"], ["J", "Java"]]})
+        };
+    }});
+    f = new FrameworkForm({autoId: false});
+    equals(""+f.boundField("language"),
+"<select name=\"language\">\n" +
+"<option value=\"\" selected=\"selected\">------</option>\n" +
+"<option value=\"P\">Python</option>\n" +
+"<option value=\"J\">Java</option>\n" +
+"</select>");
+
+    // You can specify widget attributes in the Widget constructor
+    FrameworkForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            language: new ChoiceField({
+                choices: [["P", "Python"], ["J", "Java"]],
+                widget: new Select({attrs: {"class": "foo"}})
+            })
+        };
+    }});
+    f = new FrameworkForm({autoId: false});
+    equals(""+f.boundField("language"),
+"<select class=\"foo\" name=\"language\">\n" +
+"<option value=\"P\">Python</option>\n" +
+"<option value=\"J\">Java</option>\n" +
+"</select>");
+    f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false});
+    equals(""+f.boundField("language"),
+"<select class=\"foo\" name=\"language\">\n" +
+"<option value=\"P\" selected=\"selected\">Python</option>\n" +
+"<option value=\"J\">Java</option>\n" +
+"</select>");
+
+    // When passing a custom widget instance to ChoiceField, note that setting
+    // "choices" on the widget is meaningless. The widget will use the choices
+    // defined on the Field, not the ones defined on the Widget.
+    FrameworkForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            language: new ChoiceField({
+                choices: [["P", "Python"], ["J", "Java"]],
+                widget: new Select({
+                    choices: [["R", "Ruby"], ["P", "Perl"]],
+                    attrs: {"class": "foo"}
+                })
+            })
+        };
+    }});
+    f = new FrameworkForm({autoId: false});
+    equals(""+f.boundField("language"),
+"<select class=\"foo\" name=\"language\">\n" +
+"<option value=\"P\">Python</option>\n" +
+"<option value=\"J\">Java</option>\n" +
+"</select>");
+    f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false});
+    equals(""+f.boundField("language"),
+"<select class=\"foo\" name=\"language\">\n" +
+"<option value=\"P\" selected=\"selected\">Python</option>\n" +
+"<option value=\"J\">Java</option>\n" +
+"</select>");
+
+    // You can set a ChoiceField's choices after the fact
+    FrameworkForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            language: new ChoiceField()
+        };
+    }});
+    f = new FrameworkForm({autoId: false});
+    equals(""+f.boundField("language"),
+"<select name=\"language\">\n" +
+"</select>");
+    f.fields["language"].choices = [["P", "Python"], ["J", "Java"]];
+    equals(""+f.boundField("language"),
+"<select name=\"language\">\n" +
+"<option value=\"P\">Python</option>\n" +
+"<option value=\"J\">Java</option>\n" +
+"</select>");
+
+    // Add widget: RadioSelect to use that widget with a ChoiceField
+    FrameworkForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            language: new ChoiceField({choices: [["P", "Python"], ["J", "Java"]], widget: RadioSelect})
+        };
+    }});
+    f = new FrameworkForm({autoId: false});
+    equals(""+f.boundField("language"),
+"<ul>\n" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+"</ul>");
 });

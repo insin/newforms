@@ -582,32 +582,69 @@ test("RadioSelect", function()
     expect(13);
     var w = new RadioSelect();
     equals(""+w.render("beatle", "J", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-        "<ul><li><label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li>\n" +
+"</ul>");
 
     // If the value is null, none of the options are checked
     equals(""+w.render("beatle", null, {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-        "<ul><li><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li>\n" +
+"</ul>");
 
     // If the value corresponds to a label (but not to an option value), none of the options are checked
     equals(""+w.render("beatle", "John", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-        "<ul><li><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li><li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li>\n" +
+"</ul>");
 
     // The value is compared to its String representation
     equals(""+w.render("num", 2, {}, [['1', '1'], ['2', '2'], ['3', '3']]),
-           "<ul><li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li><li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>\n" +
+"</ul>");
     equals(""+w.render("num", "2", {}, [[1, 1], [2, 2], [3, 3]]),
-           "<ul><li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li><li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>\n" +
+"</ul>");
     equals(""+w.render("num", 2, {}, [[1, 1], [2, 2], [3, 3]]),
-           "<ul><li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li><li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>\n" +
+"</ul>");
 
     // You can also pass "choices" to the constructor:
     w = new RadioSelect({choices: [[1, 1], [2, 2], [3, 3]]});
     equals(""+w.render("num", 2),
-           "<ul><li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li><li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>\n" +
+"</ul>");
 
     // If 'choices' is passed to both the constructor and render(), then they'll both be in the output
     equals(""+w.render("num", 2, {}, [[4, 4], [5, 5]]),
-           "<ul><li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li><li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li><li><label><input type=\"radio\" name=\"num\" value=\"4\"> 4</label></li><li><label><input type=\"radio\" name=\"num\" value=\"5\"> 5</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"4\"> 4</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"5\"> 5</label></li>\n" +
+"</ul>");
 
     // TODO RadioSelect uses a RadioFieldRenderer to render the individual radio
     //      inputs. You can manipulate that object directly to customize the way
@@ -656,17 +693,30 @@ test("RadioSelect", function()
     // Choices are escaped correctly
     w = new RadioSelect();
     equals(""+w.render("escape", null, {}, [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]),
-           "<ul><li><label><input type=\"radio\" name=\"escape\" value=\"bad\"> you &amp; me</label></li><li><label><input type=\"radio\" name=\"escape\" value=\"good\"> you &gt; me</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"radio\" name=\"escape\" value=\"bad\"> you &amp; me</label></li>\n" +
+"<li><label><input type=\"radio\" name=\"escape\" value=\"good\"> you &gt; me</label></li>\n" +
+"</ul>");
 
     // Attributes provided at instantiation are passed to the constituent inputs
     w = new RadioSelect({attrs: {id: "foo"}});
     equals(""+w.render("beatle", "J", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<ul><li><label for=\"foo_0\"><input id=\"foo_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li><li><label for=\"foo_1\"><input id=\"foo_1\" type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li><li><label for=\"foo_2\"><input id=\"foo_2\" type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li><li><label for=\"foo_3\"><input id=\"foo_3\" type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li></ul>");
+"<ul>\n" +
+"<li><label for=\"foo_0\"><input id=\"foo_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
+"<li><label for=\"foo_1\"><input id=\"foo_1\" type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>\n" +
+"<li><label for=\"foo_2\"><input id=\"foo_2\" type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li>\n" +
+"<li><label for=\"foo_3\"><input id=\"foo_3\" type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li>\n" +
+"</ul>");
 
     // Attributes provided at render-time are passed to the constituent inputs
     w = new RadioSelect();
     equals(""+w.render("beatle", "J", {id: "bar"}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<ul><li><label for=\"bar_0\"><input id=\"bar_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li><li><label for=\"bar_1\"><input id=\"bar_1\" type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li><li><label for=\"bar_2\"><input id=\"bar_2\" type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li><li><label for=\"bar_3\"><input id=\"bar_3\" type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li></ul>");
+"<ul>\n" +
+"<li><label for=\"bar_0\"><input id=\"bar_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
+"<li><label for=\"bar_1\"><input id=\"bar_1\" type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>\n" +
+"<li><label for=\"bar_2\"><input id=\"bar_2\" type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li>\n" +
+"<li><label for=\"bar_3\"><input id=\"bar_3\" type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li>\n" +
+"</ul>");
 });
 
 test("CheckboxSelectMultiple", function()
