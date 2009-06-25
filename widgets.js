@@ -1184,3 +1184,4 @@ function SplitHiddenDateTimeWidget(kwargs)
 }
 
 SplitHiddenDateTimeWidget.prototype = new SplitDateTimeWidget();
+SplitHiddenDateTimeWidget.isHidden = true;
