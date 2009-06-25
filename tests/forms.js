@@ -20,7 +20,7 @@ test("prettyName", function()
 
 test("Form", function()
 {
-    expect(101);
+    expect(111);
 
     var Person = formFactory({fields: function() {
         return {
@@ -544,4 +544,63 @@ test("Form", function()
 "<li><label for=\"composers_id_0\"><input id=\"composers_id_0\" type=\"checkbox\" name=\"composers\" value=\"J\"> John Lennon</label></li>\n" +
 "<li><label for=\"composers_id_1\"><input id=\"composers_id_1\" type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
 "</ul>");
+
+    SongForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: MultipleHiddenInput})
+        }
+    }});
+    f = new SongForm({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false});
+    equals(""+f.asUL(),
+"<li>Name: <input type=\"text\" name=\"name\" value=\"Yesterday\"><span><input type=\"hidden\" name=\"composers\" value=\"J\"><input type=\"hidden\" name=\"composers\" value=\"P\"></span></li>");
+
+    // When using MultipleChoiceField, the framework expects a list of input and
+    // returns a list of input.
+    f = new SongForm({data: {name: "Yesterday"}, autoId: false});
+    same(f.errors["composers"].errors, ["This field is required."]);
+    f = new SongForm({data: {name: "Yesterday", composers: ["J"]}, autoId: false});
+    same(f.errors.isPopulated(), false);
+    same(f.cleanedData["composers"], ["J"]);
+    equals(f.cleanedData["name"], "Yesterday");
+    f = new SongForm({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false});
+    same(f.errors.isPopulated(), false);
+    same(f.cleanedData["composers"], ["J", "P"]);
+    equals(f.cleanedData["name"], "Yesterday");
+
+    // Validation errors are HTML-escaped when output as HTML
+    var EscapingForm = formFactory({
+        fields: function() {
+            return {
+                specialName: new CharField({label: "<em>Special</em> Field"}),
+                specialSafeName: new CharField({label: DOMBuilder.markSafe("<em>Special</em> Field")})
+            };
+        },
+
+        cleanSpecialName: function()
+        {
+            throw new ValidationError("Something's wrong with '" + this.cleanedData.specialName + "'");
+        },
+
+        cleanSpecialSafeName: function()
+        {
+            throw new ValidationError(
+                DOMBuilder.markSafe(
+                    "'<b>" + this.cleanedData.specialSafeName + "</b>' is a safe string"));
+        }
+    });
+    f = new EscapingForm({data: {specialName: "Nothing to escape", specialSafeName: "Nothing to escape"}, autoId: false});
+    equals(""+f,
+"<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Nothing to escape&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Nothing to escape\"></td></tr>\n" +
+"<tr><th><em>Special</em> Field:</th><td><ul class=\"errorlist\"><li>'<b>Nothing to escape</b>' is a safe string</li></ul><input type=\"text\" name=\"specialSafeName\" value=\"Nothing to escape\"></td></tr>");
+    f = new EscapingForm({
+        data: {
+            specialName: "Should escape < & > and <script>alert('xss')</script>",
+            specialSafeName: "<i>Do not escape error message</i>"
+        },
+        autoId: false
+    });
+    equals(""+f,
+"<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;\"></td></tr>\n" +
+"<tr><th><em>Special</em> Field:</th><td><ul class=\"errorlist\"><li>'<b><i>Do not escape error message</i></b>' is a safe string</li></ul><input type=\"text\" name=\"specialSafeName\" value=\"&lt;i&gt;Do not escape error message&lt;/i&gt;\"></td></tr>");
 });

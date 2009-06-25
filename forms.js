@@ -576,14 +576,21 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
 
         if (bf.label)
         {
-            label = bf.label;
+            var isSafe = DOMBuilder.isSafe(bf.label);
+            label = ""+bf.label;
+
             // Only add the suffix if the label does not end in punctuation
             if (this.labelSuffix &&
                 ":?.!".indexOf(label.charAt(label.length - 1)) == -1)
             {
                 label += this.labelSuffix;
             }
-            label = bf.labelTag({contents: label}) || "";;
+
+            if (isSafe)
+            {
+                label = DOMBuilder.markSafe(label);
+            }
+            label = bf.labelTag({contents: label}) || "";
         }
 
         if (bf.field.helpText)
