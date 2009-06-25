@@ -968,11 +968,13 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, attrs, 
         }
 
         var cb = new CheckboxInput({attrs: checkboxAttrs, checkTest: checkTest});
+        items.push("\n");
         items.push(
             DOMBuilder.createElement("li", {},
                 [DOMBuilder.createElement("label", labelAttrs,
                                           [cb.render(name, optValue), " ", optLabel])]));
     }
+    items.push("\n");
     return DOMBuilder.createElement("ul", {}, items);
 };
 

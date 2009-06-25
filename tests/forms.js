@@ -13,14 +13,14 @@ test("prettyName", function()
     equals(prettyName("endsWithAcronymLikeLASER"), "Ends with acronym like LASER");
     equals(prettyName("StudlyCaps"), "Studly caps");
 
-    // ...but if you insist on using camelCase with acronyms in the middel,
+    // ...but if you insist on using camelCase with acronyms in the middle,
     // you're on your own.
     equals(prettyName("butNOTThatClever"), "But nOTThat clever");
 });
 
 test("Form", function()
 {
-    expect(97);
+    expect(101);
 
     var Person = formFactory({fields: function() {
         return {
@@ -478,7 +478,7 @@ test("Form", function()
     equals(""+f.boundField("composers"),
 "<select name=\"composers\" multiple=\"multiple\">\n" +
 "</select>")
-    var SongForm = formFactory({fields: function() {
+    SongForm = formFactory({fields: function() {
         return {
             name: new CharField(),
             composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
@@ -507,4 +507,41 @@ test("Form", function()
     f = new SongForm({data: {name: "Yesterday", composers: ["P", "J"]}, autoId: false});
     equals(""+f.boundField("composers").asHidden(),
 "<span><input type=\"hidden\" name=\"composers\" value=\"P\"><input type=\"hidden\" name=\"composers\" value=\"J\"></span>");
+
+    // MultipleChoiceField can also be used with the CheckboxSelectMultiple
+    // widget.
+    SongForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: CheckboxSelectMultiple})
+        }
+    }});
+    f = new SongForm({autoId: false});
+    equals(""+f.boundField("composers"),
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\"> John Lennon</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
+"</ul>");
+    f = new SongForm({data: {composers: ["J"]}, autoId: false});
+    equals(""+f.boundField("composers"),
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"> John Lennon</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
+"</ul>");
+    f = new SongForm({data: {composers: ["J", "P"]}, autoId: false});
+    equals(""+f.boundField("composers"),
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"> John Lennon</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\" checked=\"checked\"> Paul McCartney</label></li>\n" +
+"</ul>");
+
+    // Regarding autoId, CheckboxSelectMultiple is another special case. Each
+    // checkbox gets a distinct ID, formed by appending an underscore plus the
+    // checkbox's zero-based index.
+    f = new SongForm({autoId: "%(name)s_id"});
+    equals(""+f.boundField("composers"),
+"<ul>\n" +
+"<li><label for=\"composers_id_0\"><input id=\"composers_id_0\" type=\"checkbox\" name=\"composers\" value=\"J\"> John Lennon</label></li>\n" +
+"<li><label for=\"composers_id_1\"><input id=\"composers_id_1\" type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
+"</ul>");
 });

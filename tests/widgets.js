@@ -724,44 +724,102 @@ test("CheckboxSelectMultiple", function()
     expect(18);
     var w = new CheckboxSelectMultiple();
     equals(""+w.render("beatles", ["J"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-        "<ul><li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>\n" +
+"</ul>");
     equals(""+w.render("beatles", ["J", "P"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-        "<ul><li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked=\"checked\"> Paul</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked=\"checked\"> Paul</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>\n" +
+"</ul>");
     equals(""+w.render("beatles", ["J", "P", "R"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-        "<ul><li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked=\"checked\"> Paul</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\" checked=\"checked\"> Ringo</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked=\"checked\"> Paul</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\" checked=\"checked\"> Ringo</label></li>\n" +
+"</ul>");
 
     // If the value is null, none of the options are selected
     equals(""+w.render("beatles", null, {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-        "<ul><li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\"> John</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\"> John</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>\n" +
+"</ul>");
 
     // If the value corresponds to a label (but not to an option value), none of the options are selected
     equals(""+w.render("beatles", ["John"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-        "<ul><li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\"> John</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\"> John</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>\n" +
+"</ul>");
 
     // If multiple values are given, but some of them are not valid, the valid ones are selected
     equals(""+w.render("beatles", ["J", "G", "foo"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-        "<ul><li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\" checked=\"checked\"> George</label></li><li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\" checked=\"checked\"> George</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>\n" +
+"</ul>");
 
     // The value is compared to its String representation
     equals(""+w.render("nums", [2], {}, [['1', '1'], ['2', '2'], ['3', '3']]),
-           "<ul><li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>\n" +
+"</ul>");
     equals(""+w.render("nums", ["2"], {}, [[1, 1], [2, 2], [3, 3]]),
-           "<ul><li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>\n" +
+"</ul>");
     equals(""+w.render("nums", [2], {}, [[1, 1], [2, 2], [3, 3]]),
-           "<ul><li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>\n" +
+"</ul>");
 
     // You can also pass 'choices' to the constructor
     w = new CheckboxSelectMultiple({choices: [[1, 1], [2, 2], [3, 3]]});
     equals(""+w.render("nums", [2]),
-           "<ul><li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>\n" +
+"</ul>");
 
     // If 'choices' is passed to both the constructor and render(), then they'll both be in the output
     equals(""+w.render("nums", [2], {}, [[4, 4], [5, 5]]),
-           "<ul><li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"4\"> 4</label></li><li><label><input type=\"checkbox\" name=\"nums\" value=\"5\"> 5</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"4\"> 4</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"5\"> 5</label></li>\n" +
+"</ul>");
 
     // Choices are escaped correctly
     equals(""+w.render("escape", null, {}, [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]),
-           "<ul><li><label><input type=\"checkbox\" name=\"escape\" value=\"1\"> 1</label></li><li><label><input type=\"checkbox\" name=\"escape\" value=\"2\"> 2</label></li><li><label><input type=\"checkbox\" name=\"escape\" value=\"3\"> 3</label></li><li><label><input type=\"checkbox\" name=\"escape\" value=\"bad\"> you &amp; me</label></li><li><label><input type=\"checkbox\" name=\"escape\" value=\"good\"> you &gt; me</label></li></ul>");
+"<ul>\n" +
+"<li><label><input type=\"checkbox\" name=\"escape\" value=\"1\"> 1</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"escape\" value=\"2\"> 2</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"escape\" value=\"3\"> 3</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"escape\" value=\"bad\"> you &amp; me</label></li>\n" +
+"<li><label><input type=\"checkbox\" name=\"escape\" value=\"good\"> you &gt; me</label></li>\n" +
+"</ul>");
 
     // Test the usage of _hasChanged
     same(w._hasChanged(null, null), false);
