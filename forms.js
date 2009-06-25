@@ -424,6 +424,11 @@ Form.prototype.__iterator__ = function()
 };
 */
 
+Form.prototype.toString = function()
+{
+    return this.asTable();
+};
+
 /**
  * Creates a {@link BoundField} for the field with the given name.
  *
@@ -546,7 +551,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
         var bf = visibleBoundFields[i];
 
         // Variables which can be optional in each row
-        var errors, label, helpText, extraContent = null;
+        var errors = null, label = null, helpText = null, extraContent = null;
 
         var bfErrors = bf.errors;
         if (bfErrors.isPopulated())
@@ -560,7 +565,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
 
             if (errorsOnSeparateRow === true)
             {
-                rows.push(errorRow(errors));
+                rows.push(errorRow(errors.asUL()));
                 errors = null;
             }
         }
@@ -588,6 +593,11 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
             extraContent = hiddenFields;
         }
 
+        if (errors !== null)
+        {
+            errors = errors.asUL();
+        }
+
         rows.push(normalRow(label, bf.asWidget(), helpText, errors, extraContent));
     }
 
@@ -600,7 +610,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
         {
             extraContent = hiddenFields;
         }
-        rows.splice(0, 0, errorRow(topErrors, extraContent));
+        rows.splice(0, 0, errorRow(topErrors.asUL(), extraContent));
     }
 
     // Put hidden fields in their own error row if there were no rows to
@@ -659,7 +669,7 @@ Form.prototype.asTable = function()
         ]);
     }
 
-    return this._htmlOutput(normalRow, errorRow, true);
+    return this._htmlOutput(normalRow, errorRow, false);
 };
 
 // TODO Form.prototype.asUL
