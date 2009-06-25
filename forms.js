@@ -522,6 +522,10 @@ Form.prototype.addPrefix = function(fieldName)
  * @param {Boolean} errorsOnSeparateRow determines if errors are placed in their
  *                                      own row, or in the row for the field
  *                                      they are related to.
+ *
+ * @return if we're operating in DOM mode returns a list of DOM elements
+ *         representing rows, otherwise returns an HTML string, with rows
+ *         separated by linebreaks.
  */
 Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
 {
@@ -631,6 +635,10 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
     }
 };
 
+/**
+ * Returns this form rendered as HTML &lt;tr&gt;s - excluding the
+ * &lt;table&gt;&lt;/table&gt;.
+ */
 Form.prototype.asTable = function()
 {
     var normalRow = function(label, field, helpText, errors, extraContent)
@@ -672,8 +680,90 @@ Form.prototype.asTable = function()
     return this._htmlOutput(normalRow, errorRow, false);
 };
 
-// TODO Form.prototype.asUL
-// TODO Form.prototype.asP
+/**
+ * Returns this form rendered as HTML &lt;li&gt;s - excluding the
+ * &lt;ul&gt;&lt;/ul&gt;.
+ */
+Form.prototype.asUL = function()
+{
+    var normalRow = function(label, field, helpText, errors, extraContent)
+    {
+        var contents = [];
+        if (errors)
+        {
+            contents.push(errors);
+        }
+        if (label)
+        {
+            contents.push(label);
+        }
+        contents.push(" ");
+        contents.push(field);
+        if (helpText)
+        {
+            contents.push(helpText);
+        }
+        if (extraContent)
+        {
+            contents = contents.concat(extraContent);
+        }
+
+        return DOMBuilder.createElement("li", {}, contents);
+    };
+
+    var errorRow = function(errors, extraContent)
+    {
+        var contents = [errors];
+        if (extraContent)
+        {
+            contents = contents.concat(extraContent);
+        }
+        return DOMBuilder.createElement("li", {}, contents);
+    }
+
+    return this._htmlOutput(normalRow, errorRow, false);
+};
+
+/**
+ * Returns this form rendered as HTML &lt;p&gt;s.
+ */
+Form.prototype.asP = function()
+{
+    var normalRow = function(label, field, helpText, errors, extraContent)
+    {
+        var contents = [];
+        if (label)
+        {
+            contents.push(label);
+        }
+        contents.push(" ");
+        contents.push(field);
+        if (helpText)
+        {
+            contents.push(helpText);
+        }
+        if (extraContent)
+        {
+            contents = contents.concat(extraContent);
+        }
+
+        return DOMBuilder.createElement("p", {}, contents);
+    };
+
+    var errorRow = function(errors, extraContent)
+    {
+        if (extraContent)
+        {
+            // When provided extraContent is usually hidden fields, so we need
+            // to give it a block scope wrapper in this case for HTML validity.
+            return DOMBuilder.createElement("div", {}, [errors, extraContent]);
+        }
+        // Otherwise, just display errors as they are
+        return errors;
+    }
+
+    return this._htmlOutput(normalRow, errorRow, true);
+};
 
 /**
  * Returns errors that aren't associated with a particular field.
