@@ -879,7 +879,7 @@ test("Dynamic construction", function()
             }
         }
     });
-    f = new Person({namesRequired: false});
+    var f = new Person({namesRequired: false});
     same([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
          [false, false]);
     same([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
@@ -1350,4 +1350,96 @@ test("Help text", function()
     equals(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"next\" value=\"/\"></li>");
+});
+
+test("Subclassing forms", function()
+{
+    expect(9);
+    // You can subclass a Form to add fields. The resulting form subclass will
+    // have all of the fields of the parent Form, plus whichever fields you
+    // define in the subclass.
+    var Person = formFactory({fields: function() {
+        return {
+            first_name: new CharField(),
+            last_name: new CharField(),
+            birthday: new DateField()
+        };
+    }});
+    var Musician = formFactory({form: Person, fields: function() {
+        return {
+            instrument: new CharField()
+        };
+    }});
+    var p = new Person({autoId: false});
+    equals(""+p.asUL(),
+"<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
+"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
+"<li>Birthday: <input type=\"text\" name=\"birthday\"></li>");
+    var m = new Musician({autoId: false});
+    equals(""+m.asUL(),
+"<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
+"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
+"<li>Birthday: <input type=\"text\" name=\"birthday\"></li>\n" +
+"<li>Instrument: <input type=\"text\" name=\"instrument\"></li>");
+
+    // You can subclass multiple forms by passing a list of constructors. The
+    // fields are added in the order in which the parent Forms are listed.
+    var Person = formFactory({
+        fields: function() {
+            return {
+                first_name: new CharField(),
+                last_name: new CharField(),
+                birthday: new DateField()
+            };
+        },
+        clean_first_name: function() {
+            throw new ValidationError("Method from Person.");
+        },
+        clean_last_name: function() {
+            throw new ValidationError("Method from Person.");
+        }
+    });
+    var Instrument = formFactory({
+        fields: function() {
+            return {
+                instrument: new CharField()
+            };
+        },
+        clean_birthday: function() {
+            throw new ValidationError("Method from Instrument.");
+        }
+    });
+    var Beatle = formFactory({
+        form: [Person, Instrument],
+        fields: function() {
+            return {
+                haircut_type: new CharField()
+            };
+        },
+        clean_last_name: function() {
+            throw new ValidationError("Method from Beatle.");
+        }
+    });
+    var b = new Beatle({autoId: false});
+    equals(""+b.asUL(),
+"<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
+"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
+"<li>Birthday: <input type=\"text\" name=\"birthday\"></li>\n" +
+"<li>Instrument: <input type=\"text\" name=\"instrument\"></li>\n" +
+"<li>Haircut type: <input type=\"text\" name=\"haircut_type\"></li>");
+
+    var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}});
+    same(b.errors["first_name"].errors, ["Method from Person."]);
+    same(b.errors["birthday"].errors, ["Method from Instrument."]);
+    same(b.errors["last_name"].errors, ["Method from Beatle."]);
+
+    // JavaScript doesn't support multiple inheritance, so this is actually a
+    // bit of a hack. These tests will highlight the fallout from this (well,
+    // the ones I know about, at least).
+    same(b instanceof Form, true);
+    same(b instanceof Person, true);
+    // An instance of the first Form passed as a parent is used as the base
+    // prototype object for our new Form - methods are merely borrowed from any
+    // additional Forms, so instanceof only works for the first Form passed.
+    same(b instanceof Instrument, false);
 });

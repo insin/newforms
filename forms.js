@@ -1058,8 +1058,19 @@ function formFactory(kwargs)
         // should appear after fields created by this form.
         this.fields = extendObject(createFields.call(this), this.fields || {});
 
-        // Tell our parent to do its instantiation work
-        form.call(this, kwargs);
+        // Tell whatever number of parents we have to do their instantiation bit
+        if (form instanceof Array)
+        {
+            // We loop backwards because fields are instantiated "bottom up"
+            for (var i = form.length - 1; i >= 0; i--)
+            {
+                form[i].call(this, kwargs);
+            }
+        }
+        else
+        {
+            form.call(this, kwargs);
+        }
 
         if (postInit !== null)
         {
@@ -1073,6 +1084,26 @@ function formFactory(kwargs)
     delete kwargs.fields;
     delete kwargs.preInit;
     delete kwargs.postInit;
-    formConstructor.prototype = extendObject(new form(), kwargs);
+
+    if (form instanceof Array)
+    {
+        // *Really* inherit from the first Form we were passed
+        formConstructor.prototype = new form[0]();
+        // Borrow methods from any additional Forms this is a bit of a hack to
+        // fake multiple inheritance. We can only use instanceof for the form we
+        // really inherited from, but we can access methods from all our
+        // parents.
+        for (var i = 1, l = form.length; i < l; i++)
+        {
+            extendObject(formConstructor.prototype, form[i].prototype);
+        }
+        // Anything else defined in kwargs should take precedence
+        extendObject(formConstructor.prototype, kwargs);
+    }
+    else
+    {
+        formConstructor.prototype = extendObject(new form(), kwargs);
+    }
+
     return formConstructor;
 }
