@@ -234,6 +234,11 @@ BaseFormSet.prototype =
     }
 };
 
+BaseFormSet.prototype.toString = function()
+{
+    return ""+this.asTable();
+};
+
 /**
  * Determines the number of form instances this formset contains, based on
  * either submitted management data or initial configuration, as appropriate.
@@ -486,11 +491,37 @@ BaseFormSet.prototype.isMultipart = function()
     return (this.forms.length > 0 && this.forms[0].isMultipart());
 };
 
+/**
+ * Returns this formset rendered as HTML &lt;tr&gt;s - excluding the
+ * &lt;table&gt;&lt;/table&gt;.
+ *
+ * @param {Boolean} [doNotCoerce] if <code>true</code>, the resulting rows will
+ *                                not be coerced to a String if we're operating
+ *                                in HTML mode - defaults to <code>false</code>.
+ */
+BaseFormSet.prototype.asTable = function(doNotCoerce)
+{
+    // XXX: there is no semantic division between forms here, there probably
+    // should be. It might make sense to render each form as a table row with
+    // each field as a td.
+    var rows = this.managementForm.asTable(true);
+    for (var i = 0, l = this.forms.length; i < l; i++)
+    {
+        rows = rows.concat(this.forms[i].asTable(true));
+    }
+
+    if (doNotCoerce === true || DOMBuilder.mode == "DOM")
+    {
+        return rows;
+    }
+    else
+    {
+        return rows.join("\n");
+    }
+};
+
 /* Reference for unimplemented methods, as of Django r10643
 class BaseFormSet(StrAndUnicode):
-    def __unicode__(self):
-        return self.as_table()
-
     def _get_media(self):
         # All the forms on a FormSet are the same, so you only need to
         # interrogate the first form for media.
@@ -499,14 +530,6 @@ class BaseFormSet(StrAndUnicode):
         else:
             return Media()
     media = property(_get_media)
-
-    def as_table(self):
-        "Returns this formset rendered as HTML <tr>s -- excluding the <table></table>."
-        # XXX: there is no semantic division between forms here, there
-        # probably should be. It might make sense to render each form as a
-        # table row with each field as a td.
-        forms = u' '.join([form.as_table() for form in self.forms])
-        return mark_safe(u'\n'.join([unicode(self.management_form), forms]))
 */
 
 /**

@@ -427,7 +427,7 @@ Form.prototype.__iterator__ = function()
 
 Form.prototype.toString = function()
 {
-    return this.asTable();
+    return ""+this.asTable();
 };
 
 /**
@@ -523,12 +523,15 @@ Form.prototype.addPrefix = function(fieldName)
  * @param {Boolean} errorsOnSeparateRow determines if errors are placed in their
  *                                      own row, or in the row for the field
  *                                      they are related to.
+ * @param {Boolean} [doNotCoerce] if <code>true</code>, the resulting rows will
+ *                                not be coerced to a String if we're operating
+ *                                in HTML mode - defaults to <code>false</code>.
  *
  * @return if we're operating in DOM mode returns a list of DOM elements
  *         representing rows, otherwise returns an HTML string, with rows
  *         separated by linebreaks.
  */
-Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
+Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, doNotCoerce)
 {
     var topErrors = this.nonFieldErrors();
     var rows = []
@@ -631,8 +634,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
         rows.push(errorRow("", hiddenFields));
     }
 
-    // :-/
-    if (DOMBuilder.mode == "DOM")
+    if (doNotCoerce === true || DOMBuilder.mode == "DOM")
     {
         return rows;
     }
@@ -645,8 +647,12 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow)
 /**
  * Returns this form rendered as HTML &lt;tr&gt;s - excluding the
  * &lt;table&gt;&lt;/table&gt;.
+ *
+ * @param {Boolean} [doNotCoerce] if <code>true</code>, the resulting rows will
+ *                                not be coerced to a String if we're operating
+ *                                in HTML mode - defaults to <code>false</code>.
  */
-Form.prototype.asTable = function()
+Form.prototype.asTable = function(doNotCoerce)
 {
     var normalRow = function(label, field, helpText, errors, extraContent)
     {
@@ -684,14 +690,18 @@ Form.prototype.asTable = function()
         ]);
     }
 
-    return this._htmlOutput(normalRow, errorRow, false);
+    return this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
 };
 
 /**
  * Returns this form rendered as HTML &lt;li&gt;s - excluding the
  * &lt;ul&gt;&lt;/ul&gt;.
+ *
+ * @param {Boolean} [doNotCoerce] if <code>true</code>, the resulting rows will
+ *                                not be coerced to a String if we're operating
+ *                                in HTML mode - defaults to <code>false</code>.
  */
-Form.prototype.asUL = function()
+Form.prototype.asUL = function(doNotCoerce)
 {
     var normalRow = function(label, field, helpText, errors, extraContent)
     {
@@ -729,13 +739,17 @@ Form.prototype.asUL = function()
         return DOMBuilder.createElement("li", {}, contents);
     }
 
-    return this._htmlOutput(normalRow, errorRow, false);
+    return this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
 };
 
 /**
  * Returns this form rendered as HTML &lt;p&gt;s.
+ *
+ * @param {Boolean} [doNotCoerce] if <code>true</code>, the resulting rows will
+ *                                not be coerced to a String if we're operating
+ *                                in HTML mode - defaults to <code>false</code>.
  */
-Form.prototype.asP = function()
+Form.prototype.asP = function(doNotCoerce)
 {
     var normalRow = function(label, field, helpText, errors, extraContent)
     {
@@ -771,7 +785,7 @@ Form.prototype.asP = function()
         return errors;
     }
 
-    return this._htmlOutput(normalRow, errorRow, true);
+    return this._htmlOutput(normalRow, errorRow, true, doNotCoerce);
 };
 
 /**
