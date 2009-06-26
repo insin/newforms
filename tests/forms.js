@@ -1791,4 +1791,17 @@ test("The emptyPermitted attribute", function()
 
 test("Extracting hidden and visible fields", function()
 {
+    expect(2);
+    var SongForm = formFactory({fields: function() {
+        return {
+            token: new CharField({widget: HiddenInput}),
+            artist: new CharField(),
+            name: new CharField()
+        };
+    }});
+    var form = new SongForm();
+    var hidden = form.hiddenFields();
+    same([hidden.length, hidden[0].name], [1, "token"]);
+    var visible = form.visibleFields();
+    same([visible.length, visible[0].name, visible[1].name], [2, "artist", "name"]);
 });
