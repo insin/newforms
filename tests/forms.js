@@ -1443,3 +1443,125 @@ test("Subclassing forms", function()
     // additional Forms, so instanceof only works for the first Form passed.
     same(b instanceof Instrument, false);
 });
+
+test("Forms with prefixes", function()
+{
+    expect(30);
+    // Sometimes it's necessary to have multiple forms display on the same HTML
+    // page, or multiple copies of the same form. We can accomplish this with
+    // form prefixes. Pass a "prefix" argument to the Form constructor to use
+    // this feature. This value will be prepended to each HTML form field name.
+    // One way to think about this is "namespaces for HTML forms". Notice that
+    // in the data argument, each field's key has the prefix, in this case
+    // "person1", prepended to the actual field name.
+    var Person = formFactory({fields: function() {
+        return {
+            first_name: new CharField(),
+            last_name: new CharField(),
+            birthday: new DateField()
+        };
+    }});
+    var data = {
+        "person1-first_name": "John",
+        "person1-last_name": "Lennon",
+        "person1-birthday": "1940-10-9"
+    };
+    var p = new Person({data: data, prefix: "person1"});
+    equals(""+p.asUL(),
+"<li><label for=\"id_person1-first_name\">First name:</label> <input type=\"text\" name=\"person1-first_name\" id=\"id_person1-first_name\" value=\"John\"></li>\n" +
+"<li><label for=\"id_person1-last_name\">Last name:</label> <input type=\"text\" name=\"person1-last_name\" id=\"id_person1-last_name\" value=\"Lennon\"></li>\n" +
+"<li><label for=\"id_person1-birthday\">Birthday:</label> <input type=\"text\" name=\"person1-birthday\" id=\"id_person1-birthday\" value=\"1940-10-9\"></li>");
+    equals(""+p.boundField("first_name"),
+"<input type=\"text\" name=\"person1-first_name\" id=\"id_person1-first_name\" value=\"John\">");
+    equals(""+p.boundField("last_name"),
+"<input type=\"text\" name=\"person1-last_name\" id=\"id_person1-last_name\" value=\"Lennon\">");
+    equals(""+p.boundField("birthday"),
+"<input type=\"text\" name=\"person1-birthday\" id=\"id_person1-birthday\" value=\"1940-10-9\">");
+    same(p.errors.isPopulated(), false);
+    same(p.isValid(), true);
+    equals(p.cleanedData["first_name"], "John");
+    equals(p.cleanedData["last_name"], "Lennon");
+    same(p.cleanedData["birthday"], new Date(1940, 9, 9));
+
+    // Let's try submitting some bad data to make sure form.errors and
+    // field.errors work as expected.
+    data = {
+        "person1-first_name": "",
+        "person1-last_name": "",
+        "person1-birthday": ""
+    };
+    p = new Person({data: data, prefix: "person1"});
+    same(p.errors["first_name"].errors, ["This field is required."]);
+    same(p.errors["last_name"].errors, ["This field is required."]);
+    same(p.errors["birthday"].errors, ["This field is required."]);
+    same(p.boundField("first_name").errors.errors, ["This field is required."]);
+    try { p.boundField("person1-first_name"); } catch(e) { equals(e.message, "Form does not have a person1-first_name field."); }
+
+    // In this example, the data doesn't have a prefix, but the form requires
+    // it, so the form doesn't "see" the fields.
+    data = {
+        "first_name": "John",
+        "last_name": "Lennon",
+        "birthday": "1940-10-9"
+    };
+    p = new Person({data: data, prefix: "person1"});
+    same(p.errors["first_name"].errors, ["This field is required."]);
+    same(p.errors["last_name"].errors, ["This field is required."]);
+    same(p.errors["birthday"].errors, ["This field is required."]);
+
+    // With prefixes, a single data object can hold data for multiple instances
+    // of the same form.
+    data = {
+        "person1-first_name": "John",
+        "person1-last_name": "Lennon",
+        "person1-birthday": "1940-10-9",
+        "person2-first_name": "Jim",
+        "person2-last_name": "Morrison",
+        "person2-birthday": "1943-12-8"
+    };
+    p1 = new Person({data: data, prefix: "person1"});
+    same(p1.isValid(), true);
+    equals(p1.cleanedData["first_name"], "John");
+    equals(p1.cleanedData["last_name"], "Lennon");
+    same(p1.cleanedData["birthday"], new Date(1940, 9, 9));
+    p2 = new Person({data: data, prefix: "person2"});
+    same(p2.isValid(), true);
+    equals(p2.cleanedData["first_name"], "Jim");
+    equals(p2.cleanedData["last_name"], "Morrison");
+    same(p2.cleanedData["birthday"], new Date(1943, 11, 8));
+
+    // By default, forms append a hyphen between the prefix and the field name,
+    // but a form can alter that behavior by implementing the addPrefix()
+    // method. This method takes a field name and returns the prefixed field,
+    // according to this.prefix.
+    Person = formFactory({
+        fields: function() {
+            return {
+                first_name: new CharField(),
+                last_name: new CharField(),
+                birthday: new DateField()
+            };
+        },
+        addPrefix: function(fieldName) {
+            if (this.prefix) {
+                return this.prefix + "-prefix-" + fieldName;
+            }
+            return fieldName;
+        }
+    });
+    p = new Person({prefix: "foo"});
+    equals(""+p.asUL(),
+"<li><label for=\"id_foo-prefix-first_name\">First name:</label> <input type=\"text\" name=\"foo-prefix-first_name\" id=\"id_foo-prefix-first_name\"></li>\n" +
+"<li><label for=\"id_foo-prefix-last_name\">Last name:</label> <input type=\"text\" name=\"foo-prefix-last_name\" id=\"id_foo-prefix-last_name\"></li>\n" +
+"<li><label for=\"id_foo-prefix-birthday\">Birthday:</label> <input type=\"text\" name=\"foo-prefix-birthday\" id=\"id_foo-prefix-birthday\"></li>");
+    data = {
+        "foo-prefix-first_name": "John",
+        "foo-prefix-last_name": "Lennon",
+        "foo-prefix-birthday": "1940-10-9"
+    };
+    p = new Person({data: data, prefix: "foo"});
+    same(p.isValid(), true);
+    equals(p.cleanedData["first_name"], "John");
+    equals(p.cleanedData["last_name"], "Lennon");
+    same(p.cleanedData["birthday"], new Date(1940, 9, 9));
+});
