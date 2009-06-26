@@ -708,6 +708,7 @@ Form.prototype.asUL = function()
         contents.push(field);
         if (helpText)
         {
+            contents.push(" ");
             contents.push(helpText);
         }
         if (extraContent)
@@ -747,6 +748,7 @@ Form.prototype.asP = function()
         contents.push(field);
         if (helpText)
         {
+            contents.push(" ");
             contents.push(helpText);
         }
         if (extraContent)

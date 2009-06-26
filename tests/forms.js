@@ -1263,12 +1263,12 @@ test("Initial data", function()
 "</select></li>");
     p = new UserRegistration({data: {username: "foo", options: ["f", "b"]}, initial: {username: initialDjango}, autoId: false});
     equals(""+p.asUL(),
-"<li>Username: <input maxlength="10" type="text" name="username" value="foo"></li>\n" +
-"<li><ul class="errorlist"><li>This field is required.</li></ul>Password: <input type="password" name="password"></li>\n" +
-"<li>Options: <select name="options" multiple="multiple">\n" +
-"<option value="f" selected="selected">foo</option>\n" +
-"<option value="b" selected="selected">bar</option>\n" +
-"<option value="w">whiz</option>\n" +
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
+"<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
+"<option value=\"f\" selected=\"selected\">foo</option>\n" +
+"<option value=\"b\" selected=\"selected\">bar</option>\n" +
+"<option value=\"w\">whiz</option>\n" +
 "</select></li>");
 
     // A callable 'initial' value is *not* used as a fallback if data is not
@@ -1306,4 +1306,48 @@ test("Initial data", function()
 "<option value=\"b\" selected=\"selected\">bar</option>\n" +
 "<option value=\"w\">whiz</option>\n" +
 "</select></li>");
+});
+
+test("Help text", function()
+{
+    expect(5);
+    // You can specify descriptive text for a field by using the "helpText"
+    // argument to a Field class. This help text is displayed when a Form is
+    // rendered.
+    var UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10, helpText: "e.g., user@example.com"}),
+            password: new CharField({widget: PasswordInput, helpText: "Choose wisely."})
+        };
+    }});
+    var p = new UserRegistration({autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</li>\n" +
+"<li>Password: <input type=\"password\" name=\"password\"> Choose wisely.</li>");
+    equals(""+p.asP(),
+"<p>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</p>\n" +
+"<p>Password: <input type=\"password\" name=\"password\"> Choose wisely.</p>");
+    equals(""+p.asTable(),
+"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"><br>e.g., user@example.com</td></tr>\n" +
+"<tr><th>Password:</th><td><input type=\"password\" name=\"password\"><br>Choose wisely.</td></tr>");
+
+    // The help text is displayed whether or not data is provided for the form.
+    p = new UserRegistration({data: {username: "foo"}, autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"> e.g., user@example.com</li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"> Choose wisely.</li>");
+
+    // Help text is not displayed for hidden fields. It can be used for
+    // documentation purposes, though.
+    UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10, helpText: "e.g., user@example.com"}),
+            password: new CharField({widget: PasswordInput}),
+            next: new CharField({widget: HiddenInput, initial: "/", helpText: "Redirect destination"})
+        };
+    }});
+    p  = new UserRegistration({autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</li>\n" +
+"<li>Password: <input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"next\" value=\"/\"></li>");
 });
