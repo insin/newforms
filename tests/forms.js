@@ -1014,7 +1014,7 @@ test("Hidden inputs", function()
 
 test("Labels", function()
 {
-    expect(6);
+    expect(10);
     // You can specify the label for a field by using the "label" argument to a
     // Field class. If you don't specify 'label', js-forms will use the field
     // name with underscores converted to spaces, and the initial letter
@@ -1084,4 +1084,226 @@ test("Labels", function()
     equals(""+p.asUL(),
 "<li><label for=\"id_username\">Username:</label> <input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>\n" +
 "<li><label for=\"id_password1\">Password1:</label> <input type=\"password\" name=\"password1\" id=\"id_password1\"></li>");
+
+    // You can specify the "labelSuffix" argument to a Form class to modify the
+    // punctuation symbol used at the end of a label.  By default, the colon
+    // (:) is used, and is only appended to the label if the label doesn't
+    // already end with a punctuation symbol: ., !, ? or :.
+    var FavouriteForm = formFactory({fields: function() {
+        return {
+            colour: new CharField({label: "Favourite colour?"}),
+            animal: new CharField({label: "Favourite animal"})
+        };
+    }});
+    var f = new FavouriteForm({autoId: false});
+    equals(""+f.asUL(),
+"<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
+"<li>Favourite animal: <input type=\"text\" name=\"animal\"></li>");
+    f = new FavouriteForm({autoId: false, labelSuffix: "?"});
+    equals(""+f.asUL(),
+"<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
+"<li>Favourite animal? <input type=\"text\" name=\"animal\"></li>");
+    f = new FavouriteForm({autoId: false, labelSuffix: ""});
+    equals(""+f.asUL(),
+"<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
+"<li>Favourite animal <input type=\"text\" name=\"animal\"></li>");
+    f = new FavouriteForm({autoId: false, labelSuffix: "\u2192"});
+    equals(""+f.asUL(),
+"<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
+"<li>Favourite animal\u2192 <input type=\"text\" name=\"animal\"></li>");
+});
+
+test("Initial data", function()
+{
+    expect(22);
+    // You can specify initial data for a field by using the "initial" argument
+    // to a Field class. This initial data is displayed when a Form is rendered
+    // with *no* data. It is not displayed when a Form is rendered with any data
+    // (including an empty object). Also, the initial value is *not* used if
+    // data for a particular required field isn't provided.
+    var UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10, initial: "django"}),
+            password: new CharField({widget: PasswordInput})
+        };
+    }});
+
+    // Here, we're not submitting any data, so the initial value will be
+    // displayed.
+    var p = new UserRegistration({autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
+"<li>Password: <input type=\"password\" name=\"password\"></li>");
+
+    // Here, we're submitting data, so the initial value will *not* be displayed.
+    p = new UserRegistration({data: {}, autoId: false});
+    equals(""+p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
+    p = new UserRegistration({data: {username: ""}, autoId: false});
+    equals(""+p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
+    p = new UserRegistration({data: {username: "foo"}, autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
+
+    // An "initial" value is *not* used as a fallback if data is not provided.
+    // In this example, we don't provide a value for "username", and the form
+    // raises a validation error rather than using the initial value for
+    // "username".
+    p = new UserRegistration({data: {password: "secret"}});
+    same(p.errors["username"].errors, ["This field is required."]);
+    same(p.isValid(), false);
+
+    // The previous technique dealt with "hard-coded" initial data, but it's
+    // also possible to specify initial data after you've already created the
+    // Form class (i.e., at runtime). Use the "initial" parameter to the Form
+    // constructor. This should be an object containing initial values for one
+    // or more fields in the form, keyed by field name.
+    UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10}),
+            password: new CharField({widget: PasswordInput})
+        };
+    }});
+
+    // Here, we're not submitting any data, so the initial value will be displayed.
+    p = new UserRegistration({initial: {username: "django"}, autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
+"<li>Password: <input type=\"password\" name=\"password\"></li>");
+    p = new UserRegistration({initial: {username: "stephane"}, autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"stephane\"></li>\n" +
+"<li>Password: <input type=\"password\" name=\"password\"></li>");
+
+    // The "initial" parameter is meaningless if you pass data
+    p = new UserRegistration({data: {}, initial: {username: "django"}, autoId: false});
+    equals(""+p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
+    p = new UserRegistration({data: {username: ""}, initial: {username: "django"}, autoId: false});
+    equals(""+p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
+    p = new UserRegistration({data: {username: "foo"}, initial: {username: "django"}, autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
+
+    // A dynamic "initial" value is *not* used as a fallback if data is not
+    // provided. In this example, we don't provide a value for "username", and
+    // the form raises a validation error rather than using the initial value
+    // for "username".
+    p = new UserRegistration({data: {password: "secret"}, initial: {username: "django"}});
+    same(p.errors["username"].errors, ["This field is required."]);
+    same(p.isValid(), false);
+
+    // If a Form defines "initial" *and* "initial" is passed as a parameter
+    // during construction, then the latter will get precedence.
+    UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10, initial: "django"}),
+            password: new CharField({widget: PasswordInput})
+        };
+    }});
+    p = new UserRegistration({initial: {username: "babik"}, autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"babik\"></li>\n" +
+"<li>Password: <input type=\"password\" name=\"password\"></li>");
+
+    // The previous technique dealt with raw values as initial data, but it's
+    // also possible to specify callable data.
+    UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10}),
+            password: new CharField({widget: PasswordInput}),
+            options: new MultipleChoiceField({choices: [["f", "foo"], ["b", "bar"], ["w", "whiz"]]})
+        };
+    }});
+
+    // We need to define functions that get called later
+    function initialDjango() { return "django"; }
+    function initialStephane() { return "stephane"; }
+    function initialOptions() { return ["f", "b"]; }
+    function initialOtherOptions() { return ["b", "w"]; }
+
+    // Here, we're not submitting any data, so the initial value will be
+    // displayed.
+    p = new UserRegistration({initial: {username: initialDjango, options: initialOptions}, autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
+"<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
+"<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
+"<option value=\"f\" selected=\"selected\">foo</option>\n" +
+"<option value=\"b\" selected=\"selected\">bar</option>\n" +
+"<option value=\"w\">whiz</option>\n" +
+"</select></li>");
+
+    // The "initial" parameter is meaningless if you pass data.
+    p = new UserRegistration({data: {}, initial: {username: initialDjango, options: initialOptions}, autoId: false});
+    equals(""+p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Options: <select name=\"options\" multiple=\"multiple\">\n" +
+"<option value=\"f\">foo</option>\n" +
+"<option value=\"b\">bar</option>\n" +
+"<option value=\"w\">whiz</option>\n" +
+"</select></li>");
+    p = new UserRegistration({data: {username: ""}, initial: {username: initialDjango}, autoId: false});
+    equals(""+p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Options: <select name=\"options\" multiple=\"multiple\">\n" +
+"<option value=\"f\">foo</option>\n" +
+"<option value=\"b\">bar</option>\n" +
+"<option value=\"w\">whiz</option>\n" +
+"</select></li>");
+    p = new UserRegistration({data: {username: "foo", options: ["f", "b"]}, initial: {username: initialDjango}, autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength="10" type="text" name="username" value="foo"></li>\n" +
+"<li><ul class="errorlist"><li>This field is required.</li></ul>Password: <input type="password" name="password"></li>\n" +
+"<li>Options: <select name="options" multiple="multiple">\n" +
+"<option value="f" selected="selected">foo</option>\n" +
+"<option value="b" selected="selected">bar</option>\n" +
+"<option value="w">whiz</option>\n" +
+"</select></li>");
+
+    // A callable 'initial' value is *not* used as a fallback if data is not
+    // provided. In this example, we don't provide a value for 'username', and
+    // the form raises a validation error rather than using the initial value
+    // for 'username'.
+    p = new UserRegistration({data: {password: "secret"}, initial: {username: initialDjango, options: initialOptions}});
+    same(p.errors["username"].errors, ["This field is required."]);
+    same(p.isValid(), false);
+
+    // If a Form defines "initial" *and* "initial" is passed as a parameter
+    // during construction, then the latter will get precedence.
+    UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10, initial: initialDjango}),
+            password: new CharField({widget: PasswordInput}),
+            options: new MultipleChoiceField({choices: [["f", "foo"], ["b", "bar"], ["w", "whiz"]], initial: initialOtherOptions})
+        };
+    }});
+    p = new UserRegistration({autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
+"<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
+"<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
+"<option value=\"f\">foo</option>\n" +
+"<option value=\"b\" selected=\"selected\">bar</option>\n" +
+"<option value=\"w\" selected=\"selected\">whiz</option>\n" +
+"</select></li>");
+    p = new UserRegistration({initial: {username: initialStephane, options: initialOptions}, autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"stephane\"></li>\n" +
+"<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
+"<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
+"<option value=\"f\" selected=\"selected\">foo</option>\n" +
+"<option value=\"b\" selected=\"selected\">bar</option>\n" +
+"<option value=\"w\">whiz</option>\n" +
+"</select></li>");
 });
