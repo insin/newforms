@@ -20,7 +20,7 @@ test("prettyName", function()
 
 test("Form", function()
 {
-    expect(111);
+    expect(114);
 
     var Person = formFactory({fields: function() {
         return {
@@ -603,6 +603,75 @@ test("Form", function()
     equals(""+f,
 "<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;\"></td></tr>\n" +
 "<tr><th><em>Special</em> Field:</th><td><ul class=\"errorlist\"><li>'<b><i>Do not escape error message</i></b>' is a safe string</li></ul><input type=\"text\" name=\"specialSafeName\" value=\"&lt;i&gt;Do not escape error message&lt;/i&gt;\"></td></tr>");
+
+    // A Form's fields are displayed in the same order they were defined
+    var TestForm = formFactory({fields: function() {
+        return {
+            field1: new CharField(),
+            field2: new CharField(),
+            field3: new CharField(),
+            field4: new CharField(),
+            field5: new CharField(),
+            field6: new CharField(),
+            field7: new CharField(),
+            field8: new CharField(),
+            field9: new CharField(),
+            field10: new CharField(),
+            field11: new CharField(),
+            field12: new CharField(),
+            field13: new CharField(),
+            field14: new CharField()
+        };
+    }});
+    p = new TestForm({autoId: false});
+    equals(""+p,
+"<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
+"<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>\n" +
+"<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
+"<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>\n" +
+"<tr><th>Field5:</th><td><input type=\"text\" name=\"field5\"></td></tr>\n" +
+"<tr><th>Field6:</th><td><input type=\"text\" name=\"field6\"></td></tr>\n" +
+"<tr><th>Field7:</th><td><input type=\"text\" name=\"field7\"></td></tr>\n" +
+"<tr><th>Field8:</th><td><input type=\"text\" name=\"field8\"></td></tr>\n" +
+"<tr><th>Field9:</th><td><input type=\"text\" name=\"field9\"></td></tr>\n" +
+"<tr><th>Field10:</th><td><input type=\"text\" name=\"field10\"></td></tr>\n" +
+"<tr><th>Field11:</th><td><input type=\"text\" name=\"field11\"></td></tr>\n" +
+"<tr><th>Field12:</th><td><input type=\"text\" name=\"field12\"></td></tr>\n" +
+"<tr><th>Field13:</th><td><input type=\"text\" name=\"field13\"></td></tr>\n" +
+"<tr><th>Field14:</th><td><input type=\"text\" name=\"field14\"></td></tr>");
+
+    // Some Field classes have an effect on the HTML attributes of their
+    // associated Widget. If you set maxLength in a CharField and its associated
+    // widget is either a TextInput or PasswordInput, then the widget's rendered
+    // HTML will include the "maxlength" attribute.
+    var UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10}), // Uses TextInput by default
+            password: new CharField({maxLength: 10, widget: PasswordInput}),
+            realname: new CharField({maxLength: 10, widget: TextInput}), // Redundantly degine widget, just to test
+            address: new CharField()
+        };
+    }});
+    p = new UserRegistration({autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li>Password: <input maxlength=\"10\" type=\"password\" name=\"password\"></li>\n" +
+"<li>Realname: <input maxlength=\"10\" type=\"text\" name=\"realname\"></li>\n" +
+"<li>Address: <input type=\"text\" name=\"address\"></li>");
+
+    // If you specify a custom "attrs" that includes the "maxlength" attribute,
+    // the Field's maxLength attribute will override whatever "maxlength" you
+    // specify in "attrs".
+    UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10, widget: new TextInput({attrs: {maxlength: 20}})}),
+            password: new CharField({maxLength: 10, widget: PasswordInput})
+        };
+    }});
+    p = new UserRegistration({autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li>Password: <input maxlength=\"10\" type=\"password\" name=\"password\"></li>");
 });
 
 test("Validating multiple fields in relation to another", function()
@@ -941,4 +1010,78 @@ test("Hidden inputs", function()
 "<li><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></li>");
     equals(""+p.asP(),
 "<div><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></div>");
+});
+
+test("Labels", function()
+{
+    expect(6);
+    // You can specify the label for a field by using the "label" argument to a
+    // Field class. If you don't specify 'label', js-forms will use the field
+    // name with underscores converted to spaces, and the initial letter
+    // capitalised.
+    var UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10, label: "Your username"}),
+            password1: new CharField({widget: PasswordInput}),
+            password2: new CharField({widget: PasswordInput, label: "Password (again)"})
+        };
+    }});
+    var p = new UserRegistration({autoId: false});
+    equals(""+p.asUL(),
+"<li>Your username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li>Password1: <input type=\"password\" name=\"password1\"></li>\n" +
+"<li>Password (again): <input type=\"password\" name=\"password2\"></li>");
+
+    // Labels for as* methods will only end in a colon if they don't end in
+    // other punctuation already.
+    var Questions = formFactory({fields: function() {
+        return {
+            q1: new CharField({label: "The first question"}),
+            q2: new CharField({label: "What is your name?"}),
+            q3: new CharField({label: "The answer to life is:"}),
+            q4: new CharField({label: "Answer this question!"}),
+            q5: new CharField({label: "The last question. Period."})
+        };
+    }});
+    p = new Questions({autoId: false});
+    equals(""+p.asP(),
+"<p>The first question: <input type=\"text\" name=\"q1\"></p>\n" +
+"<p>What is your name? <input type=\"text\" name=\"q2\"></p>\n" +
+"<p>The answer to life is: <input type=\"text\" name=\"q3\"></p>\n" +
+"<p>Answer this question! <input type=\"text\" name=\"q4\"></p>\n" +
+"<p>The last question. Period. <input type=\"text\" name=\"q5\"></p>");
+
+    // If a label is set to the empty string for a field, that field won't get a
+    // label.
+    UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10, label: ""}),
+            password1: new CharField({widget: PasswordInput})
+        };
+    }});
+    p = new UserRegistration({autoId: false});
+    equals(""+p.asUL(),
+"<li> <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li>Password1: <input type=\"password\" name=\"password1\"></li>");
+    p = new UserRegistration({autoId: "id_%(name)s"});
+    equals(""+p.asUL(),
+"<li> <input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>\n" +
+"<li><label for=\"id_password1\">Password1:</label> <input type=\"password\" name=\"password1\" id=\"id_password1\"></li>");
+
+    // If label is null, js-forms will auto-create the label from the field
+    // name. This is the default behavior.
+    UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10, label: null}),
+            password1: new CharField({widget: PasswordInput})
+        };
+    }});
+    p = new UserRegistration({autoId: false});
+    equals(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li>Password1: <input type=\"password\" name=\"password1\"></li>");
+    p = new UserRegistration({autoId: "id_%(name)s"});
+    equals(""+p.asUL(),
+"<li><label for=\"id_username\">Username:</label> <input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>\n" +
+"<li><label for=\"id_password1\">Password1:</label> <input type=\"password\" name=\"password1\" id=\"id_password1\"></li>");
 });
