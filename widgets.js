@@ -67,9 +67,9 @@ Widget.prototype._hasChanged = function(initial, data)
     // For purposes of seeing whether something has changed, null is the same
     // as an empty string, if the data or inital value we get is null, replace
     // it with "".
-    var data_value = (data === null ? "" : data);
-    var initial_value = (initial === null ? "" : initial);
-    return ("" + initial_value != "" + data_value);
+    var dataValue = (data === null ? "" : data);
+    var initialValue = (initial === null ? "" : initial);
+    return ("" + initialValue != "" + dataValue);
 };
 
 /**

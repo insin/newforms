@@ -355,12 +355,12 @@ Form.prototype =
         if (this._changedData === null)
         {
             this._changedData = [];
-            // XXX: For now we're asking the individual widgets whether or not
+            // XXX: For now we're asking the individual fields whether or not
             // the data has changed. It would probably be more efficient to hash
             // the initial data, store it in a hidden field, and compare a hash
             // of the submitted data, but we'd need a way to easily get the
             // string value for a given field. Right now, that logic is embedded
-            // in the render method of each widget.
+            // in the render method of each field's widget.
             for (var name in this.fields)
             {
                 if (!this.fields.hasOwnProperty(name))
@@ -383,7 +383,7 @@ Form.prototype =
                     initialValue = field.initial;
                 }
 
-                if (field.widget._hasChanged(initialValue, dataValue))
+                if (field._hasChanged(initialValue, dataValue))
                 {
                     this._changedData.push(name);
                 }

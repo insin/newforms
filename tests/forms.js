@@ -1565,3 +1565,230 @@ test("Forms with prefixes", function()
     equals(p.cleanedData["last_name"], "Lennon");
     same(p.cleanedData["birthday"], new Date(1940, 9, 9));
 });
+
+test("Forms with NullBooleanFields", function()
+{
+    expect(6);
+    // NullBooleanField is a bit of a special case because its presentation
+    // (widget) is different than its data. This is handled transparently,
+    // though.
+    var Person = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            is_cool: new NullBooleanField()
+        };
+    }});
+    var p = new Person({data: {name: "Joe"}, autoId: false});
+    equals(""+p.boundField("is_cool"),
+"<select name=\"is_cool\">\n" +
+"<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
+"<option value=\"2\">Yes</option>\n" +
+"<option value=\"3\">No</option>\n" +
+"</select>");
+    p = new Person({data: {name: "Joe", is_cool: "1"}, autoId: false});
+    equals(""+p.boundField("is_cool"),
+"<select name=\"is_cool\">\n" +
+"<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
+"<option value=\"2\">Yes</option>\n" +
+"<option value=\"3\">No</option>\n" +
+"</select>");
+    p = new Person({data: {name: "Joe", is_cool: "2"}, autoId: false});
+    equals(""+p.boundField("is_cool"),
+"<select name=\"is_cool\">\n" +
+"<option value=\"1\">Unknown</option>\n" +
+"<option value=\"2\" selected=\"selected\">Yes</option>\n" +
+"<option value=\"3\">No</option>\n" +
+"</select>");
+    p = new Person({data: {name: "Joe", is_cool: "3"}, autoId: false});
+    equals(""+p.boundField("is_cool"),
+"<select name=\"is_cool\">\n" +
+"<option value=\"1\">Unknown</option>\n" +
+"<option value=\"2\">Yes</option>\n" +
+"<option value=\"3\" selected=\"selected\">No</option>\n" +
+"</select>");
+    p = new Person({data: {name: "Joe", is_cool: true}, autoId: false});
+    equals(""+p.boundField("is_cool"),
+"<select name=\"is_cool\">\n" +
+"<option value=\"1\">Unknown</option>\n" +
+"<option value=\"2\" selected=\"selected\">Yes</option>\n" +
+"<option value=\"3\">No</option>\n" +
+"</select>");
+    p = new Person({data: {name: "Joe", is_cool: false}, autoId: false});
+    equals(""+p.boundField("is_cool"),
+"<select name=\"is_cool\">\n" +
+"<option value=\"1\">Unknown</option>\n" +
+"<option value=\"2\">Yes</option>\n" +
+"<option value=\"3\" selected=\"selected\">No</option>\n" +
+"</select>");
+});
+
+test("Forms with FileFields", function()
+{
+    expect(6);
+
+    // Test shim
+    function SimpleUploadedFile(name, content)
+    {
+        this.name = name;
+        this.content = content;
+        this.size = (content !== null ? content.length : 0);
+    }
+
+    // FileFields are a special case because they take their data from the
+    // "files" data object, not "data".
+    var FileForm = formFactory({fields: function() {
+        return { file1: new FileField() };
+    }});
+    var f = new FileForm({autoId: false});
+    equals(""+f,
+           "<tr><th>File1:</th><td><input type=\"file\" name=\"file1\"></td></tr>");
+
+    f = new FileForm({data: {}, files: {}, autoId: false});
+    equals(""+f,
+           "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"file\" name=\"file1\"></td></tr>");
+
+    f = new FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "")}, autoId: false});
+    equals(""+f,
+           "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>The submitted file is empty.</li></ul><input type=\"file\" name=\"file1\"></td></tr>");
+
+    f = new FileForm({data: {}, files: {file1: "something that is not a file"}, autoId: false});
+    equals(""+f,
+           "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>No file was submitted. Check the encoding type on the form.</li></ul><input type=\"file\" name=\"file1\"></td></tr>");
+
+    f = new FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "some content")}, autoId: false});
+    equals(""+f,
+           "<tr><th>File1:</th><td><input type=\"file\" name=\"file1\"></td></tr>");
+    same(f.isValid(), true);
+});
+
+test("Basic form processing", function()
+{
+    expect(3);
+
+    var UserRegistration = formFactory({
+        fields: function() {
+            return {
+                username: new CharField({maxLength: 10}),
+                password1: new CharField({widget: PasswordInput}),
+                password2: new CharField({widget: PasswordInput})
+            };
+        },
+
+        clean: function() {
+            if (this.cleanedData.password1 && this.cleanedData.password2 &&
+                this.cleanedData.password1 != this.cleanedData.password2)
+            {
+                throw new ValidationError("Please make sure your passwords match.");
+            }
+            return this.cleanedData;
+        }
+    });
+
+    function myFunction(method, postData)
+    {
+        if (method == "POST")
+        {
+            var form = new UserRegistration({data: postData, autoId: false});
+            if (form.isValid())
+            {
+                return "VALID";
+            }
+        }
+        else
+        {
+            var form = new UserRegistration({autoId: false});
+        }
+        var template = "<form action=\"\" method=\"POST\">\n<table>\n%(form)s\n</table>\n<input type=\"submit\">\n</form>";
+        return formatString(template, {form: form});
+    }
+
+    // Case 1: GET (and empty form, with no errors)
+    equals(myFunction("GET", {}),
+"<form action=\"\" method=\"POST\">\n" +
+"<table>\n" +
+"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>\n" +
+"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\"></td></tr>\n" +
+"<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\"></td></tr>\n" +
+"</table>\n" +
+"<input type=\"submit\">\n" +
+"</form>");
+
+    // Case 2: POST with erroneous data (a redisplayed form, with errors)
+    equals(myFunction("POST", {username: "this-is-a-long-username", password1: "foo", password2: "bar"}),
+"<form action=\"\" method=\"POST\">\n" +
+"<table>\n" +
+"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
+"<tr><th>Username:</th><td><ul class=\"errorlist\"><li>Ensure this value has at most 10 characters (it has 23).</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"this-is-a-long-username\"></td></tr>\n" +
+"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\" value=\"foo\"></td></tr>\n" +
+"<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\" value=\"bar\"></td></tr>\n" +
+"</table>\n" +
+"<input type=\"submit\">\n" +
+"</form>");
+
+    // Case 3: POST with valid data (the success message)
+   equals(myFunction("POST", {username: "adrian", password1: "secret", password2: "secret"}),
+          "VALID");
+});
+
+test("The emptyPermitted attribute", function()
+{
+    expect(12);
+
+    // Sometimes (pretty much in formsets) we want to allow a form to pass
+    // validation if it is completely empty. We can accomplish this by using the
+    // emptyPermitted argument to a form constructor.
+    var SongForm = formFactory({fields: function() {
+        return {
+            artist: new CharField(),
+            name: new CharField()
+        };
+    }});
+
+    // First let's show what happens if emptyPermitted == false (the default)
+    var data = {artist: "", name: ""};
+    var form = new SongForm({data: data, emptyPermitted: false});
+    same(form.isValid(), false)
+    same(form.errors["artist"].errors, ["This field is required."]);
+    same(form.errors["name"].errors, ["This field is required."]);
+    equals(typeof form.cleanedData, "undefined");
+
+    // Now let's show what happens when emptyPermitted == true and the form is
+    // empty.
+    form = new SongForm({data: data, emptyPermitted: true});
+    same(form.isValid(), true);
+    same(form.errors.isPopulated(), false);
+    same(form.cleanedData, {});
+
+    // But if we fill in data for one of the fields, the form is no longer empty
+    // and the whole thing must pass validation.
+    data = {artist: "The Doors", name: ""};
+    form = new SongForm({data: data, emptyPermitted: true});
+    same(form.isValid(), false)
+    same(form.errors["name"].errors, ["This field is required."]);
+    equals(typeof form.cleanedData, "undefined");
+
+    // If a field is not given in the data then null is returned for its data.
+    // Make sure that when checking for emptyPermitted that null is treated
+    // accordingly.
+    data = {artist: null, name: ""};
+    form = new SongForm({data: data, emptyPermitted: true});
+    same(form.isValid(), true);
+
+    // However, we *really* need to be sure we are checking for null as any data
+    // in initial that is falsy in a boolean context needs to be treated
+    // literally.
+    var PriceForm = formFactory({fields: function() {
+        return {
+            amount: new FloatField(),
+            qty: new IntegerField()
+        };
+    }});
+
+    data = {amount: "0.0", qty: ""};
+    form = new PriceForm({data: data, initial: {amount: 0.0}, emptyPermitted: true});
+    same(form.isValid(), true);
+});
+
+test("Extracting hidden and visible fields", function()
+{
+});

@@ -103,7 +103,7 @@ test("IntegerField", function()
 
 test("FloatField", function()
 {
-    expect(19);
+    expect(21);
     var f = new FloatField();
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
@@ -129,6 +129,10 @@ test("FloatField", function()
     try { f.clean("0.4"); } catch (e) { equals(ve(e), "Ensure this value is greater than or equal to 0.5."); }
     same(f.clean("1.5"), 1.5);
     same(f.clean("0.5"), 0.5);
+
+    // FloatField implements its own _hasChanged due to String coercion issues
+    same(f._hasChanged("0.0", 0.0), false);
+    same(f._hasChanged("1.0", 1.0), false);
 });
 
 test("DecimalField", function()
@@ -349,6 +353,7 @@ test("EmailField", function()
 
 test("FileField", function()
 {
+    // Test shim
     function SimpleUploadedFile(name, content)
     {
         this.name = name;
