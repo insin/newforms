@@ -134,7 +134,7 @@ BaseFormSet.prototype =
         }
 
         // Construct _deletedFormIndexes, which is just a list of form indexes
-        // that have had their deletion widget set to True.
+        // that have had their deletion widget set to true.
         if (typeof this._deletedFormIndexes == "undefined")
         {
             this._deletedFormIndexes = [];
@@ -157,7 +157,7 @@ BaseFormSet.prototype =
         var deletedForms = [];
         for (var i = 0, l = this._deletedFormIndexes.length; i < l; i++)
         {
-            deletedForms.push(this.forms[i]);
+            deletedForms.push(this.forms[this._deletedFormIndexes[i]]);
         }
         return deletedForms;
     },
@@ -374,7 +374,7 @@ BaseFormSet.prototype.isValid = function()
             // more code than we'd like, but the form's cleanedData will not
             // exist if the form is invalid.
             var field = form.fields[BaseFormSet.DELETION_FIELD_NAME];
-            var rawValue = form._rawValue(DELETION_FIELD_NAME);
+            var rawValue = form._rawValue(BaseFormSet.DELETION_FIELD_NAME);
             var shouldDelete = field.clean(rawValue);
             if (shouldDelete)
             {
@@ -560,7 +560,6 @@ function formsetFactory(form, kwargs)
 
     var formsetConstructor = function(formsetKwargs)
     {
-        this.fauxClassName = (form.name || "Anonymous") + "FormSet";
         this.form = form;
         this.extra = kwargs.extra;
         this.canOrder = kwargs.canOrder;

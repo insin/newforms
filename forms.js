@@ -813,7 +813,7 @@ Form.prototype._rawValue = function(fieldname)
 {
     var field = this.fields[fieldname];
     var prefix = this.addPrefix(fieldname);
-    return field.widget.valueDromData(this.data, this.files, prefix);
+    return field.widget.valueFromData(this.data, this.files, prefix);
 };
 
 /**
