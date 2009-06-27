@@ -241,7 +241,12 @@ BaseFormSet.prototype =
 
 BaseFormSet.prototype.toString = function()
 {
-    return ""+this.asTable();
+    return ""+this.defaultRendering();
+};
+
+BaseFormSet.prototype.defaultRendering = function()
+{
+    return this.asTable();
 };
 
 /**

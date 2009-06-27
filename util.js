@@ -210,6 +210,16 @@ function ErrorObject()
 {
 }
 
+ErrorObject.prototype.toString = function()
+{
+    return ""+this.defaultRendering();
+};
+
+ErrorObject.prototype.defaultRendering = function()
+{
+    return this.asUL();
+};
+
 /**
  * Determines if any errors are present.
  *
@@ -275,6 +285,16 @@ function ErrorList(errors)
 {
     this.errors = errors || [];
 }
+
+ErrorList.prototype.toString = function()
+{
+    return ""+this.defaultRendering();
+};
+
+ErrorList.prototype.defaultRendering = function()
+{
+    return this.asUL();
+};
 
 /**
  * Adds errors from another ErrorList.

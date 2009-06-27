@@ -427,7 +427,12 @@ Form.prototype.__iterator__ = function()
 
 Form.prototype.toString = function()
 {
-    return ""+this.asTable();
+    return ""+this.defaultRendering();
+};
+
+Form.prototype.defaultRendering = function()
+{
+    return this.asTable();
 };
 
 /**
@@ -572,7 +577,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
 
             if (errorsOnSeparateRow === true)
             {
-                rows.push(errorRow(errors.asUL()));
+                rows.push(errorRow(errors.defaultRendering()));
                 errors = null;
             }
         }
@@ -609,7 +614,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
 
         if (errors !== null)
         {
-            errors = errors.asUL();
+            errors = errors.defaultRendering();
         }
 
         rows.push(normalRow(label, bf.asWidget(), helpText, errors, extraContent));
@@ -624,7 +629,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
         {
             extraContent = hiddenFields;
         }
-        rows.splice(0, 0, errorRow(topErrors.asUL(), extraContent));
+        rows.splice(0, 0, errorRow(topErrors.defaultRendering(), extraContent));
     }
 
     // Put hidden fields in their own error row if there were no rows to
