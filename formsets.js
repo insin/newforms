@@ -321,7 +321,7 @@ BaseFormSet.prototype._constructForm = function(i, kwargs)
     }
 
     // Allow extra forms to be empty
-    if (i > this.initialFormCount())
+    if (i >= this.initialFormCount())
     {
         defaults["emptyPermitted"] = true;
     }

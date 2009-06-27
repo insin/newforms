@@ -2,7 +2,7 @@ module("formsets");
 
 test("Basic formset creation and usage", function()
 {
-    expect(7);
+    expect(9);
 
     // FormSet allows us to use multiple instance of the same form on 1 page.
     // For now, the best way to create a FormSet is by using the formsetFactory
@@ -53,7 +53,7 @@ test("Basic formset creation and usage", function()
 
     // FormSet instances can also have an error attribute if validation failed for
     // any of the forms.
-    var data = {
+    data = {
         "choices-TOTAL_FORMS": "1",
         "choices-INITIAL_FORMS": "0",
         "choices-0-choice": "Calexico",
@@ -64,8 +64,8 @@ test("Basic formset creation and usage", function()
     same(formset.errors[0].votes.errors, ["This field is required."]);
 
     // We can also prefill a FormSet with existing data by providing an "initial"
-    // argument to the constructor, which should be a lis of objects.By default,
-    // an extra blank form is included.
+    // argument to the constructor, which should be a list of objects. By
+    // default, an extra blank form is included.
     var initial = [{choice: "Calexico", votes: 100}];
     formset = new ChoiceFormSet({initial: initial, autoId: false, prefix: "choices"});
     equals([formset.forms[0].asUL(), formset.forms[1].asUL()].join("\n"),
@@ -73,4 +73,18 @@ test("Basic formset creation and usage", function()
 "<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>\n" +
 "<li>Choice: <input type=\"text\" name=\"choices-1-choice\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-1-votes\"></li>");
+
+    // Let's simulate what happens if we submitted this form
+    data = {
+        "choices-TOTAL_FORMS": "2",
+        "choices-INITIAL_FORMS": "1",
+        "choices-0-choice": "Calexico",
+        "choices-0-votes": "100",
+        "choices-1-choice": "",
+        "choices-1-votes": ""
+    };
+    formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
+    same(formset.isValid(), true);
+    same([formset.forms[0].cleanedData, formset.forms[1].cleanedData],
+         [{choice: "Calexico", votes: 100}, {}]);
 });
