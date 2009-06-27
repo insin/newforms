@@ -451,7 +451,37 @@ test("FormSets with ordering + deletion", function()
 
 test("FormSets clean hook", function()
 {
-    expect(4);
+    expect(8);
+
+    function cleanTests(formsetConstructor)
+    {
+        // We start out with some duplicate data
+        var data = {
+            "drinks-TOTAL_FORMS": "2",
+            "drinks-INITIAL_FORMS": "0",
+            "drinks-0-name": "Gin and Tonic",
+            "drinks-1-name": "Gin and Tonic"
+        };
+
+        var formset = new formsetConstructor({data: data, prefix: "drinks"});
+        same(formset.isValid(), false);
+
+        // Any errors raised by formset.clean() are available via the
+        // formset.nonFormErrors() method.
+        same(formset.nonFormErrors().errors, ["You may only specify a drink once."]);
+
+        // Make sure we didn't break the valid case
+        data = {
+            "drinks-TOTAL_FORMS": "2",
+            "drinks-INITIAL_FORMS": "0",
+            "drinks-0-name": "Gin and Tonic",
+            "drinks-1-name": "Bloody Mary"
+        };
+
+        var formset = new formsetConstructor({data: data, prefix: "drinks"});
+        same(formset.isValid(), true);
+        same(formset.nonFormErrors().isPopulated(), false);
+    }
 
     // FormSets have a hook for doing extra validation that shouldn't be tied to
     // any particular form. It follows the same pattern as the clean hook on
@@ -459,9 +489,9 @@ test("FormSets clean hook", function()
     // Let's define a FormSet that takes a list of favorite drinks, but raises
     // an error if there are any duplicates.
 
-    // TODO Alter formsetFactory to act similarly to formFactory, making this
-    //      less painful.
-    var BaseFavouriteDrinksFormSet = function()
+    // This is an example of creating a custom BaseFormSet for use with
+    // formsetFactory.
+    function BaseFavouriteDrinksFormSet()
     {
         BaseFormSet.apply(this, arguments);
     }
@@ -484,32 +514,28 @@ test("FormSets clean hook", function()
         extra: 3
     });
 
-    // We start out with some duplicate data
-    var data = {
-        "drinks-TOTAL_FORMS": "2",
-        "drinks-INITIAL_FORMS": "0",
-        "drinks-0-name": "Gin and Tonic",
-        "drinks-1-name": "Gin and Tonic"
-    };
+    cleanTests(FavouriteDrinksFormSet);
 
-    var formset = new FavouriteDrinksFormSet({data: data, prefix: "drinks"});
-    same(formset.isValid(), false);
+    // Alternatively, for one-off formsets, a more convenient method is to
+    // specify custom methods for the formset in the configuration object
+    // passed to formsetFactory.
+    FavouriteDrinksFormSet = formsetFactory(FavouriteDrinkForm, {
+        extra: 3,
+        clean: function()
+        {
+            var seenDrinks = {};
+            for (var i = 0, l = this.cleanedData.length; i < l; i++)
+            {
+                if (typeof seenDrinks[this.cleanedData[i].name] != "undefined")
+                {
+                    throw new ValidationError("You may only specify a drink once.");
+                }
+                seenDrinks[this.cleanedData[i].name] = true;
+            }
+        }
+    });
 
-    // Any errors raised by formset.clean() are available via the
-    // formset.nonFormErrors() method.
-    same(formset.nonFormErrors().errors, ["You may only specify a drink once."]);
-
-    // Make sure we didn't break the valid case
-    data = {
-        "drinks-TOTAL_FORMS": "2",
-        "drinks-INITIAL_FORMS": "0",
-        "drinks-0-name": "Gin and Tonic",
-        "drinks-1-name": "Bloody Mary"
-    };
-
-    var formset = new FavouriteDrinksFormSet({data: data, prefix: "drinks"});
-    same(formset.isValid(), true);
-    same(formset.nonFormErrors().isPopulated(), false);
+    cleanTests(FavouriteDrinksFormSet);
 });
 
 test("Limiting the maximum number of forms", function()

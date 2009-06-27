@@ -547,7 +547,11 @@ class BaseFormSet(StrAndUnicode):
  *
  * @param {Form} form the constructor for the Form to be managed.
  * @param {Object} [kwargs] arguments defining options for the created FormSet
- *                          constructor.
+ *                          constructor - all arguments other than those
+ *                          defined below will be added to the new formset
+ *                          constructor's prototype, so this object can also be
+ *                          used to define new methods on the resulting formset,
+ *                          such as a custom <code>clean</code> method.
  * @config {Function} [formset] the constructuer which will provide the
  *                              prototype for the created FormSet constructor
  *                              - defaults to {@link BaseFormSet}.
@@ -568,17 +572,32 @@ function formsetFactory(form, kwargs)
         formset: BaseFormSet, extra: 1, canOrder: false, canDelete: false, maxNum: 0
     }, kwargs || {});
 
-    var formsetConstructor = function(formsetKwargs)
+    var formset = kwargs.formset;
+    var extra = kwargs.extra;
+    var canOrder = kwargs.canOrder;
+    var canDelete = kwargs.canDelete;
+    var maxNum = kwargs.maxNum;
+
+    /** @ignore */
+    var formsetConstructor = function(kwargs)
     {
         this.form = form;
-        this.extra = kwargs.extra;
-        this.canOrder = kwargs.canOrder;
-        this.canDelete = kwargs.canDelete;
-        this.maxNum = kwargs.maxNum;
-        kwargs.formset.call(this, formsetKwargs);
+        this.extra = extra;
+        this.canOrder = canOrder;
+        this.canDelete = canDelete;
+        this.maxNum = maxNum;
+        formset.call(this, kwargs);
     };
 
-    formsetConstructor.prototype = new kwargs.formset();
+    // Remove special properties from kwargs, as they will now be used to add
+    // properties to the prototype.
+    delete kwargs.formset;
+    delete kwargs.extra;
+    delete kwargs.canOrder;
+    delete kwargs.canDelete;
+    delete kwargs.maxNum;
+
+    formsetConstructor.prototype = extendObject(new formset(), kwargs);
     formsetConstructor.name = (form.name || "Anonymous") + "FormSet";
 
     return formsetConstructor;
