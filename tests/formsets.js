@@ -290,7 +290,7 @@ test("FormSets with deletion", function()
         "check-1-DELETE": "on",
         "check-2-field": "",
         "check-2-DELETE": ""
-    }
+    };
     var CheckFormSet = formsetFactory(CheckForm, {canDelete: true});
     formset = new CheckFormSet({data: data, prefix: "check"});
     same(formset.isValid(), true);
@@ -303,7 +303,7 @@ test("FormSets with deletion", function()
 
 test("FormSets with ordering", function()
 {
-    expect(5);
+    expect(7);
 
     // We can also add ordering ability to a FormSet with an argument to
     // formsetFactory. This will add a integer field to each form instance. When
@@ -340,7 +340,7 @@ test("FormSets with ordering", function()
         "choices-2-choice": "The Decemberists",
         "choices-2-votes": "500",
         "choices-2-ORDER": "0"
-    }
+    };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
     same(allCleanedData(formset.orderedForms),
@@ -365,7 +365,7 @@ test("FormSets with ordering", function()
         "choices-3-choice": "Basia Bulat",
         "choices-3-votes": "50",
         "choices-3-ORDER": ""
-    }
+    };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
     same(allCleanedData(formset.orderedForms),
@@ -373,6 +373,15 @@ test("FormSets with ordering", function()
           {choice: "Fergie", votes: 900, ORDER: 2},
           {choice: "The Decemberists", votes: 500, ORDER: null},
           {choice: "Basia Bulat", votes: 50, ORDER: null}]);
+
+    // Ordering should work with blank fieldsets
+    data = {
+        "choices-TOTAL_FORMS": "3",
+        "choices-INITIAL_FORMS": "0"
+    };
+    formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
+    same(formset.isValid(), true);
+    same(formset.orderedForms.length, 0);
 });
 
 })();

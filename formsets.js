@@ -143,7 +143,7 @@ BaseFormSet.prototype =
             {
                 var form = this.forms[i];
                 // If this is an extra form and hasn't changed, don't consider it
-                if (i > this.initialFormCount() && !form.hasChanged())
+                if (i >= this.initialFormCount() && !form.hasChanged())
                 {
                     continue;
                 }
@@ -185,7 +185,7 @@ BaseFormSet.prototype =
             {
                 var form = this.forms[i];
                 // If this is an extra form and hasn't changed, don't consider it
-                if (i > this.initialFormCount() && !form.hasChanged())
+                if (i >= this.initialFormCount() && !form.hasChanged())
                 {
                     continue;
                 }
