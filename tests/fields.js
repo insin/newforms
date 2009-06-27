@@ -659,8 +659,8 @@ test("ComboField", function()
     equals(f.clean("test@example.com"), "test@example.com");
     try { f.clean("longemailaddress@example.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 20 characters (it has 28)."); }
     try { f.clean("not an e-mail"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    equals(f.clean(""), "");
-    equals(f.clean(null), "");
+    same(f.clean(""), "");
+    same(f.clean(null), "");
 });
 
 // TODO FilePathField
@@ -694,6 +694,28 @@ test("SplitDateTimeField", function()
     try { f.clean(["2006-01-10", ""]); } catch (e) { isSet(e.messages.errors, ["Enter a valid time."]); }
     try { f.clean(["2006-01-10"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid time."]); }
     try { f.clean(["", "07:30"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date."]); }
+});
+
+test("IPAddressField", function()
+{
+    expect(14);
+    var f = new IPAddressField();
+    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    equals(f.clean("127.0.0.1"), "127.0.0.1");
+    try { f.clean("foo"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
+    try { f.clean("127.0.0."); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
+    try { f.clean("1.2.3.4.5"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
+    try { f.clean("256.125.1.5"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
+
+    f = new IPAddressField({required: false});
+    same(f.clean(""), "");
+    same(f.clean(null), "");
+    equals(f.clean("127.0.0.1"), "127.0.0.1");
+    try { f.clean("foo"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
+    try { f.clean("127.0.0."); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
+    try { f.clean("1.2.3.4.5"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
+    try { f.clean("256.125.1.5"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
 });
 
 })();
