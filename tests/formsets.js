@@ -221,7 +221,7 @@ test("Displaying more than one blank form", function()
 
 test("FormSets with deletion", function()
 {
-    expect(4);
+    expect(6);
 
     // We can easily add deletion ability to a FormSet with an argument to
     // formsetFactory. This will add a BooleanField to each form instance. When
@@ -257,11 +257,37 @@ test("FormSets with deletion", function()
         "choices-2-DELETE": ""
     };
 
-    var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
+    formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
     same(formset.cleanedData,
          [{choice: "Calexico", votes: 100, DELETE: false}, {choice: "Fergie", votes: 900, DELETE: true}, {}]);
     same(formset.deletedForms[0].cleanedData, {choice: "Fergie", votes: 900, DELETE: true});
+
+    // If we fill a form with something and then we check the canDelete checkbox
+    // for that form, that form's errors should not make the entire formset
+    // invalid since it's going to be deleted.
+    var CheckForm = formFactory({fields: function() {
+        return { field: new IntegerField({minValue: 100}) };
+    }});
+
+    data = {
+        "check-TOTAL_FORMS": "3",
+        "check-INITIAL_FORMS": "2",
+        "check-0-field": "200",
+        "check-0-DELETE": "",
+        "check-1-field": "50",
+        "check-1-DELETE": "on",
+        "check-2-field": "",
+        "check-2-DELETE": ""
+    }
+    var CheckFormSet = formsetFactory(CheckForm, {canDelete: true});
+    formset = new CheckFormSet({data: data, prefix: "check"});
+    same(formset.isValid(), true);
+
+    // If we remove the deletion flag now we will have our validation back
+    data["check-1-DELETE"] = "";
+    formset = new CheckFormSet({data: data, prefix: "check"});
+    same(formset.isValid(), false);
 });
 
 })();
