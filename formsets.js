@@ -426,7 +426,7 @@ BaseFormSet.prototype.fullClean = function()
     {
         if (e instanceof ValidationError)
         {
-            this._nonFormErrors= e.messages;
+            this._nonFormErrors = e.messages;
         }
         else
         {

@@ -13,6 +13,10 @@ var Choice = formFactory({fields: function() {
     };
 }});
 
+var FavouriteDrinkForm = formFactory({fields: function() {
+    return { name: new CharField() };
+}});
+
 function allAsUL(forms)
 {
     var rendered = [];
@@ -386,7 +390,7 @@ test("FormSets with ordering", function()
 
 test("FormSets with ordering + deletion", function()
 {
-    expect(3);
+    expect(4);
 
     // Let's try throwing ordering and deletion into the same form
     var ChoiceFormSet = formsetFactory(Choice, {canOrder: true, canDelete: true});
@@ -441,18 +445,116 @@ test("FormSets with ordering + deletion", function()
     same(allCleanedData(formset.orderedForms),
          [{choice: "The Decemberists", votes: 500, ORDER: 0, DELETE: false},
           {choice: "Calexico", votes: 100, ORDER: 1, DELETE: false}]);
+    same(allCleanedData(formset.deletedForms),
+         [{choice: "Fergie", votes: 900, ORDER: 2, DELETE: true}]);
 });
 
 test("FormSets clean hook", function()
 {
+    expect(4);
+
+    // FormSets have a hook for doing extra validation that shouldn't be tied to
+    // any particular form. It follows the same pattern as the clean hook on
+    // Forms.
+    // Let's define a FormSet that takes a list of favorite drinks, but raises
+    // an error if there are any duplicates.
+
+    // TODO Alter formsetFactory to act similarly to formFactory, making this
+    //      less painful.
+    var BaseFavouriteDrinksFormSet = function()
+    {
+        BaseFormSet.apply(this, arguments);
+    }
+    BaseFavouriteDrinksFormSet.prototype = new BaseFormSet();
+    BaseFavouriteDrinksFormSet.prototype.clean = function()
+    {
+        var seenDrinks = {};
+        for (var i = 0, l = this.cleanedData.length; i < l; i++)
+        {
+            if (typeof seenDrinks[this.cleanedData[i].name] != "undefined")
+            {
+                throw new ValidationError("You may only specify a drink once.");
+            }
+            seenDrinks[this.cleanedData[i].name] = true;
+        }
+    };
+
+    var FavouriteDrinksFormSet = formsetFactory(FavouriteDrinkForm, {
+        formset: BaseFavouriteDrinksFormSet,
+        extra: 3
+    });
+
+    // We start out with some duplicate data
+    var data = {
+        "drinks-TOTAL_FORMS": "2",
+        "drinks-INITIAL_FORMS": "0",
+        "drinks-0-name": "Gin and Tonic",
+        "drinks-1-name": "Gin and Tonic"
+    };
+
+    var formset = new FavouriteDrinksFormSet({data: data, prefix: "drinks"});
+    same(formset.isValid(), false);
+
+    // Any errors raised by formset.clean() are available via the
+    // formset.nonFormErrors() method.
+    same(formset.nonFormErrors().errors, ["You may only specify a drink once."]);
+
+    // Make sure we didn't break the valid case
+    data = {
+        "drinks-TOTAL_FORMS": "2",
+        "drinks-INITIAL_FORMS": "0",
+        "drinks-0-name": "Gin and Tonic",
+        "drinks-1-name": "Bloody Mary"
+    };
+
+    var formset = new FavouriteDrinksFormSet({data: data, prefix: "drinks"});
+    same(formset.isValid(), true);
+    same(formset.nonFormErrors().isPopulated(), false);
 });
 
 test("Limiting the maximum number of forms", function()
 {
-});
+    expect(4);
 
-test("Management form prefixes", function()
-{
+    // Base case for maxNum
+    var LimitedFavouriteDrinkFormSet = formsetFactory(FavouriteDrinkForm, {extra: 5, maxNum: 2});
+    var formset = new LimitedFavouriteDrinkFormSet();
+    equals(formset.forms.join("\n"),
+"<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\"></td></tr>\n" +
+"<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>");
+
+    // Ensure that maxNum has no affect when extra is less than maxNum
+    LimitedFavouriteDrinkFormSet = formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2});
+    formset = new LimitedFavouriteDrinkFormSet();
+    equals(formset.forms.join("\n"),
+"<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\"></td></tr>");
+
+    // maxNum with initial data
+
+    // More initial forms than max_num will result in only the first maxNum of
+    // being displayed, with no extra forms.
+    var initial = [
+        {name: "Gin and Tonic"},
+        {name: "Bloody Mary"},
+        {name: "Jack and Coke"}
+    ];
+    LimitedFavouriteDrinkFormSet = formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2});
+    formset = new LimitedFavouriteDrinkFormSet({initial: initial});
+    equals(formset.forms.join("\n"),
+"<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin and Tonic\"></td></tr>\n" +
+"<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\" value=\"Bloody Mary\"></td></tr>");
+
+    // One form from initial and extra=3 with maxNum=2 should result in the one
+    // initial form and one extra.
+    initial = [
+        {name: "Gin and Tonic"}
+    ];
+    LimitedFavouriteDrinkFormSet = formsetFactory(FavouriteDrinkForm, {extra:3, maxNum: 2});
+    formset = new LimitedFavouriteDrinkFormSet({initial: initial});
+    equals(formset.forms.join("\n"),
+"<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin and Tonic\"></td></tr>\n" +
+"<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>");
+
 });
 
 })();
