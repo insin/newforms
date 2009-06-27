@@ -1,5 +1,8 @@
 module("fields");
 
+(function()
+{
+
 /**
  * Retrieves the first error message from a ValidatonError.
  */
@@ -353,7 +356,6 @@ test("EmailField", function()
 
 test("FileField", function()
 {
-    // Test shim
     function SimpleUploadedFile(name, content)
     {
         this.name = name;
@@ -693,3 +695,5 @@ test("SplitDateTimeField", function()
     try { f.clean(["2006-01-10"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid time."]); }
     try { f.clean(["", "07:30"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date."]); }
 });
+
+})();

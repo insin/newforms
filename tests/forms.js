@@ -1626,7 +1626,6 @@ test("Forms with FileFields", function()
 {
     expect(6);
 
-    // Test shim
     function SimpleUploadedFile(name, content)
     {
         this.name = name;

@@ -849,7 +849,6 @@ FileField.prototype.defaultWidget = FileInput;
 FileField.prototype.defaultErrorMessages =
     extendObject({}, FileField.prototype.defaultErrorMessages, {
         invalid: "No file was submitted. Check the encoding type on the form.",
-        missing: "No file was submitted.",
         empty: "The submitted file is empty.",
         maxLength: "Ensure this filename has at most %(max)s characters (it has %(length)s)."
     });
