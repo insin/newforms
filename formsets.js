@@ -201,6 +201,11 @@ BaseFormSet.prototype =
             // comparison value makes it so we can leave ordering fields blank.
             this._ordering.sort(function(x, y)
             {
+                if (x[1] === null && y[1] === null)
+                {
+                    // Sort by form index if both order field values are null
+                    return x[0] - y[0];
+                }
                 if (x[1] === null)
                 {
                     return 1;

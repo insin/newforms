@@ -23,6 +23,16 @@ function allAsUL(forms)
     return rendered.join("\n");
 }
 
+function allCleanedData(forms)
+{
+    var cleanedData = [];
+    for (var i = 0, l = forms.length; i < l; i++)
+    {
+        cleanedData.push(forms[i].cleanedData);
+    }
+    return cleanedData;
+}
+
 test("Basic FormSet creation and usage", function()
 {
     expect(13);
@@ -261,7 +271,8 @@ test("FormSets with deletion", function()
     same(formset.isValid(), true);
     same(formset.cleanedData,
          [{choice: "Calexico", votes: 100, DELETE: false}, {choice: "Fergie", votes: 900, DELETE: true}, {}]);
-    same(formset.deletedForms[0].cleanedData, {choice: "Fergie", votes: 900, DELETE: true});
+    same(allCleanedData(formset.deletedForms),
+         [{choice: "Fergie", votes: 900, DELETE: true}]);
 
     // If we fill a form with something and then we check the canDelete checkbox
     // for that form, that form's errors should not make the entire formset
@@ -288,6 +299,80 @@ test("FormSets with deletion", function()
     data["check-1-DELETE"] = "";
     formset = new CheckFormSet({data: data, prefix: "check"});
     same(formset.isValid(), false);
+});
+
+test("FormSets with ordering", function()
+{
+    expect(5);
+
+    // We can also add ordering ability to a FormSet with an argument to
+    // formsetFactory. This will add a integer field to each form instance. When
+    // form validation succeeds, formset.orderedForms will have the data in the
+    // correct order specified by the ordering fields. If a number is duplicated
+    // in the set of ordering fields, for instance form 0 and form 3 are both
+    // marked as 1, then the form index is used as a secondary ordering
+    // criteria. In order to put something at the front of the list, you'd need
+    // to set its order to 0.
+    var ChoiceFormSet = formsetFactory(Choice, {canOrder: true});
+
+    var initial = [{choice: "Calexico", votes: 100}, {choice: "Fergie", votes: 900}];
+    var formset = new ChoiceFormSet({initial: initial, autoId: false, prefix: "choices"});
+    equals(allAsUL(formset.forms),
+"<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>\n" +
+"<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>\n" +
+"<li>Order: <input type=\"text\" name=\"choices-0-ORDER\" value=\"1\"></li>\n" +
+"<li>Choice: <input type=\"text\" name=\"choices-1-choice\" value=\"Fergie\"></li>\n" +
+"<li>Votes: <input type=\"text\" name=\"choices-1-votes\" value=\"900\"></li>\n" +
+"<li>Order: <input type=\"text\" name=\"choices-1-ORDER\" value=\"2\"></li>\n" +
+"<li>Choice: <input type=\"text\" name=\"choices-2-choice\"></li>\n" +
+"<li>Votes: <input type=\"text\" name=\"choices-2-votes\"></li>\n" +
+"<li>Order: <input type=\"text\" name=\"choices-2-ORDER\"></li>");
+
+    var data = {
+        "choices-TOTAL_FORMS": "3",
+        "choices-INITIAL_FORMS": "2",
+        "choices-0-choice": "Calexico",
+        "choices-0-votes": "100",
+        "choices-0-ORDER": "1",
+        "choices-1-choice": "Fergie",
+        "choices-1-votes": "900",
+        "choices-1-ORDER": "2",
+        "choices-2-choice": "The Decemberists",
+        "choices-2-votes": "500",
+        "choices-2-ORDER": "0"
+    }
+    formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
+    same(formset.isValid(), true);
+    same(allCleanedData(formset.orderedForms),
+         [{choice: "The Decemberists", votes: 500, ORDER: 0},
+          {choice: "Calexico", votes: 100, ORDER: 1},
+          {choice: "Fergie", votes: 900, ORDER: 2}]);
+
+    // Ordering fields are allowed to be left blank, and if they *are* left
+    // blank, they will be sorted below everything else.
+    data = {
+        "choices-TOTAL_FORMS": "4",
+        "choices-INITIAL_FORMS": "3",
+        "choices-0-choice": "Calexico",
+        "choices-0-votes": "100",
+        "choices-0-ORDER": "1",
+        "choices-1-choice": "Fergie",
+        "choices-1-votes": "900",
+        "choices-1-ORDER": "2",
+        "choices-2-choice": "The Decemberists",
+        "choices-2-votes": "500",
+        "choices-2-ORDER": "",
+        "choices-3-choice": "Basia Bulat",
+        "choices-3-votes": "50",
+        "choices-3-ORDER": ""
+    }
+    formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
+    same(formset.isValid(), true);
+    same(allCleanedData(formset.orderedForms),
+         [{choice: "Calexico", votes: 100, ORDER: 1},
+          {choice: "Fergie", votes: 900, ORDER: 2},
+          {choice: "The Decemberists", votes: 500, ORDER: null},
+          {choice: "Basia Bulat", votes: 50, ORDER: null}]);
 });
 
 })();
