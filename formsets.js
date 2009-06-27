@@ -192,7 +192,7 @@ BaseFormSet.prototype =
                 // Don't add data marked for deletion
                 if (this.canDelete && form.cleanedData[BaseFormSet.DELETION_FIELD_NAME])
                 {
-                    this._deletedFormIndexes.push(i);
+                    continue;
                 }
                 this._ordering.push([i, form.cleanedData[BaseFormSet.ORDERING_FIELD_NAME]]);
             }

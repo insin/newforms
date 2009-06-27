@@ -384,4 +384,75 @@ test("FormSets with ordering", function()
     same(formset.orderedForms.length, 0);
 });
 
+test("FormSets with ordering + deletion", function()
+{
+    expect(3);
+
+    // Let's try throwing ordering and deletion into the same form
+    var ChoiceFormSet = formsetFactory(Choice, {canOrder: true, canDelete: true});
+
+    var initial = [
+        {choice: "Calexico", votes: 100},
+        {choice: "Fergie", votes: 900},
+        {choice: "The Decemberists", votes: 500}
+    ];
+    var formset = new ChoiceFormSet({initial: initial, autoId: false, prefix: "choices"});
+    equals(allAsUL(formset.forms),
+"<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>\n" +
+"<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>\n" +
+"<li>Order: <input type=\"text\" name=\"choices-0-ORDER\" value=\"1\"></li>\n" +
+"<li>Delete: <input type=\"checkbox\" name=\"choices-0-DELETE\"></li>\n" +
+"<li>Choice: <input type=\"text\" name=\"choices-1-choice\" value=\"Fergie\"></li>\n" +
+"<li>Votes: <input type=\"text\" name=\"choices-1-votes\" value=\"900\"></li>\n" +
+"<li>Order: <input type=\"text\" name=\"choices-1-ORDER\" value=\"2\"></li>\n" +
+"<li>Delete: <input type=\"checkbox\" name=\"choices-1-DELETE\"></li>\n" +
+"<li>Choice: <input type=\"text\" name=\"choices-2-choice\" value=\"The Decemberists\"></li>\n" +
+"<li>Votes: <input type=\"text\" name=\"choices-2-votes\" value=\"500\"></li>\n" +
+"<li>Order: <input type=\"text\" name=\"choices-2-ORDER\" value=\"3\"></li>\n" +
+"<li>Delete: <input type=\"checkbox\" name=\"choices-2-DELETE\"></li>\n" +
+"<li>Choice: <input type=\"text\" name=\"choices-3-choice\"></li>\n" +
+"<li>Votes: <input type=\"text\" name=\"choices-3-votes\"></li>\n" +
+"<li>Order: <input type=\"text\" name=\"choices-3-ORDER\"></li>\n" +
+"<li>Delete: <input type=\"checkbox\" name=\"choices-3-DELETE\"></li>");
+
+    // Let's delete Fergie, and put The Decemberists ahead of Calexico
+    var data = {
+        "choices-TOTAL_FORMS": "4",
+        "choices-INITIAL_FORMS": "3",
+        "choices-0-choice": "Calexico",
+        "choices-0-votes": "100",
+        "choices-0-ORDER": "1",
+        "choices-0-DELETE": "",
+        "choices-1-choice": "Fergie",
+        "choices-1-votes": "900",
+        "choices-1-ORDER": "2",
+        "choices-1-DELETE": "on",
+        "choices-2-choice": "The Decemberists",
+        "choices-2-votes": "500",
+        "choices-2-ORDER": "0",
+        "choices-2-DELETE": "",
+        "choices-3-choice": "",
+        "choices-3-votes": "",
+        "choices-3-ORDER": "",
+        "choices-3-DELETE": ""
+    }
+    formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
+    same(formset.isValid(), true);
+    same(allCleanedData(formset.orderedForms),
+         [{choice: "The Decemberists", votes: 500, ORDER: 0, DELETE: false},
+          {choice: "Calexico", votes: 100, ORDER: 1, DELETE: false}]);
+});
+
+test("FormSets clean hook", function()
+{
+});
+
+test("Limiting the maximum number of forms", function()
+{
+});
+
+test("Management form prefixes", function()
+{
+});
+
 })();
