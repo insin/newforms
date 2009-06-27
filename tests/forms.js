@@ -1519,12 +1519,12 @@ test("Forms with prefixes", function()
         "person2-last_name": "Morrison",
         "person2-birthday": "1943-12-8"
     };
-    p1 = new Person({data: data, prefix: "person1"});
+    var p1 = new Person({data: data, prefix: "person1"});
     same(p1.isValid(), true);
     equals(p1.cleanedData["first_name"], "John");
     equals(p1.cleanedData["last_name"], "Lennon");
     same(p1.cleanedData["birthday"], new Date(1940, 9, 9));
-    p2 = new Person({data: data, prefix: "person2"});
+    var p2 = new Person({data: data, prefix: "person2"});
     same(p2.isValid(), true);
     equals(p2.cleanedData["first_name"], "Jim");
     equals(p2.cleanedData["last_name"], "Morrison");
