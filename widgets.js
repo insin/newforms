@@ -247,7 +247,7 @@ function FileInput(kwargs)
 
 FileInput.prototype = new Input();
 FileInput.prototype.inputType = "file";
-FileInput.prototype.needsMultiPartForm = true;
+FileInput.prototype.needsMultipartForm = true;
 
 FileInput.prototype.render = function(name, value, attrs)
 {

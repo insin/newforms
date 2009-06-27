@@ -962,7 +962,7 @@ Form.prototype.isMultipart = function()
     {
         if (this.fields.hasOwnProperty(name))
         {
-            if (this.fields[name].needsMultipartForm)
+            if (this.fields[name].widget.needsMultipartForm)
             {
                 return true;
             }

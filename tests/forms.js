@@ -1804,3 +1804,21 @@ test("Extracting hidden and visible fields", function()
     var visible = form.visibleFields();
     same([visible.length, visible[0].name, visible[1].name], [2, "artist", "name"]);
 });
+
+test("Multipart-encoded forms", function()
+{
+    expect(3);
+    var FormWithoutFile = formFactory({fields: function() {
+        return {username: new CharField()};
+    }});
+    var FormWithFile = formFactory({fields: function() {
+        return {file: new FileField()};
+    }});
+    var FormWithImage = formFactory({fields: function() {
+        return {file: new ImageField()};
+    }});
+
+    same(new FormWithoutFile().isMultipart(), false);
+    same(new FormWithFile().isMultipart(), true);
+    same(new FormWithImage().isMultipart(), true);
+});
