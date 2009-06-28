@@ -1489,7 +1489,7 @@ MultiValueField.prototype.clean = function(value)
 
         if (this.required && contains(Field.EMPTY_VALUES, fieldValue))
         {
-            throw new ValidationError(this.erroMessages.required);
+            throw new ValidationError(this.errorMessages.required);
         }
 
         try
