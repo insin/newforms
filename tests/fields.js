@@ -324,7 +324,7 @@ test("RegexField", function()
 
 test("EmailField", function()
 {
-    expect(21);
+    expect(22);
     var f = new EmailField();
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
@@ -338,6 +338,9 @@ test("EmailField", function()
     try { f.clean("example@inv-.-alid.com"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
     equals(f.clean("example@valid-----hyphens.com"), "example@valid-----hyphens.com");
     equals(f.clean("example@valid-with-hyphens.com"), "example@valid-with-hyphens.com");
+
+    // Hangs "forever" if catastrophic backtracking not fixed.
+    try { f.clean("viewx3dtextx26qx3d@yahoo.comx26latlngx3d15854521645943074058"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
 
     f = new EmailField({required: false});
     equals(f.clean(""), "");
@@ -392,9 +395,9 @@ test("URLField", function()
     var invalidURLs =
         ["foo", "http://", "http://example", "http://example.", "http://.com",
          "http://invalid-.com", "http://-invalid.com", "http://inv-.alid-.com",
-         "http://inv-.-alid.com"];
+         "http://inv-.-alid.com", ".", "com."];
 
-    expect(43);
+    expect(49);
     var f = new URLField();
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
@@ -422,6 +425,23 @@ test("URLField", function()
     {
         try { f.clean(url); } catch (e) { equals(ve(e), "Enter a valid URL."); }
     }
+
+    function createCatastrophicTestUrl(length)
+    {
+        var xs = [];
+        for (var i = 0; i < length; i++)
+        {
+            xs[i] = "X";
+        }
+        return "http://" + xs.join("");
+    };
+
+    // Hangs "forever" if catastrophic backtracking not fixed.
+    try { f.clean(createCatastrophicTestUrl(200)); } catch (e) { equals(ve(e), "Enter a valid URL."); }
+
+    // A second test, to make sure the problem is really addressed, even on
+    // domains that don't fail the domain label length check in the regex.
+    try { f.clean(createCatastrophicTestUrl(60)); } catch (e) { equals(ve(e), "Enter a valid URL."); }
 
     // URLField takes an optional verifyExists parameter, which is false by
     // default. This verifies that the URL is live on the Internet and doesn't

@@ -797,7 +797,7 @@ function EmailField(kwargs)
 EmailField.EMAIL_REGEXP = new RegExp(
     "(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*" +                                // Dot-atom
     "|^\"([\\001-\\010\\013\\014\\016-\\037!#-\\[\\]-\\177]|\\\\[\\001-011\\013\\014\\016-\\177])*\"" + // Quoted-string
-    ")@(?:[A-Z0-9]+(?:-*[A-Z0-9]+)*\\.)+[A-Z]{2,6}$",                                                                  // Domain
+    ")@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\\.)+[A-Z]{2,6}\\.?$",                                                   // Domain
     "i");
 
 EmailField.prototype = new RegexField();
@@ -976,11 +976,11 @@ function URLField(kwargs)
  * URL validation regular expression.
  */
 URLField.URL_REGEXP = new RegExp(
-    "^https?://" +                                      // http:// or https://
-    "(?:(?:[A-Z0-9]+(?:-*[A-Z0-9]+)*\\.)+[A-Z]{2,6}|" + // Domain...
-    "localhost|" +                                      // ...localhost...
-    "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})" +      // ...or ip
-    "(?::\\d+)?" +                                      // Optional port
+    "^https?://" +                                                     // http:// or https://
+    "(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\\.)+[A-Z]{2,6}\\.?|" + // Domain...
+    "localhost|" +                                                     // ...localhost...
+    "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})" +                     // ...or ip
+    "(?::\\d+)?" +                                                     // Optional port
     "(?:/?|/\\S+)$",
     "i")
 
