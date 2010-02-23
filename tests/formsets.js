@@ -48,7 +48,7 @@ test("Basic FormSet creation and usage", function()
     // display more, but we'll look at how to do so later.
     var formset = new ChoiceFormSet({autoId: false, prefix: "choices"});
     equals(""+formset,
-"<tr><td colspan=\"2\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"></td></tr>\n" +
+"<tr><td colspan=\"2\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></td></tr>\n" +
 "<tr><th>Choice:</th><td><input type=\"text\" name=\"choices-0-choice\"></td></tr>\n" +
 "<tr><th>Votes:</th><td><input type=\"text\" name=\"choices-0-votes\"></td></tr>");
 
@@ -60,6 +60,7 @@ test("Basic FormSet creation and usage", function()
     var data = {
         "choices-TOTAL_FORMS": "1", // The number of forms rendered
         "choices-INITIAL_FORMS": "0", // The number of forms with initial data
+        "choices-MAX_NUM_FORMS": "0", // Max number of forms
         "choices-0-choice": "Calexico",
         "choices-0-votes": "100"
     };
@@ -83,6 +84,7 @@ test("Basic FormSet creation and usage", function()
     data = {
         "choices-TOTAL_FORMS": "1",
         "choices-INITIAL_FORMS": "0",
+        "choices-MAX_NUM_FORMS": "0",
         "choices-0-choice": "Calexico",
         "choices-0-votes": ""
     };
@@ -105,6 +107,7 @@ test("Basic FormSet creation and usage", function()
     data = {
         "choices-TOTAL_FORMS": "2",
         "choices-INITIAL_FORMS": "1",
+        "choices-MAX_NUM_FORMS": "0",
         "choices-0-choice": "Calexico",
         "choices-0-votes": "100",
         "choices-1-choice": "",
@@ -123,6 +126,7 @@ test("Basic FormSet creation and usage", function()
     data = {
         "choices-TOTAL_FORMS": "2",
         "choices-INITIAL_FORMS": "1",
+        "choices-MAX_NUM_FORMS": "0",
         "choices-0-choice": "Calexico",
         "choices-0-votes": "100",
         "choices-1-choice": "The Decemberists",
@@ -139,6 +143,7 @@ test("Basic FormSet creation and usage", function()
     data = {
         "choices-TOTAL_FORMS": "2",
         "choices-INITIAL_FORMS": "1",
+        "choices-MAX_NUM_FORMS": "0",
         "choices-0-choice": "", // Deleted value
         "choices-0-votes": "", // Deleted value
         "choices-1-choice": "",
@@ -173,6 +178,7 @@ test("Displaying more than one blank form", function()
     var data = {
         "choices-TOTAL_FORMS": "3",
         "choices-INITIAL_FORMS": "0",
+        "choices-MAX_NUM_FORMS": "0",
         "choices-0-choice": "",
         "choices-0-votes": "",
         "choices-1-choice": "",
@@ -189,6 +195,7 @@ test("Displaying more than one blank form", function()
     data = {
         "choices-TOTAL_FORMS": "3",
         "choices-INITIAL_FORMS": "0",
+        "choices-MAX_NUM_FORMS": "0",
         "choices-0-choice": "Calexico",
         "choices-0-votes": "100",
         "choices-1-choice": "",
@@ -206,6 +213,7 @@ test("Displaying more than one blank form", function()
     data = {
         "choices-TOTAL_FORMS": "3",
         "choices-INITIAL_FORMS": "0",
+        "choices-MAX_NUM_FORMS": "0",
         "choices-0-choice": "Calexico",
         "choices-0-votes": "100",
         "choices-1-choice": "The Decemberists",
@@ -266,6 +274,7 @@ test("FormSets with deletion", function()
     var data = {
         "choices-TOTAL_FORMS": "3",
         "choices-INITIAL_FORMS": "2",
+        "choices-MAX_NUM_FORMS": "0",
         "choices-0-choice": "Calexico",
         "choices-0-votes": "100",
         "choices-0-DELETE": "",
@@ -294,6 +303,7 @@ test("FormSets with deletion", function()
     data = {
         "check-TOTAL_FORMS": "3",
         "check-INITIAL_FORMS": "2",
+        "check-MAX_NUM_FORMS": "0",
         "check-0-field": "200",
         "check-0-DELETE": "",
         "check-1-field": "50",
@@ -341,6 +351,7 @@ test("FormSets with ordering", function()
     var data = {
         "choices-TOTAL_FORMS": "3",
         "choices-INITIAL_FORMS": "2",
+        "choices-MAX_NUM_FORMS": "0",
         "choices-0-choice": "Calexico",
         "choices-0-votes": "100",
         "choices-0-ORDER": "1",
@@ -363,6 +374,7 @@ test("FormSets with ordering", function()
     data = {
         "choices-TOTAL_FORMS": "4",
         "choices-INITIAL_FORMS": "3",
+        "choices-MAX_NUM_FORMS": "0",
         "choices-0-choice": "Calexico",
         "choices-0-votes": "100",
         "choices-0-ORDER": "1",
@@ -387,7 +399,8 @@ test("FormSets with ordering", function()
     // Ordering should work with blank fieldsets
     data = {
         "choices-TOTAL_FORMS": "3",
-        "choices-INITIAL_FORMS": "0"
+        "choices-INITIAL_FORMS": "0",
+        "choices-MAX_NUM_FORMS": "0"
     };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
@@ -429,6 +442,7 @@ test("FormSets with ordering + deletion", function()
     var data = {
         "choices-TOTAL_FORMS": "4",
         "choices-INITIAL_FORMS": "3",
+        "choices-MAX_NUM_FORMS": "0",
         "choices-0-choice": "Calexico",
         "choices-0-votes": "100",
         "choices-0-ORDER": "1",
@@ -465,6 +479,7 @@ test("FormSets clean hook", function()
         var data = {
             "drinks-TOTAL_FORMS": "2",
             "drinks-INITIAL_FORMS": "0",
+            "drinks-MAX_NUM_FORMS": "0",
             "drinks-0-name": "Gin and Tonic",
             "drinks-1-name": "Gin and Tonic"
         };
@@ -480,6 +495,7 @@ test("FormSets clean hook", function()
         data = {
             "drinks-TOTAL_FORMS": "2",
             "drinks-INITIAL_FORMS": "0",
+            "drinks-MAX_NUM_FORMS": "0",
             "drinks-0-name": "Gin and Tonic",
             "drinks-1-name": "Bloody Mary"
         };

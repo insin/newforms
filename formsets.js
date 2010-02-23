@@ -13,11 +13,13 @@ function ManagementForm(kwargs)
     this.fields = {};
     this.fields[ManagementForm.TOTAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
     this.fields[ManagementForm.INITIAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
+    this.fields[ManagementForm.MAX_NUM_FORM_COUNT] = new IntegerField({widget: HiddenInput});
     Form.call(this, kwargs);
 }
 
 ManagementForm.TOTAL_FORM_COUNT = "TOTAL_FORMS";
 ManagementForm.INITIAL_FORM_COUNT = "INITIAL_FORMS";
+ManagementForm.MAX_NUM_FORM_COUNT = "MAX_NUM_FORMS";
 
 ManagementForm.prototype = new Form();
 
@@ -90,6 +92,7 @@ BaseFormSet.prototype =
             var initial = {};
             initial[ManagementForm.TOTAL_FORM_COUNT] = this.totalFormCount();
             initial[ManagementForm.INITIAL_FORM_COUNT] = this.initialFormCount();
+            initial[ManagementForm.MAX_NUM_FORM_COUNT] = this.maxNum;
             var form = new ManagementForm({autoId: this.autoId, prefix: this.prefix, initial: initial});
         }
         return form;
