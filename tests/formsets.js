@@ -152,7 +152,7 @@ test("Basic FormSet creation and usage", function()
 
 test("Displaying more than one blank form", function()
 {
-    expect(8);
+    expect(10);
 
     // We can also display more than 1 empty form at a time. To do so, pass an
     // "extra" argument to formsetFactory.
@@ -231,6 +231,12 @@ test("Displaying more than one blank form", function()
 "<li>Votes: <input type=\"text\" name=\"choices-2-votes\"></li>\n" +
 "<li>Choice: <input type=\"text\" name=\"choices-3-choice\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-3-votes\"></li>");
+
+    // Make sure retrieving an empty form works, and it shows up in the form list.
+    same(formset.emptyForm.emptyPermitted, true);
+    equals(formset.emptyForm.asUL(),
+"<li>Choice: <input type=\"text\" name=\"choices-__prefix__-choice\"></li>\n" +
+"<li>Votes: <input type=\"text\" name=\"choices-__prefix__-votes\"></li>");
 });
 
 test("FormSets with deletion", function()

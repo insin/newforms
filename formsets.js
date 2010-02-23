@@ -105,6 +105,25 @@ BaseFormSet.prototype =
         return this.forms.slice(this.initialFormCount());
     },
 
+    get emptyForm()
+    {
+        var defaults = {
+            autoId: this.autoId,
+            prefix: this.addPrefix("__prefix__"),
+            emptyPermitted: true
+        };
+
+        if (this.data || this.files)
+        {
+            defaults["data"] = this.data;
+            defaults["files"] = this.files;
+        }
+
+        var form = new this.form(defaults);
+        this.addFields(form, null);
+        return form;
+    },
+
     /**
      * Returns a list of form.cleanedData objects for every form in this.forms.
      */
@@ -451,7 +470,7 @@ BaseFormSet.prototype.addFields = function(form, index)
     if (this.canOrder)
     {
         // Only pre-fill the ordering field for initial forms.
-        if (index < this.initialFormCount())
+        if (index !== null && index < this.initialFormCount())
         {
             form.fields[BaseFormSet.ORDERING_FIELD_NAME] =
                 new IntegerField({label: "Order", initial: index + 1, required: false});
