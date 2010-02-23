@@ -471,7 +471,7 @@ test("FormSets with ordering + deletion", function()
 
 test("FormSets clean hook", function()
 {
-    expect(8);
+    expect(10);
 
     function cleanTests(formsetConstructor)
     {
@@ -558,6 +558,18 @@ test("FormSets clean hook", function()
     });
 
     cleanTests(FavouriteDrinksFormSet);
+
+    // Formset-wide errors should render properly as HTML.
+    data = {
+        "drinks-TOTAL_FORMS": "2",
+        "drinks-INITIAL_FORMS": "0",
+        "drinks-MAX_NUM_FORMS": "0",
+        "drinks-0-name": "Gin and Tonic",
+        "drinks-1-name": "Gin and Tonic"
+    };
+    var formset = new FavouriteDrinksFormSet({data: data, prefix: "drinks"});
+    same(formset.isValid(), false);
+    equals(""+formset.nonFormErrors(), "<ul class=\"errorlist\"><li>You may only specify a drink once.</li></ul>");
 });
 
 test("Limiting the maximum number of forms", function()
