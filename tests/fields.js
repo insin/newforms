@@ -634,31 +634,31 @@ test("MultipleChoiceField", function()
     var f = new MultipleChoiceField({choices: [["1", "1"], ["2", "2"]]});
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    isSet(f.clean([1]), ["1"]);
-    isSet(f.clean(["1"]), ["1"]);
-    isSet(f.clean(["1", "2"]), ["1", "2"]);
-    isSet(f.clean([1, "2"]), ["1", "2"]);
+    same(f.clean([1]), ["1"]);
+    same(f.clean(["1"]), ["1"]);
+    same(f.clean(["1", "2"]), ["1", "2"]);
+    same(f.clean([1, "2"]), ["1", "2"]);
     try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
     try { f.clean([]); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(["3"]); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
 
     var f = new MultipleChoiceField({choices: [["1", "1"], ["2", "2"]], required: false});
-    isSet(f.clean(""), []);
-    isSet(f.clean(null), []);
-    isSet(f.clean([1]), ["1"]);
-    isSet(f.clean(["1"]), ["1"]);
-    isSet(f.clean(["1", "2"]), ["1", "2"]);
-    isSet(f.clean([1, "2"]), ["1", "2"]);
+    same(f.clean(""), []);
+    same(f.clean(null), []);
+    same(f.clean([1]), ["1"]);
+    same(f.clean(["1"]), ["1"]);
+    same(f.clean(["1", "2"]), ["1", "2"]);
+    same(f.clean([1, "2"]), ["1", "2"]);
     try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
-    isSet(f.clean([]), []);
+    same(f.clean([]), []);
     try { f.clean(["3"]); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
 
     f = new MultipleChoiceField({choices: [["Numbers", [["1", "One"], ["2", "Two"]]], ["Letters", [["3", "A"],["4", "B"]]], ["5", "Other"]]});
-    isSet(f.clean([1]), ["1"]);
-    isSet(f.clean([1, 5]), ["1", "5"]);
-    isSet(f.clean([1, "5"]), ["1", "5"]);
-    isSet(f.clean(["1", 5]), ["1", "5"]);
-    isSet(f.clean(["1", "5"]), ["1", "5"]);
+    same(f.clean([1]), ["1"]);
+    same(f.clean([1, 5]), ["1", "5"]);
+    same(f.clean([1, "5"]), ["1", "5"]);
+    same(f.clean(["1", 5]), ["1", "5"]);
+    same(f.clean(["1", "5"]), ["1", "5"]);
     try { f.clean(["6"]); } catch (e) { equals(ve(e), "Select a valid choice. 6 is not one of the available choices."); }
     try { f.clean(["1", "6"]); } catch (e) { equals(ve(e), "Select a valid choice. 6 is not one of the available choices."); }
 });
@@ -694,9 +694,9 @@ test("SplitDateTimeField", function()
     try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
     try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
-    try { f.clean(["hello", "there"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date.", "Enter a valid time."]); }
-    try { f.clean(["2006-01-10", "there"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid time."]); }
-    try { f.clean(["hello", "07:30"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date."]); }
+    try { f.clean(["hello", "there"]); } catch (e) { same(e.messages.errors, ["Enter a valid date.", "Enter a valid time."]); }
+    try { f.clean(["2006-01-10", "there"]); } catch (e) { same(e.messages.errors, ["Enter a valid time."]); }
+    try { f.clean(["hello", "07:30"]); } catch (e) { same(e.messages.errors, ["Enter a valid date."]); }
 
     var f = new SplitDateTimeField({required: false});
     same(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
@@ -708,12 +708,12 @@ test("SplitDateTimeField", function()
     same(f.clean([""]), null);
     same(f.clean(["", ""]), null);
     try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
-    try { f.clean(["hello", "there"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date.", "Enter a valid time."]); }
-    try { f.clean(["2006-01-10", "there"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid time."]); }
-    try { f.clean(["hello", "07:30"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date."]); }
-    try { f.clean(["2006-01-10", ""]); } catch (e) { isSet(e.messages.errors, ["Enter a valid time."]); }
-    try { f.clean(["2006-01-10"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid time."]); }
-    try { f.clean(["", "07:30"]); } catch (e) { isSet(e.messages.errors, ["Enter a valid date."]); }
+    try { f.clean(["hello", "there"]); } catch (e) { same(e.messages.errors, ["Enter a valid date.", "Enter a valid time."]); }
+    try { f.clean(["2006-01-10", "there"]); } catch (e) { same(e.messages.errors, ["Enter a valid time."]); }
+    try { f.clean(["hello", "07:30"]); } catch (e) { same(e.messages.errors, ["Enter a valid date."]); }
+    try { f.clean(["2006-01-10", ""]); } catch (e) { same(e.messages.errors, ["Enter a valid time."]); }
+    try { f.clean(["2006-01-10"]); } catch (e) { same(e.messages.errors, ["Enter a valid time."]); }
+    try { f.clean(["", "07:30"]); } catch (e) { same(e.messages.errors, ["Enter a valid date."]); }
 });
 
 test("IPAddressField", function()

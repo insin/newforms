@@ -37,7 +37,7 @@ test("Form", function()
     same(p.isValid(), true);
     // TODO p.errors.asUL() needs some work to handle being empty
     same(p.errors.asText(), "");
-    isSet([p.cleanedData.first_name, p.cleanedData.last_name, p.cleanedData.birthday.valueOf()],
+    same([p.cleanedData.first_name, p.cleanedData.last_name, p.cleanedData.birthday.valueOf()],
           ["John", "Lennon", new Date(1940, 9, 9).valueOf()]);
     equals(""+p.boundField("first_name"),
            "<input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\">");
