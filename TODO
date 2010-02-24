@@ -16,18 +16,23 @@ Change histories for the most relevant Django modules can be found here:
 Changesets which need to be ported
 ----------------------------------
 
+http://code.djangoproject.com/changeset/7967 (partial)
+
+   Media classes - changes to forms.js and widgets.js, but won't be ported until
+   js-forms is capable of being used to generate HTML.
+
 http://code.djangoproject.com/changeset/8816 (partial)
 
    Adds support for dynamic initial values.
 
+http://code.djangoproject.com/changeset/12098 (partial)
+
+   Model validation - changes to ValidationError; changes to validation
+   implementation; error messages now have official placeholder names...
+
 
 Changesets which won't/can't be ported yet
 ------------------------------------------
-
-http://code.djangoproject.com/changeset/7967 (partially)
-
-   Media classes - changes to forms.js and widgets.js, but won't be ported until
-   js-forms is capable of being used to generate HTML.
 
 http://code.djangoproject.com/changeset/8391
 
