@@ -843,6 +843,17 @@ Form.prototype.fullClean = function()
         return;
     }
 
+    this._cleanFields();
+    this._cleanForm();
+
+    if (this._errors.isPopulated())
+    {
+        delete this.cleanedData;
+    }
+};
+
+Form.prototype._cleanFields = function()
+{
     for (var name in this.fields)
     {
         if (!this.fields.hasOwnProperty(name))
@@ -851,6 +862,9 @@ Form.prototype.fullClean = function()
         }
 
         var field = this.fields[name];
+        // valueFromData() gets the data from the data objects.
+        // Each widget type knows how to retrieve its own data, because some
+        // widgets split data over several HTML fields.
         var value = field.widget.valueFromData(this.data, this.files,
                                                this.addPrefix(name));
         try
@@ -906,7 +920,10 @@ Form.prototype.fullClean = function()
             }
         }
     }
+};
 
+Form.prototype._cleanForm = function()
+{
     try
     {
         this.cleanedData = this.clean();
@@ -921,11 +938,6 @@ Form.prototype.fullClean = function()
         {
             throw e;
         }
-    }
-
-    if (this._errors.isPopulated())
-    {
-        delete this.cleanedData;
     }
 };
 
