@@ -1692,7 +1692,7 @@ function SlugField(kwargs)
 /**
  * Slug validation regular expression.
  */
-SlugField.SLUG_REGEXP = /^[-\w]+$'/;
+SlugField.SLUG_REGEXP = /^[-\w]+$/;
 
 SlugField.prototype = new RegexField();
 SlugField.prototype.defaultErrorMessages =
