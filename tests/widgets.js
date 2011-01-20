@@ -137,7 +137,7 @@ test("MultipleHiddenInput", function()
            "<span></span>");
     equals(""+w.render("email", ["foo@example.com"]),
            "<span><input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\"></span>");
-    equals(""+w.render("email", ["foo@example.com", "test@example.com",]),
+    equals(""+w.render("email", ["foo@example.com", "test@example.com"]),
            "<span><input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\"><input class=\"fun\" type=\"hidden\" name=\"email\" value=\"test@example.com\"></span>");
 
     // Attributes passed to render() get precedence over those passed to the constructor
