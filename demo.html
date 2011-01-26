@@ -127,26 +127,6 @@
 
   ContactFormFormSet = formsetFactory(ContactForm, {extra: 1, canDelete: true});
 
-  function createFormTable(form, title)
-  {
-      var boundFields = form.boundFields();
-      var rows = [];
-      for (var i = 0, l = boundFields.length; i < l; i++)
-      {
-          var field = boundFields[i];
-          rows[rows.length] = TR(
-                                 TH(field.labelTag()),
-                                 TD(field.asWidget()));
-      }
-
-      return DIV(
-        H2(title),
-        TABLE(
-          rows
-        )
-      );
-  }
-
   jQuery(document).ready(function()
   {
       DOMBuilder.apply(window);
@@ -162,10 +142,20 @@
           }]
       });
 
-      for (var i = 0, l = formset.forms.length; i < l; i++)
+      var forms = DOMBuilder.fragment.map(formset.forms, function(form, index)
       {
-          document.body.appendChild(createFormTable(formset.forms[i], "Contact Form " + (i + 1)));
-      }
+          return [
+            H2("Contact Form " + (index + 1)),
+            TABLE(TBODY(
+              TR.map(form.boundFields(), function(field)
+              {
+                  return [TH(field.labelTag()), TD(field.asWidget())];
+              })
+            ))
+          ];
+      });
+
+      document.body.appendChild(forms);
   });
   </script>
 </head>
