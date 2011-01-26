@@ -11,7 +11,10 @@
   h1 { font-size: 160%; margin: 0em 0 1em -3%; }
   h2 { font-size: 140%; margin: 1em 0 1em -2%; }
   </style>
+  <!-- Dependencies -->
+  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
   <script type="text/javascript" src="http://dombuilder.googlecode.com/svn/trunk/DOMBuilder.js"></script>
+  <!-- js-forms -->
   <script type="text/javascript" src="util.js"></script>
   <script type="text/javascript" src="time.js"></script>
   <script type="text/javascript" src="widgets.js"></script>
@@ -144,7 +147,7 @@
       );
   }
 
-  DOMBuilder.addEvent(window, "load", function()
+  jQuery(document).ready(function()
   {
       DOMBuilder.apply(window);
 
