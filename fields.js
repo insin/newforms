@@ -305,7 +305,7 @@ FloatField.prototype.defaultErrorMessages =
     extendObject({}, FloatField.prototype.defaultErrorMessages, {
         invalid: "Enter a number.",
         maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
-        minValue: "Ensure this value is greater than or equal to %(minValue)s.",
+        minValue: "Ensure this value is greater than or equal to %(minValue)s."
     });
 
 /**
@@ -495,7 +495,7 @@ DecimalField.prototype.clean = function(value)
 function DateField(kwargs)
 {
     kwargs = extendObject({
-        inputFormats: null,
+        inputFormats: null
     }, kwargs || {});
     Field.call(this, kwargs);
     this.inputFormats =
@@ -576,7 +576,7 @@ DateField.prototype.clean = function(value)
 function TimeField(kwargs)
 {
     kwargs = extendObject({
-        inputFormats: null,
+        inputFormats: null
     }, kwargs || {});
     Field.call(this, kwargs);
     this.inputFormats =
@@ -658,7 +658,7 @@ TimeField.prototype.clean = function(value)
 function DateTimeField(kwargs)
 {
     kwargs = extendObject({
-        inputFormats: null,
+        inputFormats: null
     }, kwargs || {});
     Field.call(this, kwargs);
     this.inputFormats =
