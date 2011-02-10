@@ -103,7 +103,7 @@ function Input(kwargs)
     Widget.call(this, kwargs);
 }
 
-Input.prototype = new Widget();
+inheritFrom(Input, Widget);
 
 /**
  * The type of this input.
@@ -139,7 +139,7 @@ function TextInput(kwargs)
     Input.call(this, kwargs);
 }
 
-TextInput.prototype = new Input();
+inheritFrom(TextInput, Input);
 TextInput.prototype.inputType = "text";
 
 /**
@@ -160,7 +160,7 @@ function PasswordInput(kwargs)
     this.renderValue = kwargs.renderValue;
 }
 
-PasswordInput.prototype = new Input();
+inheritFrom(PasswordInput, Input);
 PasswordInput.prototype.inputType = "password";
 
 PasswordInput.prototype.render = function(name, value, attrs)
@@ -185,7 +185,7 @@ function HiddenInput(kwargs)
     Input.call(this, kwargs);
 }
 
-HiddenInput.prototype = new Input();
+inheritFrom(HiddenInput, Input);
 HiddenInput.prototype.inputType = "hidden";
 HiddenInput.prototype.isHidden = true;
 
@@ -203,7 +203,7 @@ function MultipleHiddenInput(kwargs)
     HiddenInput.call(this, kwargs);
 }
 
-MultipleHiddenInput.prototype = new HiddenInput();
+inheritFrom(MultipleHiddenInput, HiddenInput);
 
 MultipleHiddenInput.prototype.render = function(name, value, attrs)
 {
@@ -245,7 +245,7 @@ function FileInput(kwargs)
     Input.call(this, kwargs);
 }
 
-FileInput.prototype = new Input();
+inheritFrom(FileInput, Input);
 FileInput.prototype.inputType = "file";
 FileInput.prototype.needsMultipartForm = true;
 
@@ -291,7 +291,7 @@ function Textarea(kwargs)
     Widget.call(this, kwargs);
 }
 
-Textarea.prototype = new Widget();
+inheritFrom(Textarea, Widget);
 
 Textarea.prototype.render = function(name, value, attrs)
 {
@@ -323,7 +323,7 @@ function DateInput(kwargs)
     }
 }
 
-DateInput.prototype = new Input();
+inheritFrom(DateInput, Input);
 DateInput.prototype.inputType = "text";
 DateInput.prototype.format = "%Y-%m-%d"; // "2006-10-25"
 
@@ -371,7 +371,7 @@ function DateTimeInput(kwargs)
     }
 }
 
-DateTimeInput.prototype = new Input();
+inheritFrom(DateTimeInput, Input);
 DateTimeInput.prototype.inputType = "text";
 DateTimeInput.prototype.format = "%Y-%m-%d %H:%M:%S"; // "2006-10-25 14:30:59"
 
@@ -419,7 +419,7 @@ function TimeInput(kwargs)
     }
 }
 
-TimeInput.prototype = new Input();
+inheritFrom(TimeInput, Input);
 TimeInput.prototype.inputType = "text";
 TimeInput.prototype.format = "%H:%M:%S" // "14:30:59"
 
@@ -465,7 +465,7 @@ function CheckboxInput(kwargs)
     this.checkTest = kwargs.checkTest;
 }
 
-CheckboxInput.prototype = new Widget();
+inheritFrom(CheckboxInput, Widget);
 
 CheckboxInput.prototype.render = function(name, value, attrs)
 {
@@ -531,7 +531,7 @@ function Select(kwargs)
     this.choices = kwargs.choices;
 }
 
-Select.prototype = new Widget();
+inheritFrom(Select, Widget);
 
 /**
  * Renders the widget.
@@ -623,7 +623,7 @@ function NullBooleanSelect(kwargs)
     Select.call(this, kwargs);
 };
 
-NullBooleanSelect.prototype = new Select();
+inheritFrom(NullBooleanSelect, Select);
 
 NullBooleanSelect.prototype.render = function(name, value, attrs, choices)
 {
@@ -680,7 +680,7 @@ function SelectMultiple(kwargs)
     Select.call(this, kwargs);
 }
 
-SelectMultiple.prototype = new Select();
+inheritFrom(SelectMultiple, Select);
 
 /**
  * Renders the widget.
@@ -881,7 +881,7 @@ function RadioSelect(kwargs)
     Select.call(this, kwargs);
 }
 
-RadioSelect.prototype = new Select();
+inheritFrom(RadioSelect, Select);
 RadioSelect.prototype.renderer = RadioFieldRenderer;
 
 /**
@@ -930,7 +930,7 @@ function CheckboxSelectMultiple(kwargs)
     SelectMultiple.call(this, kwargs);
 }
 
-CheckboxSelectMultiple.prototype = new SelectMultiple();
+inheritFrom(CheckboxSelectMultiple, SelectMultiple);
 
 CheckboxSelectMultiple.prototype.render = function(name, selectedValues, attrs, choices)
 {
@@ -1004,7 +1004,7 @@ function MultiWidget(widgets, kwargs)
     Widget.call(this, kwargs);
 }
 
-MultiWidget.prototype = new Widget();
+inheritFrom(MultiWidget, Widget);
 
 /**
  * This method is different than other widgets', because it has to figure out
@@ -1156,7 +1156,7 @@ function SplitDateTimeWidget(kwargs)
     MultiWidget.call(this, widgets, kwargs);
 }
 
-SplitDateTimeWidget.prototype = new MultiWidget();
+inheritFrom(SplitDateTimeWidget, MultiWidget);
 SplitDateTimeWidget.prototype.dateFormat = DateInput.prototype.format;
 SplitDateTimeWidget.prototype.timeFormat = TimeInput.prototype.format;
 
@@ -1192,5 +1192,5 @@ function SplitHiddenDateTimeWidget(kwargs)
     MultiWidget.call(this, widgets, kwargs);
 }
 
-SplitHiddenDateTimeWidget.prototype = new SplitDateTimeWidget();
+inheritFrom(SplitHiddenDateTimeWidget, SplitDateTimeWidget);
 SplitHiddenDateTimeWidget.isHidden = true;

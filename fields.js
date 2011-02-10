@@ -142,8 +142,7 @@ function CharField(kwargs)
     this.minLength = kwargs.minLength;
     Field.call(this, kwargs);
 }
-
-CharField.prototype = new Field();
+inheritFrom(CharField, Field);
 CharField.prototype.defaultErrorMessages =
     extendObject({}, CharField.prototype.defaultErrorMessages, {
         maxLength: "Ensure this value has at most %(max)s characters (it has %(length)s).",
@@ -231,7 +230,7 @@ function IntegerField(kwargs)
  */
 IntegerField.INTEGER_REGEXP = /^ *[-+]? *\d+ *$/;
 
-IntegerField.prototype = new Field();
+inheritFrom(IntegerField, Field);
 IntegerField.prototype.defaultErrorMessages =
     extendObject({}, IntegerField.prototype.defaultErrorMessages, {
         invalid: "Enter a whole number.",
@@ -300,7 +299,7 @@ function FloatField(kwargs)
  */
 FloatField.FLOAT_REGEXP = /^ *[-+]? *\d+(?:\.\d+)? *$/;
 
-FloatField.prototype = new Field();
+inheritFrom(FloatField, Field);
 FloatField.prototype.defaultErrorMessages =
     extendObject({}, FloatField.prototype.defaultErrorMessages, {
         invalid: "Enter a number.",
@@ -393,7 +392,7 @@ function DecimalField(kwargs)
  */
 DecimalField.DECIMAL_REGEXP = /^ *[-+]? *(?:\d+(?:\.\d+)?|(?:\d+)?\.\d+) *$/;
 
-DecimalField.prototype = new Field();
+inheritFrom(DecimalField, Field);
 DecimalField.prototype.defaultErrorMessages =
     extendObject({}, DecimalField.prototype.defaultErrorMessages, {
         invalid: "Enter a number.",
@@ -514,7 +513,7 @@ DateField.DEFAULT_DATE_INPUT_FORMATS = [
     "%d %B %Y", "%d %B, %Y"  // "25 October 2006", "25 October, 2006"
 ];
 
-DateField.prototype = new Field();
+inheritFrom(DateField, Field);
 DateField.prototype.defaultErrorMessages =
     extendObject({}, DateField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid date."
@@ -591,7 +590,7 @@ TimeField.DEFAULT_TIME_INPUT_FORMATS = [
     "%H:%M"     // "14:30"
 ];
 
-TimeField.prototype = new Field();
+inheritFrom(TimeField, Field);
 TimeField.prototype.defaultWidget = TimeInput;
 TimeField.prototype.defaultErrorMessages =
     extendObject({}, TimeField.prototype.defaultErrorMessages, {
@@ -680,7 +679,7 @@ DateTimeField.DEFAULT_DATETIME_INPUT_FORMATS = [
     "%m/%d/%y"           // "10/25/06"
 ]
 
-DateTimeField.prototype = new Field();
+inheritFrom(DateTimeField, Field);
 DateTimeField.prototype.defaultWidget = DateTimeInput;
 DateTimeField.prototype.defaultErrorMessages =
     extendObject({}, DateTimeField.prototype.defaultErrorMessages, {
@@ -757,7 +756,7 @@ function RegexField(regex, kwargs)
     this.regex = regex;
 }
 
-RegexField.prototype = new CharField();
+inheritFrom(RegexField, CharField);
 
 /**
  * Validates that the given value matches the regular expression defined for
@@ -800,7 +799,7 @@ EmailField.EMAIL_REGEXP = new RegExp(
     ")@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\\.)+[A-Z]{2,6}\\.?$",                                                   // Domain
     "i");
 
-EmailField.prototype = new RegexField();
+inheritFrom(EmailField, RegexField);
 
 EmailField.prototype.defaultErrorMessages =
     extendObject({}, EmailField.prototype.defaultErrorMessages, {
@@ -844,7 +843,7 @@ function FileField(kwargs)
     Field.call(this, kwargs);
 }
 
-FileField.prototype = new Field();
+inheritFrom(FileField, Field);
 FileField.prototype.defaultWidget = FileInput;
 FileField.prototype.defaultErrorMessages =
     extendObject({}, FileField.prototype.defaultErrorMessages, {
@@ -922,7 +921,7 @@ function ImageField(kwargs)
     FileField.call(this, kwargs);
 }
 
-ImageField.prototype = new FileField();
+inheritFrom(ImageField, FileField);
 ImageField.prototype.defaultErrorMessages =
     extendObject({}, ImageField.prototype.defaultErrorMessages, {
         invalidImage: "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
@@ -990,7 +989,7 @@ URLField.URL_REGEXP = new RegExp(
 URLField.URL_VALIDATOR_USER_AGENT =
     "js-forms (http://code.google.com/p/js-forms/)";
 
-URLField.prototype = new RegexField();
+inheritFrom(URLField, RegexField);
 URLField.prototype.defaultErrorMessages =
     extendObject({}, URLField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid URL.",
@@ -1043,7 +1042,7 @@ function BooleanField(kwargs)
     Field.call(this, kwargs);
 }
 
-BooleanField.prototype = new Field();
+inheritFrom(BooleanField, Field);
 BooleanField.prototype.defaultWidget = CheckboxInput;
 
 /**
@@ -1092,7 +1091,7 @@ function NullBooleanField(kwargs)
     BooleanField.call(this, kwargs);
 }
 
-NullBooleanField.prototype = new BooleanField();
+inheritFrom(NullBooleanField, BooleanField);
 NullBooleanField.prototype.defaultWidget = NullBooleanSelect;
 
 NullBooleanField.prototype.clean = function(value)
@@ -1149,7 +1148,7 @@ function ChoiceField(kwargs)
     this.choices = kwargs.choices;
 }
 
-ChoiceField.prototype = new Field();
+inheritFrom(ChoiceField, Field);
 ChoiceField.prototype.defaultWidget = Select;
 ChoiceField.prototype.defaultErrorMessages =
     extendObject({}, ChoiceField.prototype.defaultErrorMessages, {
@@ -1247,7 +1246,7 @@ function TypedChoiceField(kwargs)
     ChoiceField.call(this, kwargs);
 }
 
-TypedChoiceField.prototype = new ChoiceField();
+inheritFrom(TypedChoiceField, ChoiceField);
 
 /**
  * Validates that the value is in this.choices and can be coerced to the right
@@ -1286,7 +1285,7 @@ function MultipleChoiceField(kwargs)
     ChoiceField.call(this, kwargs);
 }
 
-MultipleChoiceField.prototype = new ChoiceField();
+inheritFrom(MultipleChoiceField, ChoiceField);
 MultipleChoiceField.prototype.defaultWidget = SelectMultiple;
 MultipleChoiceField.prototype.hiddenWidget = MultipleHiddenInput;
 MultipleChoiceField.prototype.defaultErrorMessages =
@@ -1373,7 +1372,7 @@ function ComboField(kwargs)
     this.fields = kwargs.fields;
 }
 
-ComboField.prototype = new Field();
+inheritFrom(ComboField, Field);
 
 ComboField.prototype.clean = function(value)
 {
@@ -1422,7 +1421,7 @@ function MultiValueField(kwargs)
     this.fields = kwargs.fields;
 }
 
-MultiValueField.prototype = new Field();
+inheritFrom(MultiValueField, Field);
 MultiValueField.prototype.defaultErrorMessages =
     extendObject({}, MultiValueField.prototype.defaultErrorMessages, {
         invalid: "Enter a list of values."
@@ -1586,7 +1585,7 @@ function FilePathField(path, kwargs)
     this.widget.choices = this.choices;
 }
 
-FilePathField.prototype = new ChoiceField();
+inheritFrom(FilePathField, ChoiceField);
 
 /**
  * A {@link MultiValueField} consisting of a {@link DateField} and a
@@ -1611,7 +1610,7 @@ function SplitDateTimeField(kwargs)
     MultiValueField.call(this, kwargs);
 }
 
-SplitDateTimeField.prototype = new MultiValueField();
+inheritFrom(SplitDateTimeField, MultiValueField);
 SplitDateTimeField.prototype.defaultWidget = SplitDateTimeWidget;
 SplitDateTimeField.prototype.defaultErrorMessages =
     extendObject({}, SplitDateTimeField.prototype.defaultErrorMessages, {
@@ -1670,7 +1669,7 @@ function IPAddressField(kwargs)
 IPAddressField.IPV4_REGEXP =
     /^(25[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}$/;
 
-IPAddressField.prototype = new RegexField();
+inheritFrom(IPAddressField, RegexField);
 IPAddressField.prototype.defaultErrorMessages =
     extendObject({}, IPAddressField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid IPv4 address."
@@ -1694,7 +1693,7 @@ function SlugField(kwargs)
  */
 SlugField.SLUG_REGEXP = /^[-\w]+$/;
 
-SlugField.prototype = new RegexField();
+inheritFrom(SlugField, RegexField);
 SlugField.prototype.defaultErrorMessages =
     extendObject({}, SlugField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."

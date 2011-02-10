@@ -21,7 +21,7 @@ ManagementForm.TOTAL_FORM_COUNT = "TOTAL_FORMS";
 ManagementForm.INITIAL_FORM_COUNT = "INITIAL_FORMS";
 ManagementForm.MAX_NUM_FORM_COUNT = "MAX_NUM_FORMS";
 
-ManagementForm.prototype = new Form();
+inheritFrom(ManagementForm, Form);
 
 /**
  * A collection of instances of the same Form.

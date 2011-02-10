@@ -30,6 +30,21 @@ function extendObject(destination)
 }
 
 /**
+ * Uses a dummy constructor to make a child constructor inherit from a
+ * parent constructor.
+ *
+ * @param {Function} child the child constructor.
+ * @param {Function} parent the parent constructor.
+ */
+function inheritFrom(child, parent)
+{
+    function F() {};
+    F.prototype = parent.prototype;
+    child.prototype = new F();
+    child.prototype.constructor = child;
+}
+
+/**
  * Performs replacement of named placeholders in a String, specified in
  * <code>%(placeholder)s</code> format.
  *
