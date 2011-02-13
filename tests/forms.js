@@ -116,7 +116,7 @@ test("Form", function()
 "* birthday\n" +
 "  * This field is required.");
     equals(typeof p.cleanedData, "undefined");
-    same(p.boundField("first_name").errors.()errors, ["This field is required."]);
+    same(p.boundField("first_name").errors().errors, ["This field is required."]);
     equals(""+p.boundField("first_name").errors().asUL(),
            "<ul class=\"errorlist\"><li>This field is required.</li></ul>");
     equals(""+p.boundField("first_name").errors().asText(),

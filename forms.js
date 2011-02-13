@@ -350,7 +350,7 @@ Form.prototype =
         return this._errors;
     },
 
-    get changedData()
+    /*get */changedData: function()
     {
         if (this._changedData === null)
         {
@@ -962,7 +962,7 @@ Form.prototype.clean = function()
  */
 Form.prototype.hasChanged = function()
 {
-    return (this.changedData.length != 0);
+    return (this.changedData().length != 0);
 };
 
 /**

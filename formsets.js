@@ -77,7 +77,7 @@ BaseFormSet.prototype =
     /**
      * Returns the ManagementForm instance for this FormSet.
      */
-    get managementForm()
+    /*get */managementForm: function()
     {
         if (this.data || this.files)
         {
@@ -98,17 +98,17 @@ BaseFormSet.prototype =
         return form;
     },
 
-    get initialForms()
+    /*get */initialForms: function()
     {
         return this.forms.slice(0, this.initialFormCount());
     },
 
-    get extraForms()
+    /*get */extraForms: function()
     {
         return this.forms.slice(this.initialFormCount());
     },
 
-    get emptyForm()
+    /*get */emptyForm: function()
     {
         var defaults = {
             autoId: this.autoId,
@@ -130,7 +130,7 @@ BaseFormSet.prototype =
     /**
      * Returns a list of form.cleanedData objects for every form in this.forms.
      */
-    get cleanedData()
+    /*get */cleanedData: function()
     {
         if (!this.isValid())
         {
@@ -148,7 +148,7 @@ BaseFormSet.prototype =
      * Returns a list of forms that have been marked for deletion. Throws an
      * error if deletion is not allowed.
      */
-    get deletedForms()
+    /*get */deletedForms: function()
     {
         if (!this.isValid() || !this.canDelete)
         {
@@ -188,7 +188,7 @@ BaseFormSet.prototype =
      * Returns a list of forms in the order specified by the incoming data.
      * Throws an Error if ordering is not allowed.
      */
-    get orderedForms()
+    /*get */orderedForms: function()
     {
         if (!this.isValid() || !this.canOrder)
         {
@@ -281,7 +281,7 @@ BaseFormSet.prototype.totalFormCount = function()
 {
     if (this.data || this.files)
     {
-        return this.managementForm.cleanedData[ManagementForm.TOTAL_FORM_COUNT];
+        return this.managementForm().cleanedData[ManagementForm.TOTAL_FORM_COUNT];
     }
     else
     {
@@ -304,7 +304,7 @@ BaseFormSet.prototype.initialFormCount = function()
 {
     if (this.data || this.files)
     {
-        return this.managementForm.cleanedData[ManagementForm.INITIAL_FORM_COUNT];
+        return this.managementForm().cleanedData[ManagementForm.INITIAL_FORM_COUNT];
     }
     else
     {
@@ -537,7 +537,7 @@ BaseFormSet.prototype.asTable = function(doNotCoerce)
     // XXX: there is no semantic division between forms here, there probably
     // should be. It might make sense to render each form as a table row with
     // each field as a td.
-    var rows = this.managementForm.asTable(true);
+    var rows = this.managementForm().asTable(true);
     for (var i = 0, l = this.forms.length; i < l; i++)
     {
         rows = rows.concat(this.forms[i].asTable(true));

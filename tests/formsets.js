@@ -115,7 +115,7 @@ test("Basic FormSet creation and usage", function()
     };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
-    same(formset.cleanedData,
+    same(formset.cleanedData(),
          [{choice: "Calexico", votes: 100}, {}]);
 
     // But the second form was blank! Shouldn't we get some errors? No. If we
@@ -188,7 +188,7 @@ test("Displaying more than one blank form", function()
     };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
-    same(formset.cleanedData,
+    same(formset.cleanedData(),
          [{}, {}, {}]);
 
     // We can just fill in one of the forms
@@ -205,7 +205,7 @@ test("Displaying more than one blank form", function()
     };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
-    same(formset.cleanedData,
+    same(formset.cleanedData(),
          [{choice: "Calexico", votes: 100}, {}, {}]);
 
     // And once again, if we try to partially complete a form, validation will
@@ -241,8 +241,8 @@ test("Displaying more than one blank form", function()
 "<li>Votes: <input type=\"text\" name=\"choices-3-votes\"></li>");
 
     // Make sure retrieving an empty form works, and it shows up in the form list.
-    same(formset.emptyForm.emptyPermitted, true);
-    equals(formset.emptyForm.asUL(),
+    same(formset.emptyForm().emptyPermitted, true);
+    equals(formset.emptyForm().asUL(),
 "<li>Choice: <input type=\"text\" name=\"choices-__prefix__-choice\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-__prefix__-votes\"></li>");
 });
@@ -288,9 +288,9 @@ test("FormSets with deletion", function()
 
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
-    same(formset.cleanedData,
+    same(formset.cleanedData(),
          [{choice: "Calexico", votes: 100, DELETE: false}, {choice: "Fergie", votes: 900, DELETE: true}, {}]);
-    same(allCleanedData(formset.deletedForms),
+    same(allCleanedData(formset.deletedForms()),
          [{choice: "Fergie", votes: 900, DELETE: true}]);
 
     // If we fill a form with something and then we check the canDelete checkbox
@@ -364,7 +364,7 @@ test("FormSets with ordering", function()
     };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
-    same(allCleanedData(formset.orderedForms),
+    same(allCleanedData(formset.orderedForms()),
          [{choice: "The Decemberists", votes: 500, ORDER: 0},
           {choice: "Calexico", votes: 100, ORDER: 1},
           {choice: "Fergie", votes: 900, ORDER: 2}]);
@@ -390,7 +390,7 @@ test("FormSets with ordering", function()
     };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
-    same(allCleanedData(formset.orderedForms),
+    same(allCleanedData(formset.orderedForms()),
          [{choice: "Calexico", votes: 100, ORDER: 1},
           {choice: "Fergie", votes: 900, ORDER: 2},
           {choice: "The Decemberists", votes: 500, ORDER: null},
@@ -404,7 +404,7 @@ test("FormSets with ordering", function()
     };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
-    same(formset.orderedForms.length, 0);
+    same(formset.orderedForms().length, 0);
 });
 
 test("FormSets with ordering + deletion", function()
@@ -462,10 +462,10 @@ test("FormSets with ordering + deletion", function()
     }
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), true);
-    same(allCleanedData(formset.orderedForms),
+    same(allCleanedData(formset.orderedForms()),
          [{choice: "The Decemberists", votes: 500, ORDER: 0, DELETE: false},
           {choice: "Calexico", votes: 100, ORDER: 1, DELETE: false}]);
-    same(allCleanedData(formset.deletedForms),
+    same(allCleanedData(formset.deletedForms()),
          [{choice: "Fergie", votes: 900, ORDER: 2, DELETE: true}]);
 });
 
@@ -521,13 +521,13 @@ test("FormSets clean hook", function()
     BaseFavouriteDrinksFormSet.prototype.clean = function()
     {
         var seenDrinks = {};
-        for (var i = 0, l = this.cleanedData.length; i < l; i++)
+        for (var i = 0, l = this.cleanedData().length; i < l; i++)
         {
-            if (typeof seenDrinks[this.cleanedData[i].name] != "undefined")
+            if (typeof seenDrinks[this.cleanedData()[i].name] != "undefined")
             {
                 throw new ValidationError("You may only specify a drink once.");
             }
-            seenDrinks[this.cleanedData[i].name] = true;
+            seenDrinks[this.cleanedData()[i].name] = true;
         }
     };
 
@@ -546,13 +546,13 @@ test("FormSets clean hook", function()
         clean: function()
         {
             var seenDrinks = {};
-            for (var i = 0, l = this.cleanedData.length; i < l; i++)
+            for (var i = 0, l = this.cleanedData().length; i < l; i++)
             {
-                if (typeof seenDrinks[this.cleanedData[i].name] != "undefined")
+                if (typeof seenDrinks[this.cleanedData()[i].name] != "undefined")
                 {
                     throw new ValidationError("You may only specify a drink once.");
                 }
-                seenDrinks[this.cleanedData[i].name] = true;
+                seenDrinks[this.cleanedData()[i].name] = true;
             }
         }
     });
@@ -560,7 +560,7 @@ test("FormSets clean hook", function()
     cleanTests(FavouriteDrinksFormSet);
 
     // Formset-wide errors should render properly as HTML.
-    data = {
+    var data = {
         "drinks-TOTAL_FORMS": "2",
         "drinks-INITIAL_FORMS": "0",
         "drinks-MAX_NUM_FORMS": "0",
