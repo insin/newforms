@@ -78,7 +78,7 @@ BoundField.prototype =
         return this.form.errors()[this.name] || new this.form.errorConstructor();
     },
 
-    get isHidden()
+    /*get */isHidden: function()
     {
         return this.field.widget.isHidden;
     },
@@ -87,7 +87,7 @@ BoundField.prototype =
      * Calculates and returns the <code>id</code> attribute for this BoundFIeld if
      * the associated form has an autoId.
      */
-    get autoId()
+    /*get */autoId: function()
     {
         var autoId = this.form.autoId;
         if (autoId)
@@ -105,7 +105,7 @@ BoundField.prototype =
         return "";
     },
 
-    get data()
+    /*get */data: function()
     {
         return this.field.widget.valueFromData(this.form.data,
                                                this.form.files,
@@ -128,7 +128,7 @@ BoundField.prototype.asWidget = function(kwargs)
     kwargs = extendObject({widget: null, attrs: null}, kwargs || {});
     var widget = (kwargs.widget !== null ? kwargs.widget : this.field.widget);
     var attrs = kwargs.attrs || {};
-    var autoId = this.autoId;
+    var autoId = this.autoId();
 
     if (autoId &&
         typeof attrs.id == "undefined" &&
@@ -156,7 +156,7 @@ BoundField.prototype.asWidget = function(kwargs)
     }
     else
     {
-        data = this.data;
+        data = this.data();
     }
 
     return widget.render(this.htmlName, data, attrs);
@@ -226,7 +226,7 @@ BoundField.prototype.labelTag = function(kwargs)
     }
     else
     {
-        id = this.autoId;
+        id = this.autoId();
     }
     if (id)
     {
