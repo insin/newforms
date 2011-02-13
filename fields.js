@@ -1131,6 +1131,7 @@ NullBooleanField.prototype.clean = function(value)
  */
 function ChoiceField(kwargs)
 {
+    /*
     this.__defineGetter__("choices", function()
     {
         return this._choices;
@@ -1140,12 +1141,13 @@ function ChoiceField(kwargs)
         // Setting choices also sets the choices on the widget
         this._choices = this.widget.choices = choices;
     });
+    */
 
     kwargs = extendObject({
         choices: []
     }, kwargs || {});
     Field.call(this, kwargs);
-    this.choices = kwargs.choices;
+    this.setChoices(kwargs.choices);
 }
 
 inheritFrom(ChoiceField, Field);
@@ -1154,6 +1156,12 @@ ChoiceField.prototype.defaultErrorMessages =
     extendObject({}, ChoiceField.prototype.defaultErrorMessages, {
         invalidChoice: "Select a valid choice. %(value)s is not one of the available choices."
     });
+ChoiceField.prototype.choices = function() { return this._choices; };
+ChoiceField.prototype.setChoices = function(choices)
+{
+    // Setting choices also sets the choices on the widget
+    this._choices = this.widget.choices = choices;
+};
 
 /**
  * Validates that the given value is in this field's choices.
@@ -1196,12 +1204,12 @@ ChoiceField.prototype.clean = function(value)
  */
 ChoiceField.prototype.validValue = function(value)
 {
-    for (var i = 0, l = this.choices.length; i < l; i++)
+    for (var i = 0, l = this.choices().length; i < l; i++)
     {
-        if (this.choices[i][1] instanceof Array)
+        if (this.choices()[i][1] instanceof Array)
         {
             // This is an optgroup, so look inside the group for options
-            var optgroupChoices = this.choices[i][1];
+            var optgroupChoices = this.choices()[i][1];
             for (var j = 0, k = optgroupChoices.length; j < k; j++)
             {
                 if (value === ("" + optgroupChoices[j][0]))
@@ -1210,7 +1218,7 @@ ChoiceField.prototype.validValue = function(value)
                 }
             }
         }
-        else if (value === ("" + this.choices[i][0]))
+        else if (value === ("" + this.choices()[i][0]))
         {
             return true;
         }
@@ -1567,11 +1575,11 @@ function FilePathField(path, kwargs)
 
     if (this.required)
     {
-        this.choices = [];
+        this.setChoices([]);
     }
     else
     {
-        this.choices = [["", "---------"]];
+        this.setChoices([["", "---------"]]);
     }
 
     if (this.match !== null)
@@ -1582,7 +1590,7 @@ function FilePathField(path, kwargs)
     // TODO Populate this.choices with file paths when js-forms can be run in
     //      appropriate environments.
 
-    this.widget.choices = this.choices;
+    this.widget.choices = this.choices();
 }
 
 inheritFrom(FilePathField, ChoiceField);

@@ -401,7 +401,7 @@ test("Form", function()
     equals(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "</select>");
-    f.fields["language"].choices = [["P", "Python"], ["J", "Java"]];
+    f.fields["language"].setChoices([["P", "Python"], ["J", "Java"]]);
     equals(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "<option value=\"P\">Python</option>\n" +
