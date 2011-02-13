@@ -563,9 +563,12 @@ Select.prototype.renderOptions = function(choices, selectedValues)
 {
     // Normalise to strings
     var selectedValuesLookup = {};
+    // We can't duck type passing of a String instead, as IE < 8 doesn't allow
+    // numeric property access to grab chars out of a String.
+    var string = (typeof selectedValues == "string");
     for (var i = 0, l = selectedValues.length; i < l; i++)
     {
-        selectedValuesLookup["" + selectedValues[i]] = true;
+        selectedValuesLookup["" + (string ? selectedValues.charAt(i) : selectedValues[i])] = true;
     }
 
     var renderOption = function(optValue, optLabel)
