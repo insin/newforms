@@ -251,7 +251,7 @@ BaseFormSet.prototype =
     /**
      * Returns a list of form.errors for every form in this.forms.
      */
-    get errors()
+    /*get */errors: function()
     {
         if (this._errors === null)
         {
@@ -416,7 +416,8 @@ BaseFormSet.prototype.isValid = function()
             }
         }
 
-        if (this.errors[i].isPopulated())
+        var errors = this.errors();
+        if (errors[i].isPopulated())
         {
             formsValid = false;
         }
@@ -441,7 +442,7 @@ BaseFormSet.prototype.fullClean = function()
     for (var i = 0; i < totalFormCount; i++)
     {
         var form = this.forms[i];
-        this._errors.push(form.errors);
+        this._errors.push(form.errors());
     }
 
     // Give this.clean a chance to do cross-form validation.

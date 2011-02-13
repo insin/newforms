@@ -33,10 +33,10 @@ test("Form", function()
     // Pass a data object when initialising
     var p = new Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}});
     same(p.isBound, true);
-    same(p.errors.isPopulated(), false);
+    same(p.errors().isPopulated(), false);
     same(p.isValid(), true);
-    // TODO p.errors.asUL() needs some work to handle being empty
-    same(p.errors.asText(), "");
+    // TODO p.errors().asUL() needs some work to handle being empty
+    same(p.errors().asText(), "");
     same([p.cleanedData.first_name, p.cleanedData.last_name, p.cleanedData.birthday.valueOf()],
           ["John", "Lennon", new Date(1940, 9, 9).valueOf()]);
     equals(""+p.boundField("first_name"),
@@ -54,9 +54,9 @@ test("Form", function()
     // Empty objects are valid, too
     p = new Person({data: {}});
     same(p.isBound, true);
-    same(p.errors["first_name"].errors, ["This field is required."]);
-    same(p.errors["last_name"].errors, ["This field is required."]);
-    same(p.errors["birthday"].errors, ["This field is required."]);
+    same(p.errors()["first_name"].errors, ["This field is required."]);
+    same(p.errors()["last_name"].errors, ["This field is required."]);
+    same(p.errors()["birthday"].errors, ["This field is required."]);
     same(p.isValid(), false);
     equals(typeof p.cleanedData, "undefined");
     equals(""+p,
@@ -84,7 +84,7 @@ test("Form", function()
     // empty *but* Form.isValid() will return False.
     p = new Person();
     same(p.isBound, false);
-    same(p.errors.isPopulated(), false);
+    same(p.errors().isPopulated(), false);
     same(p.isValid(), false);
     equals(typeof p.cleanedData, "undefined");
     equals(""+p,
@@ -105,21 +105,21 @@ test("Form", function()
 "<p><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></p>");
 
     p = new Person({data: {last_name: "Lennon"}});
-    same(p.errors["first_name"].errors, ["This field is required."]);
-    same(p.errors["birthday"].errors, ["This field is required."]);
+    same(p.errors()["first_name"].errors, ["This field is required."]);
+    same(p.errors()["birthday"].errors, ["This field is required."]);
     same(p.isValid(), false);
-    equals(""+p.errors.asUL(),
+    equals(""+p.errors().asUL(),
            "<ul class=\"errorlist\"><li>first_name<ul class=\"errorlist\"><li>This field is required.</li></ul></li><li>birthday<ul class=\"errorlist\"><li>This field is required.</li></ul></li></ul>");
-    equals(p.errors.asText(),
+    equals(p.errors().asText(),
 "* first_name\n" +
 "  * This field is required.\n" +
 "* birthday\n" +
 "  * This field is required.");
     equals(typeof p.cleanedData, "undefined");
-    same(p.boundField("first_name").errors.errors, ["This field is required."]);
-    equals(""+p.boundField("first_name").errors.asUL(),
+    same(p.boundField("first_name").errors.()errors, ["This field is required."]);
+    equals(""+p.boundField("first_name").errors().asUL(),
            "<ul class=\"errorlist\"><li>This field is required.</li></ul>");
-    equals(""+p.boundField("first_name").errors.asText(),
+    equals(""+p.boundField("first_name").errors().asText(),
            "* This field is required.");
 
     p = new Person();
@@ -558,13 +558,13 @@ test("Form", function()
     // When using MultipleChoiceField, the framework expects a list of input and
     // returns a list of input.
     f = new SongForm({data: {name: "Yesterday"}, autoId: false});
-    same(f.errors["composers"].errors, ["This field is required."]);
+    same(f.errors()["composers"].errors, ["This field is required."]);
     f = new SongForm({data: {name: "Yesterday", composers: ["J"]}, autoId: false});
-    same(f.errors.isPopulated(), false);
+    same(f.errors().isPopulated(), false);
     same(f.cleanedData["composers"], ["J"]);
     equals(f.cleanedData["name"], "Yesterday");
     f = new SongForm({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false});
-    same(f.errors.isPopulated(), false);
+    same(f.errors().isPopulated(), false);
     same(f.cleanedData["composers"], ["J", "P"]);
     equals(f.cleanedData["name"], "Yesterday");
 
@@ -703,15 +703,15 @@ test("Validating multiple fields in relation to another", function()
         }
     });
     var f = new UserRegistration({autoId: false});
-    same(f.errors.isPopulated(), false);
+    same(f.errors().isPopulated(), false);
     f = new UserRegistration({data: {}, autoId: false});
-    same(f.errors["username"].errors, ["This field is required."]);
-    same(f.errors["password1"].errors, ["This field is required."]);
-    same(f.errors["password2"].errors, ["This field is required."]);
+    same(f.errors()["username"].errors, ["This field is required."]);
+    same(f.errors()["password1"].errors, ["This field is required."]);
+    same(f.errors()["password2"].errors, ["This field is required."]);
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false});
-    same(f.errors["password2"].errors, ["Please make sure your passwords match."]);
+    same(f.errors()["password2"].errors, ["Please make sure your passwords match."]);
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false});
-    same(f.errors.isPopulated(), false);
+    same(f.errors().isPopulated(), false);
     equals(f.cleanedData.username, "adrian");
     equals(f.cleanedData.password1, "foo");
     equals(f.cleanedData.password2, "foo");
@@ -747,11 +747,11 @@ test("Validating multiple fields in relation to another", function()
 "<tr><th>Username:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>\n" +
 "<tr><th>Password1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password1\"></td></tr>\n" +
 "<tr><th>Password2:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password2\"></td></tr>")
-    same(f.errors["username"].errors, ["This field is required."]);
-    same(f.errors["password1"].errors, ["This field is required."]);
-    same(f.errors["password2"].errors, ["This field is required."]);
+    same(f.errors()["username"].errors, ["This field is required."]);
+    same(f.errors()["password1"].errors, ["This field is required."]);
+    same(f.errors()["password2"].errors, ["This field is required."]);
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false});
-    same(f.errors["__all__"].errors, ["Please make sure your passwords match."]);
+    same(f.errors()["__all__"].errors, ["Please make sure your passwords match."]);
     equals(f.asTable(),
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
 "<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></td></tr>\n" +
@@ -763,7 +763,7 @@ test("Validating multiple fields in relation to another", function()
 "<li>Password1: <input type=\"password\" name=\"password1\" value=\"foo\"></li>\n" +
 "<li>Password2: <input type=\"password\" name=\"password2\" value=\"bar\"></li>");
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false});
-    same(f.errors.isPopulated(), false);
+    same(f.errors().isPopulated(), false);
     equals(f.cleanedData.username, "adrian");
     equals(f.cleanedData.password1, "foo");
     equals(f.cleanedData.password2, "foo");
@@ -1154,7 +1154,7 @@ test("Initial data", function()
     // raises a validation error rather than using the initial value for
     // "username".
     p = new UserRegistration({data: {password: "secret"}});
-    same(p.errors["username"].errors, ["This field is required."]);
+    same(p.errors()["username"].errors, ["This field is required."]);
     same(p.isValid(), false);
 
     // The previous technique dealt with "hard-coded" initial data, but it's
@@ -1198,7 +1198,7 @@ test("Initial data", function()
     // the form raises a validation error rather than using the initial value
     // for "username".
     p = new UserRegistration({data: {password: "secret"}, initial: {username: "django"}});
-    same(p.errors["username"].errors, ["This field is required."]);
+    same(p.errors()["username"].errors, ["This field is required."]);
     same(p.isValid(), false);
 
     // If a Form defines "initial" *and* "initial" is passed as a parameter
@@ -1276,7 +1276,7 @@ test("Initial data", function()
     // the form raises a validation error rather than using the initial value
     // for 'username'.
     p = new UserRegistration({data: {password: "secret"}, initial: {username: initialDjango, options: initialOptions}});
-    same(p.errors["username"].errors, ["This field is required."]);
+    same(p.errors()["username"].errors, ["This field is required."]);
     same(p.isValid(), false);
 
     // If a Form defines "initial" *and* "initial" is passed as a parameter
@@ -1429,9 +1429,9 @@ test("Subclassing forms", function()
 "<li>Haircut type: <input type=\"text\" name=\"haircut_type\"></li>");
 
     var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}});
-    same(b.errors["first_name"].errors, ["Method from Person."]);
-    same(b.errors["birthday"].errors, ["Method from Instrument."]);
-    same(b.errors["last_name"].errors, ["Method from Beatle."]);
+    same(b.errors()["first_name"].errors, ["Method from Person."]);
+    same(b.errors()["birthday"].errors, ["Method from Instrument."]);
+    same(b.errors()["last_name"].errors, ["Method from Beatle."]);
 
     // JavaScript doesn't support multiple inheritance, so this is actually a
     // bit of a hack. These tests will highlight the fallout from this (well,
@@ -1477,7 +1477,7 @@ test("Forms with prefixes", function()
 "<input type=\"text\" name=\"person1-last_name\" id=\"id_person1-last_name\" value=\"Lennon\">");
     equals(""+p.boundField("birthday"),
 "<input type=\"text\" name=\"person1-birthday\" id=\"id_person1-birthday\" value=\"1940-10-9\">");
-    same(p.errors.isPopulated(), false);
+    same(p.errors().isPopulated(), false);
     same(p.isValid(), true);
     equals(p.cleanedData["first_name"], "John");
     equals(p.cleanedData["last_name"], "Lennon");
@@ -1491,10 +1491,10 @@ test("Forms with prefixes", function()
         "person1-birthday": ""
     };
     p = new Person({data: data, prefix: "person1"});
-    same(p.errors["first_name"].errors, ["This field is required."]);
-    same(p.errors["last_name"].errors, ["This field is required."]);
-    same(p.errors["birthday"].errors, ["This field is required."]);
-    same(p.boundField("first_name").errors.errors, ["This field is required."]);
+    same(p.errors()["first_name"].errors, ["This field is required."]);
+    same(p.errors()["last_name"].errors, ["This field is required."]);
+    same(p.errors()["birthday"].errors, ["This field is required."]);
+    same(p.boundField("first_name").errors().errors, ["This field is required."]);
     try { p.boundField("person1-first_name"); } catch(e) { equals(e.message, "Form does not have a person1-first_name field."); }
 
     // In this example, the data doesn't have a prefix, but the form requires
@@ -1505,9 +1505,9 @@ test("Forms with prefixes", function()
         "birthday": "1940-10-9"
     };
     p = new Person({data: data, prefix: "person1"});
-    same(p.errors["first_name"].errors, ["This field is required."]);
-    same(p.errors["last_name"].errors, ["This field is required."]);
-    same(p.errors["birthday"].errors, ["This field is required."]);
+    same(p.errors()["first_name"].errors, ["This field is required."]);
+    same(p.errors()["last_name"].errors, ["This field is required."]);
+    same(p.errors()["birthday"].errors, ["This field is required."]);
 
     // With prefixes, a single data object can hold data for multiple instances
     // of the same form.
@@ -1747,15 +1747,15 @@ test("The emptyPermitted attribute", function()
     var data = {artist: "", name: ""};
     var form = new SongForm({data: data, emptyPermitted: false});
     same(form.isValid(), false)
-    same(form.errors["artist"].errors, ["This field is required."]);
-    same(form.errors["name"].errors, ["This field is required."]);
+    same(form.errors()["artist"].errors, ["This field is required."]);
+    same(form.errors()["name"].errors, ["This field is required."]);
     equals(typeof form.cleanedData, "undefined");
 
     // Now let's show what happens when emptyPermitted == true and the form is
     // empty.
     form = new SongForm({data: data, emptyPermitted: true});
     same(form.isValid(), true);
-    same(form.errors.isPopulated(), false);
+    same(form.errors().isPopulated(), false);
     same(form.cleanedData, {});
 
     // But if we fill in data for one of the fields, the form is no longer empty
@@ -1763,7 +1763,7 @@ test("The emptyPermitted attribute", function()
     data = {artist: "The Doors", name: ""};
     form = new SongForm({data: data, emptyPermitted: true});
     same(form.isValid(), false)
-    same(form.errors["name"].errors, ["This field is required."]);
+    same(form.errors()["name"].errors, ["This field is required."]);
     equals(typeof form.cleanedData, "undefined");
 
     // If a field is not given in the data then null is returned for its data.

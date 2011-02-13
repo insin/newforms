@@ -73,9 +73,9 @@ function BoundField(form, field, name)
 
 BoundField.prototype =
 {
-    get errors()
+    /*get */errors: function()
     {
-        return this.form.errors[this.name] || new this.form.errorConstructor();
+        return this.form.errors()[this.name] || new this.form.errorConstructor();
     },
 
     get isHidden()
@@ -341,7 +341,7 @@ Form.prototype =
      * @return errors for the data provided for the form.
      * @type ErrorObject
      */
-    get errors()
+    /*get */errors: function()
     {
         if (this._errors === null)
         {
@@ -496,7 +496,7 @@ Form.prototype.isValid = function()
         return false;
     }
 
-    return !this.errors.isPopulated();
+    return !this.errors().isPopulated();
 };
 
 /**
@@ -546,7 +546,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
     for (var i = 0, l = hiddenBoundFields.length; i < l; i++)
     {
         var bf = hiddenBoundFields[i];
-        var bfErrors = bf.errors;
+        var bfErrors = bf.errors();
         if (bfErrors.isPopulated())
         {
             for (var j = 0, m = bfErrors.errors.length; j < m; j++)
@@ -566,7 +566,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
         // Variables which can be optional in each row
         var errors = null, label = null, helpText = null, extraContent = null;
 
-        var bfErrors = bf.errors;
+        var bfErrors = bf.errors();
         if (bfErrors.isPopulated())
         {
             errors = new this.errorConstructor();
@@ -802,7 +802,7 @@ Form.prototype.asP = function(doNotCoerce)
  */
 Form.prototype.nonFieldErrors = function()
 {
-    var errors = this.errors;
+    var errors = this.errors();
     if (typeof errors[Form.NON_FIELD_ERRORS] != "undefined")
     {
         return errors[Form.NON_FIELD_ERRORS];

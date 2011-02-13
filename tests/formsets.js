@@ -90,7 +90,7 @@ test("Basic FormSet creation and usage", function()
     };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), false);
-    same(formset.errors[0].votes.errors, ["This field is required."]);
+    same(formset.errors()[0].votes.errors, ["This field is required."]);
 
     // We can also prefill a FormSet with existing data by providing an "initial"
     // argument to the constructor, which should be a list of objects. By
@@ -134,7 +134,7 @@ test("Basic FormSet creation and usage", function()
     };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), false);
-    same([formset.errors[0].isPopulated(), formset.errors[1].votes.errors],
+    same([formset.errors()[0].isPopulated(), formset.errors()[1].votes.errors],
          [false, ["This field is required."]]);
 
     // If we delete data that was pre-filled, we should get an error. Simply
@@ -151,7 +151,7 @@ test("Basic FormSet creation and usage", function()
     };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), false);
-    same([formset.errors[0].choice.errors, formset.errors[0].votes.errors],
+    same([formset.errors()[0].choice.errors, formset.errors()[0].votes.errors],
          [["This field is required."], ["This field is required."]]);
 });
 
@@ -223,7 +223,7 @@ test("Displaying more than one blank form", function()
     };
     formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     same(formset.isValid(), false);
-    same([formset.errors[0].isPopulated(), formset.errors[1].votes.errors, formset.errors[2].isPopulated()],
+    same([formset.errors()[0].isPopulated(), formset.errors()[1].votes.errors, formset.errors()[2].isPopulated()],
          [false, ["This field is required."], false]);
 
     // The "extra" argument also works when the formset is pre-filled with
