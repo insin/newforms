@@ -678,7 +678,7 @@ test("RadioSelect", function()
     // Or you can use custom RadioSelect fields that use your custom renderer
     function CustomRadioSelect(kwargs)
     {
-        kwargs = extendObject({}, kwargs, {renderer: MyRenderer});
+        kwargs = extend({}, kwargs, {renderer: MyRenderer});
         RadioSelect.call(this, kwargs);
     }
     CustomRadioSelect.prototype = new RadioSelect();

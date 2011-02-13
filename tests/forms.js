@@ -799,7 +799,7 @@ test("Dynamic construction", function()
         fields: function() { return {}; },
 
         preInit: function(kwargs) {
-            return extendObject({
+            return extend({
                 data: null, autoId: false, fieldList: []
             }, kwargs || {});
         },
@@ -830,7 +830,7 @@ test("Dynamic construction", function()
         },
 
         preInit: function(kwargs) {
-            return extendObject({
+            return extend({
                 data: null, autoId: false, fieldList: []
             }, kwargs || {});
         },
@@ -867,7 +867,7 @@ test("Dynamic construction", function()
         },
 
         preInit: function(kwargs) {
-            return extendObject({namesRequired: false}, kwargs || {});
+            return extend({namesRequired: false}, kwargs || {});
         },
 
         postInit: function(kwargs) {
@@ -904,7 +904,7 @@ test("Dynamic construction", function()
         },
 
         preInit: function(kwargs) {
-            return extendObject({nameMaxLength: null}, kwargs || {});
+            return extend({nameMaxLength: null}, kwargs || {});
         },
 
         postInit: function(kwargs) {
@@ -1698,7 +1698,7 @@ test("Basic form processing", function()
             var form = new UserRegistration({autoId: false});
         }
         var template = "<form action=\"\" method=\"POST\">\n<table>\n%(form)s\n</table>\n<input type=\"submit\">\n</form>";
-        return formatString(template, {form: form});
+        return format(template, {form: form});
     }
 
     // Case 1: GET (and empty form, with no errors)

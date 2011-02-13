@@ -50,7 +50,7 @@ inheritFrom(ManagementForm, Form);
  */
 function BaseFormSet(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         data: null, files: null, autoId: "id_%(name)s", prefix: null,
         initial: null, errorConstructor: ErrorList
     }, kwargs || {});
@@ -358,7 +358,7 @@ BaseFormSet.prototype._constructForm = function(i, kwargs)
         defaults["emptyPermitted"] = true;
     }
 
-    var formKwargs = extendObject({}, defaults, kwargs || {});
+    var formKwargs = extend({}, defaults, kwargs || {});
     var form = new this.form(formKwargs);
     this.addFields(form, i);
     return form;
@@ -591,7 +591,7 @@ class BaseFormSet(StrAndUnicode):
  */
 function formsetFactory(form, kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         formset: BaseFormSet, extra: 1, canOrder: false, canDelete: false, maxNum: 0
     }, kwargs || {});
 
@@ -620,7 +620,7 @@ function formsetFactory(form, kwargs)
     delete kwargs.canDelete;
     delete kwargs.maxNum;
 
-    formsetConstructor.prototype = extendObject(new formset(), kwargs);
+    formsetConstructor.prototype = extend(new formset(), kwargs);
     formsetConstructor.name = (form.name || "Anonymous") + "FormSet";
 
     return formsetConstructor;

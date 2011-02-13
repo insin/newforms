@@ -611,7 +611,7 @@ time.strftime = function()
             padded = padding + padded;
         }
         return padded;
-    };
+    }
 
     /**
      * Maps directive codes to functions which take the date to be formatted and
@@ -636,8 +636,7 @@ time.strftime = function()
     return function(date, format, locale)
     {
         locale = time.getLocale(locale);
-        var formatted = [];
-        var c;
+        var formatted = [], c;
 
         for (var i = 0, l = format.length; i < l; i++)
         {
@@ -650,7 +649,7 @@ time.strftime = function()
                 }
 
                 c = format.charAt(++i);
-                if (typeof directives[c] == "function")
+                if (Object.prototype.toString.call(directives[c]) == "[object Function]")
                 {
                     formatted[formatted.length] = directives[c](date, locale);
                 }
@@ -662,5 +661,5 @@ time.strftime = function()
         }
 
         return formatted.join("");
-    }
+    };
 }();

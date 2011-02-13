@@ -2,6 +2,23 @@
  * @fileOverview Miscellaneous utility functions and objects.
  */
 
+var toString = Object.prototype.toString;
+
+function isArray(o)
+{
+    return (toString.call(o) === "[object Array]");
+}
+
+function isFunction(o)
+{
+    return (toString.call(o) === "[object Function]");
+}
+
+function isString(o)
+{
+    return (toString.call(o) === "[object String]");
+}
+
 /**
  * Updates an object's properties with other objects' properties.
  *
@@ -13,7 +30,7 @@
  * @return the <code>destination</code> object.
  * @type Object
  */
-function extendObject(destination)
+function extend(destination)
 {
     for (var i = 1, l = arguments.length; i < l; i++)
     {
@@ -55,7 +72,7 @@ function inheritFrom(child, parent)
  * @type String
  * @function
  */
-var formatString = function()
+var format = function()
 {
     // Closure for accessing a context object from the replacement function
     var replacer = function(context)
@@ -100,7 +117,7 @@ function formData(form)
 {
     var data = {};
 
-    if (typeof form == "string")
+    if (isString(form))
     {
         form = document.forms[form] || document.getElementById(form);
     }
@@ -148,7 +165,7 @@ function formData(form)
         {
             if (data.hasOwnProperty(element.name))
             {
-                if (data[element.name] instanceof Array)
+                if (isArray(data[element.name]))
                 {
                     data[element.name] = data[element.name].concat(value);
                 }
@@ -172,11 +189,9 @@ function formData(form)
  * <ul>
  * <li>an item is contained in an <code>Array</code></li>
  * <li>a substring is contained within a <code>String</code></li>
- * <li>an <code>Object</code> has a given named property.</li>
  * </ul>
  *
- * @param container an <code>Array</code>, <code>String</code> or
- *                  <code>Object</code>.
+ * @param container an <code>Array</code> or <code>String</code>.
  * @param item an item which might be contained in an <code>Array</code>, or a
  *             <code>String</code>.
  *
@@ -186,7 +201,7 @@ function formData(form)
  */
 function contains(container, item)
 {
-    if (container instanceof Array)
+    if (isArray(container))
     {
         for (var i = 0, l = container.length; i < l; i++)
         {
@@ -196,19 +211,9 @@ function contains(container, item)
             }
         }
     }
-    else if (typeof container == "string")
+    else if (isString(container))
     {
         return (container.indexOf(item) != -1);
-    }
-    else
-    {
-        for (var prop in container)
-        {
-            if (container.hasOwnProperty(prop) && item === prop)
-            {
-                return true;
-            }
-        }
     }
     return false;
 }
@@ -366,7 +371,7 @@ ErrorList.prototype.isPopulated = function()
  */
 function ValidationError(message)
 {
-    if (message instanceof Array)
+    if (isArray(message))
     {
         this.messages = new ErrorList(message);
     }

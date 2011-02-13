@@ -95,7 +95,7 @@ BoundField.prototype =
             autoId = ""+autoId;
             if (autoId.indexOf("%(name)s") != -1)
             {
-                return formatString(autoId, {name: this.htmlName});
+                return format(autoId, {name: this.htmlName});
             }
             else
             {
@@ -125,7 +125,7 @@ BoundField.prototype =
  */
 BoundField.prototype.asWidget = function(kwargs)
 {
-    kwargs = extendObject({widget: null, attrs: null}, kwargs || {});
+    kwargs = extend({widget: null, attrs: null}, kwargs || {});
     var widget = (kwargs.widget !== null ? kwargs.widget : this.field.widget);
     var attrs = kwargs.attrs || {};
     var autoId = this.autoId();
@@ -149,7 +149,7 @@ BoundField.prototype.asWidget = function(kwargs)
             data = this.field.initial;
         }
 
-        if (typeof(data) == "function")
+        if (isFunction(data))
         {
             data = data();
         }
@@ -208,7 +208,7 @@ BoundField.prototype.asTextarea = function(attrs)
  */
 BoundField.prototype.labelTag = function(kwargs)
 {
-    kwargs = extendObject({contents: null, attrs: null}, kwargs || {});
+    kwargs = extend({contents: null, attrs: null}, kwargs || {});
     var contents;
     if (kwargs.contents !== null)
     {
@@ -230,7 +230,7 @@ BoundField.prototype.labelTag = function(kwargs)
     }
     if (id)
     {
-        var attrs = extendObject(kwargs.attrs || {},
+        var attrs = extend(kwargs.attrs || {},
                                  {"for": widget.idForLabel(id)});
         contents = DOMBuilder.createElement("label", attrs, [contents]);
     }
@@ -284,7 +284,7 @@ BoundField.prototype.toString = function()
  */
 function Form(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         data: null, files: null, autoId: "id_%(name)s", prefix: null, initial: null,
         errorConstructor: ErrorList, labelSuffix: ":", emptyPermitted: false
     }, kwargs || {});
@@ -512,7 +512,7 @@ Form.prototype.addPrefix = function(fieldName)
 {
     if (this.prefix !== null)
     {
-        return formatString("%(prefix)s-%(fieldName)s",
+        return format("%(prefix)s-%(fieldName)s",
                             {prefix: this.prefix, fieldName: fieldName});
     }
     return fieldName;
@@ -890,7 +890,7 @@ Form.prototype._cleanFields = function()
 
             // Try clean_name
             var customClean = "clean_" + name;
-            if (typeof this[customClean] == "function")
+            if (isFunction(this[customClean]))
             {
                  this.cleanedData[name] = this[customClean]();
                  continue;
@@ -899,7 +899,7 @@ Form.prototype._cleanFields = function()
             // Try cleanName
             customClean =
                 "clean" + name.charAt(0).toUpperCase() + name.substr(1);
-            if (typeof this[customClean] == "function")
+            if (isFunction(this[customClean]))
             {
                 this.cleanedData[name] = this[customClean]();
             }
@@ -1062,7 +1062,7 @@ function formFactory(kwargs)
         throw new Error("You must provide a function named 'fields'");
     }
 
-    kwargs = extendObject({
+    kwargs = extend({
        form: Form, preInit: null, postInit: null
     }, kwargs || {});
 
@@ -1087,10 +1087,10 @@ function formFactory(kwargs)
         // this form as its base. As such, pre-existing fields should overwrite
         // any fields with the same name and pre-existing fields with new names
         // should appear after fields created by this form.
-        this.fields = extendObject(createFields.call(this), this.fields || {});
+        this.fields = extend(createFields.call(this), this.fields || {});
 
         // Tell whatever number of parents we have to do their instantiation bit
-        if (form instanceof Array)
+        if (isArray(form))
         {
             // We loop backwards because fields are instantiated "bottom up"
             for (var i = form.length - 1; i >= 0; i--)
@@ -1116,7 +1116,7 @@ function formFactory(kwargs)
     delete kwargs.preInit;
     delete kwargs.postInit;
 
-    if (form instanceof Array)
+    if (isArray(form))
     {
         // *Really* inherit from the first Form we were passed
         formConstructor.prototype = new form[0]();
@@ -1126,14 +1126,14 @@ function formFactory(kwargs)
         // parents.
         for (var i = 1, l = form.length; i < l; i++)
         {
-            extendObject(formConstructor.prototype, form[i].prototype);
+            extend(formConstructor.prototype, form[i].prototype);
         }
         // Anything else defined in kwargs should take precedence
-        extendObject(formConstructor.prototype, kwargs);
+        extend(formConstructor.prototype, kwargs);
     }
     else
     {
-        formConstructor.prototype = extendObject(new form(), kwargs);
+        formConstructor.prototype = extend(new form(), kwargs);
     }
 
     return formConstructor;

@@ -23,7 +23,7 @@
  */
 function Field(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         required: true, widget: null, label: null, initial: null,
         helpText: null, errorMessages: null
     }, kwargs || {});
@@ -39,7 +39,7 @@ function Field(kwargs)
         widget = new widget();
     }
     // Hook into this.widgetAttrs() for any Field-specific HTML attributes.
-    extendObject(widget.attrs, this.widgetAttrs(widget));
+    extend(widget.attrs, this.widgetAttrs(widget));
     this.widget = widget;
 
     // Take our version of the creation counter, then increment it
@@ -48,7 +48,7 @@ function Field(kwargs)
 
     // Copy error messages for this instance into a new object
     this.errorMessages =
-        extendObject({}, this.defaultErrorMessages, kwargs.errorMessages || {});
+        extend({}, this.defaultErrorMessages, kwargs.errorMessages || {});
 }
 
 /**
@@ -135,7 +135,7 @@ Field.prototype._hasChanged = function(initial, data)
  */
 function CharField(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         maxLength: null, minLength: null
     }, kwargs || {});
     this.maxLength = kwargs.maxLength;
@@ -144,7 +144,7 @@ function CharField(kwargs)
 }
 inheritFrom(CharField, Field);
 CharField.prototype.defaultErrorMessages =
-    extendObject({}, CharField.prototype.defaultErrorMessages, {
+    extend({}, CharField.prototype.defaultErrorMessages, {
         maxLength: "Ensure this value has at most %(max)s characters (it has %(length)s).",
         minLength: "Ensure this value has at least %(min)s characters (it has %(length)s)."
     });
@@ -171,14 +171,14 @@ CharField.prototype.clean = function(value)
     if (this.maxLength !== null && value.length > this.maxLength)
     {
         throw new ValidationError(
-            formatString(this.errorMessages.maxLength,
+            format(this.errorMessages.maxLength,
                          {max: this.maxLength, length: value.length}));
     }
 
     if (this.minLength !== null && value.length < this.minLength)
     {
         throw new ValidationError(
-            formatString(this.errorMessages.minLength,
+            format(this.errorMessages.minLength,
                          {min: this.minLength, length: value.length}));
     }
 
@@ -217,7 +217,7 @@ CharField.prototype.widgetAttrs = function(widget)
  */
 function IntegerField(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         maxValue: null, minValue: null
     }, kwargs || {});
     this.maxValue = kwargs.maxValue;
@@ -232,7 +232,7 @@ IntegerField.INTEGER_REGEXP = /^ *[-+]? *\d+ *$/;
 
 inheritFrom(IntegerField, Field);
 IntegerField.prototype.defaultErrorMessages =
-    extendObject({}, IntegerField.prototype.defaultErrorMessages, {
+    extend({}, IntegerField.prototype.defaultErrorMessages, {
         invalid: "Enter a whole number.",
         maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
         minValue: "Ensure this value is greater than or equal to %(minValue)s."
@@ -263,12 +263,12 @@ IntegerField.prototype.clean = function(value)
     value = parseInt(value, 10);
     if (this.maxValue !== null && value > this.maxValue)
     {
-        throw new ValidationError(formatString(this.errorMessages.maxValue,
+        throw new ValidationError(format(this.errorMessages.maxValue,
                                                {maxValue: this.maxValue}));
     }
     if (this.minValue !== null && value < this.minValue)
     {
-        throw new ValidationError(formatString(this.errorMessages.minValue,
+        throw new ValidationError(format(this.errorMessages.minValue,
                                                {minValue: this.minValue}));
     }
     return value;
@@ -286,7 +286,7 @@ IntegerField.prototype.clean = function(value)
  */
 function FloatField(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         maxValue: null, minValue: null
     }, kwargs || {});
     this.maxValue = kwargs.maxValue;
@@ -301,7 +301,7 @@ FloatField.FLOAT_REGEXP = /^ *[-+]? *\d+(?:\.\d+)? *$/;
 
 inheritFrom(FloatField, Field);
 FloatField.prototype.defaultErrorMessages =
-    extendObject({}, FloatField.prototype.defaultErrorMessages, {
+    extend({}, FloatField.prototype.defaultErrorMessages, {
         invalid: "Enter a number.",
         maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
         minValue: "Ensure this value is greater than or equal to %(minValue)s."
@@ -332,12 +332,12 @@ FloatField.prototype.clean = function(value)
     value = parseFloat(value);
     if (this.maxValue !== null && value > this.maxValue)
     {
-        throw new ValidationError(formatString(this.errorMessages.maxValue,
+        throw new ValidationError(format(this.errorMessages.maxValue,
                                                {maxValue: this.maxValue}));
     }
     if (this.minValue !== null && value < this.minValue)
     {
-        throw new ValidationError(formatString(this.errorMessages.minValue,
+        throw new ValidationError(format(this.errorMessages.minValue,
                                                {minValue: this.minValue}));
     }
     return value;
@@ -377,7 +377,7 @@ FloatField.prototype._hasChanged = function(initial, data)
  */
 function DecimalField(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
       maxValue: null, minValue: null, maxDigits: null, decimalPlaces: null
     }, kwargs || {})
     this.maxValue = kwargs.maxValue;
@@ -394,7 +394,7 @@ DecimalField.DECIMAL_REGEXP = /^ *[-+]? *(?:\d+(?:\.\d+)?|(?:\d+)?\.\d+) *$/;
 
 inheritFrom(DecimalField, Field);
 DecimalField.prototype.defaultErrorMessages =
-    extendObject({}, DecimalField.prototype.defaultErrorMessages, {
+    extend({}, DecimalField.prototype.defaultErrorMessages, {
         invalid: "Enter a number.",
         maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
         minValue: "Ensure this value is greater than or equal to %(minValue)s.",
@@ -453,27 +453,27 @@ DecimalField.prototype.clean = function(value)
     var digits = pieces[0].length;
     if (this.maxValue !== null && floatValue > this.maxValue)
     {
-        throw new ValidationError(formatString(this.errorMessages.maxValue,
+        throw new ValidationError(format(this.errorMessages.maxValue,
                                                {maxValue: this.maxValue}));
     }
     if (this.minValue !== null && floatValue < this.minValue)
     {
-        throw new ValidationError(formatString(this.errorMessages.minValue,
+        throw new ValidationError(format(this.errorMessages.minValue,
                                                {minValue: this.minValue}));
     }
     if (this.maxDigits !== null && (digits + decimals) > this.maxDigits)
     {
-        throw new ValidationError(formatString(this.errorMessages.maxDigits,
+        throw new ValidationError(format(this.errorMessages.maxDigits,
                                                {maxDigits: this.maxDigits}));
     }
     if (this.decimalPlaces !== null && decimals > this.decimalPlaces)
     {
-        throw new ValidationError(formatString(this.errorMessages.maxDecimalPlaces,
+        throw new ValidationError(format(this.errorMessages.maxDecimalPlaces,
                                                {maxDecimalPlaces: this.decimalPlaces}));
     }
     if (this.maxDigits !== null && this.decimalPlaces !== null && digits > (this.maxDigits - this.decimalPlaces))
     {
-        throw new ValidationError(formatString(this.errorMessages.maxWholeDigits,
+        throw new ValidationError(format(this.errorMessages.maxWholeDigits,
                                                {maxWholeDigits: (this.maxDigits - this.decimalPlaces)}));
     }
     return floatValue;
@@ -493,7 +493,7 @@ DecimalField.prototype.clean = function(value)
  */
 function DateField(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         inputFormats: null
     }, kwargs || {});
     Field.call(this, kwargs);
@@ -515,7 +515,7 @@ DateField.DEFAULT_DATE_INPUT_FORMATS = [
 
 inheritFrom(DateField, Field);
 DateField.prototype.defaultErrorMessages =
-    extendObject({}, DateField.prototype.defaultErrorMessages, {
+    extend({}, DateField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid date."
     });
 
@@ -574,7 +574,7 @@ DateField.prototype.clean = function(value)
  */
 function TimeField(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         inputFormats: null
     }, kwargs || {});
     Field.call(this, kwargs);
@@ -593,7 +593,7 @@ TimeField.DEFAULT_TIME_INPUT_FORMATS = [
 inheritFrom(TimeField, Field);
 TimeField.prototype.defaultWidget = TimeInput;
 TimeField.prototype.defaultErrorMessages =
-    extendObject({}, TimeField.prototype.defaultErrorMessages, {
+    extend({}, TimeField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid time."
     });
 
@@ -656,7 +656,7 @@ TimeField.prototype.clean = function(value)
  */
 function DateTimeField(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         inputFormats: null
     }, kwargs || {});
     Field.call(this, kwargs);
@@ -682,7 +682,7 @@ DateTimeField.DEFAULT_DATETIME_INPUT_FORMATS = [
 inheritFrom(DateTimeField, Field);
 DateTimeField.prototype.defaultWidget = DateTimeInput;
 DateTimeField.prototype.defaultErrorMessages =
-    extendObject({}, DateTimeField.prototype.defaultErrorMessages, {
+    extend({}, DateTimeField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid date/time."
     });
 
@@ -708,7 +708,7 @@ DateTimeField.prototype.clean = function(value)
         return value;
     }
 
-    if (value instanceof Array)
+    if (isArray(value))
     {
         // Input comes from a SplitDateTimeWidget, for example, so it's two
         // components: date and time.
@@ -749,7 +749,7 @@ DateTimeField.prototype.clean = function(value)
 function RegexField(regex, kwargs)
 {
     CharField.call(this, kwargs);
-    if (typeof regex == "string")
+    if (isString(regex))
     {
         regex = new RegExp(regex);
     }
@@ -802,7 +802,7 @@ EmailField.EMAIL_REGEXP = new RegExp(
 inheritFrom(EmailField, RegexField);
 
 EmailField.prototype.defaultErrorMessages =
-    extendObject({}, EmailField.prototype.defaultErrorMessages, {
+    extend({}, EmailField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid e-mail address."
     });
 
@@ -837,7 +837,7 @@ UploadedFile.prototype.toString = function()
  */
 function FileField(kwargs)
 {
-    kwargs = extendObject({maxLength: null}, kwargs);
+    kwargs = extend({maxLength: null}, kwargs);
     this.maxLength = kwargs.maxLength;
     delete kwargs.maxLength;
     Field.call(this, kwargs);
@@ -846,7 +846,7 @@ function FileField(kwargs)
 inheritFrom(FileField, Field);
 FileField.prototype.defaultWidget = FileInput;
 FileField.prototype.defaultErrorMessages =
-    extendObject({}, FileField.prototype.defaultErrorMessages, {
+    extend({}, FileField.prototype.defaultErrorMessages, {
         invalid: "No file was submitted. Check the encoding type on the form.",
         empty: "The submitted file is empty.",
         maxLength: "Ensure this filename has at most %(max)s characters (it has %(length)s)."
@@ -888,7 +888,7 @@ FileField.prototype.clean = function(data, initial)
     if (this.maxLength !== null && fileName.length > this.maxLength)
     {
         throw new ValidationError(
-            formatString(this.errorMessages.maxLength,
+            format(this.errorMessages.maxLength,
                          {max: this.maxLength, length: fileName.length}));
     }
 
@@ -923,7 +923,7 @@ function ImageField(kwargs)
 
 inheritFrom(ImageField, FileField);
 ImageField.prototype.defaultErrorMessages =
-    extendObject({}, ImageField.prototype.defaultErrorMessages, {
+    extend({}, ImageField.prototype.defaultErrorMessages, {
         invalidImage: "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
     });
 
@@ -963,7 +963,7 @@ ImageField.prototype.clean = function(data, initial)
  */
 function URLField(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         verifyExists: false, userAgent: URLField.URL_VALIDATOR_USER_AGENT
     }, kwargs || {})
     RegexField.call(this, URLField.URL_REGEXP, kwargs);
@@ -991,7 +991,7 @@ URLField.URL_VALIDATOR_USER_AGENT =
 
 inheritFrom(URLField, RegexField);
 URLField.prototype.defaultErrorMessages =
-    extendObject({}, URLField.prototype.defaultErrorMessages, {
+    extend({}, URLField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid URL.",
         invalidLink: "This URL appears to be a broken link."
     });
@@ -1143,7 +1143,7 @@ function ChoiceField(kwargs)
     });
     */
 
-    kwargs = extendObject({
+    kwargs = extend({
         choices: []
     }, kwargs || {});
     Field.call(this, kwargs);
@@ -1153,7 +1153,7 @@ function ChoiceField(kwargs)
 inheritFrom(ChoiceField, Field);
 ChoiceField.prototype.defaultWidget = Select;
 ChoiceField.prototype.defaultErrorMessages =
-    extendObject({}, ChoiceField.prototype.defaultErrorMessages, {
+    extend({}, ChoiceField.prototype.defaultErrorMessages, {
         invalidChoice: "Select a valid choice. %(value)s is not one of the available choices."
     });
 ChoiceField.prototype.choices = function() { return this._choices; };
@@ -1188,7 +1188,7 @@ ChoiceField.prototype.clean = function(value)
 
     if (!this.validValue(value))
     {
-        throw new ValidationError(formatString(
+        throw new ValidationError(format(
             this.errorMessages.invalidChoice, {value: value}));
     }
 
@@ -1206,7 +1206,7 @@ ChoiceField.prototype.validValue = function(value)
 {
     for (var i = 0, l = this.choices().length; i < l; i++)
     {
-        if (this.choices()[i][1] instanceof Array)
+        if (isArray(this.choices()[i][1]))
         {
             // This is an optgroup, so look inside the group for options
             var optgroupChoices = this.choices()[i][1];
@@ -1244,7 +1244,7 @@ ChoiceField.prototype.validValue = function(value)
  */
 function TypedChoiceField(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         coerce: function(val) { return val; }, emptyValue: ""
     }, kwargs || {});
     this.coerce = kwargs.coerce;
@@ -1274,7 +1274,7 @@ TypedChoiceField.prototype.clean = function(value)
     }
     catch (e)
     {
-        throw new ValidationError(formatString(
+        throw new ValidationError(format(
             this.errorMessages.invalidChoice, {value: value}));
     }
     return value;
@@ -1297,7 +1297,7 @@ inheritFrom(MultipleChoiceField, ChoiceField);
 MultipleChoiceField.prototype.defaultWidget = SelectMultiple;
 MultipleChoiceField.prototype.hiddenWidget = MultipleHiddenInput;
 MultipleChoiceField.prototype.defaultErrorMessages =
-    extendObject({}, MultipleChoiceField.prototype.defaultErrorMessages, {
+    extend({}, MultipleChoiceField.prototype.defaultErrorMessages, {
         invalidChoice: "Select a valid choice. %(value)s is not one of the available choices.",
         invalidList: "Enter a list of values."
     });
@@ -1325,7 +1325,7 @@ MultipleChoiceField.prototype.clean = function(value)
 
     // The similar else branch below is required due to empty Arrays not being
     // falsy in JavaScript.
-    if (!(value instanceof Array))
+    if (!(isArray(value)))
     {
         throw new ValidationError(this.errorMessages.invalidList);
     }
@@ -1347,7 +1347,7 @@ MultipleChoiceField.prototype.clean = function(value)
         var stringValue = "" + value[i];
         if (!this.validValue(stringValue))
         {
-            throw new ValidationError(formatString(
+            throw new ValidationError(format(
                 this.errorMessages.invalidChoice, {value: stringValue}));
         }
         stringValues[stringValues.length] = stringValue;
@@ -1368,7 +1368,7 @@ MultipleChoiceField.prototype.clean = function(value)
  */
 function ComboField(kwargs)
 {
-    kwargs = extendObject({fields: []}, kwargs || {});
+    kwargs = extend({fields: []}, kwargs || {});
     Field.call(this, kwargs);
 
     // Set "required" to False on the individual fields, because the required
@@ -1417,7 +1417,7 @@ ComboField.prototype.clean = function(value)
  */
 function MultiValueField(kwargs)
 {
-    kwargs = extendObject({fields: []}, kwargs || {});
+    kwargs = extend({fields: []}, kwargs || {});
     Field.call(this, kwargs);
     // Set required to false on the individual fields, because the required
     // validation will be handled by MultiValueField, not by those individual
@@ -1431,7 +1431,7 @@ function MultiValueField(kwargs)
 
 inheritFrom(MultiValueField, Field);
 MultiValueField.prototype.defaultErrorMessages =
-    extendObject({}, MultiValueField.prototype.defaultErrorMessages, {
+    extend({}, MultiValueField.prototype.defaultErrorMessages, {
         invalid: "Enter a list of values."
     });
 
@@ -1453,10 +1453,10 @@ MultiValueField.prototype.clean = function(value)
     var cleanData = [];
     var errors = new ErrorList();
 
-    if (!value || value instanceof Array)
+    if (!value || isArray(value))
     {
         var allValuesEmpty = true;
-        if (value instanceof Array)
+        if (isArray(value))
         {
             for (var i = 0, l = value.length; i < l; i++)
             {
@@ -1559,7 +1559,7 @@ MultiValueField.prototype.compress = function(dataList)
  */
 function FilePathField(path, kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         match: null, recursive: false, required: true, widget: null,
         label: null, initial: null, helpText: null
     }, kwargs);
@@ -1606,11 +1606,11 @@ inheritFrom(FilePathField, ChoiceField);
  */
 function SplitDateTimeField(kwargs)
 {
-    kwargs = extendObject({}, kwargs || {});
-    var errors = extendObject({}, this.defaultErrorMessages);
+    kwargs = extend({}, kwargs || {});
+    var errors = extend({}, this.defaultErrorMessages);
     if (typeof kwargs.errorMessages != "undefined")
     {
-        extendObject(errors, kwargs.errorMessages);
+        extend(errors, kwargs.errorMessages);
     }
     kwargs.fields =
         [new DateField({errorMessages: {invalid: errors.invalidDate}}),
@@ -1621,7 +1621,7 @@ function SplitDateTimeField(kwargs)
 inheritFrom(SplitDateTimeField, MultiValueField);
 SplitDateTimeField.prototype.defaultWidget = SplitDateTimeWidget;
 SplitDateTimeField.prototype.defaultErrorMessages =
-    extendObject({}, SplitDateTimeField.prototype.defaultErrorMessages, {
+    extend({}, SplitDateTimeField.prototype.defaultErrorMessages, {
         invalidDate: "Enter a valid date.",
         invalidTime: "Enter a valid time."
     });
@@ -1639,7 +1639,7 @@ SplitDateTimeField.prototype.defaultErrorMessages =
  */
 SplitDateTimeField.prototype.compress = function(dataList)
 {
-    if (dataList instanceof Array && dataList.length > 0)
+    if (isArray(dataList) && dataList.length > 0)
     {
         var d = dataList[0], t = dataList[1];
         // Raise a validation error if date or time is empty (possible if
@@ -1679,7 +1679,7 @@ IPAddressField.IPV4_REGEXP =
 
 inheritFrom(IPAddressField, RegexField);
 IPAddressField.prototype.defaultErrorMessages =
-    extendObject({}, IPAddressField.prototype.defaultErrorMessages, {
+    extend({}, IPAddressField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid IPv4 address."
     });
 
@@ -1703,6 +1703,6 @@ SlugField.SLUG_REGEXP = /^[-\w]+$/;
 
 inheritFrom(SlugField, RegexField);
 SlugField.prototype.defaultErrorMessages =
-    extendObject({}, SlugField.prototype.defaultErrorMessages, {
+    extend({}, SlugField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."
     });

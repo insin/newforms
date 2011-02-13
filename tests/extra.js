@@ -50,7 +50,7 @@ test("MultiWidget and MultiValueField", function()
     ComplexField.prototype = new MultiValueField();
     ComplexField.prototype.compress = function(dataList)
     {
-        if (dataList instanceof Array && dataList.length > 0)
+        if (isArray(dataList) && dataList.length > 0)
         {
             return [dataList[0],
                     dataList[1].join(""),

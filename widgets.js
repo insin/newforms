@@ -14,9 +14,9 @@
  */
 function Widget(kwargs)
 {
-    kwargs = extendObject({attrs: null}, kwargs || {})
+    kwargs = extend({attrs: null}, kwargs || {})
     // Copy attributes to a new Object
-    this.attrs = extendObject({}, kwargs.attrs || {});
+    this.attrs = extend({}, kwargs.attrs || {});
 }
 
 /**
@@ -34,7 +34,7 @@ Widget.prototype.needsMultipartForm = false;
  */
 Widget.prototype.buildAttrs = function(extraAttrs, kwargs)
 {
-    var attrs = extendObject({}, this.attrs, kwargs || {}, extraAttrs || {});
+    var attrs = extend({}, this.attrs, kwargs || {}, extraAttrs || {});
     return attrs;
 };
 
@@ -155,7 +155,7 @@ TextInput.prototype.inputType = "text";
  */
 function PasswordInput(kwargs)
 {
-    kwargs = extendObject({renderValue: true}, kwargs || {});
+    kwargs = extend({renderValue: true}, kwargs || {});
     Input.call(this, kwargs);
     this.renderValue = kwargs.renderValue;
 }
@@ -218,7 +218,7 @@ MultipleHiddenInput.prototype.render = function(name, value, attrs)
     {
         inputs.push(
             DOMBuilder.createElement("input",
-                extendObject({}, finalAttrs, {value: value[i]})));
+                extend({}, finalAttrs, {value: value[i]})));
     }
     return DOMBuilder.createElement("span", {}, inputs);
 };
@@ -286,8 +286,8 @@ FileInput.prototype._hasChanged = function(initial, data)
 function Textarea(kwargs)
 {
     // Provide default "cols" and "rows" attributes
-    kwargs = extendObject({attrs: null}, kwargs || {});
-    kwargs.attrs = extendObject({rows: "10", cols: "40"}, kwargs.attrs || {});
+    kwargs = extend({attrs: null}, kwargs || {});
+    kwargs.attrs = extend({rows: "10", cols: "40"}, kwargs.attrs || {});
     Widget.call(this, kwargs);
 }
 
@@ -315,7 +315,7 @@ Textarea.prototype.render = function(name, value, attrs)
  */
 function DateInput(kwargs)
 {
-    kwargs = extendObject({format: null}, kwargs || {});
+    kwargs = extend({format: null}, kwargs || {});
     Input.call(this, kwargs);
     if (kwargs.format !== null)
     {
@@ -363,7 +363,7 @@ DateInput.prototype._hasChanged = function(initial, data)
  */
 function DateTimeInput(kwargs)
 {
-    kwargs = extendObject({format: null}, kwargs || {});
+    kwargs = extend({format: null}, kwargs || {});
     Input.call(this, kwargs);
     if (kwargs.format !== null)
     {
@@ -411,7 +411,7 @@ DateTimeInput.prototype._hasChanged = function(initial, data)
  */
 function TimeInput(kwargs)
 {
-    kwargs = extendObject({format: null}, kwargs || {});
+    kwargs = extend({format: null}, kwargs || {});
     Input.call(this, kwargs);
     if (kwargs.format !== null)
     {
@@ -460,7 +460,7 @@ TimeInput.prototype._hasChanged = function(initial, data)
  */
 function CheckboxInput(kwargs)
 {
-    kwargs = extendObject({checkTest: Boolean}, kwargs || {});
+    kwargs = extend({checkTest: Boolean}, kwargs || {});
     Widget.call(this, kwargs);
     this.checkTest = kwargs.checkTest;
 }
@@ -526,7 +526,7 @@ CheckboxInput.prototype._hasChanged = function(initial, data)
  */
 function Select(kwargs)
 {
-    kwargs = extendObject({choices: []}, kwargs || {});
+    kwargs = extend({choices: []}, kwargs || {});
     Widget.call(this, kwargs);
     this.choices = kwargs.choices;
 }
@@ -565,7 +565,7 @@ Select.prototype.renderOptions = function(choices, selectedValues)
     var selectedValuesLookup = {};
     // We can't duck type passing of a String instead, as IE < 8 doesn't allow
     // numeric property access to grab chars out of a String.
-    var string = (typeof selectedValues == "string");
+    var string = (isString(selectedValues));
     for (var i = 0, l = selectedValues.length; i < l; i++)
     {
         selectedValuesLookup["" + (string ? selectedValues.charAt(i) : selectedValues[i])] = true;
@@ -586,7 +586,7 @@ Select.prototype.renderOptions = function(choices, selectedValues)
     var finalChoices = this.choices.concat(choices || []);
     for (var i = 0, l = finalChoices.length; i < l; i++)
     {
-        if (finalChoices[i][1] instanceof Array)
+        if (isArray(finalChoices[i][1]))
         {
             var optgroupOptions = [];
             var optgroupChoices = finalChoices[i][1];
@@ -620,7 +620,7 @@ Select.prototype.renderOptions = function(choices, selectedValues)
  */
 function NullBooleanSelect(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         choices: [["1", "Unknown"], ["2", "Yes"], ["3", "No"]]
     }, kwargs || {});
     Select.call(this, kwargs);
@@ -808,7 +808,7 @@ RadioInput.prototype.isChecked = function()
  */
 RadioInput.prototype.tag = function()
 {
-    var finalAttrs = extendObject({}, this.attrs,
+    var finalAttrs = extend({}, this.attrs,
                                   {type: "radio", name: this.name,
                                    value: this.choiceValue});
     if (typeof finalAttrs.id != "undefined")
@@ -875,7 +875,7 @@ RadioFieldRenderer.prototype.render = function()
  */
 function RadioSelect(kwargs)
 {
-    kwargs = extendObject({renderer: null}, kwargs || {});
+    kwargs = extend({renderer: null}, kwargs || {});
     // Override the default renderer if we were passed one
     if (kwargs.renderer !== null)
     {
@@ -960,13 +960,13 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, attrs, 
         var optValue = "" + finalChoices[i][0];
         var optLabel = finalChoices[i][1];
 
-        var checkboxAttrs = extendObject({}, finalAttrs);
+        var checkboxAttrs = extend({}, finalAttrs);
         var labelAttrs = {};
         // If an ID attribute was given, add a numeric index as a suffix, so
         // that the checkboxes don't all have the same ID attribute.
         if (hasId)
         {
-            extendObject(checkboxAttrs, {id: attrs.id + "_" + i});
+            extend(checkboxAttrs, {id: attrs.id + "_" + i});
             labelAttrs["for"] = checkboxAttrs.id;
         }
 
@@ -1029,7 +1029,7 @@ inheritFrom(MultiWidget, Widget);
  */
 MultiWidget.prototype.render = function(name, value, attrs)
 {
-    if (!(value instanceof Array))
+    if (!(isArray(value)))
     {
         value = this.decompress(value);
     }
@@ -1046,7 +1046,7 @@ MultiWidget.prototype.render = function(name, value, attrs)
         }
         if (id)
         {
-            extendObject(finalAttrs, {"id": id + "_" + i});
+            extend(finalAttrs, {"id": id + "_" + i});
         }
         renderedWidgets.push(
             widget.render(name + "_" + i, widgetValue, finalAttrs));
@@ -1084,7 +1084,7 @@ MultiWidget.prototype._hasChanged = function(initial, data)
             initial.push("");
         }
     }
-    else if (!(initial instanceof Array))
+    else if (!(isArray(initial)))
     {
         initial = this.decompress(initial);
     }
@@ -1142,7 +1142,7 @@ MultiWidget.prototype.decompress = function(value)
  */
 function SplitDateTimeWidget(kwargs)
 {
-    kwargs = extendObject({
+    kwargs = extend({
         attrs: null, dateFormat: null, timeFormat: null
     }, kwargs || {});
     if (kwargs.dateFormat)
@@ -1186,7 +1186,7 @@ SplitDateTimeWidget.prototype.decompress = function(value)
  */
 function SplitHiddenDateTimeWidget(kwargs)
 {
-    kwargs = extendObject({attrs: null}, kwargs || {});
+    kwargs = extend({attrs: null}, kwargs || {});
     var dateInput = new DateInput({attrs: kwargs.attrs, format: this.dateFormat});
     dateInput.inputType = "hidden";
     var timeInput = new TimeInput({attrs: kwargs.attrs, format: this.timeFormat});
