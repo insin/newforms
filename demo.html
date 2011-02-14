@@ -141,7 +141,7 @@
           }]
       });
 
-      var forms = DOMBuilder.fragment.map(formset.forms, function(form, index)
+      var forms = FORM(DOMBuilder.fragment.map(formset.forms, function(form, index)
       {
           return [
             H2("Contact Form " + (index + 1)),
@@ -152,7 +152,7 @@
               })
             ))
           ];
-      });
+      }));
 
       document.body.appendChild(forms);
   };

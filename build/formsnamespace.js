@@ -1,12 +1,4 @@
 return {
-    // util.js
-    util: {
-        extendObject: extendObject,
-        formatString: formatString,
-        formData: formData,
-        contains: contains,
-        parseUri: parseUri
-    },
     ErrorObject: ErrorObject,
     ErrorList: ErrorList,
     ValidationError: ValidationError,

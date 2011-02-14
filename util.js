@@ -129,9 +129,9 @@ function formData(form)
 
     for (var i = 0, l = form.elements.length; i < l; i++)
     {
-        var element = form.elements[i];
-        var type = element.type;
-        var value = null;
+        var element = form.elements[i],
+            type = element.type,
+            value = null;
 
         // Retrieve the element's value (or values)
         if (type == "hidden" || type == "password" || type == "text" ||

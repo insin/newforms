@@ -1,8 +1,6 @@
 import optparse
 import os
 
-from jsmin import jsmin
-
 DIRNAME = os.path.dirname(__file__)
 TIME_SOURCE_FILES = ('../time.js',)
 FORMS_SOURCE_FILES = ('../util.js', '../widgets.js', '../fields.js',
@@ -29,7 +27,7 @@ def main(generate_api=False, jsdoc_dir=None):
         os.mkdir('out')
 
     open('out/js-forms.js', 'w').write(js)
-    open('out/js-forms-min.js', 'w').write(jsmin(js))
+    open('out/js-forms-min.js', 'w').write(google_closure(js))
 
     if generate_api and jsdoc_dir:
         os.system('java -jar %(jsdoc_jar)s %(jsdoc_app)s -a -t=%(jsdoc_templates)s -d=%(api_dir)s %(js_dir)s' % {
@@ -39,6 +37,21 @@ def main(generate_api=False, jsdoc_dir=None):
             'api_dir': os.path.normpath(os.path.join(DIRNAME, 'out/api')),
             'js_dir': os.path.normpath(os.path.join(DIRNAME, '..')),
         })
+
+def google_closure(js):
+    """Optimises and compreses with the Google Closure compiler."""
+    import httplib, urllib, sys
+    params = urllib.urlencode([
+        ('js_code', js),
+        ('compilation_level', 'SIMPLE_OPTIMIZATIONS'),
+        ('output_format', 'text'),
+        ('output_info', 'compiled_code'),
+      ])
+    headers = { "Content-type": "application/x-www-form-urlencoded" }
+    conn = httplib.HTTPConnection('closure-compiler.appspot.com')
+    conn.request('POST', '/compile', params, headers)
+    response = conn.getresponse()
+    return response.read()
 
 if __name__ == '__main__':
     parser = optparse.OptionParser();
