@@ -1,4 +1,4 @@
-var EMPTY_VALUES = (null, undefined, ""),
+var EMPTY_VALUES = [null, undefined, ""],
     URL_VALIDATOR_USER_AGENT = "js-forms (https://github.com/insin/js-forms/)";
 
 function RegexValidator(kwargs)
@@ -11,7 +11,7 @@ function RegexValidator(kwargs)
     if (kwargs.code !== null)
         this.code = code;
 
-    if (isString(this.regex)
+    if (isString(this.regex))
         this.regex = new RegExp(this.regex);
 }
 RegexValidator.prototype.regex = "";
@@ -30,10 +30,10 @@ function URLValidator(kwargs)
 {
     RegexValidator.call(this);
     kwargs = extend({
-        verifyExists: false, userAgent: URLField.URL_VALIDATOR_USER_AGENT
+        verifyExists: false, validatorUserAgent: URL_VALIDATOR_USER_AGENT
     }, kwargs || {});
     this.verifyExists = kwargs.verifyExists;
-    this.userAgent = kwargs.userAgent;
+    this.userAgent = kwargs.validatorUserAgent;
 }
 inheritsFrom(URLValidator, RegexValidator);
 URLValidator.prototype.regex = new RegExp(
@@ -70,11 +70,9 @@ URLValidator.prototype.__call__ = function(value)
         URLValidator.prototype.__call__.call(url);
     }
 
-    if (this.verifyExists === true)
-    {
-        // TODO Implement URL verification when js-forms can be run in
-        //      appropriate environments.
-    }
+    // TODO Implement URL verification when js-forms can be run in
+    //      appropriate environments.
+    //if (this.verifyExists === true) {}
 };
 
 function validateInteger(value)
@@ -94,7 +92,7 @@ EmailValidator.prototype.__call__ = function(value)
     }
     catch (e)
     {
-        if (!(e instanceof ValidationError) || !value || value.indexOf("@") == -1))
+        if (!(e instanceof ValidationError) || !value || value.indexOf("@") == -1)
             throw(e);
 
         var parts = value.split("@"),
@@ -139,12 +137,12 @@ BaseValidator.prototype.__call__ = function(value)
 {
     var cleaned = this.clean(value),
         params = {"limit_value": this.limitValue, "show_value": cleaned};
-    if (this.compare(cleaned, this.limitValue)
+    if (this.compare(cleaned, this.limitValue))
         throw new ValidationError(format(this.message, params),
                                   {code: this.code, params: params});
 };
 
-function MaxValueValidator()
+function MaxValueValidator() {};
 inheritsFrom(MaxValueValidator, BaseValidator);
 extend(MaxValueValidator.prototype, {
     compare: function(a, b) { return a > b; },
@@ -152,7 +150,7 @@ extend(MaxValueValidator.prototype, {
     code: "max_value"
 });
 
-function MinValueValidator()
+function MinValueValidator() {};
 inheritsFrom(MinValueValidator, BaseValidator);
 extend(MinValueValidator.prototype, {
     compare: function(a, b) { return a < b; },
@@ -160,7 +158,7 @@ extend(MinValueValidator.prototype, {
     code: "min_value"
 });
 
-function MinLengthValidator()
+function MinLengthValidator() {};
 inheritsFrom(MinLengthValidator, BaseValidator);
 extend(MinLengthValidator.prototype, {
     compare: function(a, b) { return a < b; },
@@ -169,7 +167,7 @@ extend(MinLengthValidator.prototype, {
     code: "min_length"
 });
 
-function MaxLengthValidator()
+function MaxLengthValidator() {};
 inheritsFrom(MaxLengthValidator, BaseValidator);
 extend(MaxLengthValidator.prototype, {
     compare: function(a, b) { return a > b; },
