@@ -275,6 +275,8 @@ FileInput.prototype._hasChanged = function(initial, data)
     return true;
 };
 
+var FILE_INPUT_CONTRADICTION = {};
+
 /**
  * An HTML <code>&lt;textarea&gt;</code> widget.
  *

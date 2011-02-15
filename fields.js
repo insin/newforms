@@ -2,11 +2,29 @@
  * @fileOverview Form Fields, which validate and normalise (or "clean") data.
  */
 
-/* TODO Populate
-var DEFAULT_DATE_INPUT_FORMATS =
-    DEFAULT_TIME_INPUT_FORMATS =
-    DEFAULT_DATETIME_INPUT_FORMATS =
-*/
+var DEFAULT_DATE_INPUT_FORMATS = [
+        "%Y-%m-%d",              // "2006-10-25"
+        "%m/%d/%Y", "%m/%d/%y",  // "10/25/2006", "10/25/06"
+        "%b %d %Y", "%b %d, %Y", // "Oct 25 2006", "Oct 25, 2006"
+        "%d %b %Y", "%d %b, %Y", // "25 Oct 2006", "25 Oct, 2006"
+        "%B %d %Y", "%B %d, %Y", // "October 25 2006", "October 25, 2006"
+        "%d %B %Y", "%d %B, %Y"  // "25 October 2006", "25 October, 2006"
+    ],
+    DEFAULT_TIME_INPUT_FORMATS = [
+        "%H:%M:%S", // "14:30:59"
+        "%H:%M"     // "14:30"
+    ],
+    DEFAULT_DATETIME_INPUT_FORMATS = DEFAULT_DATETIME_INPUT_FORMATS = [
+        "%Y-%m-%d %H:%M:%S", // "2006-10-25 14:30:59"
+        "%Y-%m-%d %H:%M",    // "2006-10-25 14:30"
+        "%Y-%m-%d",          // "2006-10-25"
+        "%m/%d/%Y %H:%M:%S", // "10/25/2006 14:30:59"
+        "%m/%d/%Y %H:%M",    // "10/25/2006 14:30"
+        "%m/%d/%Y",          // "10/25/2006"
+        "%m/%d/%y %H:%M:%S", // "10/25/06 14:30:59"
+        "%m/%d/%y %H:%M",    // "10/25/06 14:30"
+        "%m/%d/%y"           // "10/25/06"
+    ];
 
 /**
  * An object that is responsible for doing validation and normalisation, or
@@ -396,7 +414,7 @@ DecimalField.prototype.validate = function(value)
 {
     Field.prototype.validate.call(this, value);
     if (contains(EMPTY_VALUES, value))
-        return
+        return;
     // Check for NaN, Inf and -Inf values
     if (isNaN(value) || value == Number.POSITIVE_INFINITY || value == Number.NEGATIVE_INFINITY)
         throw new ValidationError(this.errorMessages.invalid);
@@ -429,34 +447,18 @@ DecimalField.prototype.validate = function(value)
  * @param {Object} [kwargs] configuration options additional to those specified
  *                          in {@link Field}.
  * @config {Array} [inputFormats] a list of {@link time.strptime} input formats
- *                                which are considered valid - if not provided,
- *                                {@link DateField.DEFAULT_DATE_INPUT_FORMATS}
- *                                will be used.
+ *                                which are considered valid. If not provided,
+ *                                DEFAULT_DATE_INPUT_FORMATS will be used instead.
  * @constructor
  */
 function DateField(kwargs)
 {
-    kwargs = extend({
-        inputFormats: null
-    }, kwargs || {});
+    kwargs = extend({inputFormats: null}, kwargs || {});
     Field.call(this, kwargs);
-    this.inputFormats =
-        kwargs.inputFormats || DateField.DEFAULT_DATE_INPUT_FORMATS;
+    this.inputFormats = kwargs.inputFormats || DEFAULT_DATE_INPUT_FORMATS;
 }
-
-/**
- * Default {@link time.strptime} input formats which are considered valid.
- */
-DateField.DEFAULT_DATE_INPUT_FORMATS = [
-    "%Y-%m-%d",              // "2006-10-25"
-    "%m/%d/%Y", "%m/%d/%y",  // "10/25/2006", "10/25/06"
-    "%b %d %Y", "%b %d, %Y", // "Oct 25 2006", "Oct 25, 2006"
-    "%d %b %Y", "%d %b, %Y", // "25 Oct 2006", "25 Oct, 2006"
-    "%B %d %Y", "%B %d, %Y", // "October 25 2006", "October 25, 2006"
-    "%d %B %Y", "%d %B, %Y"  // "25 October 2006", "25 October, 2006"
-];
-
 inheritFrom(DateField, Field);
+DateField.prototype.widget = DateInput;
 DateField.prototype.defaultErrorMessages =
     extend({}, DateField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid date."
@@ -471,22 +473,13 @@ DateField.prototype.defaultErrorMessages =
  *         set, or <code>null</code> for empty values.
  * @type Date
  */
-DateField.prototype.clean = function(value)
+DateField.prototype.toJavaScript = function(value)
 {
     Field.prototype.clean.call(this, value);
-
     if (contains(EMPTY_VALUES, value))
-    {
         return null;
-    }
-
     if (value instanceof Date)
-    {
-        return new Date(value.getFullYear(),
-                        value.getMonth(),
-                        value.getDate());
-    }
-
+        return new Date(value.getFullYear(), value.getMonth(), value.getDate());
     for (var i = 0, l = this.inputFormats.length; i < l; i++)
     {
         try
@@ -499,7 +492,6 @@ DateField.prototype.clean = function(value)
             continue;
         }
     }
-
     throw new ValidationError(this.errorMessages.invalid);
 };
 
@@ -510,28 +502,16 @@ DateField.prototype.clean = function(value)
  *                          in {@link Field}.
  * @config {Array} [inputFormats] a list of {@link time.strptime} input formats
  *                                which are considered valid - if not provided,
- *                                {@link TimeField.DEFAULT_TIME_INPUT_FORMATS}
- *                                will be used.
+ *                                DEFAULT_TIME_INPUT_FORMATS will be used.
  * @constructor
  */
 function TimeField(kwargs)
 {
-    kwargs = extend({
-        inputFormats: null
-    }, kwargs || {});
+    kwargs = extend({ inputFormats: null}, kwargs || {});
     Field.call(this, kwargs);
     this.inputFormats =
-        kwargs.inputFormats || TimeField.DEFAULT_TIME_INPUT_FORMATS;
+        kwargs.inputFormats || DEFAULT_TIME_INPUT_FORMATS;
 }
-
-/**
- * Default {@link time.strptime} input formats which are considered valid.
- */
-TimeField.DEFAULT_TIME_INPUT_FORMATS = [
-    "%H:%M:%S", // "14:30:59"
-    "%H:%M"     // "14:30"
-];
-
 inheritFrom(TimeField, Field);
 TimeField.prototype.widget = TimeInput;
 TimeField.prototype.defaultErrorMessages =
@@ -551,23 +531,10 @@ TimeField.prototype.defaultErrorMessages =
  */
 TimeField.prototype.clean = function(value)
 {
-    Field.prototype.clean.call(this, value);
-
     if (contains(EMPTY_VALUES, value))
-    {
         return null;
-    }
-
     if (value instanceof Date)
-    {
-        return new Date(1900,
-                        0,
-                        1,
-                        value.getHours(),
-                        value.getMinutes(),
-                        value.getSeconds());
-    }
-
+        return new Date(1900, 0, 1, value.getHours(), value.getMinutes(), value.getSeconds());
     for (var i = 0, l = this.inputFormats.length; i < l; i++)
     {
         try
@@ -580,7 +547,6 @@ TimeField.prototype.clean = function(value)
             continue;
         }
     }
-
     throw new ValidationError(this.errorMessages.invalid);
 };
 
@@ -591,34 +557,16 @@ TimeField.prototype.clean = function(value)
  *                          in {@link Field}.
  * @config {Array} [inputFormats] a list of {@link time.strptime} input formats
  *                                which are considered valid - if not provided,
- *                                {@link DateTimeField.DEFAULT_TIME_INPUT_FORMATS}
- *                                will be used.
+ *                                DEFAULT_TIME_INPUT_FORMATS will be used.
  * @constructor
  */
 function DateTimeField(kwargs)
 {
-    kwargs = extend({
-        inputFormats: null
-    }, kwargs || {});
+    kwargs = extend({ inputFormats: null }, kwargs || {});
     Field.call(this, kwargs);
     this.inputFormats =
-        kwargs.inputFormats || DateTimeField.DEFAULT_DATETIME_INPUT_FORMATS;
+        kwargs.inputFormats || DEFAULT_DATETIME_INPUT_FORMATS;
 }
-
-/**
- * Default {@link time.strptime} input formats which are considered valid.
- */
-DateTimeField.DEFAULT_DATETIME_INPUT_FORMATS = [
-    "%Y-%m-%d %H:%M:%S", // "2006-10-25 14:30:59"
-    "%Y-%m-%d %H:%M",    // "2006-10-25 14:30"
-    "%Y-%m-%d",          // "2006-10-25"
-    "%m/%d/%Y %H:%M:%S", // "10/25/2006 14:30:59"
-    "%m/%d/%Y %H:%M",    // "10/25/2006 14:30"
-    "%m/%d/%Y",          // "10/25/2006"
-    "%m/%d/%y %H:%M:%S", // "10/25/06 14:30:59"
-    "%m/%d/%y %H:%M",    // "10/25/06 14:30"
-    "%m/%d/%y"           // "10/25/06"
-]
 
 inheritFrom(DateTimeField, Field);
 DateTimeField.prototype.widget = DateTimeInput;
@@ -637,29 +585,20 @@ DateTimeField.prototype.defaultErrorMessages =
  */
 DateTimeField.prototype.clean = function(value)
 {
-    Field.prototype.clean.call(this, value);
-
     if (contains(EMPTY_VALUES, value))
-    {
         return null;
-    }
-
     if (value instanceof Date)
-    {
         return value;
-    }
-
     if (isArray(value))
     {
         // Input comes from a SplitDateTimeWidget, for example, so it's two
         // components: date and time.
         if (value.length != 2)
-        {
             throw new ValidationError(this.errorMessages.invalid);
-        }
+        if (contains(EMPTY_VALUES, value[0]) && contains(EMPTY_VALUES, value[1]))
+            return null;
         value = value.join(" ");
     }
-
     for (var i = 0, l = this.inputFormats.length; i < l; i++)
     {
         try
@@ -672,7 +611,6 @@ DateTimeField.prototype.clean = function(value)
             continue;
         }
     }
-
     throw new ValidationError(this.errorMessages.invalid);
 };
 
@@ -690,77 +628,32 @@ function RegexField(regex, kwargs)
 {
     CharField.call(this, kwargs);
     if (isString(regex))
-    {
         regex = new RegExp(regex);
-    }
     this.regex = regex;
+    this.validators.push(new RegexValidtor(this.regex));
 }
-
 inheritFrom(RegexField, CharField);
-
-/**
- * Validates that the given value matches the regular expression defined for
- * this Field.
- *
- * @param {String} value the value to be validated.
- *
- * @return a string which matches the regular expresson defined for this field.
- * @type String
- */
-RegexField.prototype.clean = function(value)
-{
-    value = CharField.prototype.clean.call(this, value);
-    if (value !== "" && !this.regex.test(value))
-    {
-        throw new ValidationError(this.errorMessages.invalid);
-    }
-    return value;
-};
 
 /**
  * Validates that its input appears to be a valid e-mail address.
  *
- * @param {Object} [kwargs] configuration options, as specified in
- *                          {@link RegexField}.
  * @constructor
  */
 function EmailField(kwargs)
 {
-    RegexField.call(this, EmailField.EMAIL_REGEXP, kwargs);
+    CharField.call(this, kwargs);
 }
-
-/**
- * E-mail validation regular expression.
- */
-EmailField.EMAIL_REGEXP = new RegExp(
-    "(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*" +                                // Dot-atom
-    "|^\"([\\001-\\010\\013\\014\\016-\\037!#-\\[\\]-\\177]|\\\\[\\001-011\\013\\014\\016-\\177])*\"" + // Quoted-string
-    ")@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\\.)+[A-Z]{2,6}\\.?$",                                                   // Domain
-    "i");
-
-inheritFrom(EmailField, RegexField);
-
+inheritFrom(EmailField, CharField);
+EmailField.prototype.defaultValidators = [validateEmail];
 EmailField.prototype.defaultErrorMessages =
     extend({}, EmailField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid e-mail address."
     });
 
-/**
- * A wrapper for files uploaded in a {@link FileField}.
- *
- * @param {String} filename the file's name.
- * @param {String} content the file's contents.
- * @constructor
- */
-function UploadedFile(filename, content)
+EmailField.prototype.clean = function(value)
 {
-    this.filename = filename;
-    this.content = content;
-}
-
-UploadedFile.prototype.toString = function()
-{
-    return this.filename;
+    value = this.toJavaScript(value).strip();
+    return CharField.prototype.clean.call(this, value);
 };
 
 /**
@@ -780,14 +673,15 @@ function FileField(kwargs)
     delete kwargs.maxLength;
     Field.call(this, kwargs);
 }
-
 inheritFrom(FileField, Field);
-FileField.prototype.widget = FileInput;
+FileField.prototype.widget = ClearableFileInput;
 FileField.prototype.defaultErrorMessages =
     extend({}, FileField.prototype.defaultErrorMessages, {
         invalid: "No file was submitted. Check the encoding type on the form.",
+        missing: "No file was submitted.",
         empty: "The submitted file is empty.",
-        maxLength: "Ensure this filename has at most %(max)s characters (it has %(length)s)."
+        maxLength: "Ensure this filename has at most %(max)d characters (it has %(length)d).",
+        contradicton: "Please either submit a file or check the clear checkbox, not both."
     });
 
 /**
@@ -802,45 +696,55 @@ FileField.prototype.defaultErrorMessages =
  *         empty values.
  * @type UploadedFile
  */
-FileField.prototype.clean = function(data, initial)
+FileField.prototype.toJavaScript = function(data, initial)
 {
-    Field.prototype.clean.call(this, initial || data);
-    if (!this.required && contains(EMPTY_VALUES, data))
-    {
+    if (contains(EMPTY_VALUES, data))
         return null;
-    }
-    else if (!data && initial)
-    {
-        return initial;
-    }
-
     // UploadedFile objects should have name and size attributes
     if (typeof data.name == "undefined" || typeof data.size == "undefined")
-    {
         throw new ValidationError(this.errorMessages.invalid);
-    }
 
-    var fileName = data.name;
-    var fileSize = data.size;
+    var fileName = data.name,
+        fileSize = data.size;
 
     if (this.maxLength !== null && fileName.length > this.maxLength)
-    {
-        throw new ValidationError(
-            format(this.errorMessages.maxLength,
-                         {max: this.maxLength, length: fileName.length}));
-    }
-
+        throw new ValidationError(format(this.errorMessages.maxLength, {max: this.maxLength, length: fileName.length}));
     if (!fileName)
-    {
         throw new ValidationError(this.errorMessages.invalid);
-    }
-
     if (!fileSize)
-    {
         throw new ValidationError(this.errorMessages.empty);
-    }
 
     return data;
+}
+
+FileField.prototype.clean = function(data, initial)
+{
+    // If the widget got contradictory inputs, we raise a validation error
+    if (data === FILE_INPUT_CONTRADICTION)
+        throw new ValidationError(this.errorMessages.contradiction);
+    // false means the field value should be cleared; further validation is
+    // not needed.
+    if (data === false)
+    {
+        if (!this.required)
+            return false
+        // If the field is required, clearing is not possible (the widget
+        // shouldn't return false data in that case anyway). False is not
+        // in EMPTY_VALUES; if a False value makes it this far it should be
+        // validated from here on out as null (so it will be caught by the
+        // required check).
+        data = null
+    }
+    if (!data && initial)
+        return initial;
+    return CharField.prototype.clean.call(this, data);
+};
+
+FileField.prototype.boundData = function(data, initial)
+{
+    if (data === null || data === FILE_INPUT_CONTRADICTION)
+        return initial
+    return data
 };
 
 /**
@@ -857,7 +761,6 @@ function ImageField(kwargs)
 {
     FileField.call(this, kwargs);
 }
-
 inheritFrom(ImageField, FileField);
 ImageField.prototype.defaultErrorMessages =
     extend({}, ImageField.prototype.defaultErrorMessages, {
@@ -867,17 +770,11 @@ ImageField.prototype.defaultErrorMessages =
 /**
  * Checks that the file-upload field data contains a valid image.
  */
-ImageField.prototype.clean = function(data, initial)
+ImageField.prototype.toJavaScript = function(data, initial)
 {
-    var f = FileField.prototype.clean.call(this, data, initial);
+    var f = FileField.prototype.toJavaScript.call(this, data, initial);
     if (f === null)
-    {
         return null;
-    }
-    else if (!data && initial)
-    {
-        return initial;
-    }
 
     // TODO Plug in image processing code when js-forms can be run in
     //           appropriate environments.
