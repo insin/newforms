@@ -134,10 +134,10 @@ function BaseValidator(limitValue)
 {
     this.limitValue = limitValue;
 }
-BaseValidator.prototype.compare = function(a, b) { return a !== b; }
-BaseValidator.prototype.clean = function(x) { return x }
-BaseValidator.prototype.message = "Ensure this value is %(limit_value)s (it is %(show_value)s)."
-BaseValidator.prototype.code = "limit_value"
+BaseValidator.prototype.compare = function(a, b) { return a !== b; };
+BaseValidator.prototype.clean = function(x) { return x };
+BaseValidator.prototype.message = "Ensure this value is %(limit_value)s (it is %(show_value)s).";
+BaseValidator.prototype.code = "limit_value";
 BaseValidator.prototype.__call__ = function(value)
 {
     var cleaned = this.clean(value),
