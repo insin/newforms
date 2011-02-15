@@ -39,7 +39,7 @@ def main(generate_api=False, jsdoc_dir=None):
         })
 
 def google_closure(js):
-    """Optimises and compreses with the Google Closure compiler."""
+    """Optimises and compresses with the Google Closure compiler."""
     import httplib, urllib, sys
     params = urllib.urlencode([
         ('js_code', js),
