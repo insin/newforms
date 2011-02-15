@@ -77,15 +77,12 @@ URLValidator.prototype.__call__ = function(value)
     }
 };
 
-var validateInteger = (function()
+function validateInteger(value)
 {
-    var regex = /^ *[-+]? *\d+ *$/;
-    return function(value)
-    {
-        if (!regex.test(value) || isNaN(parseInt(value, 10))
-            throw new ValidationError("");
-    };
-})();
+    value = Number(value);
+    if (isNaN(value) || value.toString().indexOf(".") != -1)
+        throw new ValidationError("");
+}
 
 function EmailValidator() {}
 inheritsFrom(EmailValidator, RegexValidtor);

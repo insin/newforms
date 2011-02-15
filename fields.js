@@ -2,6 +2,12 @@
  * @fileOverview Form Fields, which validate and normalise (or "clean") data.
  */
 
+/* TODO Populate
+var DEFAULT_DATE_INPUT_FORMATS =
+    DEFAULT_TIME_INPUT_FORMATS =
+    DEFAULT_DATETIME_INPUT_FORMATS =
+*/
+
 /**
  * An object that is responsible for doing validation and normalisation, or
  * "cleaning", for example: an {@link EmailField} makes sure its data is a valid
@@ -19,59 +25,61 @@
  *                   specified by the field's form.
  * @config {String} [helpText] help text for the field.
  * @config {Object} [errorMessages] custom error messages for the field.
+ * @config {Boolean} [showHiddenInitial] specifies if it is necessary to render a
+                                         hidden widget with initial value after the
+                                         widget.
+ * @config {Array} [validators] list of addtional validators to use
  * @constructor
  */
 function Field(kwargs)
 {
     kwargs = extend({
-        required: true, widget: null, label: null, initial: null,
-        helpText: null, errorMessages: null
+        required: true, widget: null, label: null, initial: null, helpText: null,
+        errorMessages: null, showHiddenInitial: false, validators: []
     }, kwargs || {});
     this.required = kwargs.required;
     this.label = kwargs.label;
     this.initial = kwargs.initial;
+    this.showHiddenInitial = kwargs.showHiddenInitial;
     this.helpText = kwargs.helpText || "";
 
-    var widget = kwargs.widget || this.defaultWidget;
+    var widget = kwargs.widget || this.widget;
     if (!(widget instanceof Widget))
     {
         // We must have a Widget constructor, so construct with it
         widget = new widget();
     }
-    // Hook into this.widgetAttrs() for any Field-specific HTML attributes.
+    // Let the widget know whether it should display as required
+    widget.required = this.required;
+    // Hook into this.widgetAttrs() for any Field-specific HTML attributes
     extend(widget.attrs, this.widgetAttrs(widget));
     this.widget = widget;
 
-    // Take our version of the creation counter, then increment it
-    this.creationCounter = Field.creationCounter;
-    Field.creationCounter += 1;
+    // Increment the creation counter and save our local copy
+    this.creationCounter = Field.creationCounter++;
 
     // Copy error messages for this instance into a new object
     this.errorMessages =
         extend({}, this.defaultErrorMessages, kwargs.errorMessages || {});
+
+    this.validators = this.defaultValidators.concat(kwargs.validators);
 }
-
-/**
- * Values which will, if given to <code>clean</code>, trigger the
- * <code>this.required</code> check.
- */
-Field.EMPTY_VALUES = [null, ''];
-
 /**
  * Tracks each time a Field instance is created; used to retain order.
  */
 Field.creationCounter = 0;
-
 /**
  * Default widget to use when rendering this type of Field.
  */
-Field.prototype.defaultWidget = TextInput;
-
+Field.prototype.widget = TextInput;
 /**
  * Default widget to use when rendering this type of field as hidden.
  */
 Field.prototype.hiddenWidget = HiddenInput;
-
+/**
+ * Default set of validators.
+ */
+Field.prototype.defaultValidators = [];
 /**
  * Default error messages.
  */
@@ -81,22 +89,82 @@ Field.prototype.defaultErrorMessages =
     invalid: "Enter a valid value."
 };
 
+Field.prototype.prepareValue = function(value)
+{
+    return value;
+};
+
+Field.prototype.toJavaScript = function(value)
+{
+    return value;
+};
+
+Field.prototype.validate = function(value)
+{
+    if (this.required && contains(EMPTY_VALUES, value))
+        throw new ValidationError(this.errorMessages.required);
+};
+
+Field.prototype.runValidators = fnction(value)
+{
+    if (contains(EMPTY_VALUES, value))
+        throw new ValidationError(this.errorMessages.required);
+    var errors = [];
+    for (var i = 0, l= this.validators.length; i < l; i++)
+    {
+        try
+        {
+            callValidator(v, value);
+        }
+        catch (e)
+        {
+            if (!(e instanceof ValidationError))
+                throw(e);
+            if (typeof e.code != "undefined" and e.code in this.errorMessages)
+            {
+                var message = this.errorMessages[e.code];
+                if (typeof e.params != undefined)
+                    message = format(message, e.params)
+                errors.push(message)
+            }
+            else
+            {
+                errors = errors.concat(e.messages);
+            }
+        }
+    }
+    if (errors.length > 0)
+        throw new ValidationError(errors)
+};
+
+
 /**
  * Validates the given value and returns its "cleaned" value as an appropriate
  * JavaScript object.
  *
- * @param {String} value the value to be validated.
+ * Raises ValidationError for any errors.
  *
- * @return a valid string.
- * @type String
+ * @param {String} value the value to be validated.
  */
 Field.prototype.clean = function(value)
 {
-    if (this.required && contains(Field.EMPTY_VALUES, value))
-    {
-        throw new ValidationError(this.errorMessages.required);
-    }
+    value = this.toJavaScript(value);
+    this.validate(value);
+    this.runValidators(value);
     return value;
+};
+
+/**
+ * Return the value that should be shown for this field on render of a bound
+ * form, given the submitted POST data for the field and the initial data, if
+ * any.
+ *
+ * For most fields, this will simply be data; FileFields need to handle it a bit
+ * differently.
+ */
+Field.prototype.boundValue = function(data, initial)
+{
+    return data;
 };
 
 /**
@@ -114,16 +182,6 @@ Field.prototype.widgetAttrs = function(widget)
 };
 
 /**
- * Determines if data has changed from initial.
- *
- * @type Boolean
- */
-Field.prototype._hasChanged = function(initial, data)
-{
-    return this.widget._hasChanged(initial, data);
-};
-
-/**
  * Validates that its input is a valid string.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
@@ -131,7 +189,6 @@ Field.prototype._hasChanged = function(initial, data)
  * @config {Number} [maxLength] a maximum valid length for the input string.
  * @config {Number} [minLength] a minimum valid length for the input string.
  * @constructor
- * @augments Field
  */
 function CharField(kwargs)
 {
@@ -141,47 +198,17 @@ function CharField(kwargs)
     this.maxLength = kwargs.maxLength;
     this.minLength = kwargs.minLength;
     Field.call(this, kwargs);
+    if (this.minLength !== null)
+        this.validators.append(new MinLengthValidator(this.minLength));
+    if (this.maxLength !== null)
+        this.validators.append(new MaxLengthValidator(this.maxLength));
 }
 inheritFrom(CharField, Field);
-CharField.prototype.defaultErrorMessages =
-    extend({}, CharField.prototype.defaultErrorMessages, {
-        maxLength: "Ensure this value has at most %(max)s characters (it has %(length)s).",
-        minLength: "Ensure this value has at least %(min)s characters (it has %(length)s)."
-    });
 
-/**
- * Validates max length and min length of the input, if configured to do so.
- *
- * @param {String} value the value to be validated.
- *
- * @return a valid string, which will be <code>""</code> for empty values.
- * @type String
- */
-CharField.prototype.clean = function(value)
+CharField.prototype.toJavaScript = function(value)
 {
-    Field.prototype.clean.call(this, value);
-
-    if (contains(Field.EMPTY_VALUES, value))
-    {
+    if (contains(EMPTY_VALUES, value))
         return "";
-    }
-
-    value = "" + value;
-
-    if (this.maxLength !== null && value.length > this.maxLength)
-    {
-        throw new ValidationError(
-            format(this.errorMessages.maxLength,
-                         {max: this.maxLength, length: value.length}));
-    }
-
-    if (this.minLength !== null && value.length < this.minLength)
-    {
-        throw new ValidationError(
-            format(this.errorMessages.minLength,
-                         {min: this.minLength, length: value.length}));
-    }
-
     return value;
 };
 
@@ -212,8 +239,6 @@ CharField.prototype.widgetAttrs = function(widget)
  *                          in {@link Field}.
  * @config {Number} [maxValue] a maximum value for the input.
  * @config {Number} [minValue] a minimum value for the input.
- * @constructor
- * @augments Field
  */
 function IntegerField(kwargs)
 {
@@ -223,54 +248,36 @@ function IntegerField(kwargs)
     this.maxValue = kwargs.maxValue;
     this.minValue = kwargs.minValue;
     Field.call(this, kwargs);
+
+    if (this.minValue !== null)
+        this.validators.append(new MinValueValidator(this.minValue));
+    if (this.maxValue !== null)
+        this.validators.append(new MaValueValidator(this.maxValue));
 }
-
-/**
- * Integer validation regular expression.
- */
-IntegerField.INTEGER_REGEXP = /^ *[-+]? *\d+ *$/;
-
 inheritFrom(IntegerField, Field);
 IntegerField.prototype.defaultErrorMessages =
     extend({}, IntegerField.prototype.defaultErrorMessages, {
         invalid: "Enter a whole number.",
-        maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
-        minValue: "Ensure this value is greater than or equal to %(minValue)s."
+        maxValue': "Ensure this value is less than or equal to %(limit_value)s.",
+        minValue': "Ensure this value is greater than or equal to %(limit_value)s."
     });
 
 /**
- * Validates that the given value is a valid integer.
+ * Validates that Number() can be called on the input with a result that isn't
+ * NaN and doesn't contain any decimal points.
  *
- * @param value the value to be validated.
- *
- * @return a valid integer, or <code>null</code> for empty values.
+ * @param value the value to be val idated.
+ * @return the result of Number(), or <code>null</code> for empty values.
  * @type Number
  */
-IntegerField.prototype.clean = function(value)
+IntegerField.prototype.toJavaScript = function(value)
 {
-    Field.prototype.clean.call(this, value);
-
-    if (contains(Field.EMPTY_VALUES, value))
-    {
+    value = Field.prototype.toJavaScript.call(this, value);
+    if (contains(EMPTY_VALUES, value))
         return null;
-    }
-
-    if (!IntegerField.INTEGER_REGEXP.test(value))
-    {
+    value = Number(value);
+    if (isNaN(value) || value.toString().indexOf(".") != -1)
         throw new ValidationError(this.errorMessages.invalid);
-    }
-
-    value = parseInt(value, 10);
-    if (this.maxValue !== null && value > this.maxValue)
-    {
-        throw new ValidationError(format(this.errorMessages.maxValue,
-                                               {maxValue: this.maxValue}));
-    }
-    if (this.minValue !== null && value < this.minValue)
-    {
-        throw new ValidationError(format(this.errorMessages.minValue,
-                                               {minValue: this.minValue}));
-    }
     return value;
 };
 
@@ -282,83 +289,35 @@ IntegerField.prototype.clean = function(value)
  * @config {Number} [maxValue] a maximum value for the input.
  * @config {Number} [minValue] a minimum value for the input.
  * @constructor
- * @augments Field
  */
 function FloatField(kwargs)
 {
-    kwargs = extend({
-        maxValue: null, minValue: null
-    }, kwargs || {});
-    this.maxValue = kwargs.maxValue;
-    this.minValue = kwargs.minValue;
-    Field.call(this, kwargs);
+    IntegerField.call(this, kwargs);
 }
-
-/**
- * Float validation regular expression.
- */
-FloatField.FLOAT_REGEXP = /^ *[-+]? *\d+(?:\.\d+)? *$/;
-
-inheritFrom(FloatField, Field);
+inheritFrom(FloatField, IntegerField);
 FloatField.prototype.defaultErrorMessages =
     extend({}, FloatField.prototype.defaultErrorMessages, {
-        invalid: "Enter a number.",
-        maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
-        minValue: "Ensure this value is greater than or equal to %(minValue)s."
+        invalid: "Enter a number."
     });
 
 /**
- * Validates that the given value is a valid float.
+ * Validates that Number() can be called on the input with a result that isn't
+ * NaN.
  *
  * @param value the value to be validated.
  *
- * @return a valid <code>float</code>, or <code>null</code> for empty values.
+ * @return the result of Number(), or <code>null</code> for empty values.
  * @type Number
  */
-FloatField.prototype.clean = function(value)
+FloatField.prototype.toJavaScript = function(value)
 {
-    Field.prototype.clean.call(this, value);
-
-    if (contains(Field.EMPTY_VALUES, value))
-    {
+    value = Field.prototype.toJavaScript.call(this, value);
+    if (contains(EMPTY_VALUES, value))
         return null;
-    }
-
-    if (!FloatField.FLOAT_REGEXP.test(value))
-    {
+    value = Number(value);
+    if (isNaN(value))
         throw new ValidationError(this.errorMessages.invalid);
-    }
-
-    value = parseFloat(value);
-    if (this.maxValue !== null && value > this.maxValue)
-    {
-        throw new ValidationError(format(this.errorMessages.maxValue,
-                                               {maxValue: this.maxValue}));
-    }
-    if (this.minValue !== null && value < this.minValue)
-    {
-        throw new ValidationError(format(this.errorMessages.minValue,
-                                               {minValue: this.minValue}));
-    }
     return value;
-};
-
-/**
- * Determines if data has changed from initial. In JavaScript, trailing zeroes
- * in floats are dropped when a float is coerced to a String, so e.g., an
- * initial value of 1.0 would not match a data value of "1.0" if we were to use
- * the Widget object's _hasChanged, which checks coerced String values.
- *
- * @type Boolean
- */
-FloatField.prototype._hasChanged = function(initial, data)
-{
-    // For purposes of seeing whether something has changed, null is the same
-    // as an empty string, if the data or inital value we get is null, replace
-    // it with "".
-    var dataValue = (data === null ? "" : data);
-    var initialValue = (initial === null ? "" : initial);
-    return (parseFloat(""+data) != parseFloat(""+dataValue));
 };
 
 /**
@@ -373,7 +332,6 @@ FloatField.prototype._hasChanged = function(initial, data)
  * @config {Number} decimalPlaces the maximum number of decimal places the input
  *                                may contain.
  * @constructor
- * @augments Field
  */
 function DecimalField(kwargs)
 {
@@ -385,98 +343,84 @@ function DecimalField(kwargs)
     this.maxDigits = kwargs.maxDigits;
     this.decimalPlaces = kwargs.decimalPlaces;
     Field.call(this, kwargs);
-}
 
+    if (this.minValue !== null)
+        this.validators.append(new MinValueValidator(this.minValue));
+    if (this.maxValue !== null)
+        this.validators.append(new MaValueValidator(this.maxValue));
+}
+inheritFrom(DecimalField, Field);
 /**
  * Decimal validation regular expression.
  */
-DecimalField.DECIMAL_REGEXP = /^ *[-+]? *(?:\d+(?:\.\d+)?|(?:\d+)?\.\d+) *$/;
-
-inheritFrom(DecimalField, Field);
+DecimalField.DECIMAL_REGEXP = new RegExp(/^[-+]?(?:\d+(?:\.\d+)?|(?:\d+)?\.\d+)$/;
 DecimalField.prototype.defaultErrorMessages =
     extend({}, DecimalField.prototype.defaultErrorMessages, {
         invalid: "Enter a number.",
-        maxValue: "Ensure this value is less than or equal to %(maxValue)s.",
-        minValue: "Ensure this value is greater than or equal to %(minValue)s.",
+        maxValue: "Ensure this value is less than or equal to %(limit_value)s.",
+        minValue: "Ensure this value is greater than or equal to %(limit_value)s.",
         maxDigits: "Ensure that there are no more than %(maxDigits)s digits in total.",
         maxDecimalPlaces: "Ensure that there are no more than %(maxDecimalPlaces)s decimal places.",
         maxWholeDigits: "Ensure that there are no more than %(maxWholeDigits)s digits before the decimal point."
     });
 
 /**
- * In lieu of a built-in Decimal type for JavaScript, this method casts to a
- * float and uses that for validation. Validation of decimal attributes is
- * performed on a <code>String</code> representation of the input value, with
- * any leading sign trimmed.
+ * Validates that the input looks like a decimal number.In lieu of a built-in
+ * Decimal type for JavaScript, this method uses Number() and returns the result.
  *
  * @param value the value to be validated.
  *
- * @return a valid <code>float</code>, or <code>null</code> for empty values.
+ * @return a Number, or <code>null</code> for empty values.
  * @type Number
  */
-DecimalField.prototype.clean = function(value)
+DecimalField.prototype.toJavaScript = function(value)
 {
-    Field.prototype.clean.call(this, value);
-
-    if (contains(Field.EMPTY_VALUES, value))
-    {
+    if (contains(EMPTY_VALUES, value))
         return null;
-    }
-
-    value = ("" + value).replace(/(^\s+|\s+$)/g, "");
-
+    value = strip(value);
     // TODO We should be attempting to create a Decimal object instead - are
-    //      there any JavaScript equivalents?
+    //      there any decent JavaScript equivalents?
     if (!DecimalField.DECIMAL_REGEXP.test(value))
-    {
         throw new ValidationError(this.errorMessages.invalid);
-    }
+    value = Number(value);
+    if (isNaN(value)):
+        throw new ValidationError(this.errorMessages.invalid);
+    return value;
+};
 
-    var floatValue = parseFloat(value);
-    // Django's DecimalField validates against a string representation of a
-    // decimal.Decimal, in which:
-    // * Any leading sign has been stripped
-    if (value.charAt(0) == "+" || value.charAt(0) == "-")
-    {
+/**
+ * Ensures that there are no more than maxDigits in the number, and no more than
+ * decimalPlaces digits after the decimal point.
+ */
+DecimalField.prototype.validate = function(value)
+{
+    Field.prototype.validate.call(this, value);
+    if (contains(EMPTY_VALUES, value))
+        return
+    // Check for NaN, Inf and -Inf values
+    if (isNaN(value) || value == Number.POSITIVE_INFINITY || value == Number.NEGATIVE_INFINITY)
+        throw new ValidationError(this.errorMessages.invalid);
+    // Perform remaining checks against a string representation...
+    value = ""+value;
+    // Strip sign, if present
+    if (value.charAt(0) == "-")
         value = value.substr(1);
-    }
-    // * Leading zeros have been stripped from digits before the decimal point,
-    //   but trailing digits are retained after the decimal point.
-    value = value.replace(/^0+/, "");
-    // * Values which did not have a leading zero gain a single leading zero.
-    if (value.charAt(0) == ".")
-    {
-        value = "0" + value;
-    }
-    var pieces = value.split(".");
-    var decimals = (pieces.length == 2 ? pieces[1].length : 0);
-    var digits = pieces[0].length;
-    if (this.maxValue !== null && floatValue > this.maxValue)
-    {
-        throw new ValidationError(format(this.errorMessages.maxValue,
-                                               {maxValue: this.maxValue}));
-    }
-    if (this.minValue !== null && floatValue < this.minValue)
-    {
-        throw new ValidationError(format(this.errorMessages.minValue,
-                                               {minValue: this.minValue}));
-    }
-    if (this.maxDigits !== null && (digits + decimals) > this.maxDigits)
-    {
+    var pieces = value.split("."),
+        wholeDigits = pieces[0].length,
+        decimals = (pieces.length == 2 ? pieces[1].length : 0),
+        digits = wholeDigits + decimals;
+
+    if (this.maxDigits !== null && digits > this.maxDigits)
         throw new ValidationError(format(this.errorMessages.maxDigits,
-                                               {maxDigits: this.maxDigits}));
-    }
+                                  {maxDigits: this.maxDigits}));
     if (this.decimalPlaces !== null && decimals > this.decimalPlaces)
-    {
         throw new ValidationError(format(this.errorMessages.maxDecimalPlaces,
-                                               {maxDecimalPlaces: this.decimalPlaces}));
-    }
-    if (this.maxDigits !== null && this.decimalPlaces !== null && digits > (this.maxDigits - this.decimalPlaces))
-    {
+                                  {maxDecimalPlaces: this.decimalPlaces}));
+    if (this.maxDigits !== null &&
+        this.decimalPlaces !== null &&
+        wholeDigits > (this.maxDigits - this.decimalPlaces))
         throw new ValidationError(format(this.errorMessages.maxWholeDigits,
-                                               {maxWholeDigits: (this.maxDigits - this.decimalPlaces)}));
-    }
-    return floatValue;
+                                  {maxWholeDigits: (this.maxDigits - this.decimalPlaces)}));
 };
 
 /**
@@ -489,7 +433,6 @@ DecimalField.prototype.clean = function(value)
  *                                {@link DateField.DEFAULT_DATE_INPUT_FORMATS}
  *                                will be used.
  * @constructor
- * @augments Field
  */
 function DateField(kwargs)
 {
@@ -532,7 +475,7 @@ DateField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    if (contains(Field.EMPTY_VALUES, value))
+    if (contains(EMPTY_VALUES, value))
     {
         return null;
     }
@@ -570,7 +513,6 @@ DateField.prototype.clean = function(value)
  *                                {@link TimeField.DEFAULT_TIME_INPUT_FORMATS}
  *                                will be used.
  * @constructor
- * @augments Field
  */
 function TimeField(kwargs)
 {
@@ -591,7 +533,7 @@ TimeField.DEFAULT_TIME_INPUT_FORMATS = [
 ];
 
 inheritFrom(TimeField, Field);
-TimeField.prototype.defaultWidget = TimeInput;
+TimeField.prototype.widget = TimeInput;
 TimeField.prototype.defaultErrorMessages =
     extend({}, TimeField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid time."
@@ -611,7 +553,7 @@ TimeField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    if (contains(Field.EMPTY_VALUES, value))
+    if (contains(EMPTY_VALUES, value))
     {
         return null;
     }
@@ -652,7 +594,6 @@ TimeField.prototype.clean = function(value)
  *                                {@link DateTimeField.DEFAULT_TIME_INPUT_FORMATS}
  *                                will be used.
  * @constructor
- * @augments Field
  */
 function DateTimeField(kwargs)
 {
@@ -680,7 +621,7 @@ DateTimeField.DEFAULT_DATETIME_INPUT_FORMATS = [
 ]
 
 inheritFrom(DateTimeField, Field);
-DateTimeField.prototype.defaultWidget = DateTimeInput;
+DateTimeField.prototype.widget = DateTimeInput;
 DateTimeField.prototype.defaultErrorMessages =
     extend({}, DateTimeField.prototype.defaultErrorMessages, {
         invalid: "Enter a valid date/time."
@@ -698,7 +639,7 @@ DateTimeField.prototype.clean = function(value)
 {
     Field.prototype.clean.call(this, value);
 
-    if (contains(Field.EMPTY_VALUES, value))
+    if (contains(EMPTY_VALUES, value))
     {
         return null;
     }
@@ -744,7 +685,6 @@ DateTimeField.prototype.clean = function(value)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Field} and {@link CharField}.
  * @constructor
- * @augments CharField
  */
 function RegexField(regex, kwargs)
 {
@@ -783,7 +723,6 @@ RegexField.prototype.clean = function(value)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link RegexField}.
  * @constructor
- * @augments RegexField
  */
 function EmailField(kwargs)
 {
@@ -833,7 +772,6 @@ UploadedFile.prototype.toString = function()
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Field}.
  * @constructor
- * @augments Field
  */
 function FileField(kwargs)
 {
@@ -844,7 +782,7 @@ function FileField(kwargs)
 }
 
 inheritFrom(FileField, Field);
-FileField.prototype.defaultWidget = FileInput;
+FileField.prototype.widget = FileInput;
 FileField.prototype.defaultErrorMessages =
     extend({}, FileField.prototype.defaultErrorMessages, {
         invalid: "No file was submitted. Check the encoding type on the form.",
@@ -867,7 +805,7 @@ FileField.prototype.defaultErrorMessages =
 FileField.prototype.clean = function(data, initial)
 {
     Field.prototype.clean.call(this, initial || data);
-    if (!this.required && contains(Field.EMPTY_VALUES, data))
+    if (!this.required && contains(EMPTY_VALUES, data))
     {
         return null;
     }
@@ -914,7 +852,6 @@ FileField.prototype.clean = function(data, initial)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link FileField}.
  * @constructor
- * @augments FileField
  */
 function ImageField(kwargs)
 {
@@ -959,7 +896,6 @@ ImageField.prototype.clean = function(data, initial)
  * @config {String} [userAgent] the user agent string to use when attempting URL
  *                              verification.
  * @constructor
- * @augments RegexField
  */
 function URLField(kwargs)
 {
@@ -1035,7 +971,6 @@ URLField.prototype.clean = function(value)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Field}.
  * @constructor
- * @augments Field
  */
 function BooleanField(kwargs)
 {
@@ -1043,7 +978,7 @@ function BooleanField(kwargs)
 }
 
 inheritFrom(BooleanField, Field);
-BooleanField.prototype.defaultWidget = CheckboxInput;
+BooleanField.prototype.widget = CheckboxInput;
 
 /**
  * Normalises the given value to a <code>Boolean</code> primitive.
@@ -1084,7 +1019,6 @@ BooleanField.prototype.clean = function(value)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link BooleanField}.
  * @constructor
- * @augments BooleanField
  */
 function NullBooleanField(kwargs)
 {
@@ -1092,7 +1026,7 @@ function NullBooleanField(kwargs)
 }
 
 inheritFrom(NullBooleanField, BooleanField);
-NullBooleanField.prototype.defaultWidget = NullBooleanSelect;
+NullBooleanField.prototype.widget = NullBooleanSelect;
 
 NullBooleanField.prototype.clean = function(value)
 {
@@ -1127,7 +1061,6 @@ NullBooleanField.prototype.clean = function(value)
  *                           <code>{choices: [[1, "One"], [2, "Two"]]}</code>.
  *                           Defaults to an empty <code>Array</code>.
  * @constructor
- * @augments Field
  */
 function ChoiceField(kwargs)
 {
@@ -1151,7 +1084,7 @@ function ChoiceField(kwargs)
 }
 
 inheritFrom(ChoiceField, Field);
-ChoiceField.prototype.defaultWidget = Select;
+ChoiceField.prototype.widget = Select;
 ChoiceField.prototype.defaultErrorMessages =
     extend({}, ChoiceField.prototype.defaultErrorMessages, {
         invalidChoice: "Select a valid choice. %(value)s is not one of the available choices."
@@ -1175,7 +1108,7 @@ ChoiceField.prototype.clean = function(value)
 {
     value = Field.prototype.clean.call(this, value);
 
-    if (contains(Field.EMPTY_VALUES, value))
+    if (contains(EMPTY_VALUES, value))
     {
         return "";
     }
@@ -1240,7 +1173,6 @@ ChoiceField.prototype.validValue = function(value)
  *                               selected value can be validly empty - defaults
  *                               to an empty string.
  * @constructor
- * @augments ChoiceField
  */
 function TypedChoiceField(kwargs)
 {
@@ -1263,7 +1195,7 @@ inheritFrom(TypedChoiceField, ChoiceField);
 TypedChoiceField.prototype.clean = function(value)
 {
     var value = ChoiceField.prototype.clean.call(this, value);
-    if (value === this.emptyValue || contains(Field.EMPTY_VALUES, value))
+    if (value === this.emptyValue || contains(EMPTY_VALUES, value))
     {
         return this.emptyValue;
     }
@@ -1286,7 +1218,6 @@ TypedChoiceField.prototype.clean = function(value)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link ChoiceField}.
  * @constructor
- * @augments ChoiceField
  */
 function MultipleChoiceField(kwargs)
 {
@@ -1294,7 +1225,7 @@ function MultipleChoiceField(kwargs)
 }
 
 inheritFrom(MultipleChoiceField, ChoiceField);
-MultipleChoiceField.prototype.defaultWidget = SelectMultiple;
+MultipleChoiceField.prototype.widget = SelectMultiple;
 MultipleChoiceField.prototype.hiddenWidget = MultipleHiddenInput;
 MultipleChoiceField.prototype.defaultErrorMessages =
     extend({}, MultipleChoiceField.prototype.defaultErrorMessages, {
@@ -1364,7 +1295,6 @@ MultipleChoiceField.prototype.clean = function(value)
  * @config {Array} [fields] fields which will be used to perform cleaning in the
  *                          order they're given in.
  * @constructor
- * @augments Field
  */
 function ComboField(kwargs)
 {
@@ -1413,7 +1343,6 @@ ComboField.prototype.clean = function(value)
  * @config {Array} [fields] a list of fields to be used to clean a
  *                          "decompressed" list of values.
  * @constructor
- * @augments Field
  */
 function MultiValueField(kwargs)
 {
@@ -1494,7 +1423,7 @@ MultiValueField.prototype.clean = function(value)
             fieldValue = null;
         }
 
-        if (this.required && contains(Field.EMPTY_VALUES, fieldValue))
+        if (this.required && contains(EMPTY_VALUES, fieldValue))
         {
             throw new ValidationError(this.errorMessages.required);
         }
@@ -1555,7 +1484,6 @@ MultiValueField.prototype.compress = function(dataList)
  *                               will be listed as choices - defaults to
  *                               <code>false</code>.
  * @constructor
- * @augments ChoiceField
  */
 function FilePathField(path, kwargs)
 {
@@ -1602,7 +1530,6 @@ inheritFrom(FilePathField, ChoiceField);
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Field} and {@link MultiValueField}.
  * @constructor
- * @augments MultiValueField
  */
 function SplitDateTimeField(kwargs)
 {
@@ -1619,7 +1546,7 @@ function SplitDateTimeField(kwargs)
 }
 
 inheritFrom(SplitDateTimeField, MultiValueField);
-SplitDateTimeField.prototype.defaultWidget = SplitDateTimeWidget;
+SplitDateTimeField.prototype.widget = SplitDateTimeWidget;
 SplitDateTimeField.prototype.defaultErrorMessages =
     extend({}, SplitDateTimeField.prototype.defaultErrorMessages, {
         invalidDate: "Enter a valid date.",
@@ -1644,11 +1571,11 @@ SplitDateTimeField.prototype.compress = function(dataList)
         var d = dataList[0], t = dataList[1];
         // Raise a validation error if date or time is empty (possible if
         // SplitDateTimeField has required == false).
-        if (contains(Field.EMPTY_VALUES, d))
+        if (contains(EMPTY_VALUES, d))
         {
            throw new ValidationError(this.errorMessages.invalidDate);
         }
-        else if (contains(Field.EMPTY_VALUES, t))
+        else if (contains(EMPTY_VALUES, t))
         {
            throw new ValidationError(this.errorMessages.invalidTime);
         }
@@ -1664,7 +1591,6 @@ SplitDateTimeField.prototype.compress = function(dataList)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Field} and {@link CharField}.
  * @constructor
- * @augments RegexField
  */
 function IPAddressField(kwargs)
 {
@@ -1689,7 +1615,6 @@ IPAddressField.prototype.defaultErrorMessages =
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Field} and {@link CharField}.
  * @constructor
- * @augments RegexField
  */
 function SlugField(kwargs)
 {

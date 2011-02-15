@@ -24,6 +24,14 @@ function isCallable(o)
     return (isFunction(o) || isFunction(o.__call__));
 }
 
+function callValidator(v, value)
+{
+    if (isFunction(v))
+        return v(value)
+    if (isFunction(v.__call__))
+        return v.__call__(value);
+}
+
 /**
  * Updates an object's properties with other objects' properties.
  *
@@ -232,6 +240,14 @@ function getDefault(o, prop, default)
     if (typeof o[prop] != "undefined")
         return o[prop];
     return default;
+}
+
+/**
+ * Coerces to string and strips leading and trailing spaces.
+ */
+function strip(s)
+{
+    return (""+s).replace(/(^\s+|\s+$)/g, "");
 }
 
 /**
