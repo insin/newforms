@@ -9,10 +9,10 @@
  */
 var prettyName = (function()
 {
-    var capsRE = /([A-Z]+)/g;
-    var splitRE = /[ _]+/;
-    var trimRE = /(^ +| +$)/g;
-    var allCapsRE = /^[A-Z][A-Z0-9]+$/;
+    var capsRE = /([A-Z]+)/g,
+        splitRE = /[ _]+/,
+        trimRE = /(^ +| +$)/g,
+        allCapsRE = /^[A-Z][A-Z0-9]+$/;
 
     return function(name)
     {
@@ -22,24 +22,18 @@ var prettyName = (function()
 
         // If we had an initial cap...
         if (parts[0] === "")
-        {
             parts.splice(0, 1);
-        }
 
         // Give the first word an initial cap and all subsequent words an
         // initial lowercase if not all caps.
         for (var i = 0, l = parts.length; i < l; i++)
         {
             if (i == 0)
-            {
                 parts[0] = parts[0].charAt(0).toUpperCase() +
                            parts[0].substr(1);
-            }
             else if (!allCapsRE.test(parts[i]))
-            {
                 parts[i] = parts[i].charAt(0).toLowerCase() +
                            parts[i].substr(1);
-            }
         }
 
         return parts.join(" ");
@@ -60,14 +54,12 @@ function BoundField(form, field, name)
     this.field = field;
     this.name = name;
     this.htmlName = form.addPrefix(name);
+    this.htmlInitialName = form.addInitialPrefix(name);
+    this.htmlInitialId = form.addInitialPrefix(this.autoId());
     if (this.field.label !== null)
-    {
         this.label = this.field.label;
-    }
     else
-    {
         this.label = prettyName(name);
-    }
     this.helpText = field.helpText || "";
 }
 
@@ -85,7 +77,7 @@ BoundField.prototype =
 
     /**
      * Calculates and returns the <code>id</code> attribute for this BoundFIeld if
-     * the associated form has an autoId.
+     * the associated form has an autoId. Returns an empty string otherwise.
      */
     /*get */autoId: function()
     {
@@ -94,24 +86,53 @@ BoundField.prototype =
         {
             autoId = ""+autoId;
             if (autoId.indexOf("%(name)s") != -1)
-            {
                 return format(autoId, {name: this.htmlName});
-            }
-            else
-            {
-                return this.htmlName;
-            }
+            return this.htmlName;
         }
         return "";
     },
 
+    /**
+     * Returns the data for this BoundFIeld, or <code>null</code> if it wasn't
+     * given.
+     */
     /*get */data: function()
     {
         return this.field.widget.valueFromData(this.form.data,
                                                this.form.files,
                                                this.htmlName);
-    }
+    },
+
+    /**
+     * Wrapper around the field widget's <code>idForLabel</code> method.
+     * Useful, for example, for focusing on this field regardless of whether
+     * it has a single widget or a MutiWidget.
+     */
+     /*get */idForLabel: function()
+     {
+        var widget = this.field.widget,
+            id = getDefault(widget.attrs, "id", this.autoId());
+        return widget.idForLabel(id);
+     }
 };
+
+/**
+ * Assuming this method will only be used when DOMBuilder is configured to
+ * generate HTML.
+ */
+BoundField.prototype.toString = function()
+{
+    return ""+this.defaultRendering();
+};
+
+BoundField.prototype.defaultRendering: function()
+{
+    if (this.field.showHiddenInitial)
+    {
+        return DOMBuilder.fragment(this.asWidget(), this.asHidden({onlyInitial: true}));
+    }
+    return this.asWidget();
+}
 
 /**
  * Renders a widget for the field.
@@ -125,53 +146,24 @@ BoundField.prototype =
  */
 BoundField.prototype.asWidget = function(kwargs)
 {
-    kwargs = extend({widget: null, attrs: null}, kwargs || {});
-    var widget = (kwargs.widget !== null ? kwargs.widget : this.field.widget);
-    var attrs = kwargs.attrs || {};
-    var autoId = this.autoId();
+    kwargs = extend({widget: null, attrs: null, onlyInitial: false}, kwargs || {});
+    var widget = (kwargs.widget !== null ? kwargs.widget : this.field.widget),
+        attrs = kwargs.attrs || {},
+        autoId = this.autoId(),
+        name;
 
     if (autoId &&
         typeof attrs.id == "undefined" &&
         typeof widget.attrs.id == "undefined")
-    {
-        attrs.id = autoId;
-    }
+        attrs.id = (!kwargs.onlyInitial ? autoId : this.htmlInitialId);
 
-    var data;
-    if (!this.form.isBound)
-    {
-        if (typeof this.form.initial[this.name] !== "undefined")
-        {
-            data = this.form.initial[this.name];
-        }
-        else
-        {
-            data = this.field.initial;
-        }
-
-        if (isFunction(data))
-        {
-            data = data();
-        }
-    }
+    if (!kwargs.onlyInitial)
+        name = this.htmlName;
     else
-    {
-        data = this.data();
-    }
+        name = this.htmlInitialName
 
-    return widget.render(this.htmlName, data, attrs);
-};
-
-/**
- * Renders the field as a hidden field.
- *
- * @param {Object} [attrs] additional attributes to be added to the field's
- *                         widget.
- */
-BoundField.prototype.asHidden = function(attrs)
-{
-    return this.asWidget({widget: new this.field.hiddenWidget(),
-                          attrs: attrs || {}});
+    // TODO Check if we should use {attrs: attrs} instead
+    return widget.render(name, this.value(), attrs);
 };
 
 /**
@@ -199,7 +191,45 @@ BoundField.prototype.asTextarea = function(attrs)
 };
 
 /**
- * Creates an HTML <code>&lt;label&gt;</code> for the field.
+ * Renders the field as a hidden field.
+ *
+ * @param {Object} [attrs] additional attributes to be added to the field's
+ *                         widget.
+ */
+BoundField.prototype.asHidden = function(attrs)
+{
+    return this.asWidget({widget: new this.field.hiddenWidget(),
+                          attrs: attrs || {}});
+};
+
+/**
+ * Returns the value for this BoundField, using the initial value if the form
+ * is not bound or the data otherwise.
+ */
+BoundField.prototype.value = function()
+{
+    var data;
+    if (!this.form.isBound)
+    {
+        data = getDefault(this.form.initial, this.name, this.field.initial);
+        if (isFunction(data))
+            data = data()
+    }
+    else
+    {
+        data = this.field.boundData(this.data, getDefault(this.form.initial,
+                                                          this.name,
+                                                          this.field.initial));
+    }
+    return this.field.prepareValue(data);
+};
+
+/**
+ * Wraps the given contents in a &lt;label&gt;, if the field has an ID attribute.
+ * Does not HTML-escape the contents. If contents aren't given, uses the field's
+ * HTML-escaped label.
+ *
+ * If attrs are given, they're used as HTML attributes on the <label> tag.
  *
  * @param {Object} [kwargs] configuration options.
  * @config {String} [contents] contents for the label - if not provided, label
@@ -209,41 +239,34 @@ BoundField.prototype.asTextarea = function(attrs)
 BoundField.prototype.labelTag = function(kwargs)
 {
     kwargs = extend({contents: null, attrs: null}, kwargs || {});
-    var contents;
+    var contents, widget = this.field.widget, id, attrs;
     if (kwargs.contents !== null)
-    {
-        contents = kwargs.contents;
-    }
+        contents = DOMBuilder.markSafe(kwargs.contents);
     else
-    {
         contents = this.label;
-    }
-    var widget = this.field.widget;
-    var id;
-    if (typeof widget.attrs.id  != "undefined")
-    {
-        id = widget.attrs.id;
-    }
-    else
-    {
-        id = this.autoId();
-    }
+
+    id = getDedault(widget.attrs, "id", this.autoID());
     if (id)
     {
-        var attrs = extend(kwargs.attrs || {},
-                                 {"for": widget.idForLabel(id)});
+        attrs = extend(kwargs.attrs || {},
+                       {"for": widget.idForLabel(id)});
         contents = DOMBuilder.createElement("label", attrs, [contents]);
     }
     return contents;
 };
 
 /**
- * Assuming this method will only be used when DOMBuilder is configured to
- * generate HTML.
+ * Returns a string of space-separated CSS classes for this field.
  */
-BoundField.prototype.toString = function()
+BoundField.prototype.cssClasses = function(extraClasses)
 {
-    return ""+this.asWidget();
+    if (isFunction(extraClasses.split))
+        extraClasses = extraClasses.split();
+    if (this.errors() && isString(this.form.errorCssClass))
+        extraClasses.push(this.form.errorCssClass);
+    if (this.field.required && isString(this.form.requiredCssClass))
+        extraClasses.push(this.form.requiredCssClass)
+    return extraClasses.join(" ");
 };
 
 /**
@@ -304,8 +327,7 @@ function Form(kwargs)
     //      constructor for now, but is there a nice way to get anything like
     //      the more declarative syntax Python's metaclassing gives Django?
 
-    // TODO Is there any hope of ever replacing __getitem__ properly?
-    /*
+    /* TODO Is there any hope of ever replacing __getitem__ properly?
     if (typeof this.fields != "undefined")
     {
         for (var name in this.fields)
@@ -344,9 +366,7 @@ Form.prototype =
     /*get */errors: function()
     {
         if (this._errors === null)
-        {
             this.fullClean();
-        }
         return this._errors;
     },
 
@@ -364,44 +384,53 @@ Form.prototype =
             for (var name in this.fields)
             {
                 if (!this.fields.hasOwnProperty(name))
-                {
                     continue;
-                }
 
-                var field = this.fields[name];
-                var prefixedName = this.addPrefix(name);
-                var dataValue = field.widget.valueFromData(this.data,
+                var field = this.fields[name],
+                    prefixedName = this.addPrefix(name),
+                    dataValue = field.widget.valueFromData(this.data,
                                                            this.files,
-                                                           prefixedName);
-                var initialValue;
-                if (typeof this.initial[name] != "undefined")
+                                                           prefixedName),
+                    initialValue = getDefault(this.initial, name, field.initial);
+
+                if (field.showHiddenInitial)
                 {
-                    initialValue = this.initial[name];
-                }
-                else
-                {
-                    initialValue = field.initial;
+                    var initialPrefixedName = this.addInitialPrefix(name),
+                        hiddenWidget = new field.hiddenWidget(),
+                        initialValue = hiddenWidget.valueFromData(
+                            this.data, this.files, initialPrefixedName);
                 }
 
                 if (field._hasChanged(initialValue, dataValue))
-                {
                     this._changedData.push(name);
-                }
             }
         }
         return this._changedData;
-    }
+    },
 
-    // TODO get media()
+    // TODO Implement
+    /*get */media: function()
+    {
+    }
 };
 
-// TODO Come up with a suitable replacement for __iter__
+Form.prototype.toString = function()
+{
+    return ""+this.defaultRendering();
+};
+
+Form.prototype.defaultRendering = function()
+{
+    return this.asTable();
+};
+
+/* TODO Come up with a suitable cross-browser replacement for __iter__
 //def __iter__(self):
 //    for name, field in self.fields.items():
 //        yield BoundField(self, field, name)
 
-/* The yield keyword is only available in Firefox - adding the necessary
-   ;version=1.7 to the script tag breaks other browsers, so leave be for now.
+// The yield keyword is only available in Firefox - adding the necessary
+// ";version=1.7" to the script tag breaks other browsers, so leave be for now.
 Form.prototype.__iterator__ = function()
 {
     var fields = [];
@@ -425,37 +454,9 @@ Form.prototype.__iterator__ = function()
 };
 */
 
-Form.prototype.toString = function()
-{
-    return ""+this.defaultRendering();
-};
-
-Form.prototype.defaultRendering = function()
-{
-    return this.asTable();
-};
-
 /**
- * Creates a {@link BoundField} for the field with the given name.
- *
- * @param {String} name a field name.
- *
- * @return a <code>BoundField</code> for the field with the given name, if one
- *         exists.
- * @type BoundField
- */
-Form.prototype.boundField = function(name)
-{
-    if (!this.fields.hasOwnProperty(name))
-    {
-        throw new Error("Form does not have a " + name + " field.");
-    }
-    return new BoundField(this, this.fields[name], name);
-};
-
-/**
- * Creates a {@link BoundField} for each field in the form, ordering them
- * by the order in which the fields were created.
+ * In lieu of __iter__, creates a {@link BoundField} for each field in the form,
+ * in the order in which the fields were created.
  *
  * @param {Function} [test] if provided, this function will be called with
  *                          "field" and "name" arguments - BoundFields will
@@ -472,14 +473,27 @@ Form.prototype.boundFields = function(test)
 
     var fields = [];
     for (var name in this.fields)
-    {
         if (this.fields.hasOwnProperty(name) &&
             test(this.fields[name], name) === true)
-        {
             fields.push(new BoundField(this, this.fields[name], name));
-        }
-    }
     return fields;
+};
+
+/**
+ * In lieu of __getitem__, creates a {@link BoundField} for the field with the
+ * given name.
+ *
+ * @param {String} name a field name.
+ *
+ * @return a <code>BoundField</code> for the field with the given name, if one
+ *         exists.
+ * @type BoundField
+ */
+Form.prototype.boundField = function(name)
+{
+    if (!this.fields.hasOwnProperty(name))
+        throw new Error("Form does not have a '" + name + "' field.");
+    return new BoundField(this, this.fields[name], name);
 };
 
 /**
@@ -492,10 +506,7 @@ Form.prototype.boundFields = function(test)
 Form.prototype.isValid = function()
 {
     if (!this.isBound)
-    {
         return false;
-    }
-
     return !this.errors().isPopulated();
 };
 
@@ -513,12 +524,18 @@ Form.prototype.addPrefix = function(fieldName)
     if (this.prefix !== null)
     {
         return format("%(prefix)s-%(fieldName)s",
-                            {prefix: this.prefix, fieldName: fieldName});
+                      {prefix: this.prefix, fieldName: fieldName});
     }
     return fieldName;
 };
 
-// TODO Form.addInitialPrefix
+/**
+ * Add an "initial" prefix for checking dynamic initial values.
+ */
+Form.prototype.addInitialPrefix = function(fieldName)
+{
+    return format("initial-%(fieldName)s", {fieldName: this.addPrefix(fieldName)});
+};
 
 /**
  * Helper function for outputting HTML.
@@ -538,9 +555,11 @@ Form.prototype.addPrefix = function(fieldName)
  */
 Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, doNotCoerce)
 {
-    var topErrors = this.nonFieldErrors();
-    var rows = []
-    var hiddenFields = [];
+    var topErrors = this.nonFieldErrors(); // Errors that should be displayed above all fields
+        rows = [],
+        hiddenFields = [],
+        htmlClassAttr,
+        cssClasses;
 
     var hiddenBoundFields = this.hiddenFields();
     for (var i = 0, l = hiddenBoundFields.length; i < l; i++)
@@ -548,13 +567,9 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
         var bf = hiddenBoundFields[i];
         var bfErrors = bf.errors();
         if (bfErrors.isPopulated())
-        {
             for (var j = 0, m = bfErrors.errors.length; j < m; j++)
-            {
                 topErrors.errors.push("(Hidden field " + bf.name + ") " +
                                       bfErrors.errors[j]);
-            }
-        }
         hiddenFields.push(bf.asWidget());
     }
 
@@ -562,6 +577,10 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
     for (var i = 0, l = visibleBoundFields.length; i < l; i++)
     {
         var bf = visibleBoundFields[i];
+        htmlClassAttr = "";
+        cssClasses = bf.cssClasses();
+        if (cssClasses)
+            htmlClassAttr = cssClasses
 
         // Variables which can be optional in each row
         var errors = null, label = null, helpText = null, extraContent = null;
@@ -571,53 +590,37 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
         {
             errors = new this.errorConstructor();
             for (var j = 0, m = bfErrors.errors.length; j < m; j++)
-            {
                 errors.errors.push(bfErrors.errors[j]);
-            }
 
             if (errorsOnSeparateRow === true)
-            {
                 rows.push(errorRow(errors.defaultRendering()));
                 errors = null;
-            }
         }
 
         if (bf.label)
         {
             var isSafe = DOMBuilder.isSafe(bf.label);
             label = ""+bf.label;
-
             // Only add the suffix if the label does not end in punctuation
             if (this.labelSuffix &&
                 ":?.!".indexOf(label.charAt(label.length - 1)) == -1)
-            {
                 label += this.labelSuffix;
-            }
-
             if (isSafe)
-            {
                 label = DOMBuilder.markSafe(label);
-            }
             label = bf.labelTag({contents: label}) || "";
         }
 
         if (bf.field.helpText)
-        {
             helpText = bf.field.helpText;
-        }
 
         // If this is the last row, it should include any hidden fields
         if (i == l - 1 && hiddenFields.length > 0)
-        {
             extraContent = hiddenFields;
-        }
 
         if (errors !== null)
-        {
             errors = errors.defaultRendering();
-        }
 
-        rows.push(normalRow(label, bf.asWidget(), helpText, errors, extraContent));
+        rows.push(normalRow(label, bf.asWidget(), helpText, errors, htmlClassAttr, extraContent));
     }
 
     if (topErrors.isPopulated())
@@ -626,27 +629,19 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
         // there are no other rows.
         var extraContent = null;
         if (hiddenFields.length > 0 && rows.length == 0)
-        {
             extraContent = hiddenFields;
-        }
         rows.splice(0, 0, errorRow(topErrors.defaultRendering(), extraContent));
     }
 
     // Put hidden fields in their own error row if there were no rows to
     // display.
     if (hiddenFields.length > 0 && rows.length == 0)
-    {
         rows.push(errorRow("", hiddenFields));
-    }
 
     if (doNotCoerce === true || DOMBuilder.mode == "DOM")
-    {
         return rows;
-    }
     else
-    {
         return rows.join("\n");
-    }
 };
 
 /**
@@ -657,15 +652,13 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
  *                                not be coerced to a String if we're operating
  *                                in HTML mode - defaults to <code>false</code>.
  */
-Form.prototype.asTable = function(doNotCoerce)
+Form.prototype.asTable = (function()
 {
-    var normalRow = function(label, field, helpText, errors, extraContent)
+    var normalRow = function(label, field, helpText, errors, htmlClassAttr, extraContent)
     {
         var contents = [];
         if (errors)
-        {
             contents.push(errors);
-        }
         contents.push(field);
         if (helpText)
         {
@@ -673,11 +666,12 @@ Form.prototype.asTable = function(doNotCoerce)
             contents.push(helpText);
         }
         if (extraContent)
-        {
             contents = contents.concat(extraContent);
-        }
 
-        return DOMBuilder.createElement("tr", {}, [
+        var rowAttrs = {};
+        if htmlClassAttr:
+            rowAttrs["class"] = htmlClassAttr;
+        return DOMBuilder.createElement("tr", rowAttrs, [
           DOMBuilder.createElement("th", {}, [label]),
           DOMBuilder.createElement("td", {}, contents)
         ]);
@@ -687,16 +681,17 @@ Form.prototype.asTable = function(doNotCoerce)
     {
         var contents = [errors];
         if (extraContent)
-        {
             contents = contents.concat(extraContent);
-        }
         return DOMBuilder.createElement("tr", {}, [
           DOMBuilder.createElement("td", {colSpan: 2}, contents)
         ]);
     }
 
-    return this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
-};
+    return function(doNotCoerce)
+    {
+        this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
+    }
+})();
 
 /**
  * Returns this form rendered as HTML &lt;li&gt;s - excluding the
@@ -706,19 +701,15 @@ Form.prototype.asTable = function(doNotCoerce)
  *                                not be coerced to a String if we're operating
  *                                in HTML mode - defaults to <code>false</code>.
  */
-Form.prototype.asUL = function(doNotCoerce)
+Form.prototype.asUL = (function()
 {
-    var normalRow = function(label, field, helpText, errors, extraContent)
+    var normalRow = function(label, field, helpText, errors, htmlClassAttr, extraContent)
     {
         var contents = [];
         if (errors)
-        {
             contents.push(errors);
-        }
         if (label)
-        {
             contents.push(label);
-        }
         contents.push(" ");
         contents.push(field);
         if (helpText)
@@ -727,25 +718,27 @@ Form.prototype.asUL = function(doNotCoerce)
             contents.push(helpText);
         }
         if (extraContent)
-        {
             contents = contents.concat(extraContent);
-        }
 
-        return DOMBuilder.createElement("li", {}, contents);
+        var rowAttrs = {};
+        if htmlClassAttr:
+            rowAttrs["class"] = htmlClassAttr;
+        return DOMBuilder.createElement("li", rowAttrs, contents);
     };
 
     var errorRow = function(errors, extraContent)
     {
         var contents = [errors];
         if (extraContent)
-        {
             contents = contents.concat(extraContent);
-        }
         return DOMBuilder.createElement("li", {}, contents);
     }
 
-    return this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
-};
+    return function(doNotCoerce)
+    {
+        this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
+    }
+})();
 
 /**
  * Returns this form rendered as HTML &lt;p&gt;s.
@@ -754,15 +747,13 @@ Form.prototype.asUL = function(doNotCoerce)
  *                                not be coerced to a String if we're operating
  *                                in HTML mode - defaults to <code>false</code>.
  */
-Form.prototype.asP = function(doNotCoerce)
+Form.prototype.asP = (function()
 {
-    var normalRow = function(label, field, helpText, errors, extraContent)
+    var normalRow = function(label, field, helpText, errors, htmlClassAttr, extraContent)
     {
         var contents = [];
         if (label)
-        {
             contents.push(label);
-        }
         contents.push(" ");
         contents.push(field);
         if (helpText)
@@ -771,11 +762,12 @@ Form.prototype.asP = function(doNotCoerce)
             contents.push(helpText);
         }
         if (extraContent)
-        {
             contents = contents.concat(extraContent);
-        }
 
-        return DOMBuilder.createElement("p", {}, contents);
+        var rowAttrs = {};
+        if htmlClassAttr:
+            rowAttrs["class"] = htmlClassAttr;
+        return DOMBuilder.createElement("p", rowAttrs, contents);
     };
 
     var errorRow = function(errors, extraContent)
@@ -790,8 +782,11 @@ Form.prototype.asP = function(doNotCoerce)
         return errors;
     }
 
-    return this._htmlOutput(normalRow, errorRow, true, doNotCoerce);
-};
+    return function(doNotCoerce)
+    {
+        return this._htmlOutput(normalRow, errorRow, true, doNotCoerce);
+    };
+})();
 
 /**
  * Returns errors that aren't associated with a particular field.
@@ -802,12 +797,9 @@ Form.prototype.asP = function(doNotCoerce)
  */
 Form.prototype.nonFieldErrors = function()
 {
-    var errors = this.errors();
-    if (typeof errors[Form.NON_FIELD_ERRORS] != "undefined")
-    {
-        return errors[Form.NON_FIELD_ERRORS];
-    }
-    return new this.errorConstructor();
+    return getDefault(this.errors(),
+                      Form.NON_FIELD_ERRORS,
+                      new this.errorConstructor());
 };
 
 /**
@@ -829,27 +821,21 @@ Form.prototype.fullClean = function()
 {
     this._errors = new ErrorObject();
     if (!this.isBound)
-    {
-        // Stop further processing
-        return;
-    }
+        return; // Stop further processing
 
     this.cleanedData = {};
 
     // If the form is permitted to be empty, and none of the form data has
     // changed from the initial data, short circuit any validation.
     if (this.emptyPermitted && !this.hasChanged())
-    {
         return;
-    }
 
     this._cleanFields();
     this._cleanForm();
+    this._postClean();
 
     if (this._errors.isPopulated())
-    {
         delete this.cleanedData;
-    }
 };
 
 Form.prototype._cleanFields = function()
@@ -857,29 +843,21 @@ Form.prototype._cleanFields = function()
     for (var name in this.fields)
     {
         if (!this.fields.hasOwnProperty(name))
-        {
             continue;
-        }
 
-        var field = this.fields[name];
-        // valueFromData() gets the data from the data objects.
-        // Each widget type knows how to retrieve its own data, because some
-        // widgets split data over several HTML fields.
-        var value = field.widget.valueFromData(this.data, this.files,
-                                               this.addPrefix(name));
+        var field = this.fields[name],
+            // valueFromData() gets the data from the data objects.
+            // Each widget type knows how to retrieve its own data, because some
+            // widgets split data over several HTML fields.
+            value = field.widget.valueFromData(this.data, this.files,
+                                               this.addPrefix(name)),
+            initial,
+            customClean;
         try
         {
             if (field instanceof FileField)
             {
-                var initial;
-                if (typeof this.initial[name] != "undefined")
-                {
-                    initial = this.initial[name];
-                }
-                else
-                {
-                    initial = field.initial;
-                }
+                initial = getDefault(this.initial, name, field.initial);
                 value = field.clean(value, initial);
             }
             else
@@ -889,7 +867,7 @@ Form.prototype._cleanFields = function()
             this.cleanedData[name] = value;
 
             // Try clean_name
-            var customClean = "clean_" + name;
+            customClean = "clean_" + name;
             if (isFunction(this[customClean]))
             {
                  this.cleanedData[name] = this[customClean]();
@@ -897,8 +875,7 @@ Form.prototype._cleanFields = function()
             }
 
             // Try cleanName
-            customClean =
-                "clean" + name.charAt(0).toUpperCase() + name.substr(1);
+            customClean = "clean" + name.charAt(0).toUpperCase() + name.substr(1);
             if (isFunction(this[customClean]))
             {
                 this.cleanedData[name] = this[customClean]();
@@ -906,18 +883,12 @@ Form.prototype._cleanFields = function()
         }
         catch (e)
         {
-            if (e instanceof ValidationError)
-            {
-                this._errors[name] = e.messages;
-                if (typeof this.cleanedData[name] != "undefined")
-                {
-                    delete this.cleanedData[name];
-                }
-            }
-            else
-            {
-                throw e;
-            }
+            if (!(e instanceof ValidationError))
+                throw (e);
+
+            this._errors[name] = new this.errorConstructor(e.messages);
+            if (typeof this.cleanedData[name] != "undefined")
+                delete this.cleanedData[name];
         }
     }
 };
@@ -930,16 +901,17 @@ Form.prototype._cleanForm = function()
     }
     catch (e)
     {
-        if (e instanceof ValidationError)
-        {
-            this._errors[Form.NON_FIELD_ERRORS] = e.messages;
-        }
-        else
-        {
-            throw e;
-        }
+        if (!(e instanceof ValidationError))
+            throw (e)
+        this._errors[Form.NON_FIELD_ERRORS] = new this.errorConstructor(e.messages);
     }
 };
+
+/**
+ * An internal hook for performing additional cleaning after form cleaning is
+ * complete.
+ */
+Form.prototype._postClean = function() {};
 
 /**
  * Hook for doing any extra form-wide cleaning after each Field's
@@ -962,7 +934,7 @@ Form.prototype.clean = function()
  */
 Form.prototype.hasChanged = function()
 {
-    return (this.changedData().length != 0);
+    return (this.changedData().length > 0);
 };
 
 /**
@@ -976,15 +948,9 @@ Form.prototype.hasChanged = function()
 Form.prototype.isMultipart = function()
 {
     for (var name in this.fields)
-    {
         if (this.fields.hasOwnProperty(name))
-        {
             if (this.fields[name].widget.needsMultipartForm)
-            {
                 return true;
-            }
-        }
-    }
     return false;
 };
 
@@ -1057,7 +1023,7 @@ Form.prototype.visibleFields = function()
  */
 function formFactory(kwargs)
 {
-    if (typeof kwargs.fields != "function")
+    if (!isFunction(kwargs.fields))
     {
         throw new Error("You must provide a function named 'fields'");
     }
@@ -1068,20 +1034,18 @@ function formFactory(kwargs)
 
     // Create references to special functions which will be closed over by the
     // new form constructor.
-    var form = kwargs.form;
-    var createFields = kwargs.fields;
-    var preInit = kwargs.preInit;
-    var postInit = kwargs.postInit;
+    var form = kwargs.form,
+        createFields = kwargs.fields,
+        preInit = kwargs.preInit,
+        postInit = kwargs.postInit;
 
     /** @ignore */
     var formConstructor = function(kwargs)
     {
         if (preInit !== null)
-        {
             // If the preInit function returns anything, use the returned value
             // as the kwargs object for further processing.
             kwargs = preInit.call(this, kwargs) || kwargs;
-        }
 
         // Any pre-existing fields will have been created by a form which uses
         // this form as its base. As such, pre-existing fields should overwrite
@@ -1091,22 +1055,14 @@ function formFactory(kwargs)
 
         // Tell whatever number of parents we have to do their instantiation bit
         if (isArray(form))
-        {
-            // We loop backwards because fields are instantiated "bottom up"
+            // Loop backwards because fields are instantiated "bottom up"
             for (var i = form.length - 1; i >= 0; i--)
-            {
                 form[i].call(this, kwargs);
-            }
-        }
         else
-        {
             form.call(this, kwargs);
-        }
 
         if (postInit !== null)
-        {
             postInit.call(this, kwargs);
-        }
     };
 
     // Remove special functions from kwargs, as they will now be used to add
@@ -1118,22 +1074,24 @@ function formFactory(kwargs)
 
     if (isArray(form))
     {
-        // *Really* inherit from the first Form we were passed
-        formConstructor.prototype = new form[0]();
-        // Borrow methods from any additional Forms this is a bit of a hack to
-        // fake multiple inheritance. We can only use instanceof for the form we
-        // really inherited from, but we can access methods from all our
-        // parents.
+        // Really inherit from the first Form we were passed
+        inheritFrom(formConstructor, form[0]);
+        // Borrow methods from any additional Forms - this is a bit of a hack to
+        // fake multiple inheritance, using any additonal forms as mixins. We can
+        // only use instanceof for the form we really inherited from, but we can
+        // access methods from all our parents.
         for (var i = 1, l = form.length; i < l; i++)
         {
             extend(formConstructor.prototype, form[i].prototype);
         }
+
         // Anything else defined in kwargs should take precedence
         extend(formConstructor.prototype, kwargs);
     }
     else
     {
-        formConstructor.prototype = extend(new form(), kwargs);
+        inheritFrom(formConstructor, form);
+        extend(formConstructor.prototype, kwargs);
     }
 
     return formConstructor;

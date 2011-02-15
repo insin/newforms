@@ -224,6 +224,17 @@ function contains(container, item)
 }
 
 /**
+ * Returns the value of a property if it is defined in the given object,
+ * otherwise returns the given default value.
+ */
+function getDefault(o, prop, default)
+{
+    if (typeof o[prop] != "undefined")
+        return o[prop];
+    return default;
+}
+
+/**
  * A collection of errors that knows how to display itself in various formats.
  * <p>
  * This object's properties are the field names, and corresponding values are
