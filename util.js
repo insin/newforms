@@ -14,6 +14,16 @@ function isFunction(o)
     return (toString.call(o) === "[object Function]");
 }
 
+function isNumber(o)
+{
+    return (toString.call(o) === "[object Number]");
+}
+
+function isObject(o)
+{
+    return (toString.call(o) === "[object Object]");
+}
+
 function isString(o)
 {
     return (toString.call(o) === "[object String]");
@@ -27,9 +37,9 @@ function isCallable(o)
 function callValidator(v, value)
 {
     if (isFunction(v))
-        return v(value)
-    if (isFunction(v.__call__))
-        return v.__call__(value);
+        v(value)
+    else if (isFunction(v.__call__))
+        v.__call__(value);
 }
 
 /**
@@ -41,7 +51,6 @@ function callValidator(v, value)
  *                          order given.
  *
  * @return the <code>destination</code> object.
- * @type Object
  */
 function extend(destination)
 {
@@ -82,8 +91,6 @@ function inheritFrom(child, parent)
  * @param {Object} context an object specifying formatting context attributes.
  *
  * @return a formatted version of the given String.
- * @type String
- * @function
  */
 var format = (function()
 {
@@ -100,7 +107,6 @@ var format = (function()
          * @param {String} name the name of a placeholder.
          *
          * @return the replacement for the placeholder with the given name.
-         * @type String
          */
         return function(s, name)
         {
@@ -124,7 +130,6 @@ var format = (function()
  *
  * @return an object representing the data present in the form. If the form
  *         could not be found, this object will be empty.
- * @type Object
  */
 function formData(form)
 {
@@ -210,7 +215,6 @@ function formData(form)
  *
  * @return <code>true</code> if the container contains the item,
  *         <code>false</code> otherwise.
- * @type Boolean
  */
 function contains(container, item)
 {
@@ -235,11 +239,11 @@ function contains(container, item)
  * Returns the value of a property if it is defined in the given object,
  * otherwise returns the given default value.
  */
-function getDefault(o, prop, default)
+function getDefault(o, prop, defaultValue)
 {
     if (typeof o[prop] != "undefined")
         return o[prop];
-    return default;
+    return defaultValue;
 }
 
 /**
@@ -397,18 +401,18 @@ ErrorList.prototype.isPopulated = function()
 
 /**
  * A validation error.
- *
- * @param message an error message or <code>Array</code> of error messages.
- * @constructor
  */
-function ValidationError(message)
+function ValidationError(message, kwargs)
 {
+    kwargs = extend({code: null, params: null}, kwargs || {});
     if (isArray(message))
     {
         this.messages = new ErrorList(message);
     }
     else
     {
+        this.code = kwargs.code;
+        this.params = kwargs.params;
         this.messages = new ErrorList([message]);
     }
 }

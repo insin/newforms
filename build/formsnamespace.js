@@ -45,6 +45,7 @@ return {
     ChoiceField: ChoiceField,
     TypedChoiceField: TypedChoiceField,
     MultipleChoiceField: MultipleChoiceField,
+    TypedMultipleChoiceField: TypedMultipleChoiceField,
     ComboField: ComboField,
     MultiValueField: MultiValueField,
     FilePathField: FilePathField,

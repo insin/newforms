@@ -21,9 +21,7 @@ test("ValidationError", function()
            "<ul class=\"errorlist\"><li>Error one.</li><li>Error two.</li></ul>");
 
     // Can take a non-string
-    function VeryBadError()
-    {
-    }
+    function VeryBadError() { }
     VeryBadError.prototype =
     {
         toString: function() { return "A very bad error."; }
