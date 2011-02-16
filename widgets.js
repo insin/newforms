@@ -4,30 +4,33 @@
 
 /**
  * An HTML form widget.
- * <p>
+ *
  * A widget handles the rendering of HTML, and the extraction of data from an
  * object that corresponds to the widget.
  *
- * @param {Object} [kwargs] configuration options.
- * @config {Object} [attrs] HTML attributes for the rendered widget.
+ * @param {Object} [attrs] HTML attributes for the rendered widget.
  * @constructor
  */
-function Widget(kwargs)
+function Widget(attrs)
 {
-    kwargs = extend({attrs: null}, kwargs || {})
-    // Copy attributes to a new Object
-    this.attrs = extend({}, kwargs.attrs || {});
+    this.attrs = extend({}, attrs || {})
 }
-
-/**
- * Determines whether this corresponds to an &lt;input type="hidden"&gt;.
- */
+/** Determines whether this corresponds to an &lt;input type="hidden"&gt;. */
 Widget.prototype.isHidden = false;
+/** Determines whether this widget needs a multipart-encrypted form. */
+Widget.prototype.needsMultipartForm = false;
+Widget.prototype.isRequired = false;
 
 /**
- * Determines whether this widget needs a multipart-encrypted form.
+ * Returns this Widget rendered as HTML.
+ *
+ * The 'value' given is not guaranteed to be valid input, so subclass
+ * implementations should program defensively.
  */
-Widget.prototype.needsMultipartForm = false;
+Widget.prototype.render = function(value)
+{
+    throw new Error("Subclasses must implement this method.");
+};
 
 /**
  * Helper function for building an attribute dictionary.
@@ -50,17 +53,11 @@ Widget.prototype.buildAttrs = function(extraAttrs, kwargs)
  */
 Widget.prototype.valueFromData = function(data, files, name)
 {
-    if (typeof data[name] != "undefined")
-    {
-        return data[name];
-    }
-    return null;
+    return getDefault(data, name, null);
 };
 
 /**
  * Determines if data has changed from initial.
- *
- * @type Boolean
  */
 Widget.prototype._hasChanged = function(initial, data)
 {
@@ -96,33 +93,24 @@ Widget.prototype.idForLabel = function(id)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Widget}.
  * @constructor
- * @augments Widget
  */
-function Input(kwargs)
+function Input(attrs)
 {
-    Widget.call(this, kwargs);
+    Widget.call(this, attrs);
 }
-
 inheritFrom(Input, Widget);
-
-/**
- * The type of this input.
- */
+/** The type of this input. */
 Input.prototype.inputType = null;
 
 Input.prototype.render = function(name, value, attrs)
 {
     if (value === null)
-    {
         value = "";
-    }
     var finalAttrs = this.buildAttrs(attrs, {type: this.inputType,
                                              name: name});
     if (value !== "")
-    {
         // Only add the "value" attribute if value is non-empty
         finalAttrs.value = value;
-    }
     return DOMBuilder.createElement("input", finalAttrs);
 };
 
@@ -132,13 +120,11 @@ Input.prototype.render = function(name, value, attrs)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Input}.
  * @constructor
- * @augments Input
  */
-function TextInput(kwargs)
+function TextInput(attrs)
 {
-    Input.call(this, kwargs);
+    Input.call(this, attrs);
 }
-
 inheritFrom(TextInput, Input);
 TextInput.prototype.inputType = "text";
 
@@ -151,24 +137,20 @@ TextInput.prototype.inputType = "text";
  *                                 rendered for this field - defaults to
  *                                 <code>true</code>.
  * @constructor
- * @augments Input
  */
 function PasswordInput(kwargs)
 {
-    kwargs = extend({renderValue: true}, kwargs || {});
-    Input.call(this, kwargs);
+    kwargs = extend({attrs: null, renderValue: true}, kwargs || {});
+    Input.call(this, kwargs.attrs);
     this.renderValue = kwargs.renderValue;
 }
-
 inheritFrom(PasswordInput, Input);
 PasswordInput.prototype.inputType = "password";
 
 PasswordInput.prototype.render = function(name, value, attrs)
 {
     if (!this.renderValue)
-    {
         value = "";
-    }
     return Input.prototype.render.call(this, name, value, attrs);
 };
 
@@ -178,13 +160,11 @@ PasswordInput.prototype.render = function(name, value, attrs)
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Input}.
  * @constructor
- * @augments Input
  */
-function HiddenInput(kwargs)
+function HiddenInput(attrs)
 {
-    Input.call(this, kwargs);
+    Input.call(this, attrs);
 }
-
 inheritFrom(HiddenInput, Input);
 HiddenInput.prototype.inputType = "hidden";
 HiddenInput.prototype.isHidden = true;
@@ -196,29 +176,29 @@ HiddenInput.prototype.isHidden = true;
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link HiddenInput}.
  * @constructor
- * @augments HiddenInput
  */
 function MultipleHiddenInput(kwargs)
 {
     HiddenInput.call(this, kwargs);
 }
-
 inheritFrom(MultipleHiddenInput, HiddenInput);
 
 MultipleHiddenInput.prototype.render = function(name, value, attrs)
 {
     if (value === null)
-    {
         value = [];
-    }
-
-    var finalAttrs = this.buildAttrs(attrs, {type: this.inputType, name: name});
-    var inputs = [];
+    var finalAttrs = this.buildAttrs(attrs, {type: this.inputType, name: name}),
+        id = getDefault(finalAttrs, "id", null),
+        inputs = [];
     for (var i = 0, l = value.length; i < l; i++)
     {
+        var inputAttrs = extend({}, finalAttrs, {value: value[i]});
+        if (id)
+            // An ID attribute was given. Add a numeric index as a suffix
+            // so that the inputs don't all have the same ID attribute.
+            inputAttrs.id = format("%(id)s_%(i)s", {id: id, i: i});
         inputs.push(
-            DOMBuilder.createElement("input",
-                extend({}, finalAttrs, {value: value[i]})));
+            DOMBuilder.createElement("input", inputAttrs);
     }
     return DOMBuilder.createElement("span", {}, inputs);
 };
@@ -226,25 +206,22 @@ MultipleHiddenInput.prototype.render = function(name, value, attrs)
 MultipleHiddenInput.prototype.valueFromData = function(data, files, name)
 {
     if (typeof data[name] != "undefined")
-    {
         return [].concat(data[name]);
-    }
     return null;
 };
 
 /**
  * An HTML <code>&lt;input type="file"&gt;</code> widget.
  *
- * @param {Object} [kwargs] configuration options, as specified in
- *                          {@link Input}.
+ * @param {Object} [attrs] configuration options, as specified in
+ *                         {@link Input}.
  * @constructor
  * @augments Input
  */
-function FileInput(kwargs)
+function FileInput(attrs)
 {
-    Input.call(this, kwargs);
+    Input.call(this, attrs);
 }
-
 inheritFrom(FileInput, Input);
 FileInput.prototype.inputType = "file";
 FileInput.prototype.needsMultipartForm = true;
@@ -259,19 +236,13 @@ FileInput.prototype.render = function(name, value, attrs)
  */
 FileInput.prototype.valueFromData = function(data, files, name)
 {
-    if (typeof files[name] != "undefined")
-    {
-        return files[name];
-    }
-    return null;
+    return getDefault(files, name, null);
 };
 
 FileInput.prototype._hasChanged = function(initial, data)
 {
     if (data === null)
-    {
         return false;
-    }
     return true;
 };
 
@@ -994,7 +965,7 @@ CheckboxSelectMultiple.prototype.idForLabel = function(id)
 
 /**
  * A widget that is composed of multiple widgets.
- * <p>
+ *
  * You'll probably want to use this class with {@link MultiValueField}.
  *
  * @param {Array} widgets the list of widgets composing this widget.
@@ -1014,10 +985,10 @@ inheritFrom(MultiWidget, Widget);
 /**
  * This method is different than other widgets', because it has to figure out
  * how to split a single value for display in multiple widgets.
- * <p>
+ *
  * If the given value is NOT a list, it will first be "decompressed" into a list
  * before it is rendered by calling the {@link MultiWidget#decompress} method.
- * <p>
+ *
  * Each value in the list is rendered  with the corresponding widget -- the
  * first value is rendered in the first widget, the second value is rendered in
  * the second widget, and so on.
@@ -1103,7 +1074,7 @@ MultiWidget.prototype._hasChanged = function(initial, data)
 
 /**
  * Creates an element containing a given list of rendered widgets.
- * <p>
+ *
  * This hook allows you to format the HTML design of the widgets, if needed.
  *
  * @param {Array} renderedWidgets a list of rendered widgets.

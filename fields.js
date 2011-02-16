@@ -712,7 +712,7 @@ FileField.prototype.boundData = function(data, initial)
 
 /**
  * Validates that its input is a valid uploaded image.
- * <p>
+ *
  * This field is mostly meaningless on the client-side, but is included for
  * future use in any future server-side implementation.
  *
@@ -1128,18 +1128,18 @@ ComboField.prototype.clean = function(value)
 
 /**
  * A Field that aggregates the logic of multiple Fields.
- * <p>
+ *
  * Its <code>clean()</code> method takes a "decompressed" list of values, which
  * are then cleaned into a single value according to <code>this.fields</code>.
  * Each value in this list is cleaned by the corresponding field -- the first
  * value is cleaned by the first field, the second value is cleaned by the
  * second field, etc. Once all fields are cleaned, the list of clean values is
  * "compressed" into a single value.
- * <p>
+ *
  * Subclasses should not have to implement <code>clean()</code>. Instead, they
  * must implement <code>compress()</code>, which takes a list of valid values
  * and returns a "compressed" version of those values -- a single value.
- * <p>
+ *
  * You'll probably want to use this with {@link MultiWidget}.
  *
  * @param {Object} [kwargs] configuration options additional to those supplied
@@ -1170,7 +1170,7 @@ MultiValueField.prototype.validate = function() {};
 /**
  * Validates every value in the given list. A value is validated against the
  * corresponding Field in <code>this.fields</code>.
- * <p>
+ *
  * For example, if this MultiValueField was instantiated with
  * <code>{fields: [new DateField(), new TimeField()]}, <code>clean()</code>
  * would call <code>DateField.clean(value[0])</code> and
@@ -1242,7 +1242,7 @@ MultiValueField.prototype.clean = function(value)
 /**
  * Returns a single value for the given list of values. The values can be
  * assumed to be valid.
- * <p>
+ *
  * For example, if this MultiValueField was instantiated with
  * <code>{fields: [new DateField(), new TimeField()]}</code>, this might return
  * a <code>Date</code> object created by combining the date and time in

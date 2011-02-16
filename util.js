@@ -100,7 +100,7 @@ var format = (function()
         /**
          * A replacement function which looks up replacements for a named
          * placeholder.
-         * <p>
+         *
          * See http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:String:replace#Specifying_a_function_as_a_parameter
          *
          * @param {String} s the matched substring to be replaced.
@@ -256,7 +256,7 @@ function strip(s)
 
 /**
  * A collection of errors that knows how to display itself in various formats.
- * <p>
+ *
  * This object's properties are the field names, and corresponding values are
  * the errors.
  *

@@ -510,7 +510,7 @@ var time = {
     /**
      * A partial implementation of <code>strftime</code>, which formats a date
      * according to a format string.
-     * <p>
+     *
      * Supported formatting directives are:
      * <table>
      * <thead>
