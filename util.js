@@ -285,12 +285,8 @@ ErrorObject.prototype.defaultRendering = function()
 ErrorObject.prototype.isPopulated = function()
 {
     for (var name in this)
-    {
         if (this.hasOwnProperty(name))
-        {
             return true;
-        }
-    }
     return false;
 };
 
@@ -301,12 +297,11 @@ ErrorObject.prototype.asUL = function()
 {
     var items = [];
     for (var name in this)
-    {
         if (this.hasOwnProperty(name))
-        {
             items.push(DOMBuilder.createElement("li", {}, [name, this[name].asUL()]));
-        }
-    }
+
+    if (items.length === 0)
+        return DOMBuilder.fragment();
     return DOMBuilder.createElement("ul", {"class": "errorlist"}, items);
 };
 
@@ -339,6 +334,8 @@ ErrorObject.prototype.asText = function()
  */
 function ErrorList(errors)
 {
+    if (errors instanceof ErrorList)
+        console.log("Got error list!");
     this.errors = errors || [];
 }
 
@@ -369,9 +366,7 @@ ErrorList.prototype.asUL = function()
 {
     var items = [];
     for (var i = 0, l = this.errors.length; i < l; i++)
-    {
         items.push(DOMBuilder.createElement("li", {}, [this.errors[i]]));
-    }
     return DOMBuilder.createElement("ul", {"class": "errorlist"}, items);
 };
 
@@ -382,9 +377,7 @@ ErrorList.prototype.asText = function()
 {
     var items = [];
     for (var i = 0, l = this.errors.length; i < l; i++)
-    {
-        items[items.length] = "* " + this.errors[i]
-    }
+        items.push( "* " + this.errors[i]);
     return items.join("\n");
 };
 

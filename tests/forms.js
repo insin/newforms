@@ -1,5 +1,16 @@
 module("forms");
 
+(function()
+{
+
+var Person = formFactory({fields: function() {
+    return {
+        first_name: new CharField(),
+        last_name: new CharField(),
+        birthday: new DateField()
+    };
+}});
+
 test("prettyName", function()
 {
     expect(7);
@@ -20,32 +31,24 @@ test("prettyName", function()
 
 test("Form", function()
 {
-    expect(114);
-
-    var Person = formFactory({fields: function() {
-        return {
-            first_name: new CharField(),
-            last_name: new CharField(),
-            birthday: new DateField()
-        };
-    }});
+    expect(115);
 
     // Pass a data object when initialising
     var p = new Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}});
-    same(p.isBound, true);
-    same(p.errors().isPopulated(), false);
-    same(p.isValid(), true);
-    // TODO p.errors().asUL() needs some work to handle being empty
-    same(p.errors().asText(), "");
-    same([p.cleanedData.first_name, p.cleanedData.last_name, p.cleanedData.birthday.valueOf()],
-          ["John", "Lennon", new Date(1940, 9, 9).valueOf()]);
-    equals(""+p.boundField("first_name"),
+    equal(p.isBound, true);
+    equal(p.errors().isPopulated(), false);
+    equal(p.isValid(), true);
+    equal(""+p.errors().asUL(), "");
+    equal(p.errors().asText(), "");
+    deepEqual([p.cleanedData.first_name, p.cleanedData.last_name, p.cleanedData.birthday.valueOf()],
+              ["John", "Lennon", new Date(1940, 9, 9).valueOf()]);
+    equal(""+p.boundField("first_name"),
            "<input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\">");
-    equals(""+p.boundField("last_name"),
+    equal(""+p.boundField("last_name"),
            "<input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\">");
-    equals(""+p.boundField("birthday"),
+    equal(""+p.boundField("birthday"),
            "<input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\">");
-    try { p.boundField("nonexistentfield"); } catch (e) { equals(e.message, "Form does not have a nonexistentfield field."); }
+    try { p.boundField("nonexistentfield"); } catch (e) { equals(e.message, "Form does not have a 'nonexistentfield' field."); }
     equals(p.asTable(),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\"></td></tr>\n" +
@@ -1495,7 +1498,7 @@ test("Forms with prefixes", function()
     same(p.errors()["last_name"].errors, ["This field is required."]);
     same(p.errors()["birthday"].errors, ["This field is required."]);
     same(p.boundField("first_name").errors().errors, ["This field is required."]);
-    try { p.boundField("person1-first_name"); } catch(e) { equals(e.message, "Form does not have a person1-first_name field."); }
+    try { p.boundField("person1-first_name"); } catch(e) { equals(e.message, "Form does not have a 'person1-first_name' field."); }
 
     // In this example, the data doesn't have a prefix, but the form requires
     // it, so the form doesn't "see" the fields.
@@ -1831,7 +1834,7 @@ test("Overriding ErrorList", function()
     {
         ErrorList.apply(this, arguments);
     }
-    DivErrorList.prototype = new ErrorList();
+    inheritFrom(DivErrorList, ErrorList);
     DivErrorList.prototype.defaultRendering = function()
     {
         return this.asDIV();
@@ -1863,3 +1866,5 @@ test("Overriding ErrorList", function()
 "<div class=\"errorlist\"><div class=\"error\">This field is required.</div></div>\n" +
 "<p>Comment: <input type=\"text\" name=\"comment\"></p>");
 });
+
+})();

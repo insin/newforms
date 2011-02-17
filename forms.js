@@ -258,8 +258,10 @@ BoundField.prototype.labelTag = function(kwargs)
  */
 BoundField.prototype.cssClasses = function(extraClasses)
 {
-    if (isFunction(extraClasses.split))
+    extraClasses = extraClasses || null;
+    if (extraClasses !== null && isFunction(extraClasses.split))
         extraClasses = extraClasses.split();
+    extraClasses = extraClasses || [];
     if (this.errors() && isString(this.form.errorCssClass))
         extraClasses.push(this.form.errorCssClass);
     if (this.field.required && isString(this.form.requiredCssClass))
@@ -586,8 +588,10 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
                 errors.errors.push(bfErrors.errors[j]);
 
             if (errorsOnSeparateRow === true)
+            {
                 rows.push(errorRow(errors.defaultRendering()));
                 errors = null;
+            }
         }
 
         if (bf.label)
@@ -878,7 +882,7 @@ Form.prototype._cleanFields = function()
             if (!(e instanceof ValidationError))
                 throw e;
 
-            this._errors[name] = new this.errorConstructor(e.messages);
+            this._errors[name] = e.messages;
             if (typeof this.cleanedData[name] != "undefined")
                 delete this.cleanedData[name];
         }
