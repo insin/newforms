@@ -3,24 +3,27 @@
  *               forms on the same page. They can be best compared to data grids.
  */
 
+// Special field names
+var TOTAL_FORM_COUNT = "TOTAL_FORMS";
+    INITIAL_FORM_COUNT = "INITIAL_FORMS";
+    MAX_NUM_FORM_COUNT = "MAX_NUM_FORMS";
+    ORDERING_FIELD_NAME = "ORDER";
+    DELETION_FIELD_NAME = "DELETE";
+
 /**
- * A form which defines fields related to formset management.
+ * ManagementForm is used to keep track of how many form instances are displayed
+ * on the page. If adding new forms via javascript, you should increment the
+ * count field of this form as well.
  * @constructor
- * @augments Form
  */
 function ManagementForm(kwargs)
 {
     this.fields = {};
-    this.fields[ManagementForm.TOTAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
-    this.fields[ManagementForm.INITIAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
-    this.fields[ManagementForm.MAX_NUM_FORM_COUNT] = new IntegerField({widget: HiddenInput});
+    this.fields[TOTAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
+    this.fields[INITIAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
+    this.fields[MAX_NUM_FORM_COUNT] = new IntegerField({required: false, widget: HiddenInput});
     Form.call(this, kwargs);
 }
-
-ManagementForm.TOTAL_FORM_COUNT = "TOTAL_FORMS";
-ManagementForm.INITIAL_FORM_COUNT = "INITIAL_FORMS";
-ManagementForm.MAX_NUM_FORM_COUNT = "MAX_NUM_FORMS";
-
 inheritFrom(ManagementForm, Form);
 
 /**
@@ -67,9 +70,6 @@ function BaseFormSet(kwargs)
     // Construct the forms in the formset
     this._constructForms();
 }
-
-BaseFormSet.ORDERING_FIELD_NAME = "ORDER";
-BaseFormSet.DELETION_FIELD_NAME = "DELETE";
 BaseFormSet.getDefaultPrefix = function() { return "form"; }
 
 BaseFormSet.prototype =
@@ -83,16 +83,14 @@ BaseFormSet.prototype =
         {
             var form = new ManagementForm({data: this.data, autoId: this.autoId, prefix: this.prefix});
             if (!form.isValid())
-            {
                 throw new ValidationError("ManagementForm data is missing or has been tampered with");
-            }
         }
         else
         {
             var initial = {};
-            initial[ManagementForm.TOTAL_FORM_COUNT] = this.totalFormCount();
-            initial[ManagementForm.INITIAL_FORM_COUNT] = this.initialFormCount();
-            initial[ManagementForm.MAX_NUM_FORM_COUNT] = this.maxNum;
+            initial[TOTAL_FORM_COUNT] = this.totalFormCount();
+            initial[INITIAL_FORM_COUNT] = this.initialFormCount();
+            initial[MAX_NUM_FORM_COUNT] = this.maxNum;
             var form = new ManagementForm({autoId: this.autoId, prefix: this.prefix, initial: initial});
         }
         return form;
@@ -108,7 +106,7 @@ BaseFormSet.prototype =
         return this.forms.slice(this.initialFormCount());
     },
 
-    /*get */emptyForm: function()
+    /*get */emptyForm: function(kwargs)
     {
         var defaults = {
             autoId: this.autoId,
@@ -116,13 +114,14 @@ BaseFormSet.prototype =
             emptyPermitted: true
         };
 
-        if (this.data || this.files)
+        if (this.isBound)
         {
             defaults["data"] = this.data;
             defaults["files"] = this.files;
         }
 
-        var form = new this.form(defaults);
+        var formKwargs = extend(defaults, kwargs || {})
+        var form = new this.form(formKwargs);
         this.addFields(form, null);
         return form;
     },
@@ -133,14 +132,10 @@ BaseFormSet.prototype =
     /*get */cleanedData: function()
     {
         if (!this.isValid())
-        {
             throw new Error(this.constructor.name + " object has no attribute 'cleanedData'");
-        }
         var cleaned = [];
         for (var i = 0, l = this.forms.length; i < l; i++)
-        {
             cleaned.push(this.forms[i].cleanedData);
-        }
         return cleaned;
     },
 
@@ -151,9 +146,7 @@ BaseFormSet.prototype =
     /*get */deletedForms: function()
     {
         if (!this.isValid() || !this.canDelete)
-        {
             throw new Error(this.constructor.name + " object has no attribute 'deletedForms'");
-        }
 
         // Construct _deletedFormIndexes, which is just a list of form indexes
         // that have had their deletion widget set to true.
@@ -166,21 +159,15 @@ BaseFormSet.prototype =
                 var form = this.forms[i];
                 // If this is an extra form and hasn't changed, don't consider it
                 if (i >= this.initialFormCount() && !form.hasChanged())
-                {
                     continue;
-                }
-                if (form.cleanedData[BaseFormSet.DELETION_FIELD_NAME])
-                {
+                if (this._shouldDeleteForm(form))
                     this._deletedFormIndexes.push(i);
-                }
             }
         }
 
         var deletedForms = [];
         for (var i = 0, l = this._deletedFormIndexes.length; i < l; i++)
-        {
             deletedForms.push(this.forms[this._deletedFormIndexes[i]]);
-        }
         return deletedForms;
     },
 
@@ -191,9 +178,7 @@ BaseFormSet.prototype =
     /*get */orderedForms: function()
     {
         if (!this.isValid() || !this.canOrder)
-        {
             throw new Error(this.constructor.name + " object has no attribute 'orderedForms'");
-        }
 
         // Construct _ordering, which is a list of [form index, orderFieldValue]
         // pairs. After constructing this list, we'll sort it by orderFieldValue
@@ -208,15 +193,11 @@ BaseFormSet.prototype =
                 var form = this.forms[i];
                 // If this is an extra form and hasn't changed, don't consider it
                 if (i >= this.initialFormCount() && !form.hasChanged())
-                {
                     continue;
-                }
                 // Don't add data marked for deletion
-                if (this.canDelete && form.cleanedData[BaseFormSet.DELETION_FIELD_NAME])
-                {
+                if (this.canDelete && this._shouldDeleteForm(form))
                     continue;
-                }
-                this._ordering.push([i, form.cleanedData[BaseFormSet.ORDERING_FIELD_NAME]]);
+                this._ordering.push([i, form.cleanedData[ORDERING_FIELD_NAME]]);
             }
 
             // Null should be sorted below anything else. Allowing null as a
@@ -224,27 +205,19 @@ BaseFormSet.prototype =
             this._ordering.sort(function(x, y)
             {
                 if (x[1] === null && y[1] === null)
-                {
                     // Sort by form index if both order field values are null
                     return x[0] - y[0];
-                }
                 if (x[1] === null)
-                {
                     return 1;
-                }
                 if (y[1] === null)
-                {
                     return -1;
-                }
                 return x[1] - y[1];
             });
         }
 
         var orderedForms = [];
         for (var i = 0, l = this._ordering.length; i < l; i++)
-        {
             orderedForms.push(this.forms[this._ordering[i][0]]);
-        }
         return orderedForms;
     },
 
@@ -254,9 +227,7 @@ BaseFormSet.prototype =
     /*get */errors: function()
     {
         if (this._errors === null)
-        {
             this.fullClean();
-        }
         return this._errors;
     }
 };
@@ -274,22 +245,23 @@ BaseFormSet.prototype.defaultRendering = function()
 /**
  * Determines the number of form instances this formset contains, based on
  * either submitted management data or initial configuration, as appropriate.
- *
- * @type Number
  */
 BaseFormSet.prototype.totalFormCount = function()
 {
-    if (this.data || this.files)
+    if (this.isBound)
     {
-        return this.managementForm().cleanedData[ManagementForm.TOTAL_FORM_COUNT];
+        return this.managementForm().cleanedData[TOTAL_FORM_COUNT];
     }
     else
     {
-        var totalForms = this.initialFormCount() + this.extra;
-        if (totalForms > this.maxNum && this.maxNum > 0)
-        {
+        var initialForms = this.initialFormCount(),
+            totalForms = this.initialFormCount() + this.extra;
+        // Allow all existing related objects/inlines to be displayed, but don't
+        // allow extra beyond max_num.
+        if (initialForms > this.maxNum && this.maxNum >= 0)
+            totalForms = initialForms;
+        if (totalForms > this.maxNum && this.maxNum >= 0)
             totalForms = this.maxNum;
-        }
         return totalForms
     }
 };
@@ -297,23 +269,21 @@ BaseFormSet.prototype.totalFormCount = function()
 /**
  * Determines the number of initial form instances this formset contains, based
  * on either submitted management data or initial configuration, as appropriate.
- *
- * @type Number
  */
 BaseFormSet.prototype.initialFormCount = function()
 {
-    if (this.data || this.files)
+    if (this.isBound)
     {
-        return this.managementForm().cleanedData[ManagementForm.INITIAL_FORM_COUNT];
+        return this.managementForm().cleanedData[INITIAL_FORM_COUNT];
     }
     else
     {
         // Use the length of the inital data if it's there, 0 otherwise.
-        var initialForms = (this.initial !== null && this.initial.length > 0 ? this.initial.length : 0);
-        if (initialForms > this.maxNum && this.maxNum > 0)
-        {
+        var initialForms = (this.initial !== null && this.initial.length > 0
+                            ? this.initial.length
+                            : 0);
+        if (initialForms > this.maxNum && this.maxNum >= 0)
             initialForms = this.maxNum;
-        }
         return initialForms
     }
 };
@@ -338,7 +308,7 @@ BaseFormSet.prototype._constructForm = function(i, kwargs)
 {
     var defaults = {autoId: this.autoId, prefix: this.addPrefix(i)};
 
-    if (this.data || this.files)
+    if (this.isBound)
     {
         defaults["data"] = this.data;
         defaults["files"] = this.files;
@@ -347,18 +317,14 @@ BaseFormSet.prototype._constructForm = function(i, kwargs)
     if (this.initial !== null && this.initial.length > 0)
     {
         if (typeof this.initial[i] != "undefined")
-        {
             defaults["initial"] = this.initial[i];
-        }
     }
 
     // Allow extra forms to be empty
     if (i >= this.initialFormCount())
-    {
         defaults["emptyPermitted"] = true;
-    }
 
-    var formKwargs = extend({}, defaults, kwargs || {});
+    var formKwargs = extend(defaults, kwargs || {});
     var form = new this.form(formKwargs);
     this.addFields(form, i);
     return form;
@@ -368,59 +334,49 @@ BaseFormSet.prototype._constructForm = function(i, kwargs)
  * Returns an ErrorList of errors that aren't associated with a particular
  * form -- i.e., from <code>formset.clean()</code>. Returns an empty ErrorList
  * if there are none.
- *
- * @type ErrorList
  */
 BaseFormSet.prototype.nonFormErrors = function()
 {
     if (this._nonFormErrors !== null)
-    {
         return this._nonFormErrors;
-    }
     return new this.errorConstructor();
+};
+
+BaseFormSet.prototype._shouldDeleteForm = function(form)
+{
+    // The way we lookup the value of the deletion field here takes
+    // more code than we'd like, but the form's cleanedData will not
+    // exist if the form is invalid.
+    var field = form.fields[DELETION_FIELD_NAME],
+        rawValue = form._rawValue(DELETION_FIELD_NAME),
+        shouldDelete = field.clean(rawValue);
+    return shouldDelete;
 };
 
 /**
  * Returns <code>true</code> if <code>form.errors</code> is empty for every form
  * in <code>this.forms</code>
- *
- * @type Boolean
  */
 BaseFormSet.prototype.isValid = function()
 {
     if (!this.isBound)
-    {
         return false;
-    }
 
     // We loop over every form.errors here rather than short circuiting on the
     // first failure to make sure validation gets triggered for every form.
-    var formsValid = true;
-    var totalFormCount = this.totalFormCount();
+    var formsValid = true,
+        err = this.errors(), // Triggers fullClean()
+        totalFormCount = this.totalFormCount();
     for (var i = 0; i < totalFormCount; i++)
     {
-        var form = this.forms[i];
+        var form = this.forms[i]
         if (this.canDelete)
-        {
-            // The way we lookup the value of the deletion field here takes
-            // more code than we'd like, but the form's cleanedData will not
-            // exist if the form is invalid.
-            var field = form.fields[BaseFormSet.DELETION_FIELD_NAME];
-            var rawValue = form._rawValue(BaseFormSet.DELETION_FIELD_NAME);
-            var shouldDelete = field.clean(rawValue);
-            if (shouldDelete)
-            {
+            if (this._shouldDeleteform(form))
                 // This form is going to be deleted so any of its errors should
                 // not cause the entire formset to be invalid.
                 continue;
-            }
-        }
-
-        var errors = this.errors();
         if (errors[i].isPopulated())
-        {
             formsValid = false;
-        }
     }
 
     return (formsValid && !this.nonFormErrors().isPopulated());
@@ -433,10 +389,7 @@ BaseFormSet.prototype.fullClean = function()
 {
     this._errors = [];
     if (!this.isBound)
-    {
-        // Stop further processing
-        return;
-    }
+        return; // Stop further processing
 
     var totalFormCount = this.totalFormCount();
     for (var i = 0; i < totalFormCount; i++)
@@ -445,23 +398,26 @@ BaseFormSet.prototype.fullClean = function()
         this._errors.push(form.errors());
     }
 
-    // Give this.clean a chance to do cross-form validation.
+    // Give this.clean() a chance to do cross-form validation.
     try
     {
         this.clean();
     }
     catch (e)
     {
-        if (e instanceof ValidationError)
-        {
-            this._nonFormErrors = e.messages;
-        }
-        else
-        {
+        if (!(e instanceof ValidationError))
             throw e;
-        }
+        this._nonFormErrors = new this.errorConstructor(e.messages);
     }
 };
+
+/**
+ * Hook for doing any extra formset-wide cleaning after Form.clean() has been
+ * called on every form. Any ValidationError raised by this method will not be
+ * associated with a particular form; it will be accesible via
+ * formset.nonFormErrors()
+ */
+BaseFormSet.prototype.clean = function() {};
 
 /**
  * A hook for adding extra fields on to each form instance.
@@ -475,30 +431,22 @@ BaseFormSet.prototype.addFields = function(form, index)
     {
         // Only pre-fill the ordering field for initial forms.
         if (index !== null && index < this.initialFormCount())
-        {
-            form.fields[BaseFormSet.ORDERING_FIELD_NAME] =
+            form.fields[ORDERING_FIELD_NAME] =
                 new IntegerField({label: "Order", initial: index + 1, required: false});
-        }
         else
-        {
-            form.fields[BaseFormSet.ORDERING_FIELD_NAME] =
+            form.fields[ORDERING_FIELD_NAME] =
                 new IntegerField({label: "Order", required: false});
-        }
     }
 
     if (this.canDelete)
-    {
-        form.fields[BaseFormSet.DELETION_FIELD_NAME] =
+        form.fields[DELETION_FIELD_NAME] =
             new BooleanField({label: "Delete", required: false});
-    }
 };
 
 /**
  * Returns the formset prefix with the form index appended.
  *
  * @param {Number} index the index of a form in the formset.
- *
- * @type String
  */
 BaseFormSet.prototype.addPrefix = function(index)
 {
@@ -506,18 +454,8 @@ BaseFormSet.prototype.addPrefix = function(index)
 };
 
 /**
- * Hook for doing any extra formset-wide cleaning after Form.clean() has been
- * called on every form. Any ValidationError raised by this method will not be
- * associated with a particular form; it will be accesible via
- * formset.nonFormErrors()
- */
-BaseFormSet.prototype.clean = function() {};
-
-/**
  * Returns <code>true</code> if the formset needs to be multipart-encrypted, i.e. it has
  * FileInput. Otherwise, <code>false</code>.
- *
- * @type Boolean
  */
 BaseFormSet.prototype.isMultipart = function()
 {
@@ -539,31 +477,34 @@ BaseFormSet.prototype.asTable = function(doNotCoerce)
     // each field as a td.
     var rows = this.managementForm().asTable(true);
     for (var i = 0, l = this.forms.length; i < l; i++)
-    {
         rows = rows.concat(this.forms[i].asTable(true));
-    }
 
     if (doNotCoerce === true || DOMBuilder.mode == "DOM")
-    {
         return rows;
-    }
-    else
-    {
-        return rows.join("\n");
-    }
+    return rows.join("\n");
 };
 
-/* Reference for unimplemented methods, as of Django r10643
-class BaseFormSet(StrAndUnicode):
-    def _get_media(self):
-        # All the forms on a FormSet are the same, so you only need to
-        # interrogate the first form for media.
-        if self.forms:
-            return self.forms[0].media
-        else:
-            return Media()
-    media = property(_get_media)
-*/
+BaseFormSet.prototype.asP = function(doNotCoerce)
+{
+    var rows = this.managementForm().asTable(true);
+    for (var i = 0, l = this.forms.length; i < l; i++)
+        rows = rows.concat(this.forms[i].asP(true));
+
+    if (doNotCoerce === true || DOMBuilder.mode == "DOM")
+        return rows;
+    return rows.join("\n");
+};
+
+BaseFormSet.prototype.asUL = function(doNotCoerce)
+{
+    var rows = this.managementForm().asTable(true);
+    for (var i = 0, l = this.forms.length; i < l; i++)
+        rows = rows.concat(this.forms[i].asUL(true));
+
+    if (doNotCoerce === true || DOMBuilder.mode == "DOM")
+        return rows;
+    return rows.join("\n");
+};
 
 /**
  * Returns a FormSet constructor for the given Form constructor.
@@ -586,22 +527,19 @@ class BaseFormSet(StrAndUnicode):
  *                               defaults to <code>false</code>.
  * @config {Number} [maxNum] the maximum number of forms to be displayed -
  *                           defaults to <code>0</code>.
- *
- * @type Function
  */
 function formsetFactory(form, kwargs)
 {
     kwargs = extend({
-        formset: BaseFormSet, extra: 1, canOrder: false, canDelete: false, maxNum: 0
+        formset: BaseFormSet, extra: 1, canOrder: false, canDelete: false, maxNum: null
     }, kwargs || {});
 
     var formset = kwargs.formset;
-    var extra = kwargs.extra;
-    var canOrder = kwargs.canOrder;
-    var canDelete = kwargs.canDelete;
-    var maxNum = kwargs.maxNum;
+        extra = kwargs.extra;
+        canOrder = kwargs.canOrder;
+        canDelete = kwargs.canDelete;
+        maxNum = kwargs.maxNum;
 
-    /** @ignore */
     var formsetConstructor = function(kwargs)
     {
         this.form = form;
@@ -611,6 +549,7 @@ function formsetFactory(form, kwargs)
         this.maxNum = maxNum;
         formset.call(this, kwargs);
     };
+    inheritFrom(formsetConstructor, formset);
 
     // Remove special properties from kwargs, as they will now be used to add
     // properties to the prototype.
@@ -620,16 +559,13 @@ function formsetFactory(form, kwargs)
     delete kwargs.canDelete;
     delete kwargs.maxNum;
 
-    formsetConstructor.prototype = extend(new formset(), kwargs);
-    formsetConstructor.name = (form.name || "Anonymous") + "FormSet";
+    extend(formsetConstructor.prototype, kwargs);
 
     return formsetConstructor;
 }
 
 /**
  * Returns <code>true</code> if every formset in formsets is valid.
- *
- * @Boolean
  */
 function allValid(formsets)
 {
