@@ -123,7 +123,7 @@ Field.prototype.validate = function(value)
         throw new ValidationError(this.errorMessages.required);
 };
 
-Field.prototype.runValidators = fnction(value)
+Field.prototype.runValidators = function(value)
 {
     if (contains(EMPTY_VALUES, value))
         throw new ValidationError(this.errorMessages.required);
@@ -468,7 +468,6 @@ DateField.prototype.defaultErrorMessages =
  */
 DateField.prototype.toJavaScript = function(value)
 {
-    Field.prototype.clean.call(this, value);
     if (contains(EMPTY_VALUES, value))
         return null;
     if (value instanceof Date)

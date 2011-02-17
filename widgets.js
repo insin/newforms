@@ -257,7 +257,7 @@ function ClearableFileInput(attrs)
 {
     FileInput.call(this, attrs);
 }
-inheritsFrom(ClearableFileInput, FileInput);
+inheritFrom(ClearableFileInput, FileInput);
 ClearableFileInput.prototype.initialText = "Currently";
 ClearableFileInput.prototype.inputText = "Change";
 ClearableFileInput.prototype.clearCheckboxLabel = "Clear";
