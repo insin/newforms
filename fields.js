@@ -137,7 +137,7 @@ Field.prototype.runValidators = fnction(value)
         catch (e)
         {
             if (!(e instanceof ValidationError))
-                throw(e);
+                throw e;
             if (typeof e.code != "undefined" && e.code in this.errorMessages)
             {
                 var message = this.errorMessages[e.code];
@@ -1226,7 +1226,7 @@ MultiValueField.prototype.clean = function(value)
         catch (e)
         {
             if (!(e instanceof ValidationError))
-                throw (e);
+                throw e;
             errors.extend(e.messages);
         }
     }

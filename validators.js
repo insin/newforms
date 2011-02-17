@@ -58,7 +58,7 @@ URLValidator.prototype.__call__ = function(value)
     catch (e)
     {
         if (!(e instanceof ValidationError) || !value)
-            throw(e);
+            throw e;
 
         var urlParts = urlparse.urlsplit(value);
         try
@@ -67,7 +67,7 @@ URLValidator.prototype.__call__ = function(value)
         }
         catch (_e)
         {
-            throw(e);
+            throw e;
         }
 
         url = urlparse.urlunsplit(urlParts);
@@ -94,7 +94,7 @@ EmailValidator.prototype.__call__ = function(value)
     catch (e)
     {
         if (!(e instanceof ValidationError) || !value || value.indexOf("@") == -1)
-            throw(e);
+            throw e;
 
         var parts = value.split("@"),
             domainPart = parts[parts.length - 1];
@@ -104,7 +104,7 @@ EmailValidator.prototype.__call__ = function(value)
         }
         catch (_e)
         {
-            throw(e);
+            throw e;
         }
         RegexValidator.prototype.__call__.call(this, parts.join("@"));
     }

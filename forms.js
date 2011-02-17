@@ -876,7 +876,7 @@ Form.prototype._cleanFields = function()
         catch (e)
         {
             if (!(e instanceof ValidationError))
-                throw (e);
+                throw e;
 
             this._errors[name] = new this.errorConstructor(e.messages);
             if (typeof this.cleanedData[name] != "undefined")
@@ -894,7 +894,7 @@ Form.prototype._cleanForm = function()
     catch (e)
     {
         if (!(e instanceof ValidationError))
-            throw (e)
+            throw e;
         this._errors[Form.NON_FIELD_ERRORS] = new this.errorConstructor(e.messages);
     }
 };
