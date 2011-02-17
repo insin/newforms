@@ -215,9 +215,9 @@ BoundField.prototype.value = function()
     }
     else
     {
-        data = this.field.boundData(this.data, getDefault(this.form.initial,
-                                                          this.name,
-                                                          this.field.initial));
+        data = this.field.boundData(this.data(), getDefault(this.form.initial,
+                                                            this.name,
+                                                            this.field.initial));
     }
     return this.field.prepareValue(data);
 };
@@ -243,7 +243,7 @@ BoundField.prototype.labelTag = function(kwargs)
     else
         contents = this.label;
 
-    id = getDedault(widget.attrs, "id", this.autoID());
+    id = getDefault(widget.attrs, "id", this.autoId());
     if (id)
     {
         attrs = extend(kwargs.attrs || {},
@@ -682,7 +682,7 @@ Form.prototype.asTable = (function()
 
     return function(doNotCoerce)
     {
-        this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
+        return this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
     }
 })();
 
@@ -729,7 +729,7 @@ Form.prototype.asUL = (function()
 
     return function(doNotCoerce)
     {
-        this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
+        return this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
     }
 })();
 

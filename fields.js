@@ -179,7 +179,7 @@ Field.prototype.clean = function(value)
  * For most fields, this will simply be data; FileFields need to handle it a bit
  * differently.
  */
-Field.prototype.boundValue = function(data, initial)
+Field.prototype.boundData = function(data, initial)
 {
     return data;
 };
@@ -215,9 +215,9 @@ function CharField(kwargs)
     this.minLength = kwargs.minLength;
     Field.call(this, kwargs);
     if (this.minLength !== null)
-        this.validators.append(new MinLengthValidator(this.minLength));
+        this.validators.push(new MinLengthValidator(this.minLength));
     if (this.maxLength !== null)
-        this.validators.append(new MaxLengthValidator(this.maxLength));
+        this.validators.push(new MaxLengthValidator(this.maxLength));
 }
 inheritFrom(CharField, Field);
 
@@ -265,9 +265,9 @@ function IntegerField(kwargs)
     Field.call(this, kwargs);
 
     if (this.minValue !== null)
-        this.validators.append(new MinValueValidator(this.minValue));
+        this.validators.push(new MinValueValidator(this.minValue));
     if (this.maxValue !== null)
-        this.validators.append(new MaValueValidator(this.maxValue));
+        this.validators.push(new MaValueValidator(this.maxValue));
 }
 inheritFrom(IntegerField, Field);
 IntegerField.prototype.defaultErrorMessages =
@@ -358,9 +358,9 @@ function DecimalField(kwargs)
     Field.call(this, kwargs);
 
     if (this.minValue !== null)
-        this.validators.append(new MinValueValidator(this.minValue));
+        this.validators.push(new MinValueValidator(this.minValue));
     if (this.maxValue !== null)
-        this.validators.append(new MaValueValidator(this.maxValue));
+        this.validators.push(new MaValueValidator(this.maxValue));
 }
 inheritFrom(DecimalField, Field);
 /**
@@ -981,7 +981,7 @@ inheritFrom(TypedChoiceField, ChoiceField);
 
 TypedChoiceField.prototype.toJavaScript = function(value)
 {
-    var value = ChoiceField.prototype.clean.call(this, value);
+    var value = ChoiceField.prototype.toJavaScript.call(this, value);
     ChoiceField.prototype.validate.call(this, value);
     if (value === this.emptyValue || contains(EMPTY_VALUES, value))
         return this.emptyValue;

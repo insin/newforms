@@ -13,7 +13,8 @@ test("MultiWidget and MultiValueField", function()
         ];
         MultiWidget.call(this, widgets, kwargs);
     }
-    ComplexWidget.prototype = new MultiWidget();
+    inheritFrom(ComplexWidget, MultiWidget);
+
     ComplexWidget.prototype.decompress = function(value)
     {
         if (value)
@@ -36,7 +37,7 @@ test("MultiWidget and MultiValueField", function()
 "<option value=\"P\" selected=\"selected\">Paul</option>\n" +
 "<option value=\"G\">George</option>\n" +
 "<option value=\"R\">Ringo</option>\n" +
-"</select><span><input type=\"text\" name=\"name_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"name_2_1\" value=\"06:24:00\"></span></div>");
+"</select><input type=\"text\" name=\"name_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"name_2_1\" value=\"06:24:00\"></div>");
 
     function ComplexField(kwargs)
     {
@@ -47,7 +48,7 @@ test("MultiWidget and MultiValueField", function()
         ];
         MultiValueField.call(this, kwargs);
     }
-    ComplexField.prototype = new MultiValueField();
+    inheritFrom(ComplexField, MultiValueField);
     ComplexField.prototype.compress = function(dataList)
     {
         if (isArray(dataList) && dataList.length > 0)
@@ -81,7 +82,7 @@ test("MultiWidget and MultiValueField", function()
 "<option value=\"P\">Paul</option>\n" +
 "<option value=\"G\">George</option>\n" +
 "<option value=\"R\">Ringo</option>\n" +
-"</select><span><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\"></span></div></td></tr>");
+"</select><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\"></div></td></tr>");
 
     f = new ComplexFieldForm({data: {field1_0: "some text", field1_1 :["J", "P"], field1_2_0: "2007-04-25", field1_2_1: "06:24:00"}});
     equals(""+f,
@@ -90,7 +91,7 @@ test("MultiWidget and MultiValueField", function()
 "<option value=\"P\" selected=\"selected\">Paul</option>\n" +
 "<option value=\"G\">George</option>\n" +
 "<option value=\"R\">Ringo</option>\n" +
-"</select><span><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\" value=\"06:24:00\"></span></div></td></tr>");
+"</select><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\" value=\"06:24:00\"></div></td></tr>");
 
     equals(f.cleanedData["field1"], "some text,JP,2007-04-25 06:24:00");
 });

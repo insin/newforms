@@ -179,9 +179,9 @@ HiddenInput.prototype.isHidden = true;
  *                          {@link HiddenInput}.
  * @constructor
  */
-function MultipleHiddenInput(kwargs)
+function MultipleHiddenInput(attrs)
 {
-    HiddenInput.call(this, kwargs);
+    HiddenInput.call(this, attrs);
 }
 inheritFrom(MultipleHiddenInput, HiddenInput);
 
@@ -632,9 +632,9 @@ Select.prototype.renderOption = function(selectedValuesLookup, optValue, optLabe
 function NullBooleanSelect(kwargs)
 {
     kwargs = extend({
-        choices: [["1", "Unknown"], ["2", "Yes"], ["3", "No"]]
+        attrs: null, choices: [["1", "Unknown"], ["2", "Yes"], ["3", "No"]]
     }, kwargs || {});
-    Select.call(this, kwargs);
+    Select.call(this, attrs.kwargs);
 };
 
 inheritFrom(NullBooleanSelect, Select);
@@ -682,9 +682,9 @@ NullBooleanSelect.prototype._hasChanged = function(initial, data)
  *                          {@link Select}.
  * @constructor
  */
-function SelectMultiple(kwargs)
+function SelectMultiple(attrs)
 {
-    Select.call(this, kwargs);
+    Select.call(this, attrs);
 }
 inheritFrom(SelectMultiple, Select);
 
@@ -854,11 +854,11 @@ RadioFieldRenderer.prototype.render = function()
  */
 function RadioSelect(kwargs)
 {
-    kwargs = extend({renderer: null}, kwargs || {});
+    kwargs = extend({attrs: null, renderer: null}, kwargs || {});
     // Override the default renderer if we were passed one
     if (kwargs.renderer !== null)
         this.renderer = kwargs.renderer;
-    Select.call(this, kwargs);
+    Select.call(this, kwargs.attrs);
 }
 inheritFrom(RadioSelect, Select);
 RadioSelect.prototype.renderer = RadioFieldRenderer;
@@ -1131,7 +1131,7 @@ function SplitHiddenDateTimeWidget(kwargs)
     for (var i = 0, l = this.widgets.length; i < l; i++)
     {
         this.widgets[i].inputType = "hidden";
-        this.widgets[i].isHidden = truue;
+        this.widgets[i].isHidden = true;
     }
 }
 inheritFrom(SplitHiddenDateTimeWidget, SplitDateTimeWidget);

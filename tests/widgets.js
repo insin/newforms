@@ -655,7 +655,7 @@ test("RadioSelect", function()
     {
         RadioFieldRenderer.apply(this, arguments);
     }
-    MyRenderer.prototype = new RadioFieldRenderer();
+    inheritFrom(MyRenderer, RadioFieldRenderer);
     MyRenderer.prototype.render = function()
     {
         var inputs = this.radioInputs();
@@ -681,7 +681,7 @@ test("RadioSelect", function()
         kwargs = extend({}, kwargs, {renderer: MyRenderer});
         RadioSelect.call(this, kwargs);
     }
-    CustomRadioSelect.prototype = new RadioSelect();
+    inheritFrom(CustomRadioSelect, RadioSelect);
 
     w = new CustomRadioSelect();
     equals(""+w.render("beatle", "G", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
@@ -836,7 +836,7 @@ test("MultiWidget", function()
     {
         MultiWidget.call(this, widgets, kwargs);
     }
-    MyMultiWidget.prototype = new MultiWidget();
+    inheritFrom(MyMultiWidget, MultiWidget);
     MyMultiWidget.prototype.decompress = function(value)
     {
         if (value)
@@ -876,22 +876,22 @@ test("SplitDateTimeWidget", function()
     expect(8);
     var w = new SplitDateTimeWidget();
     equals(""+w.render("date", ""),
-           "<span><input type=\"text\" name=\"date_0\"><input type=\"text\" name=\"date_1\"></span>");
+           "<input type=\"text\" name=\"date_0\"><input type=\"text\" name=\"date_1\">");
     equals(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
-           "<span><input type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" value=\"07:30:00\"></span>");
+           "<input type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" value=\"07:30:00\">");
     equals(""+w.render("date", [new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]),
-           "<span><input type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" value=\"07:30:00\"></span>");
+           "<input type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" value=\"07:30:00\">");
 
     // You can also pass "attrs" to the constructor. In this case, the attrs
     // will be included on both widgets.
     w = new SplitDateTimeWidget({attrs: {"class": "pretty"}});
     equals(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
-           "<span><input class=\"pretty\" type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input class=\"pretty\" type=\"text\" name=\"date_1\" value=\"07:30:00\"></span>");
+           "<input class=\"pretty\" type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input class=\"pretty\" type=\"text\" name=\"date_1\" value=\"07:30:00\">");
 
     // Use "dateFormat" and "timeFormat" to change the way a value is displayed
     w = new SplitDateTimeWidget({dateFormat: "%d/%m/%Y", timeFormat: "%H:%M"});
     equals(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
-           "<span><input type=\"text\" name=\"date_0\" value=\"10/01/2006\"><input type=\"text\" name=\"date_1\" value=\"07:30\"></span>");
+           "<input type=\"text\" name=\"date_0\" value=\"10/01/2006\"><input type=\"text\" name=\"date_1\" value=\"07:30\">");
 
     same(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["2008-05-05", "12:40:00"]), true);
     same(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:40"]), false);
@@ -969,10 +969,10 @@ test("SplitHiddenDateTimeWidget", function()
     expect(3);
     var w = new SplitHiddenDateTimeWidget();
     equals(""+w.render("date", ""),
-           "<span><input type=\"hidden\" name=\"date_0\"><input type=\"hidden\" name=\"date_1\"></span>");
+           "<input type=\"hidden\" name=\"date_0\"><input type=\"hidden\" name=\"date_1\">");
     var d = new Date(2007, 8, 17, 12, 51, 34);
     equals(""+w.render("date", d),
-           "<span><input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:34\"></span>");
+           "<input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:34\">");
     equals(""+w.render("date", new Date(2007, 8, 17, 12, 51)),
-           "<span><input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:00\"></span>");
+           "<input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:00\">");
 });

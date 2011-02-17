@@ -517,7 +517,7 @@ test("FormSets clean hook", function()
     {
         BaseFormSet.apply(this, arguments);
     }
-    BaseFavouriteDrinksFormSet.prototype = new BaseFormSet();
+    inheritFrom(BaseFavouriteDrinksFormSet, BaseFormSet);
     BaseFavouriteDrinksFormSet.prototype.clean = function()
     {
         var seenDrinks = {};
