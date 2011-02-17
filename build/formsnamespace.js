@@ -10,6 +10,7 @@ return {
     HiddenInput: HiddenInput,
     MultipleHiddenInput: MultipleHiddenInput,
     FileInput: FileInput,
+    ClearableFileInput: ClearableFileInput,
     Textarea: Textarea,
     DateInput: DateInput,
     DateTimeInput: DateTimeInput,
