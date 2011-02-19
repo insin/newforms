@@ -11,6 +11,16 @@ var Person = formFactory({fields: function() {
     };
 }});
 
+var PersonNew = formFactory({fields: function() {
+    return {
+        first_name: new CharField({
+            widget: new TextInput({attrs: {id: "first_name_id"}})
+        }),
+        last_name: new CharField(),
+        birthday: new DateField()
+    };
+}});
+
 test("prettyName", function()
 {
     expect(7);
@@ -31,15 +41,13 @@ test("prettyName", function()
 
 test("Form", function()
 {
-    expect(115);
-
     // Pass a data object when initialising
     var p = new Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}});
-    equal(p.isBound, true);
-    equal(p.errors().isPopulated(), false);
-    equal(p.isValid(), true);
-    equal(""+p.errors().asUL(), "");
-    equal(p.errors().asText(), "");
+    strictEqual(p.isBound, true);
+    strictEqual(p.errors().isPopulated(), false);
+    strictEqual(p.isValid(), true);
+    strictEqual(""+p.errors().asUL(), "");
+    strictEqual(p.errors().asText(), "");
     deepEqual([p.cleanedData.first_name, p.cleanedData.last_name, p.cleanedData.birthday.valueOf()],
               ["John", "Lennon", new Date(1940, 9, 9).valueOf()]);
     equal(""+p.boundField("first_name"),
@@ -49,103 +57,129 @@ test("Form", function()
     equal(""+p.boundField("birthday"),
            "<input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\">");
     try { p.boundField("nonexistentfield"); } catch (e) { equals(e.message, "Form does not have a 'nonexistentfield' field."); }
-    equals(p.asTable(),
+    equal(p.asTable(),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\"></td></tr>\n" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\"></td></tr>");
 
+//    form_output = []
+//
+//    for boundfield in p:
+//        form_output.append([boundfield.label, boundfield.data])
+//
+//    self.assertEqual(form_output, [
+//        ['First name', u'John'],
+//        ['Last name', u'Lennon'],
+//        ['Birthday', u'1940-10-9']
+//    ])
+});
+
+test("Empty data object", function()
+{
     // Empty objects are valid, too
     p = new Person({data: {}});
-    same(p.isBound, true);
-    same(p.errors()["first_name"].errors, ["This field is required."]);
-    same(p.errors()["last_name"].errors, ["This field is required."]);
-    same(p.errors()["birthday"].errors, ["This field is required."]);
-    same(p.isValid(), false);
-    equals(typeof p.cleanedData, "undefined");
-    equals(""+p,
+    strictEqual(p.isBound, true);
+    deepEqual(p.errors()["first_name"].errors, ["This field is required."]);
+    deepEqual(p.errors()["last_name"].errors, ["This field is required."]);
+    deepEqual(p.errors()["birthday"].errors, ["This field is required."]);
+    deepEqual(p.isValid(), false);
+    equal(typeof p.cleanedData, "undefined");
+    equal(""+p,
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>");
-    equals(p.asTable(),
+    equal(p.asTable(),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>");
-    equals(p.asUL(),
+    equal(p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></li>");
-    equals(p.asP(),
+    equal(p.asP(),
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
 "<p><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>\n" +
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
 "<p><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>\n" +
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
 "<p><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></p>");
+});
 
+test("Unbound form", function()
+{
     // If you don't pass any "data" values, or if you pass null, the Form will
     // be considered unbound and won't do any validation. Form.errors will be
     // empty *but* Form.isValid() will return False.
     p = new Person();
-    same(p.isBound, false);
-    same(p.errors().isPopulated(), false);
-    same(p.isValid(), false);
-    equals(typeof p.cleanedData, "undefined");
-    equals(""+p,
+    strictEqual(p.isBound, false);
+    strictEqual(p.errors().isPopulated(), false);
+    strictEqual(p.isValid(), false);
+    equal(typeof p.cleanedData, "undefined");
+    equal(""+p,
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>");
-    equals(p.asTable(),
+    equal(p.asTable(),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>");
-    equals(p.asUL(),
+    equal(p.asUL(),
 "<li><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>\n" +
 "<li><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>\n" +
 "<li><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></li>");
-    equals(p.asP(),
+    equal(p.asP(),
 "<p><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>\n" +
 "<p><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>\n" +
 "<p><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></p>");
+});
 
+test("Validation errors", function()
+{
     p = new Person({data: {last_name: "Lennon"}});
-    same(p.errors()["first_name"].errors, ["This field is required."]);
-    same(p.errors()["birthday"].errors, ["This field is required."]);
-    same(p.isValid(), false);
-    equals(""+p.errors().asUL(),
+    deepEqual(p.errors()["first_name"].errors, ["This field is required."]);
+    deepEqual(p.errors()["birthday"].errors, ["This field is required."]);
+    deepEqual(p.isValid(), false);
+    equal(""+p.errors().asUL(),
            "<ul class=\"errorlist\"><li>first_name<ul class=\"errorlist\"><li>This field is required.</li></ul></li><li>birthday<ul class=\"errorlist\"><li>This field is required.</li></ul></li></ul>");
-    equals(p.errors().asText(),
+    equal(p.errors().asText(),
 "* first_name\n" +
 "  * This field is required.\n" +
 "* birthday\n" +
 "  * This field is required.");
-    equals(typeof p.cleanedData, "undefined");
-    same(p.boundField("first_name").errors().errors, ["This field is required."]);
-    equals(""+p.boundField("first_name").errors().asUL(),
+    equal(typeof p.cleanedData, "undefined");
+    deepEqual(p.boundField("first_name").errors().errors, ["This field is required."]);
+    equal(""+p.boundField("first_name").errors().asUL(),
            "<ul class=\"errorlist\"><li>This field is required.</li></ul>");
-    equals(""+p.boundField("first_name").errors().asText(),
+    equal(""+p.boundField("first_name").errors().asText(),
            "* This field is required.");
 
     p = new Person();
-    equals(""+p.boundField("first_name"),
+    equal(""+p.boundField("first_name"),
            "<input type=\"text\" name=\"first_name\" id=\"id_first_name\">");
-    equals(""+p.boundField("last_name"),
+    equal(""+p.boundField("last_name"),
            "<input type=\"text\" name=\"last_name\" id=\"id_last_name\">");
-    equals(""+p.boundField("birthday"),
+    equal(""+p.boundField("birthday"),
            "<input type=\"text\" name=\"birthday\" id=\"id_birthday\">");
+});
 
+test("cleanedData only fields", function()
+{
     // cleanedData will always *only* contain properties for fields defined in
     // the Form, even if you pass extra data when you define the Form. In this
     // example, we pass a bunch of extra fields to the form constructor, but
     // cleanedData contains only the form's fields.
     var data = {first_name: "John", last_name: "Lennon", birthday: "1940-10-9", extra1: "hello", extra2: "hello"};
     p = new Person({data: data});
-    same(p.isValid(), true);
-    equals(p.cleanedData.first_name, "John");
-    equals(p.cleanedData.last_name, "Lennon");
-    same(p.cleanedData.birthday, new Date(1940, 9, 9));
-    equals(typeof p.cleanedData.extra1, "undefined");
-    equals(typeof p.cleanedData.extra2, "undefined");
+    strictEqual(p.isValid(), true);
+    equal(p.cleanedData.first_name, "John");
+    equal(p.cleanedData.last_name, "Lennon");
+    equal(p.cleanedData.birthday.valueOf(), new Date(1940, 9, 9).valueOf());
+    equal(typeof p.cleanedData.extra1, "undefined");
+    equal(typeof p.cleanedData.extra2, "undefined");
+});
 
+test("Optional data", function()
+{
     // cleanedData will include a key and value for *all* fields defined in the
     // Form, even if the Form's data didn't include a value for fields that are
     // not required. In this example, the data object doesn't include a value
@@ -160,10 +194,10 @@ test("Form", function()
     }});
     data = {first_name: "John", last_name: "Lennon"};
     var f = new OptionalPersonForm({data: data});
-    same(f.isValid(), true);
-    same(f.cleanedData.nick_name, "");
-    equals(f.cleanedData.first_name, "John");
-    equals(f.cleanedData.last_name, "Lennon");
+    strictEqual(f.isValid(), true);
+    strictEqual(f.cleanedData.nick_name, "");
+    equal(f.cleanedData.first_name, "John");
+    equal(f.cleanedData.last_name, "Lennon");
 
     // For DateFields, it's set to null
     OptionalPersonForm = formFactory({fields: function() {
@@ -175,71 +209,80 @@ test("Form", function()
     }});
     data = {first_name: "John", last_name: "Lennon"};
     f = new OptionalPersonForm({data: data});
-    same(f.isValid(), true);
-    same(f.cleanedData.birth_date, null);
-    equals(f.cleanedData.first_name, "John");
-    equals(f.cleanedData.last_name, "Lennon");
+    strictEqual(f.isValid(), true);
+    strictEqual(f.cleanedData.birth_date, null);
+    equal(f.cleanedData.first_name, "John");
+    equal(f.cleanedData.last_name, "Lennon");
+});
 
+test("autoId", function()
+{
     // "autoId" tells the Form to add an "id" attribute to each form element.
     // If it's a string that contains "%(name)s", js-forms will use that as a
     // format string into which the field's name will be inserted. It will also
     // put a <label> around the human-readable labels for a field.
     p = new Person({autoId: "%(name)s_id"});
-    equals(p.asTable(),
+    equal(p.asTable(),
 "<tr><th><label for=\"first_name_id\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"first_name_id\"></td></tr>\n" +
 "<tr><th><label for=\"last_name_id\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"last_name_id\"></td></tr>\n" +
 "<tr><th><label for=\"birthday_id\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"birthday_id\"></td></tr>");
-    equals(p.asUL(),
+    equal(p.asUL(),
 "<li><label for=\"first_name_id\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"first_name_id\"></li>\n" +
 "<li><label for=\"last_name_id\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name_id\"></li>\n" +
 "<li><label for=\"birthday_id\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday_id\"></li>");
-    equals(p.asP(),
+    equal(p.asP(),
 "<p><label for=\"first_name_id\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"first_name_id\"></p>\n" +
 "<p><label for=\"last_name_id\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name_id\"></p>\n" +
 "<p><label for=\"birthday_id\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday_id\"></p>");
+});
 
+test("autoId true", function()
+{
     // If autoId is any truthy value whose string representation does not
     // contain "%(name)s", the "id" attribute will be the name of the field.
     p = new Person({autoId: true});
-    equals(p.asUL(),
+    equal(p.asUL(),
 "<li><label for=\"first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"first_name\"></li>\n" +
 "<li><label for=\"last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name\"></li>\n" +
 "<li><label for=\"birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday\"></li>");
+});
 
+test("autoId false", function()
+{
     // If autoId is any falsy value, an "id" attribute won't be output unless it
     // was manually entered.
     p = new Person({autoId: false});
-    equals(p.asUL(),
+    equal(p.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\"></li>");
+});
 
+test("id on field", function()
+{
     // In this example, autoId is false, but the "id" attribute for the
     // "first_name" field is given. Also note that field gets a <label>, while
     // the others don't.
-    Person = formFactory({fields: function() {
-        return {
-            first_name: new CharField({
-                widget: new TextInput({attrs: {id: "first_name_id"}})
-            }),
-            last_name: new CharField(),
-            birthday: new DateField()
-        };
-    }});
-    p = new Person({autoId: false});
-    equals(p.asUL(),
+    p = new PersonNew({autoId: false});
+    equal(p.asUL(),
 "<li><label for=\"first_name_id\">First name:</label> <input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\"></li>");
+});
 
+test("autoId on form and field", function()
+{
     // If the "id" attribute is specified in the Form and autoId is true, the
     // "id" attribute in the Form gets precedence.
-    p = new Person({autoId: true});
-    equals(p.asUL(),
+    p = new PersonNew({autoId: true});
+    equal(p.asUL(),
 "<li><label for=\"first_name_id\">First name:</label> <input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>\n" +
 "<li><label for=\"last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name\"></li>\n" +
 "<li><label for=\"birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday\"></li>");
+});
 
+test("Various boolean values", function()
+{
     var SignupForm = formFactory({fields: function() {
         return {
             email: new EmailField(),
@@ -247,17 +290,36 @@ test("Form", function()
         };
     }});
     f = new SignupForm({autoId: false});
-    equals(""+f.boundField("email"),
+    equal(""+f.boundField("email"),
            "<input type=\"text\" name=\"email\">");
-    equals(""+f.boundField("get_spam"),
+    equal(""+f.boundField("get_spam"),
            "<input type=\"checkbox\" name=\"get_spam\">");
 
     f = new SignupForm({data: {email: "test@example.com", get_spam: true}, autoId: false});
-    equals(""+f.boundField("email"),
+    equal(""+f.boundField("email"),
            "<input type=\"text\" name=\"email\" value=\"test@example.com\">");
-    equals(""+f.boundField("get_spam"),
+    equal(""+f.boundField("get_spam"),
            "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">");
 
+    /* TODO
+    # 'True' or 'true' should be rendered without a value attribute
+    f = SignupForm({'email': 'test@example.com', 'get_spam': 'True'}, auto_id=False)
+    self.assertEqual(str(f['get_spam']), '<input checked="checked" type="checkbox" name="get_spam" />')
+
+    f = SignupForm({'email': 'test@example.com', 'get_spam': 'true'}, auto_id=False)
+    self.assertEqual(str(f['get_spam']), '<input checked="checked" type="checkbox" name="get_spam" />')
+
+    # A value of 'False' or 'false' should be rendered unchecked
+    f = SignupForm({'email': 'test@example.com', 'get_spam': 'False'}, auto_id=False)
+    self.assertEqual(str(f['get_spam']), '<input type="checkbox" name="get_spam" />')
+
+    f = SignupForm({'email': 'test@example.com', 'get_spam': 'false'}, auto_id=False)
+    self.assertEqual(str(f['get_spam']), '<input type="checkbox" name="get_spam" />')
+    */
+});
+
+test("Widget output", function()
+{
     // Any Field can have a Widget constructor passed to its constructor
     var ContactForm = formFactory({fields: function() {
         return {
@@ -266,18 +328,18 @@ test("Form", function()
         };
     }});
     f = new ContactForm({autoId: false});
-    equals(""+f.boundField("subject"),
+    equal(""+f.boundField("subject"),
            "<input type=\"text\" name=\"subject\">");
-    equals(""+f.boundField("message"),
+    equal(""+f.boundField("message"),
            "<textarea rows=\"10\" cols=\"40\" name=\"message\"></textarea>");
 
     // asTextarea(), asText() and asHidden() are shortcuts for changing the
     // output widget type
-    equals(""+f.boundField("subject").asText(),
+    equal(""+f.boundField("subject").asText(),
            "<input type=\"text\" name=\"subject\">");
-    equals(""+f.boundField("subject").asTextarea(),
+    equal(""+f.boundField("subject").asTextarea(),
            "<textarea rows=\"10\" cols=\"40\" name=\"subject\"></textarea>");
-    equals(""+f.boundField("subject").asHidden(),
+    equal(""+f.boundField("subject").asHidden(),
            "<input type=\"hidden\" name=\"subject\">");
 
     //The "widget" parameter to a Field can also be an instance
@@ -290,21 +352,24 @@ test("Form", function()
         };
     }});
     f = new ContactForm({autoId: false});
-    equals(""+f.boundField("message"),
+    equal(""+f.boundField("message"),
            "<textarea rows=\"80\" cols=\"20\" name=\"message\"></textarea>");
 
     // Instance-level attrs are *not* carried over to asTextarea(), asText() and
     // asHidden()
-    equals(""+f.boundField("message").asText(),
+    equal(""+f.boundField("message").asText(),
            "<input type=\"text\" name=\"message\">");
     f = new ContactForm({data: {subject: "Hello", message: "I love you."}, autoId: false});
-    equals(""+f.boundField("subject").asTextarea(),
+    equal(""+f.boundField("subject").asTextarea(),
            "<textarea rows=\"10\" cols=\"40\" name=\"subject\">Hello</textarea>");
-    equals(""+f.boundField("message").asText(),
+    equal(""+f.boundField("message").asText(),
            "<input type=\"text\" name=\"message\" value=\"I love you.\">");
-    equals(""+f.boundField("message").asHidden(),
+    equal(""+f.boundField("message").asHidden(),
            "<input type=\"hidden\" name=\"message\" value=\"I love you.\">");
+});
 
+test("Forms with choices", function()
+{
     // For a form with a <select>, use ChoiceField
     var FrameworkForm = formFactory({fields: function() {
         return {
@@ -313,13 +378,13 @@ test("Form", function()
         };
     }});
     f = new FrameworkForm({autoId: false});
-    equals(""+f.boundField("language"),
+    equal(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "<option value=\"P\">Python</option>\n" +
 "<option value=\"J\">Java</option>\n" +
 "</select>");
     f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false});
-    equals(""+f.boundField("language"),
+    equal(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "<option value=\"P\" selected=\"selected\">Python</option>\n" +
 "<option value=\"J\">Java</option>\n" +
@@ -335,7 +400,7 @@ test("Form", function()
         };
     }});
     f = new FrameworkForm({autoId: false});
-    equals(""+f.boundField("language"),
+    equal(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "<option value=\"\" selected=\"selected\">------</option>\n" +
 "<option value=\"P\">Python</option>\n" +
@@ -353,13 +418,13 @@ test("Form", function()
         };
     }});
     f = new FrameworkForm({autoId: false});
-    equals(""+f.boundField("language"),
+    equal(""+f.boundField("language"),
 "<select class=\"foo\" name=\"language\">\n" +
 "<option value=\"P\">Python</option>\n" +
 "<option value=\"J\">Java</option>\n" +
 "</select>");
     f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false});
-    equals(""+f.boundField("language"),
+    equal(""+f.boundField("language"),
 "<select class=\"foo\" name=\"language\">\n" +
 "<option value=\"P\" selected=\"selected\">Python</option>\n" +
 "<option value=\"J\">Java</option>\n" +
@@ -381,13 +446,13 @@ test("Form", function()
         };
     }});
     f = new FrameworkForm({autoId: false});
-    equals(""+f.boundField("language"),
+    equal(""+f.boundField("language"),
 "<select class=\"foo\" name=\"language\">\n" +
 "<option value=\"P\">Python</option>\n" +
 "<option value=\"J\">Java</option>\n" +
 "</select>");
     f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false});
-    equals(""+f.boundField("language"),
+    equal(""+f.boundField("language"),
 "<select class=\"foo\" name=\"language\">\n" +
 "<option value=\"P\" selected=\"selected\">Python</option>\n" +
 "<option value=\"J\">Java</option>\n" +
@@ -401,16 +466,19 @@ test("Form", function()
         };
     }});
     f = new FrameworkForm({autoId: false});
-    equals(""+f.boundField("language"),
+    equal(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "</select>");
     f.fields["language"].setChoices([["P", "Python"], ["J", "Java"]]);
-    equals(""+f.boundField("language"),
+    equal(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "<option value=\"P\">Python</option>\n" +
 "<option value=\"J\">Java</option>\n" +
 "</select>");
+});
 
+test("Forms with radio", function()
+{
     // Add widget: RadioSelect to use that widget with a ChoiceField
     FrameworkForm = formFactory({fields: function() {
         return {
@@ -419,7 +487,7 @@ test("Form", function()
         };
     }});
     f = new FrameworkForm({autoId: false});
-    equals(""+f.boundField("language"),
+    equal(""+f.boundField("language"),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
@@ -441,7 +509,7 @@ test("Form", function()
     // button gets a distinct ID, formed by appending an underscore plus the
     // button's zero-based index.
     f = new FrameworkForm({autoId: "id_%(name)s"});
-    equals(""+f.boundField("language"),
+    equal(""+f.boundField("language"),
 "<ul>\n" +
 "<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
 "<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
@@ -450,25 +518,28 @@ test("Form", function()
     // When RadioSelect is used with autoId, and the whole form is printed using
     // either asTable() or asUl(), the label for the RadioSelect will point to the
     // ID of the *first* radio button.
-    equals(""+f,
+    equal(""+f,
 "<tr><th><label for=\"id_name\">Name:</label></th><td><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_language_0\">Language:</label></th><td><ul>\n" +
 "<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
 "<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
 "</ul></td></tr>");
-    equals(""+f.asUL(),
+    equal(""+f.asUL(),
 "<li><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></li>\n" +
 "<li><label for=\"id_language_0\">Language:</label> <ul>\n" +
 "<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
 "<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
 "</ul></li>");
-    equals(""+f.asP(),
+    equal(""+f.asP(),
 "<p><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></p>\n" +
 "<p><label for=\"id_language_0\">Language:</label> <ul>\n" +
 "<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
 "<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
 "</ul></p>");
+});
 
+test("Forms with multiple choice", function()
+{
     // MultipleChoiceField is a special case, as its data is required to be a
     // list.
     var SongForm = formFactory({fields: function() {
@@ -478,7 +549,7 @@ test("Form", function()
         }
     }});
     f = new SongForm({autoId: false});
-    equals(""+f.boundField("composers"),
+    equal(""+f.boundField("composers"),
 "<select name=\"composers\" multiple=\"multiple\">\n" +
 "</select>")
     SongForm = formFactory({fields: function() {
@@ -488,29 +559,53 @@ test("Form", function()
         }
     }});
     f = new SongForm({autoId: false});
-    equals(""+f.boundField("composers"),
+    equal(""+f.boundField("composers"),
 "<select name=\"composers\" multiple=\"multiple\">\n" +
 "<option value=\"J\">John Lennon</option>\n" +
 "<option value=\"P\">Paul McCartney</option>\n" +
 "</select>")
     f = new SongForm({data: {name: "Yesterday", composers: ["P"]}, autoId: false});
-    equals(""+f.boundField("name"),
+    equal(""+f.boundField("name"),
 "<input type=\"text\" name=\"name\" value=\"Yesterday\">");
-    equals(""+f.boundField("composers"),
+    equal(""+f.boundField("composers"),
 "<select name=\"composers\" multiple=\"multiple\">\n" +
 "<option value=\"J\">John Lennon</option>\n" +
 "<option value=\"P\" selected=\"selected\">Paul McCartney</option>\n" +
 "</select>")
+});
+
+test("Hidden data", function()
+{
+    var SongForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
+        }
+    }});
 
     // MultipleChoiceField rendered asHidden() is a special case. Because it can
     // have multiple values, its asHidden() renders multiple
     // <input type="hidden"> tags.
-    equals(""+f.boundField("composers").asHidden(),
+    equal(""+f.boundField("composers").asHidden(),
 "<span><input type=\"hidden\" name=\"composers\" value=\"P\"></span>");
     f = new SongForm({data: {name: "Yesterday", composers: ["P", "J"]}, autoId: false});
-    equals(""+f.boundField("composers").asHidden(),
+    equal(""+f.boundField("composers").asHidden(),
 "<span><input type=\"hidden\" name=\"composers\" value=\"P\"><input type=\"hidden\" name=\"composers\" value=\"J\"></span>");
 
+    /* TODO
+    # DateTimeField rendered as_hidden() is special too
+    class MessageForm(Form):
+        when = SplitDateTimeField()
+
+    f = MessageForm({'when_0': '1992-01-01', 'when_1': '01:01'})
+    self.assertTrue(f.is_valid())
+    self.assertEqual(str(f['when']), '<input type="text" name="when_0" value="1992-01-01" id="id_when_0" /><input type="text" name="when_1" value="01:01" id="id_when_1" />')
+    self.assertEqual(f['when'].as_hidden(), '<input type="hidden" name="when_0" value="1992-01-01" id="id_when_0" /><input type="hidden" name="when_1" value="01:01" id="id_when_1" />')
+    */
+});
+
+test("Mutiple choice checkbox", function()
+{
     // MultipleChoiceField can also be used with the CheckboxSelectMultiple
     // widget.
     SongForm = formFactory({fields: function() {
@@ -520,34 +615,42 @@ test("Form", function()
         }
     }});
     f = new SongForm({autoId: false});
-    equals(""+f.boundField("composers"),
+    equal(""+f.boundField("composers"),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\"> John Lennon</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
 "</ul>");
     f = new SongForm({data: {composers: ["J"]}, autoId: false});
-    equals(""+f.boundField("composers"),
+    equal(""+f.boundField("composers"),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"> John Lennon</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
 "</ul>");
     f = new SongForm({data: {composers: ["J", "P"]}, autoId: false});
-    equals(""+f.boundField("composers"),
+    equal(""+f.boundField("composers"),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"> John Lennon</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\" checked=\"checked\"> Paul McCartney</label></li>\n" +
 "</ul>");
+});
 
+test("Checkbox autoId", function()
+{
     // Regarding autoId, CheckboxSelectMultiple is another special case. Each
     // checkbox gets a distinct ID, formed by appending an underscore plus the
     // checkbox's zero-based index.
     f = new SongForm({autoId: "%(name)s_id"});
-    equals(""+f.boundField("composers"),
+    equal(""+f.boundField("composers"),
 "<ul>\n" +
 "<li><label for=\"composers_id_0\"><input id=\"composers_id_0\" type=\"checkbox\" name=\"composers\" value=\"J\"> John Lennon</label></li>\n" +
 "<li><label for=\"composers_id_1\"><input id=\"composers_id_1\" type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
 "</ul>");
+});
 
+// TODO test(test_multiple_choice_list_data
+
+test("Multiple hidden", function()
+{
     SongForm = formFactory({fields: function() {
         return {
             name: new CharField(),
@@ -555,22 +658,25 @@ test("Form", function()
         }
     }});
     f = new SongForm({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false});
-    equals(""+f.asUL(),
+    equal(""+f.asUL(),
 "<li>Name: <input type=\"text\" name=\"name\" value=\"Yesterday\"><span><input type=\"hidden\" name=\"composers\" value=\"J\"><input type=\"hidden\" name=\"composers\" value=\"P\"></span></li>");
 
     // When using MultipleChoiceField, the framework expects a list of input and
     // returns a list of input.
     f = new SongForm({data: {name: "Yesterday"}, autoId: false});
-    same(f.errors()["composers"].errors, ["This field is required."]);
+    deepEqual(f.errors()["composers"].errors, ["This field is required."]);
     f = new SongForm({data: {name: "Yesterday", composers: ["J"]}, autoId: false});
-    same(f.errors().isPopulated(), false);
-    same(f.cleanedData["composers"], ["J"]);
-    equals(f.cleanedData["name"], "Yesterday");
+    strictEqual(f.errors().isPopulated(), false);
+    deepEqual(f.cleanedData["composers"], ["J"]);
+    equal(f.cleanedData["name"], "Yesterday");
     f = new SongForm({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false});
-    same(f.errors().isPopulated(), false);
-    same(f.cleanedData["composers"], ["J", "P"]);
-    equals(f.cleanedData["name"], "Yesterday");
+    strictEqual(f.errors().isPopulated(), false);
+    deepEqual(f.cleanedData["composers"], ["J", "P"]);
+    equal(f.cleanedData["name"], "Yesterday");
+});
 
+test("Escaping", function()
+{
     // Validation errors are HTML-escaped when output as HTML
     var EscapingForm = formFactory({
         fields: function() {
@@ -593,7 +699,7 @@ test("Form", function()
         }
     });
     f = new EscapingForm({data: {specialName: "Nothing to escape", specialSafeName: "Nothing to escape"}, autoId: false});
-    equals(""+f,
+    equal(""+f,
 "<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Nothing to escape&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Nothing to escape\"></td></tr>\n" +
 "<tr><th><em>Special</em> Field:</th><td><ul class=\"errorlist\"><li>'<b>Nothing to escape</b>' is a safe string</li></ul><input type=\"text\" name=\"specialSafeName\" value=\"Nothing to escape\"></td></tr>");
     f = new EscapingForm({
@@ -603,81 +709,12 @@ test("Form", function()
         },
         autoId: false
     });
-    equals(""+f,
+    equal(""+f,
 "<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;\"></td></tr>\n" +
 "<tr><th><em>Special</em> Field:</th><td><ul class=\"errorlist\"><li>'<b><i>Do not escape error message</i></b>' is a safe string</li></ul><input type=\"text\" name=\"specialSafeName\" value=\"&lt;i&gt;Do not escape error message&lt;/i&gt;\"></td></tr>");
-
-    // A Form's fields are displayed in the same order they were defined
-    var TestForm = formFactory({fields: function() {
-        return {
-            field1: new CharField(),
-            field2: new CharField(),
-            field3: new CharField(),
-            field4: new CharField(),
-            field5: new CharField(),
-            field6: new CharField(),
-            field7: new CharField(),
-            field8: new CharField(),
-            field9: new CharField(),
-            field10: new CharField(),
-            field11: new CharField(),
-            field12: new CharField(),
-            field13: new CharField(),
-            field14: new CharField()
-        };
-    }});
-    p = new TestForm({autoId: false});
-    equals(""+p,
-"<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
-"<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>\n" +
-"<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
-"<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>\n" +
-"<tr><th>Field5:</th><td><input type=\"text\" name=\"field5\"></td></tr>\n" +
-"<tr><th>Field6:</th><td><input type=\"text\" name=\"field6\"></td></tr>\n" +
-"<tr><th>Field7:</th><td><input type=\"text\" name=\"field7\"></td></tr>\n" +
-"<tr><th>Field8:</th><td><input type=\"text\" name=\"field8\"></td></tr>\n" +
-"<tr><th>Field9:</th><td><input type=\"text\" name=\"field9\"></td></tr>\n" +
-"<tr><th>Field10:</th><td><input type=\"text\" name=\"field10\"></td></tr>\n" +
-"<tr><th>Field11:</th><td><input type=\"text\" name=\"field11\"></td></tr>\n" +
-"<tr><th>Field12:</th><td><input type=\"text\" name=\"field12\"></td></tr>\n" +
-"<tr><th>Field13:</th><td><input type=\"text\" name=\"field13\"></td></tr>\n" +
-"<tr><th>Field14:</th><td><input type=\"text\" name=\"field14\"></td></tr>");
-
-    // Some Field classes have an effect on the HTML attributes of their
-    // associated Widget. If you set maxLength in a CharField and its associated
-    // widget is either a TextInput or PasswordInput, then the widget's rendered
-    // HTML will include the "maxlength" attribute.
-    var UserRegistration = formFactory({fields: function() {
-        return {
-            username: new CharField({maxLength: 10}), // Uses TextInput by default
-            password: new CharField({maxLength: 10, widget: PasswordInput}),
-            realname: new CharField({maxLength: 10, widget: TextInput}), // Redundantly degine widget, just to test
-            address: new CharField()
-        };
-    }});
-    p = new UserRegistration({autoId: false});
-    equals(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li>Password: <input maxlength=\"10\" type=\"password\" name=\"password\"></li>\n" +
-"<li>Realname: <input maxlength=\"10\" type=\"text\" name=\"realname\"></li>\n" +
-"<li>Address: <input type=\"text\" name=\"address\"></li>");
-
-    // If you specify a custom "attrs" that includes the "maxlength" attribute,
-    // the Field's maxLength attribute will override whatever "maxlength" you
-    // specify in "attrs".
-    UserRegistration = formFactory({fields: function() {
-        return {
-            username: new CharField({maxLength: 10, widget: new TextInput({attrs: {maxlength: 20}})}),
-            password: new CharField({maxLength: 10, widget: PasswordInput})
-        };
-    }});
-    p = new UserRegistration({autoId: false});
-    equals(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li>Password: <input maxlength=\"10\" type=\"password\" name=\"password\"></li>");
 });
 
-test("Validating multiple fields in relation to another", function()
+test("Validating multiple fields", function()
 {
     expect(20);
     // There are a couple of ways to do multiple-field validation. If you want
@@ -706,18 +743,18 @@ test("Validating multiple fields in relation to another", function()
         }
     });
     var f = new UserRegistration({autoId: false});
-    same(f.errors().isPopulated(), false);
+    strictEqual(f.errors().isPopulated(), false);
     f = new UserRegistration({data: {}, autoId: false});
-    same(f.errors()["username"].errors, ["This field is required."]);
-    same(f.errors()["password1"].errors, ["This field is required."]);
-    same(f.errors()["password2"].errors, ["This field is required."]);
+    deepEqual(f.errors()["username"].errors, ["This field is required."]);
+    deepEqual(f.errors()["password1"].errors, ["This field is required."]);
+    deepEqual(f.errors()["password2"].errors, ["This field is required."]);
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false});
-    same(f.errors()["password2"].errors, ["Please make sure your passwords match."]);
+    deepEqual(f.errors()["password2"].errors, ["Please make sure your passwords match."]);
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false});
-    same(f.errors().isPopulated(), false);
-    equals(f.cleanedData.username, "adrian");
-    equals(f.cleanedData.password1, "foo");
-    equals(f.cleanedData.password2, "foo");
+    strictEqual(f.errors().isPopulated(), false);
+    equal(f.cleanedData.username, "adrian");
+    equal(f.cleanedData.password1, "foo");
+    equal(f.cleanedData.password2, "foo");
 
     // Another way of doing multiple-field validation is by implementing the
     // Form's clean() method. If you do this, any ValidationError raised by that
@@ -746,30 +783,30 @@ test("Validating multiple fields in relation to another", function()
         }
     });
     f = new UserRegistration({data: {}, autoId: false});
-    equals(f.asTable(),
+    equal(f.asTable(),
 "<tr><th>Username:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>\n" +
 "<tr><th>Password1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password1\"></td></tr>\n" +
 "<tr><th>Password2:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password2\"></td></tr>")
-    same(f.errors()["username"].errors, ["This field is required."]);
-    same(f.errors()["password1"].errors, ["This field is required."]);
-    same(f.errors()["password2"].errors, ["This field is required."]);
+    deepEqual(f.errors()["username"].errors, ["This field is required."]);
+    deepEqual(f.errors()["password1"].errors, ["This field is required."]);
+    deepEqual(f.errors()["password2"].errors, ["This field is required."]);
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false});
-    same(f.errors()["__all__"].errors, ["Please make sure your passwords match."]);
-    equals(f.asTable(),
+    deepEqual(f.errors()["__all__"].errors, ["Please make sure your passwords match."]);
+    equal(f.asTable(),
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
 "<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></td></tr>\n" +
 "<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\" value=\"foo\"></td></tr>\n" +
 "<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\" value=\"bar\"></td></tr>");
-    equals(f.asUL(),
+    equal(f.asUL(),
 "<li><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></li>\n" +
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></li>\n" +
 "<li>Password1: <input type=\"password\" name=\"password1\" value=\"foo\"></li>\n" +
 "<li>Password2: <input type=\"password\" name=\"password2\" value=\"bar\"></li>");
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false});
-    same(f.errors().isPopulated(), false);
-    equals(f.cleanedData.username, "adrian");
-    equals(f.cleanedData.password1, "foo");
-    equals(f.cleanedData.password2, "foo");
+    strictEqual(f.errors().isPopulated(), false);
+    equal(f.cleanedData.username, "adrian");
+    equal(f.cleanedData.password1, "foo");
+    equal(f.cleanedData.password2, "foo");
 });
 
 test("Dynamic construction", function()
@@ -791,7 +828,7 @@ test("Dynamic construction", function()
         }
     });
     var p = new Person({autoId: false});
-    equals(""+p,
+    equal(""+p,
 "<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>\n" +
 "<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>\n" +
 "<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\"></td></tr>");
@@ -815,12 +852,12 @@ test("Dynamic construction", function()
     });
     var fieldList = [["field1", new CharField()], ["field2", new CharField()]];
     var myForm = new MyForm({fieldList: fieldList});
-    equals(""+myForm,
+    equal(""+myForm,
 "<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
 "<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>");
     fieldList = [["field3", new CharField()], ["field4", new CharField()]];
     myForm = new MyForm({fieldList: fieldList});
-    equals(""+myForm,
+    equal(""+myForm,
 "<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
 "<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>");
 
@@ -846,14 +883,14 @@ test("Dynamic construction", function()
     });
     fieldList = [["field1", new CharField()], ["field2", new CharField()]];
     myForm = new MyForm({fieldList: fieldList});
-    equals(""+myForm,
+    equal(""+myForm,
 "<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>\n" +
 "<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>\n" +
 "<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
 "<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>");
     fieldList = [["field3", new CharField()], ["field4", new CharField()]];
     myForm = new MyForm({fieldList: fieldList});
-    equals(""+myForm,
+    equal(""+myForm,
 "<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>\n" +
 "<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>\n" +
 "<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
@@ -883,19 +920,19 @@ test("Dynamic construction", function()
         }
     });
     var f = new Person({namesRequired: false});
-    same([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
+    deepEqual([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
          [false, false]);
-    same([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
+    deepEqual([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
          [{}, {}]);
     f = new Person({namesRequired: true});
-    same([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
+    deepEqual([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
          [true, true]);
-    same([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
+    deepEqual([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
          [{"class": "required"}, {"class": "required"}]);
     f = new Person({namesRequired: false});
-    same([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
+    deepEqual([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
          [false, false]);
-    same([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
+    deepEqual([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
          [{}, {}]);
 
     Person = formFactory({
@@ -918,17 +955,17 @@ test("Dynamic construction", function()
         }
     });
     f = new Person({nameMaxLength: null});
-    same([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
+    deepEqual([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
          [30, 30]);
     f = new Person({nameMaxLength: 20});
-    same([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
+    deepEqual([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
          [20, 20]);
     f = new Person({nameMaxLength: null});
-    same([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
+    deepEqual([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
          [30, 30]);
 });
 
-test("Hidden inputs", function()
+test("Hidden widget", function()
 {
     expect(12);
     // HiddenInput widgets are displayed differently in the asTable(), asUL()
@@ -944,30 +981,30 @@ test("Hidden inputs", function()
         };
     }});
     var p = new Person({autoId: false});
-    equals(""+p,
+    equal(""+p,
 "<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>\n" +
 "<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>\n" +
 "<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></td></tr>");
-    equals(p.asUL(),
+    equal(p.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></li>");
-    equals(p.asP(),
+    equal(p.asP(),
 "<p>First name: <input type=\"text\" name=\"first_name\"></p>\n" +
 "<p>Last name: <input type=\"text\" name=\"last_name\"></p>\n" +
 "<p>Birthday: <input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></p>");
 
     // With autoId set, a HiddenInput still gets an id, but it doesn't get a label.
     p = new Person({autoId: "id_%(name)s"});
-    equals(""+p,
+    equal(""+p,
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></td></tr>");
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>\n" +
 "<li><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>\n" +
 "<li><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></li>");
-    equals(""+p.asP(),
+    equal(""+p.asP(),
 "<p><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>\n" +
 "<p><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>\n" +
 "<p><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></p>");
@@ -977,17 +1014,17 @@ test("Hidden inputs", function()
     // "(Hidden field [fieldname]) " prepended. This message is displayed at the
     // top of the output, regardless of its field's order in the form.
     p = new Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}, autoId: false});
-    equals(""+p,
+    equal(""+p,
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></td></tr>\n" +
 "<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\" value=\"John\"></td></tr>\n" +
 "<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\" value=\"Lennon\"></td></tr>\n" +
 "<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></td></tr>");
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></li>\n" +
 "<li>First name: <input type=\"text\" name=\"first_name\" value=\"John\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\" value=\"Lennon\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></li>");
-    equals(""+p.asP(),
+    equal(""+p.asP(),
 "<ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul>\n" +
 "<p>First name: <input type=\"text\" name=\"first_name\" value=\"John\"></p>\n" +
 "<p>Last name: <input type=\"text\" name=\"last_name\" value=\"Lennon\"></p>\n" +
@@ -1007,17 +1044,92 @@ test("Hidden inputs", function()
         };
     }});
     p = new TestForm({autoId: false});
-    equals(""+p.asTable(),
+    equal(""+p.asTable(),
 "<tr><td colspan=\"2\"><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></td></tr>");
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></li>");
-    equals(""+p.asP(),
+    equal(""+p.asP(),
 "<div><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></div>");
 });
 
-test("Labels", function()
+test("Field order", function()
 {
-    expect(10);
+    // A Form's fields are displayed in the same order they were defined
+    var TestForm = formFactory({fields: function() {
+        return {
+            field1: new CharField(),
+            field2: new CharField(),
+            field3: new CharField(),
+            field4: new CharField(),
+            field5: new CharField(),
+            field6: new CharField(),
+            field7: new CharField(),
+            field8: new CharField(),
+            field9: new CharField(),
+            field10: new CharField(),
+            field11: new CharField(),
+            field12: new CharField(),
+            field13: new CharField(),
+            field14: new CharField()
+        };
+    }});
+    p = new TestForm({autoId: false});
+    equal(""+p,
+"<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
+"<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>\n" +
+"<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
+"<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>\n" +
+"<tr><th>Field5:</th><td><input type=\"text\" name=\"field5\"></td></tr>\n" +
+"<tr><th>Field6:</th><td><input type=\"text\" name=\"field6\"></td></tr>\n" +
+"<tr><th>Field7:</th><td><input type=\"text\" name=\"field7\"></td></tr>\n" +
+"<tr><th>Field8:</th><td><input type=\"text\" name=\"field8\"></td></tr>\n" +
+"<tr><th>Field9:</th><td><input type=\"text\" name=\"field9\"></td></tr>\n" +
+"<tr><th>Field10:</th><td><input type=\"text\" name=\"field10\"></td></tr>\n" +
+"<tr><th>Field11:</th><td><input type=\"text\" name=\"field11\"></td></tr>\n" +
+"<tr><th>Field12:</th><td><input type=\"text\" name=\"field12\"></td></tr>\n" +
+"<tr><th>Field13:</th><td><input type=\"text\" name=\"field13\"></td></tr>\n" +
+"<tr><th>Field14:</th><td><input type=\"text\" name=\"field14\"></td></tr>");
+});
+
+test("Form HTML attributes", function()
+{
+    // Some Field classes have an effect on the HTML attributes of their
+    // associated Widget. If you set maxLength in a CharField and its associated
+    // widget is either a TextInput or PasswordInput, then the widget's rendered
+    // HTML will include the "maxlength" attribute.
+    var UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10}), // Uses TextInput by default
+            password: new CharField({maxLength: 10, widget: PasswordInput}),
+            realname: new CharField({maxLength: 10, widget: TextInput}), // Redundantly degine widget, just to test
+            address: new CharField()
+        };
+    }});
+    p = new UserRegistration({autoId: false});
+    equal(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li>Password: <input maxlength=\"10\" type=\"password\" name=\"password\"></li>\n" +
+"<li>Realname: <input maxlength=\"10\" type=\"text\" name=\"realname\"></li>\n" +
+"<li>Address: <input type=\"text\" name=\"address\"></li>");
+
+    // If you specify a custom "attrs" that includes the "maxlength" attribute,
+    // the Field's maxLength attribute will override whatever "maxlength" you
+    // specify in "attrs".
+    UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10, widget: new TextInput({attrs: {maxlength: 20}})}),
+            password: new CharField({maxLength: 10, widget: PasswordInput})
+        };
+    }});
+    p = new UserRegistration({autoId: false});
+    equal(""+p.asUL(),
+"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
+"<li>Password: <input maxlength=\"10\" type=\"password\" name=\"password\"></li>");
+});
+
+test("Specifying labels", function()
+{
+    expect(6);
     // You can specify the label for a field by using the "label" argument to a
     // Field class. If you don't specify 'label', js-forms will use the field
     // name with underscores converted to spaces, and the initial letter
@@ -1030,7 +1142,7 @@ test("Labels", function()
         };
     }});
     var p = new UserRegistration({autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Your username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li>Password1: <input type=\"password\" name=\"password1\"></li>\n" +
 "<li>Password (again): <input type=\"password\" name=\"password2\"></li>");
@@ -1047,7 +1159,7 @@ test("Labels", function()
         };
     }});
     p = new Questions({autoId: false});
-    equals(""+p.asP(),
+    equal(""+p.asP(),
 "<p>The first question: <input type=\"text\" name=\"q1\"></p>\n" +
 "<p>What is your name? <input type=\"text\" name=\"q2\"></p>\n" +
 "<p>The answer to life is: <input type=\"text\" name=\"q3\"></p>\n" +
@@ -1063,11 +1175,11 @@ test("Labels", function()
         };
     }});
     p = new UserRegistration({autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li> <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li>Password1: <input type=\"password\" name=\"password1\"></li>");
     p = new UserRegistration({autoId: "id_%(name)s"});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li> <input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>\n" +
 "<li><label for=\"id_password1\">Password1:</label> <input type=\"password\" name=\"password1\" id=\"id_password1\"></li>");
 
@@ -1080,14 +1192,17 @@ test("Labels", function()
         };
     }});
     p = new UserRegistration({autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li>Password1: <input type=\"password\" name=\"password1\"></li>");
     p = new UserRegistration({autoId: "id_%(name)s"});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><label for=\"id_username\">Username:</label> <input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>\n" +
 "<li><label for=\"id_password1\">Password1:</label> <input type=\"password\" name=\"password1\" id=\"id_password1\"></li>");
+});
 
+test("Label suffix", function()
+{
     // You can specify the "labelSuffix" argument to a Form class to modify the
     // punctuation symbol used at the end of a label.  By default, the colon
     // (:) is used, and is only appended to the label if the label doesn't
@@ -1099,26 +1214,26 @@ test("Labels", function()
         };
     }});
     var f = new FavouriteForm({autoId: false});
-    equals(""+f.asUL(),
+    equal(""+f.asUL(),
 "<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
 "<li>Favourite animal: <input type=\"text\" name=\"animal\"></li>");
     f = new FavouriteForm({autoId: false, labelSuffix: "?"});
-    equals(""+f.asUL(),
+    equal(""+f.asUL(),
 "<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
 "<li>Favourite animal? <input type=\"text\" name=\"animal\"></li>");
     f = new FavouriteForm({autoId: false, labelSuffix: ""});
-    equals(""+f.asUL(),
+    equal(""+f.asUL(),
 "<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
 "<li>Favourite animal <input type=\"text\" name=\"animal\"></li>");
     f = new FavouriteForm({autoId: false, labelSuffix: "\u2192"});
-    equals(""+f.asUL(),
+    equal(""+f.asUL(),
 "<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
 "<li>Favourite animal\u2192 <input type=\"text\" name=\"animal\"></li>");
 });
 
 test("Initial data", function()
 {
-    expect(22);
+    expect(6);
     // You can specify initial data for a field by using the "initial" argument
     // to a Field class. This initial data is displayed when a Form is rendered
     // with *no* data. It is not displayed when a Form is rendered with any data
@@ -1134,21 +1249,21 @@ test("Initial data", function()
     // Here, we're not submitting any data, so the initial value will be
     // displayed.
     var p = new UserRegistration({autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>");
 
     // Here, we're submitting data, so the initial value will *not* be displayed.
     p = new UserRegistration({data: {}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
     p = new UserRegistration({data: {username: ""}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
     p = new UserRegistration({data: {username: "foo"}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
 
@@ -1157,9 +1272,12 @@ test("Initial data", function()
     // raises a validation error rather than using the initial value for
     // "username".
     p = new UserRegistration({data: {password: "secret"}});
-    same(p.errors()["username"].errors, ["This field is required."]);
-    same(p.isValid(), false);
+    deepEqual(p.errors()["username"].errors, ["This field is required."]);
+    strictEqual(p.isValid(), false);
+});
 
+test("Dynamic initial data", function()
+{
     // The previous technique dealt with "hard-coded" initial data, but it's
     // also possible to specify initial data after you've already created the
     // Form class (i.e., at runtime). Use the "initial" parameter to the Form
@@ -1174,25 +1292,25 @@ test("Initial data", function()
 
     // Here, we're not submitting any data, so the initial value will be displayed.
     p = new UserRegistration({initial: {username: "django"}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>");
     p = new UserRegistration({initial: {username: "stephane"}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"stephane\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>");
 
     // The "initial" parameter is meaningless if you pass data
     p = new UserRegistration({data: {}, initial: {username: "django"}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
     p = new UserRegistration({data: {username: ""}, initial: {username: "django"}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
     p = new UserRegistration({data: {username: "foo"}, initial: {username: "django"}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>");
 
@@ -1201,8 +1319,8 @@ test("Initial data", function()
     // the form raises a validation error rather than using the initial value
     // for "username".
     p = new UserRegistration({data: {password: "secret"}, initial: {username: "django"}});
-    same(p.errors()["username"].errors, ["This field is required."]);
-    same(p.isValid(), false);
+    deepEqual(p.errors()["username"].errors, ["This field is required."]);
+    strictEqual(p.isValid(), false);
 
     // If a Form defines "initial" *and* "initial" is passed as a parameter
     // during construction, then the latter will get precedence.
@@ -1213,10 +1331,13 @@ test("Initial data", function()
         };
     }});
     p = new UserRegistration({initial: {username: "babik"}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"babik\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>");
+});
 
+test("Callable initial data", function()
+{
     // The previous technique dealt with raw values as initial data, but it's
     // also possible to specify callable data.
     UserRegistration = formFactory({fields: function() {
@@ -1236,7 +1357,7 @@ test("Initial data", function()
     // Here, we're not submitting any data, so the initial value will be
     // displayed.
     p = new UserRegistration({initial: {username: initialDjango, options: initialOptions}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
 "<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
@@ -1247,7 +1368,7 @@ test("Initial data", function()
 
     // The "initial" parameter is meaningless if you pass data.
     p = new UserRegistration({data: {}, initial: {username: initialDjango, options: initialOptions}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Options: <select name=\"options\" multiple=\"multiple\">\n" +
@@ -1256,7 +1377,7 @@ test("Initial data", function()
 "<option value=\"w\">whiz</option>\n" +
 "</select></li>");
     p = new UserRegistration({data: {username: ""}, initial: {username: initialDjango}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Options: <select name=\"options\" multiple=\"multiple\">\n" +
@@ -1265,7 +1386,7 @@ test("Initial data", function()
 "<option value=\"w\">whiz</option>\n" +
 "</select></li>");
     p = new UserRegistration({data: {username: "foo", options: ["f", "b"]}, initial: {username: initialDjango}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
 "<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
@@ -1279,8 +1400,8 @@ test("Initial data", function()
     // the form raises a validation error rather than using the initial value
     // for 'username'.
     p = new UserRegistration({data: {password: "secret"}, initial: {username: initialDjango, options: initialOptions}});
-    same(p.errors()["username"].errors, ["This field is required."]);
-    same(p.isValid(), false);
+    deepEqual(p.errors()["username"].errors, ["This field is required."]);
+    strictEqual(p.isValid(), false);
 
     // If a Form defines "initial" *and* "initial" is passed as a parameter
     // during construction, then the latter will get precedence.
@@ -1292,7 +1413,7 @@ test("Initial data", function()
         };
     }});
     p = new UserRegistration({autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
 "<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
@@ -1301,7 +1422,7 @@ test("Initial data", function()
 "<option value=\"w\" selected=\"selected\">whiz</option>\n" +
 "</select></li>");
     p = new UserRegistration({initial: {username: initialStephane, options: initialOptions}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"stephane\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
 "<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
@@ -1310,6 +1431,8 @@ test("Initial data", function()
 "<option value=\"w\">whiz</option>\n" +
 "</select></li>");
 });
+
+// TODO test(test_boundfield_values
 
 test("Help text", function()
 {
@@ -1324,19 +1447,19 @@ test("Help text", function()
         };
     }});
     var p = new UserRegistration({autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"> Choose wisely.</li>");
-    equals(""+p.asP(),
+    equal(""+p.asP(),
 "<p>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</p>\n" +
 "<p>Password: <input type=\"password\" name=\"password\"> Choose wisely.</p>");
-    equals(""+p.asTable(),
+    equal(""+p.asTable(),
 "<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"><br>e.g., user@example.com</td></tr>\n" +
 "<tr><th>Password:</th><td><input type=\"password\" name=\"password\"><br>Choose wisely.</td></tr>");
 
     // The help text is displayed whether or not data is provided for the form.
     p = new UserRegistration({data: {username: "foo"}, autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"> e.g., user@example.com</li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"> Choose wisely.</li>");
 
@@ -1350,7 +1473,7 @@ test("Help text", function()
         };
     }});
     p  = new UserRegistration({autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"next\" value=\"/\"></li>");
 });
@@ -1374,12 +1497,12 @@ test("Subclassing forms", function()
         };
     }});
     var p = new Person({autoId: false});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\"></li>");
     var m = new Musician({autoId: false});
-    equals(""+m.asUL(),
+    equal(""+m.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\"></li>\n" +
@@ -1424,7 +1547,7 @@ test("Subclassing forms", function()
         }
     });
     var b = new Beatle({autoId: false});
-    equals(""+b.asUL(),
+    equal(""+b.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\"></li>\n" +
@@ -1432,19 +1555,19 @@ test("Subclassing forms", function()
 "<li>Haircut type: <input type=\"text\" name=\"haircut_type\"></li>");
 
     var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}});
-    same(b.errors()["first_name"].errors, ["Method from Person."]);
-    same(b.errors()["birthday"].errors, ["Method from Instrument."]);
-    same(b.errors()["last_name"].errors, ["Method from Beatle."]);
+    deepEqual(b.errors()["first_name"].errors, ["Method from Person."]);
+    deepEqual(b.errors()["birthday"].errors, ["Method from Instrument."]);
+    deepEqual(b.errors()["last_name"].errors, ["Method from Beatle."]);
 
     // JavaScript doesn't support multiple inheritance, so this is actually a
     // bit of a hack. These tests will highlight the fallout from this (well,
     // the ones I know about, at least).
-    same(b instanceof Form, true);
-    same(b instanceof Person, true);
+    strictEqual(b instanceof Form, true);
+    strictEqual(b instanceof Person, true);
     // An instance of the first Form passed as a parent is used as the base
     // prototype object for our new Form - methods are merely borrowed from any
     // additional Forms, so instanceof only works for the first Form passed.
-    same(b instanceof Instrument, false);
+    strictEqual(b instanceof Instrument, false);
 });
 
 test("Forms with prefixes", function()
@@ -1470,21 +1593,21 @@ test("Forms with prefixes", function()
         "person1-birthday": "1940-10-9"
     };
     var p = new Person({data: data, prefix: "person1"});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><label for=\"id_person1-first_name\">First name:</label> <input type=\"text\" name=\"person1-first_name\" id=\"id_person1-first_name\" value=\"John\"></li>\n" +
 "<li><label for=\"id_person1-last_name\">Last name:</label> <input type=\"text\" name=\"person1-last_name\" id=\"id_person1-last_name\" value=\"Lennon\"></li>\n" +
 "<li><label for=\"id_person1-birthday\">Birthday:</label> <input type=\"text\" name=\"person1-birthday\" id=\"id_person1-birthday\" value=\"1940-10-9\"></li>");
-    equals(""+p.boundField("first_name"),
+    equal(""+p.boundField("first_name"),
 "<input type=\"text\" name=\"person1-first_name\" id=\"id_person1-first_name\" value=\"John\">");
-    equals(""+p.boundField("last_name"),
+    equal(""+p.boundField("last_name"),
 "<input type=\"text\" name=\"person1-last_name\" id=\"id_person1-last_name\" value=\"Lennon\">");
-    equals(""+p.boundField("birthday"),
+    equal(""+p.boundField("birthday"),
 "<input type=\"text\" name=\"person1-birthday\" id=\"id_person1-birthday\" value=\"1940-10-9\">");
-    same(p.errors().isPopulated(), false);
-    same(p.isValid(), true);
-    equals(p.cleanedData["first_name"], "John");
-    equals(p.cleanedData["last_name"], "Lennon");
-    same(p.cleanedData["birthday"], new Date(1940, 9, 9));
+    strictEqual(p.errors().isPopulated(), false);
+    strictEqual(p.isValid(), true);
+    equal(p.cleanedData["first_name"], "John");
+    equal(p.cleanedData["last_name"], "Lennon");
+    equal(p.cleanedData["birthday"].valueOf(), new Date(1940, 9, 9).valueOf());
 
     // Let's try submitting some bad data to make sure form.errors and
     // field.errors work as expected.
@@ -1494,11 +1617,11 @@ test("Forms with prefixes", function()
         "person1-birthday": ""
     };
     p = new Person({data: data, prefix: "person1"});
-    same(p.errors()["first_name"].errors, ["This field is required."]);
-    same(p.errors()["last_name"].errors, ["This field is required."]);
-    same(p.errors()["birthday"].errors, ["This field is required."]);
-    same(p.boundField("first_name").errors().errors, ["This field is required."]);
-    try { p.boundField("person1-first_name"); } catch(e) { equals(e.message, "Form does not have a 'person1-first_name' field."); }
+    deepEqual(p.errors()["first_name"].errors, ["This field is required."]);
+    deepEqual(p.errors()["last_name"].errors, ["This field is required."]);
+    deepEqual(p.errors()["birthday"].errors, ["This field is required."]);
+    deepEqual(p.boundField("first_name").errors().errors, ["This field is required."]);
+    try { p.boundField("person1-first_name"); } catch(e) { equal(e.message, "Form does not have a 'person1-first_name' field."); }
 
     // In this example, the data doesn't have a prefix, but the form requires
     // it, so the form doesn't "see" the fields.
@@ -1508,9 +1631,9 @@ test("Forms with prefixes", function()
         "birthday": "1940-10-9"
     };
     p = new Person({data: data, prefix: "person1"});
-    same(p.errors()["first_name"].errors, ["This field is required."]);
-    same(p.errors()["last_name"].errors, ["This field is required."]);
-    same(p.errors()["birthday"].errors, ["This field is required."]);
+    deepEqual(p.errors()["first_name"].errors, ["This field is required."]);
+    deepEqual(p.errors()["last_name"].errors, ["This field is required."]);
+    deepEqual(p.errors()["birthday"].errors, ["This field is required."]);
 
     // With prefixes, a single data object can hold data for multiple instances
     // of the same form.
@@ -1523,15 +1646,15 @@ test("Forms with prefixes", function()
         "person2-birthday": "1943-12-8"
     };
     var p1 = new Person({data: data, prefix: "person1"});
-    same(p1.isValid(), true);
-    equals(p1.cleanedData["first_name"], "John");
-    equals(p1.cleanedData["last_name"], "Lennon");
-    same(p1.cleanedData["birthday"], new Date(1940, 9, 9));
+    strictEqual(p1.isValid(), true);
+    equal(p1.cleanedData["first_name"], "John");
+    equal(p1.cleanedData["last_name"], "Lennon");
+    equal(p1.cleanedData["birthday"].valueOf(), new Date(1940, 9, 9).valueOf());
     var p2 = new Person({data: data, prefix: "person2"});
-    same(p2.isValid(), true);
-    equals(p2.cleanedData["first_name"], "Jim");
-    equals(p2.cleanedData["last_name"], "Morrison");
-    same(p2.cleanedData["birthday"], new Date(1943, 11, 8));
+    strictEqual(p2.isValid(), true);
+    equal(p2.cleanedData["first_name"], "Jim");
+    equal(p2.cleanedData["last_name"], "Morrison");
+    equal(p2.cleanedData["birthday"].valueOf(), new Date(1943, 11, 8).valueOf());
 
     // By default, forms append a hyphen between the prefix and the field name,
     // but a form can alter that behavior by implementing the addPrefix()
@@ -1553,7 +1676,7 @@ test("Forms with prefixes", function()
         }
     });
     p = new Person({prefix: "foo"});
-    equals(""+p.asUL(),
+    equal(""+p.asUL(),
 "<li><label for=\"id_foo-prefix-first_name\">First name:</label> <input type=\"text\" name=\"foo-prefix-first_name\" id=\"id_foo-prefix-first_name\"></li>\n" +
 "<li><label for=\"id_foo-prefix-last_name\">Last name:</label> <input type=\"text\" name=\"foo-prefix-last_name\" id=\"id_foo-prefix-last_name\"></li>\n" +
 "<li><label for=\"id_foo-prefix-birthday\">Birthday:</label> <input type=\"text\" name=\"foo-prefix-birthday\" id=\"id_foo-prefix-birthday\"></li>");
@@ -1563,13 +1686,13 @@ test("Forms with prefixes", function()
         "foo-prefix-birthday": "1940-10-9"
     };
     p = new Person({data: data, prefix: "foo"});
-    same(p.isValid(), true);
-    equals(p.cleanedData["first_name"], "John");
-    equals(p.cleanedData["last_name"], "Lennon");
-    same(p.cleanedData["birthday"], new Date(1940, 9, 9));
+    strictEqual(p.isValid(), true);
+    equal(p.cleanedData["first_name"], "John");
+    equal(p.cleanedData["last_name"], "Lennon");
+    equal(p.cleanedData["birthday"].valueOf(), new Date(1940, 9, 9).valueOf());
 });
 
-test("Forms with NullBooleanFields", function()
+test("Forms with null boolean", function()
 {
     expect(6);
     // NullBooleanField is a bit of a special case because its presentation
@@ -1582,42 +1705,42 @@ test("Forms with NullBooleanFields", function()
         };
     }});
     var p = new Person({data: {name: "Joe"}, autoId: false});
-    equals(""+p.boundField("is_cool"),
+    equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select>");
     p = new Person({data: {name: "Joe", is_cool: "1"}, autoId: false});
-    equals(""+p.boundField("is_cool"),
+    equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select>");
     p = new Person({data: {name: "Joe", is_cool: "2"}, autoId: false});
-    equals(""+p.boundField("is_cool"),
+    equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
 "<option value=\"2\" selected=\"selected\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select>");
     p = new Person({data: {name: "Joe", is_cool: "3"}, autoId: false});
-    equals(""+p.boundField("is_cool"),
+    equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\" selected=\"selected\">No</option>\n" +
 "</select>");
     p = new Person({data: {name: "Joe", is_cool: true}, autoId: false});
-    equals(""+p.boundField("is_cool"),
+    equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
 "<option value=\"2\" selected=\"selected\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select>");
     p = new Person({data: {name: "Joe", is_cool: false}, autoId: false});
-    equals(""+p.boundField("is_cool"),
+    equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
@@ -1625,7 +1748,7 @@ test("Forms with NullBooleanFields", function()
 "</select>");
 });
 
-test("Forms with FileFields", function()
+test("Forms with file fields", function()
 {
     expect(6);
 
@@ -1642,25 +1765,25 @@ test("Forms with FileFields", function()
         return { file1: new FileField() };
     }});
     var f = new FileForm({autoId: false});
-    equals(""+f,
+    equal(""+f,
            "<tr><th>File1:</th><td><input type=\"file\" name=\"file1\"></td></tr>");
 
     f = new FileForm({data: {}, files: {}, autoId: false});
-    equals(""+f,
+    equal(""+f,
            "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"file\" name=\"file1\"></td></tr>");
 
     f = new FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "")}, autoId: false});
-    equals(""+f,
+    equal(""+f,
            "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>The submitted file is empty.</li></ul><input type=\"file\" name=\"file1\"></td></tr>");
 
     f = new FileForm({data: {}, files: {file1: "something that is not a file"}, autoId: false});
-    equals(""+f,
+    equal(""+f,
            "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>No file was submitted. Check the encoding type on the form.</li></ul><input type=\"file\" name=\"file1\"></td></tr>");
 
     f = new FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "some content")}, autoId: false});
-    equals(""+f,
+    equal(""+f,
            "<tr><th>File1:</th><td><input type=\"file\" name=\"file1\"></td></tr>");
-    same(f.isValid(), true);
+    strictEqual(f.isValid(), true);
 });
 
 test("Basic form processing", function()
@@ -1705,7 +1828,7 @@ test("Basic form processing", function()
     }
 
     // Case 1: GET (and empty form, with no errors)
-    equals(myFunction("GET", {}),
+    equal(myFunction("GET", {}),
 "<form action=\"\" method=\"POST\">\n" +
 "<table>\n" +
 "<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>\n" +
@@ -1716,7 +1839,7 @@ test("Basic form processing", function()
 "</form>");
 
     // Case 2: POST with erroneous data (a redisplayed form, with errors)
-    equals(myFunction("POST", {username: "this-is-a-long-username", password1: "foo", password2: "bar"}),
+    equal(myFunction("POST", {username: "this-is-a-long-username", password1: "foo", password2: "bar"}),
 "<form action=\"\" method=\"POST\">\n" +
 "<table>\n" +
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
@@ -1728,9 +1851,11 @@ test("Basic form processing", function()
 "</form>");
 
     // Case 3: POST with valid data (the success message)
-   equals(myFunction("POST", {username: "adrian", password1: "secret", password2: "secret"}),
+   equal(myFunction("POST", {username: "adrian", password1: "secret", password2: "secret"}),
           "VALID");
 });
+
+// TODO test(test_templates_with_forms
 
 test("The emptyPermitted attribute", function()
 {
@@ -1749,32 +1874,32 @@ test("The emptyPermitted attribute", function()
     // First let's show what happens if emptyPermitted == false (the default)
     var data = {artist: "", name: ""};
     var form = new SongForm({data: data, emptyPermitted: false});
-    same(form.isValid(), false)
-    same(form.errors()["artist"].errors, ["This field is required."]);
-    same(form.errors()["name"].errors, ["This field is required."]);
-    equals(typeof form.cleanedData, "undefined");
+    strictEqual(form.isValid(), false)
+    deepEqual(form.errors()["artist"].errors, ["This field is required."]);
+    deepEqual(form.errors()["name"].errors, ["This field is required."]);
+    equal(typeof form.cleanedData, "undefined");
 
     // Now let's show what happens when emptyPermitted == true and the form is
     // empty.
     form = new SongForm({data: data, emptyPermitted: true});
-    same(form.isValid(), true);
-    same(form.errors().isPopulated(), false);
-    same(form.cleanedData, {});
+    strictEqual(form.isValid(), true);
+    strictEqual(form.errors().isPopulated(), false);
+    deepEqual(form.cleanedData, {});
 
     // But if we fill in data for one of the fields, the form is no longer empty
     // and the whole thing must pass validation.
     data = {artist: "The Doors", name: ""};
     form = new SongForm({data: data, emptyPermitted: true});
-    same(form.isValid(), false)
-    same(form.errors()["name"].errors, ["This field is required."]);
-    equals(typeof form.cleanedData, "undefined");
+    strictEqual(form.isValid(), false)
+    deepEqual(form.errors()["name"].errors, ["This field is required."]);
+    equal(typeof form.cleanedData, "undefined");
 
     // If a field is not given in the data then null is returned for its data.
     // Make sure that when checking for emptyPermitted that null is treated
     // accordingly.
     data = {artist: null, name: ""};
     form = new SongForm({data: data, emptyPermitted: true});
-    same(form.isValid(), true);
+    strictEqual(form.isValid(), true);
 
     // However, we *really* need to be sure we are checking for null as any data
     // in initial that is falsy in a boolean context needs to be treated
@@ -1788,10 +1913,10 @@ test("The emptyPermitted attribute", function()
 
     data = {amount: "0.0", qty: ""};
     form = new PriceForm({data: data, initial: {amount: 0.0}, emptyPermitted: true});
-    same(form.isValid(), true);
+    strictEqual(form.isValid(), true);
 });
 
-test("Extracting hidden and visible fields", function()
+test("Extracting hidden and visible", function()
 {
     expect(2);
     var SongForm = formFactory({fields: function() {
@@ -1803,10 +1928,16 @@ test("Extracting hidden and visible fields", function()
     }});
     var form = new SongForm();
     var hidden = form.hiddenFields();
-    same([hidden.length, hidden[0].name], [1, "token"]);
+    deepEqual([hidden.length, hidden[0].name], [1, "token"]);
     var visible = form.visibleFields();
-    same([visible.length, visible[0].name, visible[1].name], [2, "artist", "name"]);
+    deepEqual([visible.length, visible[0].name, visible[1].name], [2, "artist", "name"]);
 });
+
+// TODO test(test_hiddden_initial_gets_id
+
+// TODO test(test_error_html_required_html_classes
+
+// TODO test(test_label_split_datetime_not_displayed
 
 test("Multipart-encoded forms", function()
 {
@@ -1821,9 +1952,9 @@ test("Multipart-encoded forms", function()
         return {file: new ImageField()};
     }});
 
-    same(new FormWithoutFile().isMultipart(), false);
-    same(new FormWithFile().isMultipart(), true);
-    same(new FormWithImage().isMultipart(), true);
+    strictEqual(new FormWithoutFile().isMultipart(), false);
+    strictEqual(new FormWithFile().isMultipart(), true);
+    strictEqual(new FormWithImage().isMultipart(), true);
 });
 
 test("Overriding ErrorList", function()
@@ -1843,9 +1974,7 @@ test("Overriding ErrorList", function()
     {
         var items = [];
         for (var i = 0, l = this.errors.length; i < l; i++)
-        {
             items.push(DOMBuilder.createElement("div", {"class": "error"}, [this.errors[i]]));
-        }
         return DOMBuilder.createElement("div", {"class": "errorlist"}, items);
     };
 
@@ -1859,7 +1988,7 @@ test("Overriding ErrorList", function()
 
     var data = {email: "invalid"};
     var f = new CommentForm({data: data, autoId: false, errorConstructor: DivErrorList});
-    equals(""+f.asP(),
+    equal(""+f.asP(),
 "<p>Name: <input maxlength=\"50\" type=\"text\" name=\"name\"></p>\n" +
 "<div class=\"errorlist\"><div class=\"error\">Enter a valid e-mail address.</div></div>\n" +
 "<p>Email: <input type=\"text\" name=\"email\" value=\"invalid\"></p>\n" +

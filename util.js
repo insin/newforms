@@ -298,7 +298,7 @@ ErrorObject.prototype.asUL = function()
     var items = [];
     for (var name in this)
         if (this.hasOwnProperty(name))
-            items.push(DOMBuilder.createElement("li", {}, [name, this[name].asUL()]));
+            items.push(DOMBuilder.createElement("li", {}, [name, this[name].defaultRendering()]));
 
     if (items.length === 0)
         return DOMBuilder.fragment();
@@ -318,9 +318,7 @@ ErrorObject.prototype.asText = function()
             items.push("* " + name);
             var errorList = this[name];
             for (var i = 0, l = errorList.errors.length; i < l; i++)
-            {
                 items.push("  * " + errorList.errors[i]);
-            }
         }
     }
     return items.join("\n");
@@ -334,8 +332,6 @@ ErrorObject.prototype.asText = function()
  */
 function ErrorList(errors)
 {
-    if (errors instanceof ErrorList)
-        console.log("Got error list!");
     this.errors = errors || [];
 }
 
@@ -393,20 +389,22 @@ ErrorList.prototype.isPopulated = function()
 };
 
 /**
- * A validation error.
+ * A validation error, containing a list of messages. Single messages
+ * (e.g. those produced by validators may have an associated error code
+ * and parameters to allow customisation by fields.
  */
 function ValidationError(message, kwargs)
 {
     kwargs = extend({code: null, params: null}, kwargs || {});
     if (isArray(message))
     {
-        this.messages = new ErrorList(message);
+        this.messages = message;
     }
     else
     {
         this.code = kwargs.code;
         this.params = kwargs.params;
-        this.messages = new ErrorList([message]);
+        this.messages = [message];
     }
 }
 

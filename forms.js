@@ -239,7 +239,7 @@ BoundField.prototype.labelTag = function(kwargs)
     kwargs = extend({contents: null, attrs: null}, kwargs || {});
     var contents, widget = this.field.widget, id, attrs;
     if (kwargs.contents !== null)
-        contents = DOMBuilder.markSafe(kwargs.contents);
+        contents = kwargs.contents;
     else
         contents = this.label;
 
@@ -400,7 +400,7 @@ Form.prototype =
                             this.data, this.files, initialPrefixedName);
                 }
 
-                if (field._hasChanged(initialValue, dataValue))
+                if (field.widget._hasChanged(initialValue, dataValue))
                     this._changedData.push(name);
             }
         }
@@ -882,7 +882,7 @@ Form.prototype._cleanFields = function()
             if (!(e instanceof ValidationError))
                 throw e;
 
-            this._errors[name] = e.messages;
+            this._errors[name] = new this.errorConstructor(e.messages);
             if (typeof this.cleanedData[name] != "undefined")
                 delete this.cleanedData[name];
         }

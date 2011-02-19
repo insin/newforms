@@ -16,6 +16,7 @@
  */
 function Widget(kwargs)
 {
+    kwargs = extend({attrs: null}, kwargs || {});
     this.attrs = extend({}, kwargs.attrs || {});
 }
 /** Determines whether this corresponds to an &lt;input type="hidden"&gt;. */
@@ -69,7 +70,7 @@ Widget.prototype._hasChanged = function(initial, data)
     // it with "".
     var dataValue = (data === null ? "" : data);
     var initialValue = (initial === null ? "" : initial);
-    return ("" + initialValue != "" + dataValue);
+    return (""+initialValue != ""+dataValue);
 };
 
 /**
@@ -637,6 +638,7 @@ Select.prototype.renderOption = function(selectedValuesLookup, optValue, optLabe
  */
 function NullBooleanSelect(kwargs)
 {
+    kwargs = kwargs || {};
     // Set or overrride choices
     kwargs.choices = [["1", "Unknown"], ["2", "Yes"], ["3", "No"]];
     Select.call(this, kwargs);

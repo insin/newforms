@@ -132,7 +132,7 @@ Field.prototype.runValidators = function(value)
     {
         try
         {
-            callValidator(v, value);
+            callValidator(this.validators[i], value);
         }
         catch (e)
         {
@@ -141,7 +141,7 @@ Field.prototype.runValidators = function(value)
             if (typeof e.code != "undefined" && e.code in this.errorMessages)
             {
                 var message = this.errorMessages[e.code];
-                if (typeof e.params != undefined)
+                if (typeof e.params != "undefined")
                     message = format(message, e.params)
                 errors.push(message)
             }
@@ -309,25 +309,31 @@ function FloatField(kwargs)
     IntegerField.call(this, kwargs);
 }
 inheritFrom(FloatField, IntegerField);
+/** Float validation regular expression, as parseFloat() is too forgiving. */
+FloatField.FLOAT_REGEXP = /^[-+]?(?:\d+(?:\.\d+)?|(?:\d+)?\.\d+)$/;
 FloatField.prototype.defaultErrorMessages =
     extend({}, FloatField.prototype.defaultErrorMessages, {
         invalid: "Enter a number."
     });
 
 /**
- * Validates that Number() can be called on the input with a result that isn't
- * NaN.
+ * Validates that the input looks like valid input for parseFloat() and the
+ * result of calling it isn't NaN.
  *
  * @param value the value to be validated.
  *
- * @return the result of Number(), or <code>null</code> for empty values.
+ * @return a Number obtained from parseFloat(), or <code>null</code> for empty
+ *         values.
  */
 FloatField.prototype.toJavaScript = function(value)
 {
     value = Field.prototype.toJavaScript.call(this, value);
     if (contains(EMPTY_VALUES, value))
         return null;
-    value = Number(value);
+    value = strip(value)
+    if (!FloatField.FLOAT_REGEXP.test(value))
+        throw new ValidationError(this.errorMessages.invalid);
+    value = parseFloat(value);
     if (isNaN(value))
         throw new ValidationError(this.errorMessages.invalid);
     return value;
@@ -363,9 +369,7 @@ function DecimalField(kwargs)
         this.validators.push(new MaValueValidator(this.maxValue));
 }
 inheritFrom(DecimalField, Field);
-/**
- * Decimal validation regular expression.
- */
+/** Decimal validation regular expression, in lieu of a Decimal type. */
 DecimalField.DECIMAL_REGEXP = /^[-+]?(?:\d+(?:\.\d+)?|(?:\d+)?\.\d+)$/;
 DecimalField.prototype.defaultErrorMessages =
     extend({}, DecimalField.prototype.defaultErrorMessages, {
@@ -378,12 +382,13 @@ DecimalField.prototype.defaultErrorMessages =
     });
 
 /**
- * Validates that the input looks like a decimal number.In lieu of a built-in
- * Decimal type for JavaScript, this method uses Number() and returns the result.
+ * Validates that the input looks like a decimal number. In lieu of a built-in
+ * Decimal type for JavaScript, this method uses parseFloat().
  *
  * @param value the value to be validated.
  *
- * @return a Number, or <code>null</code> for empty values.
+ * @return a Number obtained from parseFloat, or <code>null</code> for empty
+ *         values.
  */
 DecimalField.prototype.toJavaScript = function(value)
 {
@@ -391,10 +396,10 @@ DecimalField.prototype.toJavaScript = function(value)
         return null;
     value = strip(value);
     // TODO We should be attempting to create a Decimal object instead - are
-    //      there any decent JavaScript equivalents?
+    //      there any decent JavaScript implementations?
     if (!DecimalField.DECIMAL_REGEXP.test(value))
         throw new ValidationError(this.errorMessages.invalid);
-    value = Number(value);
+    value = parseFloat(value);
     if (isNaN(value))
         throw new ValidationError(this.errorMessages.invalid);
     return value;
@@ -626,7 +631,7 @@ EmailField.prototype.defaultErrorMessages =
 
 EmailField.prototype.clean = function(value)
 {
-    value = this.toJavaScript(value).strip();
+    value = strip(this.toJavaScript(value));
     return CharField.prototype.clean.call(this, value);
 };
 
