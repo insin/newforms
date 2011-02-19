@@ -126,7 +126,7 @@ Field.prototype.validate = function(value)
 Field.prototype.runValidators = function(value)
 {
     if (contains(EMPTY_VALUES, value))
-        throw new ValidationError(this.errorMessages.required);
+        return;
     var errors = [];
     for (var i = 0, l= this.validators.length; i < l; i++)
     {
