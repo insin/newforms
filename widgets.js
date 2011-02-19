@@ -10,12 +10,13 @@
  * A widget handles the rendering of HTML, and the extraction of data from an
  * object that corresponds to the widget.
  *
- * @param {Object} [attrs] HTML attributes for the rendered widget.
+ * @param {Object} [kwargs] Configuration options.
+ * @config {Object} [attrs] HTML attributes for the rendered widget.
  * @constructor
  */
-function Widget(attrs)
+function Widget(kwargs)
 {
-    this.attrs = extend({}, attrs || {})
+    this.attrs = extend({}, kwargs.attrs || {});
 }
 /** Determines whether this corresponds to an &lt;input type="hidden"&gt;. */
 Widget.prototype.isHidden = false;
@@ -96,9 +97,9 @@ Widget.prototype.idForLabel = function(id)
  *                          {@link Widget}.
  * @constructor
  */
-function Input(attrs)
+function Input(kwargs)
 {
-    Widget.call(this, attrs);
+    Widget.call(this, kwargs);
 }
 inheritFrom(Input, Widget);
 /** The type of this input. */
@@ -123,9 +124,9 @@ Input.prototype.render = function(name, value, attrs)
  *                          {@link Input}.
  * @constructor
  */
-function TextInput(attrs)
+function TextInput(kwargs)
 {
-    Input.call(this, attrs);
+    Input.call(this, kwargs);
 }
 inheritFrom(TextInput, Input);
 TextInput.prototype.inputType = "text";
@@ -142,8 +143,8 @@ TextInput.prototype.inputType = "text";
  */
 function PasswordInput(kwargs)
 {
-    kwargs = extend({attrs: null, renderValue: true}, kwargs || {});
-    Input.call(this, kwargs.attrs);
+    kwargs = extend({renderValue: true}, kwargs || {});
+    Input.call(this, kwargs);
     this.renderValue = kwargs.renderValue;
 }
 inheritFrom(PasswordInput, Input);
@@ -163,9 +164,9 @@ PasswordInput.prototype.render = function(name, value, attrs)
  *                          {@link Input}.
  * @constructor
  */
-function HiddenInput(attrs)
+function HiddenInput(kwargs)
 {
-    Input.call(this, attrs);
+    Input.call(this, kwargs);
 }
 inheritFrom(HiddenInput, Input);
 HiddenInput.prototype.inputType = "hidden";
@@ -179,9 +180,9 @@ HiddenInput.prototype.isHidden = true;
  *                          {@link HiddenInput}.
  * @constructor
  */
-function MultipleHiddenInput(attrs)
+function MultipleHiddenInput(kwargs)
 {
-    HiddenInput.call(this, attrs);
+    HiddenInput.call(this, kwargs);
 }
 inheritFrom(MultipleHiddenInput, HiddenInput);
 
@@ -215,14 +216,13 @@ MultipleHiddenInput.prototype.valueFromData = function(data, files, name)
 /**
  * An HTML <code>&lt;input type="file"&gt;</code> widget.
  *
- * @param {Object} [attrs] configuration options, as specified in
- *                         {@link Input}.
+ * @param {Object} [kwargs] configuration options, as specified in
+ *                          {@link Input}.
  * @constructor
- * @augments Input
  */
-function FileInput(attrs)
+function FileInput(kwargs)
 {
-    Input.call(this, attrs);
+    Input.call(this, kwargs);
 }
 inheritFrom(FileInput, Input);
 FileInput.prototype.inputType = "file";
@@ -253,9 +253,9 @@ var FILE_INPUT_CONTRADICTION = {};
 /**
  * @constructor.
  */
-function ClearableFileInput(attrs)
+function ClearableFileInput(kwargs)
 {
-    FileInput.call(this, attrs);
+    FileInput.call(this, kwargs);
 }
 inheritFrom(ClearableFileInput, FileInput);
 ClearableFileInput.prototype.initialText = "Currently";
@@ -331,13 +331,17 @@ ClearableFileInput.prototype.valueFromData = function(data, files, name)
  *
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Widget}.
+ * @config {Object} [attrs] HTML attributes for the rendered widget. Default rows
+ *                          and cols attributes will be used if not provided.
  * @constructor
  */
-function Textarea(attrs)
+function Textarea(kwargs)
 {
+    // Ensure we have something in attrs
+    kwargs = extend({attrs: null}, kwargs || {});
     // Provide default "cols" and "rows" attributes
-    attrs = extend({}, {rows: "10", cols: "40"}, attrs || {});
-    Widget.call(this, attrs);
+    kwargs.attrs = extend({rows: "10", cols: "40"}, kwargs.attrs || {});
+    Widget.call(this, kwargs);
 }
 inheritFrom(Textarea, Widget);
 
@@ -360,8 +364,8 @@ Textarea.prototype.render = function(name, value, attrs)
  */
 function DateInput(kwargs)
 {
-    kwargs = extend({attrs: null, format: null}, kwargs || {});
-    Input.call(this, kwargs.attrs);
+    kwargs = extend({format: null}, kwargs || {});
+    Input.call(this, kwargs);
     if (kwargs.format !== null)
         this.format = kwargs.format;
 }
@@ -398,8 +402,8 @@ DateInput.prototype._hasChanged = function(initial, data)
  */
 function DateTimeInput(kwargs)
 {
-    kwargs = extend({attrs: null, format: null}, kwargs || {});
-    Input.call(this, kwargs.attrs);
+    kwargs = extend({format: null}, kwargs || {});
+    Input.call(this, kwargs);
     if (kwargs.format !== null)
         this.format = kwargs.format;
 }
@@ -436,8 +440,8 @@ DateTimeInput.prototype._hasChanged = function(initial, data)
  */
 function TimeInput(kwargs)
 {
-    kwargs = extend({attrs: null, format: null}, kwargs || {});
-    Input.call(this, kwargs.attrs);
+    kwargs = extend({format: null}, kwargs || {});
+    Input.call(this, kwargs);
     if (kwargs.format !== null)
         this.format = kwargs.format;
 }
@@ -476,8 +480,8 @@ TimeInput.prototype._hasChanged = function(initial, data)
  */
 function CheckboxInput(kwargs)
 {
-    kwargs = extend({attrs:null, checkTest: Boolean}, kwargs || {});
-    Widget.call(this, kwargs.attrs);
+    kwargs = extend({checkTest: Boolean}, kwargs || {});
+    Widget.call(this, kwargs);
     this.checkTest = kwargs.checkTest;
 }
 
@@ -539,9 +543,9 @@ CheckboxInput.prototype._hasChanged = function(initial, data)
  */
 function Select(kwargs)
 {
-    kwargs = extend({attrs: null, choices: []}, kwargs || {});
-    Widget.call(this, kwargs.attrs);
-    this.choices = kwargs.choices;
+    kwargs = extend({choices: []}, kwargs || {});
+    Widget.call(this, kwargs);
+    this.choices = kwargs.choices || [];
 }
 inheritFrom(Select, Widget);
 
@@ -626,15 +630,16 @@ Select.prototype.renderOption = function(selectedValuesLookup, optValue, optLabe
  * {@link NullBooleanField}.
  *
  * @param {Object} [kwargs] configuration options, as specified in
- *                          {@link Select}.
+ *                          {@link Select}. Any choices configuration provided
+ *                          will be overrridden with the specific choices this
+ *                          widget requires.
  * @constructor
  */
 function NullBooleanSelect(kwargs)
 {
-    kwargs = extend({
-        attrs: null, choices: [["1", "Unknown"], ["2", "Yes"], ["3", "No"]]
-    }, kwargs || {});
-    Select.call(this, attrs.kwargs);
+    // Set or overrride choices
+    kwargs.choices = [["1", "Unknown"], ["2", "Yes"], ["3", "No"]];
+    Select.call(this, kwargs);
 };
 
 inheritFrom(NullBooleanSelect, Select);
@@ -682,9 +687,9 @@ NullBooleanSelect.prototype._hasChanged = function(initial, data)
  *                          {@link Select}.
  * @constructor
  */
-function SelectMultiple(attrs)
+function SelectMultiple(kwargs)
 {
-    Select.call(this, attrs);
+    Select.call(this, kwargs);
 }
 inheritFrom(SelectMultiple, Select);
 
@@ -755,7 +760,7 @@ SelectMultiple.prototype._hasChanged = function(initial, data)
  * @param {Array} choice choice details to be used when rendering the widget,
  *                specified as an <code>Array</code> in
  *                <code>[value, text]</code> format.
- * @param {Number} index
+ * @param {Number} index the index of the radio button this widget represents.
  * @constructor
  */
 function RadioInput(name, value, attrs, choice, index)
@@ -849,16 +854,18 @@ RadioFieldRenderer.prototype.render = function()
 /**
  * Renders a single select as a list of <code>&lt;input type="radio"&gt;</code>
  * elements.
- *
+ * @param {Object} [kwargs] configuration options additional to those specified
+ *                          in {@link Select}.
+ * @config {Function} [renderer] a custom RadioFieldRenderer constructor.
  * @constructor
  */
 function RadioSelect(kwargs)
 {
-    kwargs = extend({attrs: null, renderer: null}, kwargs || {});
+    kwargs = extend({renderer: null}, kwargs || {});
     // Override the default renderer if we were passed one
     if (kwargs.renderer !== null)
         this.renderer = kwargs.renderer;
-    Select.call(this, kwargs.attrs);
+    Select.call(this, kwargs);
 }
 inheritFrom(RadioSelect, Select);
 RadioSelect.prototype.renderer = RadioFieldRenderer;
@@ -963,14 +970,14 @@ CheckboxSelectMultiple.prototype.idForLabel = function(id)
  *                          {@link Widget}.
  * @constructor
  */
-function MultiWidget(widgets, attrs)
+function MultiWidget(widgets, kwargs)
 {
     this.widgets = [];
     for (var i = 0, l = widgets.length; i < l; i++)
         this.widgets.push(widgets[i] instanceof Widget
                           ? widgets[i]
                           : new widgets[i]);
-    Widget.call(this, attrs);
+    Widget.call(this, kwargs);
 }
 inheritFrom(MultiWidget, Widget);
 
@@ -1090,9 +1097,7 @@ MultiWidget.prototype.decompress = function(value)
  */
 function SplitDateTimeWidget(kwargs)
 {
-    kwargs = extend({
-        attrs: null, dateFormat: null, timeFormat: null
-    }, kwargs || {});
+    kwargs = extend({adateFormat: null, timeFormat: null}, kwargs || {});
     if (kwargs.dateFormat)
         this.dateFormat = kwargs.dateFormat;
     if (kwargs.timeFormat)
