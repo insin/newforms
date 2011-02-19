@@ -400,7 +400,7 @@ Form.prototype =
                             this.data, this.files, initialPrefixedName);
                 }
 
-                if (field.widget._hasChanged(initialValue, dataValue))
+                if (field._hasChanged(initialValue, dataValue))
                     this._changedData.push(name);
             }
         }

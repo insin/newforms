@@ -198,6 +198,15 @@ Field.prototype.widgetAttrs = function(widget)
 };
 
 /**
+ * Django has dropped this method, but we still need to it perform the change
+ * check for certain Field types.
+ */
+Field.prototype._hasChanged = function(initial, data)
+{
+    return this.widget._hasChanged(initial, data);
+};
+
+/**
  * Validates that its input is a valid string.
  *
  * @param {Object} [kwargs] configuration options additional to those specified
@@ -337,6 +346,24 @@ FloatField.prototype.toJavaScript = function(value)
     if (isNaN(value))
         throw new ValidationError(this.errorMessages.invalid);
     return value;
+};
+
+/**
+* Determines if data has changed from initial. In JavaScript, trailing zeroes
+* in floats are dropped when a float is coerced to a String, so e.g., an
+* initial value of 1.0 would not match a data value of "1.0" if we were to use
+* the Widget object's _hasChanged, which checks coerced String values.
+*
+* @type Boolean
+*/
+FloatField.prototype._hasChanged = function(initial, data)
+{
+    // For purposes of seeing whether something has changed, null is the same
+    // as an empty string, if the data or inital value we get is null, replace
+    // it with "".
+    var dataValue = (data === null ? "" : data);
+    var initialValue = (initial === null ? "" : initial);
+    return (parseFloat(""+data) != parseFloat(""+dataValue));
 };
 
 /**
