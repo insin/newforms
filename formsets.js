@@ -534,10 +534,10 @@ function formsetFactory(form, kwargs)
         formset: BaseFormSet, extra: 1, canOrder: false, canDelete: false, maxNum: null
     }, kwargs || {});
 
-    var formset = kwargs.formset;
-        extra = kwargs.extra;
-        canOrder = kwargs.canOrder;
-        canDelete = kwargs.canDelete;
+    var formset = kwargs.formset,
+        extra = kwargs.extra,
+        canOrder = kwargs.canOrder,
+        canDelete = kwargs.canDelete,
         maxNum = kwargs.maxNum;
 
     var formsetConstructor = function(kwargs)
