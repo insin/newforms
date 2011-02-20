@@ -1499,7 +1499,7 @@ test("Boundfield values", function()
     var UserRegistration = formFactory({fields: function() {
         return {
             username: new CharField({maxLength: 10, initial: "djangonaut"}),
-            password: new CharField({widget: PasswordInput}),
+            password: new CharField({widget: PasswordInput})
         };
     }});
     var unbound = new UserRegistration();
