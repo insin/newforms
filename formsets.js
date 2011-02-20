@@ -4,10 +4,10 @@
  */
 
 // Special field names
-var TOTAL_FORM_COUNT = "TOTAL_FORMS";
-    INITIAL_FORM_COUNT = "INITIAL_FORMS";
-    MAX_NUM_FORM_COUNT = "MAX_NUM_FORMS";
-    ORDERING_FIELD_NAME = "ORDER";
+var TOTAL_FORM_COUNT = "TOTAL_FORMS",
+    INITIAL_FORM_COUNT = "INITIAL_FORMS",
+    MAX_NUM_FORM_COUNT = "MAX_NUM_FORMS",
+    ORDERING_FIELD_NAME = "ORDER",
     DELETION_FIELD_NAME = "DELETE";
 
 /**
@@ -79,7 +79,7 @@ BaseFormSet.prototype =
      */
     /*get */managementForm: function()
     {
-        if (this.data || this.files)
+        if (this.isBound)
         {
             var form = new ManagementForm({data: this.data, autoId: this.autoId, prefix: this.prefix});
             if (!form.isValid())
@@ -258,9 +258,9 @@ BaseFormSet.prototype.totalFormCount = function()
             totalForms = this.initialFormCount() + this.extra;
         // Allow all existing related objects/inlines to be displayed, but don't
         // allow extra beyond max_num.
-        if (initialForms > this.maxNum && this.maxNum >= 0)
+        if (this.maxNum  !== null && initialForms > this.maxNum && this.maxNum >= 0)
             totalForms = initialForms;
-        if (totalForms > this.maxNum && this.maxNum >= 0)
+        if (this.maxNum  !== null && totalForms > this.maxNum && this.maxNum >= 0)
             totalForms = this.maxNum;
         return totalForms
     }
@@ -282,7 +282,7 @@ BaseFormSet.prototype.initialFormCount = function()
         var initialForms = (this.initial !== null && this.initial.length > 0
                             ? this.initial.length
                             : 0);
-        if (initialForms > this.maxNum && this.maxNum >= 0)
+        if (this.maxNum  !== null && initialForms > this.maxNum && this.maxNum >= 0)
             initialForms = this.maxNum;
         return initialForms
     }
@@ -365,13 +365,13 @@ BaseFormSet.prototype.isValid = function()
     // We loop over every form.errors here rather than short circuiting on the
     // first failure to make sure validation gets triggered for every form.
     var formsValid = true,
-        err = this.errors(), // Triggers fullClean()
+        errors = this.errors(), // Triggers fullClean()
         totalFormCount = this.totalFormCount();
     for (var i = 0; i < totalFormCount; i++)
     {
         var form = this.forms[i]
         if (this.canDelete)
-            if (this._shouldDeleteform(form))
+            if (this._shouldDeleteForm(form))
                 // This form is going to be deleted so any of its errors should
                 // not cause the entire formset to be invalid.
                 continue;
