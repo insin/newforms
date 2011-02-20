@@ -21,16 +21,6 @@ var FavouriteDrinkForm = formFactory({fields: function() {
     };
 }});
 
-function EmptyFsetWontValidate(kwargs)
-{
-    BaseFormSet.call(this, kwargs);
-}
-inheritFrom(EmptyFsetWontValidate, BaseFormSet);
-EmptyFsetWontValidate.prototype.clean = function()
-{
-    throw new ValidationError("Clean method called");
-};
-
 // Utility methods for displaying results
 function allAsUL(forms)
 {
@@ -706,9 +696,53 @@ test("Max num with initial data", function()
 // TODO test(formset_as_table
 // TODO test(formset_as_p
 // TODO test(formset_as_ul
+
+// Regression test of for Django issue #11418
+var ArticleForm = formFactory({fields: function() {
+    return {
+        title: new CharField(),
+        pub_date: new DateField()
+    };
+}});
+
+var ArticleFormSet = formsetFactory(ArticleForm);
+
 // TODO test(on_data_raises_validation_Error
 // TODO test(management_data_attrs work fine
 // TODO test(form_errors_caught by formset
-// TODO test(empty_formset_is_valid
+
+test("Empty formset is valid", function()
+{
+    expect(2);
+    function EmptyFsetWontValidate(kwargs)
+    {
+        BaseFormSet.call(this, kwargs);
+    }
+    inheritFrom(EmptyFsetWontValidate, BaseFormSet);
+    EmptyFsetWontValidate.prototype.clean = function()
+    {
+        throw new ValidationError("Clean method called");
+    };
+
+    var EmptyFsetWontValidateFormset = formsetFactory(FavouriteDrinkForm, {
+        formset: EmptyFsetWontValidate, extra: 0});
+    var formset1 = new EmptyFsetWontValidateFormset({
+        data: {
+            'form-INITIAL_FORMS': '0',
+            'form-TOTAL_FORMS': '0'
+        },
+        prefix: "form"
+    });
+    var formset2 = new EmptyFsetWontValidateFormset({
+        data: {
+            'form-INITIAL_FORMS': '0',
+            'form-TOTAL_FORMS': '1',
+            'form-0-name': 'bah'
+        },
+        prefix: "form"
+    });
+    strictEqual(formset1.isValid(), false);
+    strictEqual(formset2.isValid(), false);
+});
 
 })();
