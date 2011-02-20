@@ -1347,8 +1347,8 @@ function SplitDateTimeField(kwargs)
     var errors = extend({}, this.defaultErrorMessages);
     if (typeof kwargs.errorMessages != "undefined")
         extend(errors, kwargs.errorMessages);
-    kwargs.fields =
-        [new DateField({inputFormats: kwargs.inputDateFormats,
+    kwargs.fields = [
+         new DateField({inputFormats: kwargs.inputDateFormats,
                         errorMessages: {invalid: errors.invalidDate}}),
          new TimeField({inputFormats: kwargs.inputDateFormats,
                         errorMessages: {invalid: errors.invalidTime}})];
@@ -1356,6 +1356,7 @@ function SplitDateTimeField(kwargs)
 }
 inheritFrom(SplitDateTimeField, MultiValueField);
 SplitDateTimeField.prototype.widget = SplitDateTimeWidget;
+SplitDateTimeField.prototype.hiddenWidget = SplitHiddenDateTimeWidget;
 SplitDateTimeField.prototype.defaultErrorMessages =
     extend({}, SplitDateTimeField.prototype.defaultErrorMessages, {
         invalidDate: "Enter a valid date.",

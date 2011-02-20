@@ -522,7 +522,7 @@ CheckboxInput.prototype.valueFromData = function(data, files, name)
     // Translate true and false strings to boolean values
     if (isString(value))
         value = getDefault(values, value.toLowerCase(), value);
-    return Widget.prototype.valueFromData.call(this, data, files, name);
+    return value;
 };
 
 CheckboxInput.prototype._hasChanged = function(initial, data)
@@ -1032,11 +1032,8 @@ MultiWidget.prototype.idForLabel = function(id)
 MultiWidget.prototype.valueFromData = function(data, files, name)
 {
     var values = [];
-    for (var i = 0, l = this.widgets.length, widget; i < l; i++)
-    {
-        widget = this.widgets[i];
-        values[i] = widget.valueFromData(data, files, name + "_" + i);
-    }
+    for (var i = 0, l = this.widgets.length; i < l; i++)
+        values[i] = this.widgets[i].valueFromData(data, files, name + "_" + i);
     return values;
 };
 
@@ -1142,4 +1139,4 @@ function SplitHiddenDateTimeWidget(kwargs)
     }
 }
 inheritFrom(SplitHiddenDateTimeWidget, SplitDateTimeWidget);
-SplitHiddenDateTimeWidget.isHidden = true;
+SplitHiddenDateTimeWidget.prototype.isHidden = true;

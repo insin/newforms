@@ -41,6 +41,7 @@ test("prettyName", function()
 
 test("Form", function()
 {
+    expect(12);
     // Pass a data object when initialising
     var p = new Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}});
     strictEqual(p.isBound, true);
@@ -57,27 +58,28 @@ test("Form", function()
     equal(""+p.boundField("birthday"),
            "<input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\">");
     try { p.boundField("nonexistentfield"); } catch (e) { equals(e.message, "Form does not have a 'nonexistentfield' field."); }
-    equal(p.asTable(),
+
+    var formOutput = [], boundFields = p.boundFields();
+    for (var i = 0, boundField; boundField = boundFields[i]; i++)
+        formOutput.push([boundField.label, boundField.data()]);
+    deepEqual(formOutput, [
+        ['First name', 'John'],
+        ['Last name', 'Lennon'],
+        ['Birthday', '1940-10-9']
+    ]);
+
+    equal(""+p,
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\"></td></tr>\n" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\"></td></tr>");
 
-//    form_output = []
-//
-//    for boundfield in p:
-//        form_output.append([boundfield.label, boundfield.data])
-//
-//    self.assertEqual(form_output, [
-//        ['First name', u'John'],
-//        ['Last name', u'Lennon'],
-//        ['Birthday', u'1940-10-9']
-//    ])
 });
 
 test("Empty data object", function()
 {
+    expect(10);
     // Empty objects are valid, too
-    p = new Person({data: {}});
+    var p = new Person({data: {}});
     strictEqual(p.isBound, true);
     deepEqual(p.errors()["first_name"].errors, ["This field is required."]);
     deepEqual(p.errors()["last_name"].errors, ["This field is required."]);
@@ -107,10 +109,11 @@ test("Empty data object", function()
 
 test("Unbound form", function()
 {
+    expect(8);
     // If you don't pass any "data" values, or if you pass null, the Form will
     // be considered unbound and won't do any validation. Form.errors will be
     // empty *but* Form.isValid() will return False.
-    p = new Person();
+    var p = new Person();
     strictEqual(p.isBound, false);
     strictEqual(p.errors().isPopulated(), false);
     strictEqual(p.isValid(), false);
@@ -135,7 +138,8 @@ test("Unbound form", function()
 
 test("Validation errors", function()
 {
-    p = new Person({data: {last_name: "Lennon"}});
+    expect(12);
+    var p = new Person({data: {last_name: "Lennon"}});
     deepEqual(p.errors()["first_name"].errors, ["This field is required."]);
     deepEqual(p.errors()["birthday"].errors, ["This field is required."]);
     deepEqual(p.isValid(), false);
@@ -164,12 +168,13 @@ test("Validation errors", function()
 
 test("cleanedData only fields", function()
 {
+    expect(6);
     // cleanedData will always *only* contain properties for fields defined in
     // the Form, even if you pass extra data when you define the Form. In this
     // example, we pass a bunch of extra fields to the form constructor, but
     // cleanedData contains only the form's fields.
     var data = {first_name: "John", last_name: "Lennon", birthday: "1940-10-9", extra1: "hello", extra2: "hello"};
-    p = new Person({data: data});
+    var p = new Person({data: data});
     strictEqual(p.isValid(), true);
     equal(p.cleanedData.first_name, "John");
     equal(p.cleanedData.last_name, "Lennon");
@@ -180,6 +185,7 @@ test("cleanedData only fields", function()
 
 test("Optional data", function()
 {
+    expect(8);
     // cleanedData will include a key and value for *all* fields defined in the
     // Form, even if the Form's data didn't include a value for fields that are
     // not required. In this example, the data object doesn't include a value
@@ -192,7 +198,7 @@ test("Optional data", function()
             nick_name: new CharField({required: false})
         };
     }});
-    data = {first_name: "John", last_name: "Lennon"};
+    var data = {first_name: "John", last_name: "Lennon"};
     var f = new OptionalPersonForm({data: data});
     strictEqual(f.isValid(), true);
     strictEqual(f.cleanedData.nick_name, "");
@@ -217,11 +223,12 @@ test("Optional data", function()
 
 test("autoId", function()
 {
+    expect(3);
     // "autoId" tells the Form to add an "id" attribute to each form element.
     // If it's a string that contains "%(name)s", js-forms will use that as a
     // format string into which the field's name will be inserted. It will also
     // put a <label> around the human-readable labels for a field.
-    p = new Person({autoId: "%(name)s_id"});
+    var p = new Person({autoId: "%(name)s_id"});
     equal(p.asTable(),
 "<tr><th><label for=\"first_name_id\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"first_name_id\"></td></tr>\n" +
 "<tr><th><label for=\"last_name_id\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"last_name_id\"></td></tr>\n" +
@@ -238,9 +245,10 @@ test("autoId", function()
 
 test("autoId true", function()
 {
+    expect(1);
     // If autoId is any truthy value whose string representation does not
     // contain "%(name)s", the "id" attribute will be the name of the field.
-    p = new Person({autoId: true});
+    var p = new Person({autoId: true});
     equal(p.asUL(),
 "<li><label for=\"first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"first_name\"></li>\n" +
 "<li><label for=\"last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name\"></li>\n" +
@@ -249,9 +257,10 @@ test("autoId true", function()
 
 test("autoId false", function()
 {
+    expect(1);
     // If autoId is any falsy value, an "id" attribute won't be output unless it
     // was manually entered.
-    p = new Person({autoId: false});
+    var p = new Person({autoId: false});
     equal(p.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
@@ -260,10 +269,11 @@ test("autoId false", function()
 
 test("id on field", function()
 {
+    expect(1);
     // In this example, autoId is false, but the "id" attribute for the
     // "first_name" field is given. Also note that field gets a <label>, while
     // the others don't.
-    p = new PersonNew({autoId: false});
+    var p = new PersonNew({autoId: false});
     equal(p.asUL(),
 "<li><label for=\"first_name_id\">First name:</label> <input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
@@ -272,9 +282,10 @@ test("id on field", function()
 
 test("autoId on form and field", function()
 {
+    expect(1);
     // If the "id" attribute is specified in the Form and autoId is true, the
     // "id" attribute in the Form gets precedence.
-    p = new PersonNew({autoId: true});
+    var p = new PersonNew({autoId: true});
     equal(p.asUL(),
 "<li><label for=\"first_name_id\">First name:</label> <input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>\n" +
 "<li><label for=\"last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name\"></li>\n" +
@@ -283,13 +294,14 @@ test("autoId on form and field", function()
 
 test("Various boolean values", function()
 {
+    expect(8);
     var SignupForm = formFactory({fields: function() {
         return {
             email: new EmailField(),
             get_spam: new BooleanField()
         };
     }});
-    f = new SignupForm({autoId: false});
+    var f = new SignupForm({autoId: false});
     equal(""+f.boundField("email"),
            "<input type=\"text\" name=\"email\">");
     equal(""+f.boundField("get_spam"),
@@ -301,25 +313,28 @@ test("Various boolean values", function()
     equal(""+f.boundField("get_spam"),
            "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">");
 
-    /* TODO
-    # 'True' or 'true' should be rendered without a value attribute
-    f = SignupForm({'email': 'test@example.com', 'get_spam': 'True'}, auto_id=False)
-    self.assertEqual(str(f['get_spam']), '<input checked="checked" type="checkbox" name="get_spam" />')
+    // Values of "true" or "True" should be rendered without a value
+    f = new SignupForm({data: {email: "test@example.com", get_spam: "true"}, autoId: false});
+    equal(""+f.boundField("get_spam"),
+           "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">");
 
-    f = SignupForm({'email': 'test@example.com', 'get_spam': 'true'}, auto_id=False)
-    self.assertEqual(str(f['get_spam']), '<input checked="checked" type="checkbox" name="get_spam" />')
+    f = new SignupForm({data: {email: "test@example.com", get_spam: "True"}, autoId: false});
+    equal(""+f.boundField("get_spam"),
+           "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">");
 
-    # A value of 'False' or 'false' should be rendered unchecked
-    f = SignupForm({'email': 'test@example.com', 'get_spam': 'False'}, auto_id=False)
-    self.assertEqual(str(f['get_spam']), '<input type="checkbox" name="get_spam" />')
+    // Values of "false" or "False" should render unchecked
+    f = new SignupForm({data: {email: "test@example.com", get_spam: "false"}, autoId: false});
+    equal(""+f.boundField("get_spam"),
+           "<input type=\"checkbox\" name=\"get_spam\">");
 
-    f = SignupForm({'email': 'test@example.com', 'get_spam': 'false'}, auto_id=False)
-    self.assertEqual(str(f['get_spam']), '<input type="checkbox" name="get_spam" />')
-    */
+    f = new SignupForm({data: {email: "test@example.com", get_spam: "False"}, autoId: false});
+    equal(""+f.boundField("get_spam"),
+           "<input type=\"checkbox\" name=\"get_spam\">");
 });
 
 test("Widget output", function()
 {
+    expect(10);
     // Any Field can have a Widget constructor passed to its constructor
     var ContactForm = formFactory({fields: function() {
         return {
@@ -327,7 +342,7 @@ test("Widget output", function()
             message: new CharField({widget: Textarea})
         };
     }});
-    f = new ContactForm({autoId: false});
+    var f = new ContactForm({autoId: false});
     equal(""+f.boundField("subject"),
            "<input type=\"text\" name=\"subject\">");
     equal(""+f.boundField("message"),
@@ -370,6 +385,7 @@ test("Widget output", function()
 
 test("Forms with choices", function()
 {
+    expect(9);
     // For a form with a <select>, use ChoiceField
     var FrameworkForm = formFactory({fields: function() {
         return {
@@ -377,7 +393,7 @@ test("Forms with choices", function()
             language: new ChoiceField({choices: [["P", "Python"], ["J", "Java"]]})
         };
     }});
-    f = new FrameworkForm({autoId: false});
+    var f = new FrameworkForm({autoId: false});
     equal(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "<option value=\"P\">Python</option>\n" +
@@ -479,26 +495,27 @@ test("Forms with choices", function()
 
 test("Forms with radio", function()
 {
-    // Add widget: RadioSelect to use that widget with a ChoiceField
-    FrameworkForm = formFactory({fields: function() {
+    expect(7);
+    // Add {widget: RadioSelect} to use that widget with a ChoiceField
+    var FrameworkForm = formFactory({fields: function() {
         return {
             name: new CharField(),
             language: new ChoiceField({choices: [["P", "Python"], ["J", "Java"]], widget: RadioSelect})
         };
     }});
-    f = new FrameworkForm({autoId: false});
+    var f = new FrameworkForm({autoId: false});
     equal(""+f.boundField("language"),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
 "</ul>");
-    equals(""+f,
+    equal(""+f,
 "<tr><th>Name:</th><td><input type=\"text\" name=\"name\"></td></tr>\n" +
 "<tr><th>Language:</th><td><ul>\n" +
 "<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
 "</ul></td></tr>");
-    equals(""+f.asUL(),
+    equal(""+f.asUL(),
 "<li>Name: <input type=\"text\" name=\"name\"></li>\n" +
 "<li>Language: <ul>\n" +
 "<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
@@ -540,15 +557,16 @@ test("Forms with radio", function()
 
 test("Forms with multiple choice", function()
 {
+    expect(4);
     // MultipleChoiceField is a special case, as its data is required to be a
     // list.
     var SongForm = formFactory({fields: function() {
         return {
             name: new CharField(),
             composers: new MultipleChoiceField()
-        }
+        };
     }});
-    f = new SongForm({autoId: false});
+    var f = new SongForm({autoId: false});
     equal(""+f.boundField("composers"),
 "<select name=\"composers\" multiple=\"multiple\">\n" +
 "</select>")
@@ -556,7 +574,7 @@ test("Forms with multiple choice", function()
         return {
             name: new CharField(),
             composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
-        }
+        };
     }});
     f = new SongForm({autoId: false});
     equal(""+f.boundField("composers"),
@@ -576,45 +594,50 @@ test("Forms with multiple choice", function()
 
 test("Hidden data", function()
 {
+    expect(5);
     var SongForm = formFactory({fields: function() {
         return {
             name: new CharField(),
             composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
-        }
+        };
     }});
 
     // MultipleChoiceField rendered asHidden() is a special case. Because it can
     // have multiple values, its asHidden() renders multiple
     // <input type="hidden"> tags.
+    var f = new SongForm({data: {name: "Yesterday", composers: ["P"]}, autoId: false});
     equal(""+f.boundField("composers").asHidden(),
 "<span><input type=\"hidden\" name=\"composers\" value=\"P\"></span>");
     f = new SongForm({data: {name: "Yesterday", composers: ["P", "J"]}, autoId: false});
     equal(""+f.boundField("composers").asHidden(),
 "<span><input type=\"hidden\" name=\"composers\" value=\"P\"><input type=\"hidden\" name=\"composers\" value=\"J\"></span>");
 
-    /* TODO
-    # DateTimeField rendered as_hidden() is special too
-    class MessageForm(Form):
-        when = SplitDateTimeField()
-
-    f = MessageForm({'when_0': '1992-01-01', 'when_1': '01:01'})
-    self.assertTrue(f.is_valid())
-    self.assertEqual(str(f['when']), '<input type="text" name="when_0" value="1992-01-01" id="id_when_0" /><input type="text" name="when_1" value="01:01" id="id_when_1" />')
-    self.assertEqual(f['when'].as_hidden(), '<input type="hidden" name="when_0" value="1992-01-01" id="id_when_0" /><input type="hidden" name="when_1" value="01:01" id="id_when_1" />')
-    */
+    // DateTimeField rendered asHidden() is special too
+    var MessageForm = formFactory({fields: function() {
+        return {
+            when: new SplitDateTimeField()
+        };
+    }});
+    f = new MessageForm({data: {when_0: "1992-01-01", when_1: "01:01"}});
+    strictEqual(f.isValid(), true);
+    equal(""+f.boundField("when"),
+"<input type=\"text\" name=\"when_0\" id=\"id_when_0\" value=\"1992-01-01\"><input type=\"text\" name=\"when_1\" id=\"id_when_1\" value=\"01:01\">");
+    equal(""+f.boundField("when").asHidden(),
+"<input type=\"hidden\" name=\"when_0\" id=\"id_when_0\" value=\"1992-01-01\"><input type=\"hidden\" name=\"when_1\" id=\"id_when_1\" value=\"01:01\">");
 });
 
 test("Mutiple choice checkbox", function()
 {
+    expect(3);
     // MultipleChoiceField can also be used with the CheckboxSelectMultiple
     // widget.
-    SongForm = formFactory({fields: function() {
+    var SongForm = formFactory({fields: function() {
         return {
             name: new CharField(),
             composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: CheckboxSelectMultiple})
         }
     }});
-    f = new SongForm({autoId: false});
+    var f = new SongForm({autoId: false});
     equal(""+f.boundField("composers"),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\"> John Lennon</label></li>\n" +
@@ -636,10 +659,17 @@ test("Mutiple choice checkbox", function()
 
 test("Checkbox autoId", function()
 {
+    expect(1);
+    var SongForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: CheckboxSelectMultiple})
+        };
+    }});
     // Regarding autoId, CheckboxSelectMultiple is another special case. Each
     // checkbox gets a distinct ID, formed by appending an underscore plus the
     // checkbox's zero-based index.
-    f = new SongForm({autoId: "%(name)s_id"});
+    var f = new SongForm({autoId: "%(name)s_id"});
     equal(""+f.boundField("composers"),
 "<ul>\n" +
 "<li><label for=\"composers_id_0\"><input id=\"composers_id_0\" type=\"checkbox\" name=\"composers\" value=\"J\"> John Lennon</label></li>\n" +
@@ -647,17 +677,46 @@ test("Checkbox autoId", function()
 "</ul>");
 });
 
-// TODO test(test_multiple_choice_list_data
+test("Multiple choice list data", function()
+{
+    expect(2);
+    var SongForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: CheckboxSelectMultiple})
+        };
+    }});
+
+    var data = {name: "Yesterday", composers: ["J", "P"]};
+    var f = new SongForm(data);
+    equal(f.errors().isPopulated(), false);
+
+    // This also happens to work with Strings if choice values are single
+    // characters.
+    var data = {name: "Yesterday", composers: "JP"};
+    var f = new SongForm(data);
+    equal(f.errors().isPopulated(), false);
+});
 
 test("Multiple hidden", function()
 {
-    SongForm = formFactory({fields: function() {
+    expect(8);
+    var SongForm = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: CheckboxSelectMultiple})
+        };
+    }});
+
+    // The MultipleHiddenInput widget renders multiple values as hidden fields
+    var SongFormHidden = formFactory({fields: function() {
         return {
             name: new CharField(),
             composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: MultipleHiddenInput})
-        }
+        };
     }});
-    f = new SongForm({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false});
+
+    var f = new SongFormHidden({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false});
     equal(""+f.asUL(),
 "<li>Name: <input type=\"text\" name=\"name\" value=\"Yesterday\"><span><input type=\"hidden\" name=\"composers\" value=\"J\"><input type=\"hidden\" name=\"composers\" value=\"P\"></span></li>");
 
@@ -677,6 +736,7 @@ test("Multiple hidden", function()
 
 test("Escaping", function()
 {
+    expect(2);
     // Validation errors are HTML-escaped when output as HTML
     var EscapingForm = formFactory({
         fields: function() {
@@ -686,19 +746,17 @@ test("Escaping", function()
             };
         },
 
-        cleanSpecialName: function()
-        {
+        cleanSpecialName: function() {
             throw new ValidationError("Something's wrong with '" + this.cleanedData.specialName + "'");
         },
 
-        cleanSpecialSafeName: function()
-        {
+        cleanSpecialSafeName: function() {
             throw new ValidationError(
                 DOMBuilder.markSafe(
                     "'<b>" + this.cleanedData.specialSafeName + "</b>' is a safe string"));
         }
     });
-    f = new EscapingForm({data: {specialName: "Nothing to escape", specialSafeName: "Nothing to escape"}, autoId: false});
+    var f = new EscapingForm({data: {specialName: "Nothing to escape", specialSafeName: "Nothing to escape"}, autoId: false});
     equal(""+f,
 "<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Nothing to escape&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Nothing to escape\"></td></tr>\n" +
 "<tr><th><em>Special</em> Field:</th><td><ul class=\"errorlist\"><li>'<b>Nothing to escape</b>' is a safe string</li></ul><input type=\"text\" name=\"specialSafeName\" value=\"Nothing to escape\"></td></tr>");
@@ -736,9 +794,7 @@ test("Validating multiple fields", function()
 
         clean_password2: function() {
             if (this.cleanedData.password1 != this.cleanedData.password2)
-            {
                 throw new ValidationError("Please make sure your passwords match.");
-            }
             return this.cleanedData.password2;
         }
     });
@@ -776,9 +832,7 @@ test("Validating multiple fields", function()
         clean: function() {
             if (this.cleanedData.password1 && this.cleanedData.password2 &&
                 this.cleanedData.password1 != this.cleanedData.password2)
-            {
                 throw new ValidationError("Please make sure your passwords match.");
-            }
             return this.cleanedData;
         }
     });
@@ -1054,6 +1108,7 @@ test("Hidden widget", function()
 
 test("Field order", function()
 {
+    expect(1);
     // A Form's fields are displayed in the same order they were defined
     var TestForm = formFactory({fields: function() {
         return {
@@ -1073,7 +1128,7 @@ test("Field order", function()
             field14: new CharField()
         };
     }});
-    p = new TestForm({autoId: false});
+    var p = new TestForm({autoId: false});
     equal(""+p,
 "<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
 "<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>\n" +
@@ -1093,6 +1148,7 @@ test("Field order", function()
 
 test("Form HTML attributes", function()
 {
+    expect(2);
     // Some Field classes have an effect on the HTML attributes of their
     // associated Widget. If you set maxLength in a CharField and its associated
     // widget is either a TextInput or PasswordInput, then the widget's rendered
@@ -1105,7 +1161,7 @@ test("Form HTML attributes", function()
             address: new CharField()
         };
     }});
-    p = new UserRegistration({autoId: false});
+    var p = new UserRegistration({autoId: false});
     equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li>Password: <input maxlength=\"10\" type=\"password\" name=\"password\"></li>\n" +
@@ -1203,6 +1259,7 @@ test("Specifying labels", function()
 
 test("Label suffix", function()
 {
+    expect(4);
     // You can specify the "labelSuffix" argument to a Form class to modify the
     // punctuation symbol used at the end of a label.  By default, the colon
     // (:) is used, and is only appended to the label if the label doesn't
@@ -1278,12 +1335,13 @@ test("Initial data", function()
 
 test("Dynamic initial data", function()
 {
+    expect(8);
     // The previous technique dealt with "hard-coded" initial data, but it's
     // also possible to specify initial data after you've already created the
     // Form class (i.e., at runtime). Use the "initial" parameter to the Form
     // constructor. This should be an object containing initial values for one
     // or more fields in the form, keyed by field name.
-    UserRegistration = formFactory({fields: function() {
+    var UserRegistration = formFactory({fields: function() {
         return {
             username: new CharField({maxLength: 10}),
             password: new CharField({widget: PasswordInput})
@@ -1291,7 +1349,7 @@ test("Dynamic initial data", function()
     }});
 
     // Here, we're not submitting any data, so the initial value will be displayed.
-    p = new UserRegistration({initial: {username: "django"}, autoId: false});
+    var p = new UserRegistration({initial: {username: "django"}, autoId: false});
     equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>");
@@ -1338,9 +1396,10 @@ test("Dynamic initial data", function()
 
 test("Callable initial data", function()
 {
+    expect(8);
     // The previous technique dealt with raw values as initial data, but it's
     // also possible to specify callable data.
-    UserRegistration = formFactory({fields: function() {
+    var UserRegistration = formFactory({fields: function() {
         return {
             username: new CharField({maxLength: 10}),
             password: new CharField({widget: PasswordInput}),
@@ -1356,7 +1415,7 @@ test("Callable initial data", function()
 
     // Here, we're not submitting any data, so the initial value will be
     // displayed.
-    p = new UserRegistration({initial: {username: initialDjango, options: initialOptions}, autoId: false});
+    var p = new UserRegistration({initial: {username: initialDjango, options: initialOptions}, autoId: false});
     equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
@@ -1432,7 +1491,24 @@ test("Callable initial data", function()
 "</select></li>");
 });
 
-// TODO test(test_boundfield_values
+test("Boundfield values", function()
+{
+    expect(4);
+    // It's possible to get to the value which would be used for rendering
+    // the widget for a field by using the BoundField's value method.
+    var UserRegistration = formFactory({fields: function() {
+        return {
+            username: new CharField({maxLength: 10, initial: "djangonaut"}),
+            password: new CharField({widget: PasswordInput}),
+        };
+    }});
+    var unbound = new UserRegistration();
+    var bound = new UserRegistration({data: {password: "foo"}});
+    strictEqual(bound.boundField("username").value(), null);
+    equal(unbound.boundField("username").value(), "djangonaut");
+    equal(bound.boundField("password").value(), "foo");
+    strictEqual(unbound.boundField("password").value(), null);
+});
 
 test("Help text", function()
 {
@@ -1815,9 +1891,7 @@ test("Basic form processing", function()
         {
             var form = new UserRegistration({data: postData, autoId: false});
             if (form.isValid())
-            {
                 return "VALID";
-            }
         }
         else
         {
@@ -1855,12 +1929,9 @@ test("Basic form processing", function()
           "VALID");
 });
 
-// TODO test(test_templates_with_forms
-
-test("The emptyPermitted attribute", function()
+test("emptyPermitted", function()
 {
     expect(12);
-
     // Sometimes (pretty much in formsets) we want to allow a form to pass
     // validation if it is completely empty. We can accomplish this by using the
     // emptyPermitted argument to a form constructor.
@@ -1933,11 +2004,76 @@ test("Extracting hidden and visible", function()
     deepEqual([visible.length, visible[0].name, visible[1].name], [2, "artist", "name"]);
 });
 
-// TODO test(test_hiddden_initial_gets_id
+test("Hidden initial gets id", function()
+{
+    expect(1);
+    var MyForm = formFactory({fields: function() {
+        return {
+                field1: new CharField({maxLength: 50, showHiddenInitial: true})
+        }
+    }});
+    equal(""+new MyForm().asTable(),
+"<tr><th><label for=\"id_field1\">Field1:</label></th><td><input maxlength=\"50\" type=\"text\" name=\"field1\" id=\"id_field1\"><input type=\"hidden\" name=\"initial-field1\" id=\"initial-id_field1\"></td></tr>");
+});
 
-// TODO test(test_error_html_required_html_classes
+test("Error/required HTML classes", function()
+{
+    expect(3);
+    var Person = formFactory({fields: function() {
+        return {
+            name: new CharField(),
+            is_cool: new NullBooleanField(),
+            email: new EmailField({required: false}),
+            age: new IntegerField()
+        };
+    }});
 
-// TODO test(test_label_split_datetime_not_displayed
+    var p = new Person({data: {}});
+    p.errorCssClass = "error";
+    p.requiredCssClass = "required";
+    equal(""+p.asUL(),
+"<li class=\"error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></li>\n" +
+"<li class=\"required\"><label for=\"id_is_cool\">Is cool:</label> <select name=\"is_cool\" id=\"id_is_cool\">\n" +
+"<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
+"<option value=\"2\">Yes</option>\n" +
+"<option value=\"3\">No</option>\n" +
+"</select></li>\n" +
+"<li><label for=\"id_email\">Email:</label> <input type=\"text\" name=\"email\" id=\"id_email\"></li>\n" +
+"<li class=\"error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_age\">Age:</label> <input type=\"text\" name=\"age\" id=\"id_age\"></li>");
+    equal(""+p.asP(),
+"<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
+"<p class=\"error required\"><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></p>\n" +
+"<p class=\"required\"><label for=\"id_is_cool\">Is cool:</label> <select name=\"is_cool\" id=\"id_is_cool\">\n" +
+"<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
+"<option value=\"2\">Yes</option>\n" +
+"<option value=\"3\">No</option>\n" +
+"</select></p>\n" +
+"<p><label for=\"id_email\">Email:</label> <input type=\"text\" name=\"email\" id=\"id_email\"></p>\n" +
+"<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
+"<p class=\"error required\"><label for=\"id_age\">Age:</label> <input type=\"text\" name=\"age\" id=\"id_age\"></p>");
+    equal(""+p.asTable(),
+"<tr class=\"error required\"><th><label for=\"id_name\">Name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>\n" +
+"<tr class=\"required\"><th><label for=\"id_is_cool\">Is cool:</label></th><td><select name=\"is_cool\" id=\"id_is_cool\">\n" +
+"<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
+"<option value=\"2\">Yes</option>\n" +
+"<option value=\"3\">No</option>\n" +
+"</select></td></tr>\n" +
+"<tr><th><label for=\"id_email\">Email:</label></th><td><input type=\"text\" name=\"email\" id=\"id_email\"></td></tr>\n" +
+"<tr class=\"error required\"><th><label for=\"id_age\">Age:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"age\" id=\"id_age\"></td></tr>");
+});
+
+test("Label split datetime not displayed", function()
+{
+    expect(1);
+    var EventForm = formFactory({fields: function() {
+        return {
+            happened_at: new SplitDateTimeField({widget: SplitHiddenDateTimeWidget})
+        };
+    }});
+    var form = new EventForm();
+    equal(""+form.asUL(),
+"<li><input type=\"hidden\" name=\"happened_at_0\" id=\"id_happened_at_0\"><input type=\"hidden\" name=\"happened_at_1\" id=\"id_happened_at_1\"></li>");
+});
 
 test("Multipart-encoded forms", function()
 {

@@ -148,44 +148,36 @@ BoundField.prototype.asWidget = function(kwargs)
     var widget = (kwargs.widget !== null ? kwargs.widget : this.field.widget),
         attrs = kwargs.attrs || {},
         autoId = this.autoId(),
-        name;
+        name = !kwargs.onlyInitial ? this.htmlName : this.htmlInitialName;
 
     if (autoId &&
         typeof attrs.id == "undefined" &&
         typeof widget.attrs.id == "undefined")
         attrs.id = (!kwargs.onlyInitial ? autoId : this.htmlInitialId);
 
-    if (!kwargs.onlyInitial)
-        name = this.htmlName;
-    else
-        name = this.htmlInitialName
-
-    // TODO Check if we should use {attrs: attrs} instead
     return widget.render(name, this.value(), attrs);
 };
 
 /**
  * Renders the field as a text input.
  *
- * @param {Object} [attrs] additional attributes to be added to the field's
- *                         widget.
+ * @param {Object} [kwargs] widget options.
  */
-BoundField.prototype.asText = function(attrs)
+BoundField.prototype.asText = function(kwargs)
 {
-    return this.asWidget({widget: new TextInput(),
-                          attrs: attrs || {}});
+    kwargs = extend({}, kwargs || {}, {widget: new TextInput()});
+    return this.asWidget(kwargs);
 };
 
 /**
  * Renders the field as a textarea.
  *
- * @param {Object} [attrs] additional attributes to be added to the field's
- *                         widget.
+ * @param {Object} [kwargs] widget options.
  */
-BoundField.prototype.asTextarea = function(attrs)
+BoundField.prototype.asTextarea = function(kwargs)
 {
-    return this.asWidget({widget: new Textarea(),
-                          attrs: attrs || {}});
+    kwargs = extend({}, kwargs || {}, {widget: new Textarea()});
+    return this.asWidget(kwargs);
 };
 
 /**
@@ -194,10 +186,10 @@ BoundField.prototype.asTextarea = function(attrs)
  * @param {Object} [attrs] additional attributes to be added to the field's
  *                         widget.
  */
-BoundField.prototype.asHidden = function(attrs)
+BoundField.prototype.asHidden = function(kwargs)
 {
-    return this.asWidget({widget: new this.field.hiddenWidget(),
-                          attrs: attrs || {}});
+    kwargs = extend({}, kwargs || {}, {widget: new this.field.hiddenWidget()});
+    return this.asWidget(kwargs);
 };
 
 /**
@@ -262,9 +254,9 @@ BoundField.prototype.cssClasses = function(extraClasses)
     if (extraClasses !== null && isFunction(extraClasses.split))
         extraClasses = extraClasses.split();
     extraClasses = extraClasses || [];
-    if (this.errors() && isString(this.form.errorCssClass))
+    if (this.errors().isPopulated() && typeof this.form.errorCssClass != "undefined")
         extraClasses.push(this.form.errorCssClass);
-    if (this.field.required && isString(this.form.requiredCssClass))
+    if (this.field.required && typeof this.form.requiredCssClass != "undefined")
         extraClasses.push(this.form.requiredCssClass)
     return extraClasses.join(" ");
 };
@@ -550,7 +542,7 @@ Form.prototype.addInitialPrefix = function(fieldName)
  */
 Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, doNotCoerce)
 {
-    var topErrors = this.nonFieldErrors(); // Errors that should be displayed above all fields
+    var topErrors = this.nonFieldErrors(), // Errors that should be displayed above all fields
         rows = [],
         hiddenFields = [],
         htmlClassAttr = null,
@@ -565,7 +557,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
             for (var j = 0, m = bfErrors.errors.length; j < m; j++)
                 topErrors.errors.push("(Hidden field " + bf.name + ") " +
                                       bfErrors.errors[j]);
-        hiddenFields.push(bf.asWidget());
+        hiddenFields.push(bf.defaultRendering());
     }
 
     var visibleBoundFields = this.visibleFields();
@@ -617,7 +609,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
         if (errors !== null)
             errors = errors.defaultRendering();
 
-        rows.push(normalRow(label, bf.asWidget(), helpText, errors, htmlClassAttr, extraContent));
+        rows.push(normalRow(label, bf.defaultRendering(), helpText, errors, htmlClassAttr, extraContent));
     }
 
     if (topErrors.isPopulated())
