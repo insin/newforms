@@ -1107,7 +1107,7 @@ inheritFrom(TypedMultipleChoiceField, MultipleChoiceField);
 
 TypedMultipleChoiceField.prototype.toJavaScript = function(value)
 {
-    var value = MultipleChoiceField.prototype.toJavaScript.call(this, value);
+    value = MultipleChoiceField.prototype.toJavaScript.call(this, value);
     MultipleChoiceField.prototype.validate.call(this, value);
     if (value === this.emptyValue || contains(EMPTY_VALUES, value))
         return this.emptyValue;

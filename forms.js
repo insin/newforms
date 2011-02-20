@@ -838,14 +838,12 @@ Form.prototype._cleanFields = function()
             // Each widget type knows how to retrieve its own data, because some
             // widgets split data over several HTML fields.
             value = field.widget.valueFromData(this.data, this.files,
-                                               this.addPrefix(name)),
-            initial,
-            customClean;
+                                               this.addPrefix(name));
         try
         {
             if (field instanceof FileField)
             {
-                initial = getDefault(this.initial, name, field.initial);
+                var initial = getDefault(this.initial, name, field.initial);
                 value = field.clean(value, initial);
             }
             else
@@ -855,8 +853,8 @@ Form.prototype._cleanFields = function()
             this.cleanedData[name] = value;
 
             // Try clean_name
-            customClean = "clean_" + name;
-            if (isFunction(this[customClean]))
+            var customClean = "clean_" + name;
+            if (typeof this[customClean] != "undefined" && isFunction(this[customClean]))
             {
                  this.cleanedData[name] = this[customClean]();
                  continue;
@@ -864,7 +862,7 @@ Form.prototype._cleanFields = function()
 
             // Try cleanName
             customClean = "clean" + name.charAt(0).toUpperCase() + name.substr(1);
-            if (isFunction(this[customClean]))
+            if (typeof this[customClean] != "undefined" && isFunction(this[customClean]))
             {
                 this.cleanedData[name] = this[customClean]();
             }
