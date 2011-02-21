@@ -60,8 +60,8 @@ function BaseFormSet(kwargs)
     this.isBound = kwargs.data !== null || kwargs.files !== null;
     this.prefix = kwargs.prefix || BaseFormSet.getDefaultPrefix();
     this.autoId = kwargs.autoId;
-    this.data = kwargs.data;
-    this.files = kwargs.files;
+    this.data = kwargs.data || {};
+    this.files = kwargs.files || {};
     this.initial = kwargs.initial;
     this.errorConstructor = kwargs.errorConstructor;
     this._errors = null;
@@ -486,7 +486,7 @@ BaseFormSet.prototype.asTable = function(doNotCoerce)
 
 BaseFormSet.prototype.asP = function(doNotCoerce)
 {
-    var rows = this.managementForm().asTable(true);
+    var rows = this.managementForm().asP(true);
     for (var i = 0, l = this.forms.length; i < l; i++)
         rows = rows.concat(this.forms[i].asP(true));
 
@@ -497,7 +497,7 @@ BaseFormSet.prototype.asP = function(doNotCoerce)
 
 BaseFormSet.prototype.asUL = function(doNotCoerce)
 {
-    var rows = this.managementForm().asTable(true);
+    var rows = this.managementForm().asUL(true);
     for (var i = 0, l = this.forms.length; i < l; i++)
         rows = rows.concat(this.forms[i].asUL(true));
 

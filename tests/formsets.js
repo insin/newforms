@@ -693,11 +693,43 @@ test("Max num with initial data", function()
 // TODO test(regression_6926
 // TODO test(regression_12878
 // TODO test(forset_iteration
-// TODO test(formset_as_table
-// TODO test(formset_as_p
-// TODO test(formset_as_ul
 
-// Regression test of for Django issue #11418
+var remderTestData = {
+    "choices-TOTAL_FORMS": "1",
+    "choices-INITIAL_FORMS": "0",
+    "choices-MAX_NUM_FORMS": "0",
+    "choices-0-choice": "Calexico",
+    "choices-0-votes": "100",
+}
+
+test("FormSet asTable", function()
+{
+    expect(1);
+    equal(""+new ChoiceFormSet({data: remderTestData, autoId: false, prefix: "choices"}).asTable(),
+"<tr><td colspan=\"2\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></td></tr>\n" +
+"<tr><th>Choice:</th><td><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></td></tr>\n" +
+"<tr><th>Votes:</th><td><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></td></tr>");
+});
+
+test("FormSet asP", function()
+{
+    expect(1);
+    equal(""+new ChoiceFormSet({data: remderTestData, autoId: false, prefix: "choices"}).asP(),
+"<div><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></div>\n" +
+"<p>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></p>\n" +
+"<p>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></p>");
+});
+
+test("FormSet asUL", function()
+{
+    expect(1);
+    equal(""+new ChoiceFormSet({data: remderTestData, autoId: false, prefix: "choices"}).asUL(),
+"<li><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></li>\n" +
+"<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>\n" +
+"<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>");
+});
+
+// 3 Regression tests for Django issue #11418
 var ArticleForm = formFactory({fields: function() {
     return {
         title: new CharField(),
@@ -707,9 +739,46 @@ var ArticleForm = formFactory({fields: function() {
 
 var ArticleFormSet = formsetFactory(ArticleForm);
 
-// TODO test(on_data_raises_validation_Error
-// TODO test(management_data_attrs work fine
-// TODO test(form_errors_caught by formset
+test("No data raises ValidationError", function()
+{
+    expect(1);
+    raises(function() { new ArticleFormSet({data: {}}); });
+});
+
+test("With management data works fine", function()
+{
+    expect(7);
+    var data = {
+        "form-TOTAL_FORMS": "1",
+        "form-INITIAL_FORMS": "0"
+    };
+    var formset = new ArticleFormSet({data: data});
+    strictEqual(formset.initialFormCount(), 0)
+    strictEqual(formset.totalFormCount(), 1)
+    strictEqual(formset.isBound, true)
+    strictEqual(formset.forms[0].isBound, true)
+    strictEqual(formset.isValid(), true)
+    strictEqual(formset.forms[0].isValid(), true)
+    deepEqual(formset.cleanedData(), [{}])
+});
+
+test("Form errors are caught by FormSet", function()
+{
+    expect(4);
+    var data = {
+        "form-TOTAL_FORMS": "2",
+        "form-INITIAL_FORMS": "0",
+        "form-0-title": "Test",
+        "form-0-pub_date": "1904-06-16",
+        "form-1-title": "Test",
+        "form-1-pub_date": "" // Missing, but required
+    };
+    var formset = new ArticleFormSet({data: data});
+    strictEqual(formset.isValid(), false);
+    strictEqual(formset.errors()[0].isPopulated(), false);
+    strictEqual(formset.errors()[1].isPopulated(), true);
+    deepEqual(formset.errors()[1].pub_date.errors, ["This field is required."]);
+});
 
 test("Empty formset is valid", function()
 {
