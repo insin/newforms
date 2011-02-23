@@ -68,7 +68,7 @@ function Field(kwargs)
         widget = new widget();
     }
     // Let the widget know whether it should display as required
-    widget.required = this.required;
+    widget.isRequired = this.required;
     // Hook into this.widgetAttrs() for any Field-specific HTML attributes
     extend(widget.attrs, this.widgetAttrs(widget));
     this.widget = widget;
@@ -443,10 +443,6 @@ DecimalField.prototype.clean = function(value)
     // * Leading zeros have been stripped from digits before the decimal point,
     //   but trailing digits are retained after the decimal point.
     value = value.replace(/^0+/, "");
-    // * Values which did not have a leading zero gain a single leading zero
-    if (value.charAt(0) == ".") {
-        value = "0" + value;
-    }
 
     // Perform own validation
     var pieces = value.split("."),
@@ -465,6 +461,10 @@ DecimalField.prototype.clean = function(value)
         throw new ValidationError(format(this.errorMessages.maxWholeDigits,
                                   {maxWholeDigits: (this.maxDigits - this.decimalPlaces)}));
 
+    // * Values which did not have a leading zero gain a single leading zero
+    if (value.charAt(0) == ".") {
+        value = "0" + value;
+    }
     // Restore sign if necessary
     if (negative) {
         value = "-" + value;

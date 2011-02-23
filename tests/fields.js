@@ -29,6 +29,13 @@ function cleanRaisesWithValidationError(field, message, var_args)
     throw new Error("Method did not throw an exception");
 }
 
+test("Field sets widget isRequired", function()
+{
+    expect(2);
+    strictEqual(new Field({required: true}).widget.isRequired, true);
+    strictEqual(new Field({required: false}).widget.isRequired, false);
+});
+
 test("CharField", function()
 {
     expect(30);
@@ -77,11 +84,12 @@ test("CharField", function()
 
 test("IntegerField", function()
 {
-    expect(50);
+    expect(51);
     var f = new IntegerField();
     cleanRaisesWithValidationError(f, "This field is required.", null);
     cleanRaisesWithValidationError(f, "This field is required.", "");
     strictEqual(f.clean("1"), 1);
+    strictEqual(isNumber(f.clean("1")), true);
     strictEqual(f.clean("23"), 23);
     cleanRaisesWithValidationError(f, "Enter a whole number.", "a");
     strictEqual(f.clean(42), 42);
@@ -185,15 +193,20 @@ test("FloatField", function()
 
 test("DecimalField", function()
 {
-    expect(31);
+    expect(56);
     var f = new DecimalField({maxDigits: 4, decimalPlaces: 2});
     cleanRaisesWithValidationError(f, "This field is required.", "");
     cleanRaisesWithValidationError(f, "This field is required.", null);
     strictEqual(f.clean("1"), "1");
+    strictEqual(isString(f.clean("1")), true);
     strictEqual(f.clean("23"), "23");
     strictEqual(f.clean("3.14"), "3.14");
     strictEqual(f.clean(3.14), "3.14");
+    cleanRaisesWithValidationError(f, "Enter a number.", "NaN");
+    cleanRaisesWithValidationError(f, "Enter a number.", "Infinity");
+    cleanRaisesWithValidationError(f, "Enter a number.", "-Infinity");
     cleanRaisesWithValidationError(f, "Enter a number.", "a");
+    // TODO Unicode characters test
     strictEqual(f.clean("1.0 "), "1.0");
     strictEqual(f.clean(" 1.0"), "1.0");
     strictEqual(f.clean(" 1.0 "), "1.0");
@@ -207,22 +220,52 @@ test("DecimalField", function()
     strictEqual(f.clean("-00.12"), "-0.12");
     strictEqual(f.clean("-000.12"), "-0.12");
     cleanRaisesWithValidationError(f, "Ensure that there are no more than 2 decimal places.", "-000.123");
-    cleanRaisesWithValidationError(f, "Ensure that there are no more than 4 digits in total.", "-000.1234");
+    cleanRaisesWithValidationError(f, "Ensure that there are no more than 2 decimal places.", "-000.1234");
+    cleanRaisesWithValidationError(f, "Ensure that there are no more than 4 digits in total.", "-000.12345");
     cleanRaisesWithValidationError(f, "Enter a number.", "--0.12");
+    strictEqual(f.maxDigits, 4);
+    strictEqual(f.decimalPlaces, 2);
+    strictEqual(f.maxValue, null);
+    strictEqual(f.minValue, null);
 
-    var f = new DecimalField({maxDigits: 4, decimalPlaces: 2, required: false});
+    f = new DecimalField({maxDigits: 4, decimalPlaces: 2, required: false});
     strictEqual(f.clean(""), null);
     strictEqual(f.clean(null), null);
     strictEqual(f.clean(1), "1");
+    strictEqual(f.maxDigits, 4);
+    strictEqual(f.decimalPlaces, 2);
+    strictEqual(f.maxValue, null);
+    strictEqual(f.minValue, null);
 
     // DecimalField accepts min_value and max_value just like IntegerField
-    var f = new DecimalField({maxDigits: 4, decimalPlaces: 2, maxValue: 1.5, minValue: 0.5});
+    f = new DecimalField({maxDigits: 4, decimalPlaces: 2, maxValue: 1.5, minValue: 0.5});
     cleanRaisesWithValidationError(f, "Ensure this value is less than or equal to 1.5.", "1.6");
     cleanRaisesWithValidationError(f, "Ensure this value is greater than or equal to 0.5.", "0.4");
     strictEqual(f.clean("1.5"), "1.5");
     strictEqual(f.clean("0.5"), "0.5");
     strictEqual(f.clean(".5"), "0.5");
     strictEqual(f.clean("00.50"), "0.50");
+    strictEqual(f.maxDigits, 4);
+    strictEqual(f.decimalPlaces, 2);
+    strictEqual(f.maxValue, 1.5);
+    strictEqual(f.minValue, 0.5);
+
+    f = new DecimalField({decimalPlaces: 2});
+    cleanRaisesWithValidationError(f, "Ensure that there are no more than 2 decimal places.", "0.00000001");
+
+    f = new DecimalField({maxDigits: 3});
+    // Leading whole zeros "collapse" to one digit.
+    equal(f.clean("0000000.10"), "0.10");
+    // But a leading 0 before the . doesn"t count towards max_digits
+    equal(f.clean("0000000.100"), "0.100");
+    // Only leading whole zeros "collapse" to one digit.
+    equal(f.clean("000000.02"), "0.02");
+    cleanRaisesWithValidationError(f, "Ensure that there are no more than 3 digits in total.", "000000.0002");
+    equal(f.clean(".002"), "0.002");
+
+    f = new DecimalField({maxDigits: 2, decimalPlaces: 2});
+    equal(f.clean(".01"), "0.01");
+    cleanRaisesWithValidationError(f, "Ensure that there are no more than 0 digits before the decimal point.", "1.1");
 });
 
 test("DateField", function()
