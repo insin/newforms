@@ -4,180 +4,198 @@ module("fields");
 {
 
 /**
- * Retrieves the first error message from a ValidatonError.
+ * Asserts that when a field's clean method is called with given arguments,
+ * a {@code ValidationError} is thrown containing the specified error message(s).
+ * @param {Field} the field to be tested.
+ * @param {{string|Array.<string>}} the error message or messages which should
+ *     be contained in the resulting {@code ValidationError}.
+ * @param {...*} var_args arguments for the call to the field's clean method.
  */
-function ve(e)
+function cleanRaisesWithValidationError(field, message, var_args)
 {
-    return e.messages.errors[0];
+    if (!isArray(message))
+        message = [message];
+    try
+    {
+        field.clean.apply(field, Array.prototype.slice.call(arguments, 2));
+    }
+    catch (e)
+    {
+        if (!(e instanceof ValidationError))
+            throw new Error("Method did not throw a ValidationError:" + e);
+        deepEqual(e.messages, message);
+        return;
+    }
+    throw new Error("Method did not throw an exception");
 }
 
 test("CharField", function()
 {
     expect(20);
     var f = new CharField();
-    equals(f.clean(1), "1");
-    equals(f.clean("hello"), "hello");
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required.");  }
-    equals(f.clean([1, 2, 3]), "1,2,3");
+    strictEqual(f.clean(1), "1");
+    equal(f.clean("hello"), "hello");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    strictEqual(f.clean([1, 2, 3]), "1,2,3");
 
     f = new CharField({required: false});
-    equals(f.clean(1), "1");
-    equals(f.clean("hello"), "hello");
-    same(f.clean(null), "");
-    same(f.clean(""), "");
-    equals(f.clean([1, 2, 3]), "1,2,3");
+    strictEqual(f.clean(1), "1");
+    equal(f.clean("hello"), "hello");
+    strictEqual(f.clean(null), "");
+    strictEqual(f.clean(""), "");
+    strictEqual(f.clean([1, 2, 3]), "1,2,3");
 
     // CharField accepts an optional maxLength parameter
     f = new CharField({maxLength: 10, required: false});
-    equals(f.clean("12345"), "12345");
-    equals(f.clean("1234567890"), "1234567890");
-    try { f.clean("1234567890a"); } catch (e) { equals(ve(e), "Ensure this value has at most 10 characters (it has 11)."); }
+    equal(f.clean("12345"), "12345");
+    equal(f.clean("1234567890"), "1234567890");
+    cleanRaisesWithValidationError(f, "Ensure this value has at most 10 characters (it has 11).", "1234567890a");
 
     // CharField accepts an optional minLength parameter
     f = new CharField({minLength: 10, required: false});
-    try { f.clean("12345"); } catch (e) { equals(ve(e), "Ensure this value has at least 10 characters (it has 5)."); }
-    equals(f.clean("1234567890"), "1234567890");
-    equals(f.clean("1234567890a"), "1234567890a");
+    cleanRaisesWithValidationError(f, "Ensure this value has at least 10 characters (it has 5).", "12345");
+    equal(f.clean("1234567890"), "1234567890");
+    equal(f.clean("1234567890a"), "1234567890a");
 
     f = new CharField({minLength: 10, required: true});
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean("12345"); } catch (e) { equals(ve(e), "Ensure this value has at least 10 characters (it has 5)."); }
-    equals(f.clean("1234567890"), "1234567890");
-    equals(f.clean("1234567890a"), "1234567890a");
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "Ensure this value has at least 10 characters (it has 5).", "12345");
+    equal(f.clean("1234567890"), "1234567890");
+    equal(f.clean("1234567890a"), "1234567890a");
 });
 
 test("IntegerField", function()
 {
     expect(40);
     var f = new IntegerField();
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    same(f.clean("1"), 1);
-    same(f.clean("23"), 23);
-    try { f.clean("a"); } catch (e) { equals(ve(e), "Enter a whole number."); }
-    same(f.clean(42), 42);
-    try { f.clean(3.14); } catch (e) { equals(ve(e), "Enter a whole number."); }
-    same(f.clean("1 "), 1);
-    same(f.clean(" 1"), 1);
-    same(f.clean(" 1 "), 1);
-    try { f.clean("1a"); } catch (e) { equals(ve(e), "Enter a whole number."); }
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    strictEqual(f.clean("1"), 1);
+    strictEqual(f.clean("23"), 23);
+    cleanRaisesWithValidationError(f, "Enter a whole number.", "a");
+    strictEqual(f.clean(42), 42);
+    cleanRaisesWithValidationError(f, "Enter a whole number.", 3.14);
+    strictEqual(f.clean("1 "), 1);
+    strictEqual(f.clean(" 1"), 1);
+    strictEqual(f.clean(" 1 "), 1);
+    cleanRaisesWithValidationError(f, "Enter a whole number.", "1a");
 
     f = new IntegerField({required: false});
-    same(f.clean(""), null);
-    same(f.clean(null), null);
-    same(f.clean("1"), 1);
-    same(f.clean("23"), 23);
-    try { f.clean("a"); } catch (e) { equals(ve(e), "Enter a whole number."); }
-    same(f.clean("1 "), 1);
-    same(f.clean(" 1"), 1);
-    same(f.clean(" 1 "), 1);
-    try { f.clean("1a"); } catch (e) { equals(ve(e), "Enter a whole number."); }
+    strictEqual(f.clean(""), null);
+    strictEqual(f.clean(null), null);
+    strictEqual(f.clean("1"), 1);
+    strictEqual(f.clean("23"), 23);
+    cleanRaisesWithValidationError(f, "Enter a whole number.", "a");
+    strictEqual(f.clean("1 "), 1);
+    strictEqual(f.clean(" 1"), 1);
+    strictEqual(f.clean(" 1 "), 1);
+    cleanRaisesWithValidationError(f, "Enter a whole number.", "1a");
 
     // IntegerField accepts an optional maxValue parameter
     f = new IntegerField({maxValue: 10})
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    same(f.clean(1), 1);
-    same(f.clean(10), 10);
-    try { f.clean(11); } catch (e) { equals(ve(e), "Ensure this value is less than or equal to 10."); }
-    same(f.clean("10"), 10);
-    try { f.clean("11"); } catch (e) { equals(ve(e), "Ensure this value is less than or equal to 10."); }
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    strictEqual(f.clean(1), 1);
+    strictEqual(f.clean(10), 10);
+    cleanRaisesWithValidationError(f, "Ensure this value is less than or equal to 10.", 11);
+    strictEqual(f.clean("10"), 10);
+    cleanRaisesWithValidationError(f, "Ensure this value is less than or equal to 10.", "11");
 
     // IntegerField accepts an optional minValue parameter
     f = new IntegerField({minValue: 10});
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(1); } catch (e) { equals(ve(e), "Ensure this value is greater than or equal to 10."); }
-    same(f.clean(10), 10);
-    same(f.clean(11), 11);
-    same(f.clean("10"), 10);
-    same(f.clean("11"), 11);
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    cleanRaisesWithValidationError(f, "Ensure this value is greater than or equal to 10.", 1);
+    strictEqual(f.clean(10), 10);
+    strictEqual(f.clean(11), 11);
+    strictEqual(f.clean("10"), 10);
+    strictEqual(f.clean("11"), 11);
 
     // minValue and maxValue can be used together
     f = new IntegerField({minValue: 10, maxValue: 20});
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(1); } catch (e) { equals(ve(e), "Ensure this value is greater than or equal to 10."); }
-    same(f.clean(10), 10);
-    same(f.clean(11), 11);
-    same(f.clean("10"), 10);
-    same(f.clean("11"), 11);
-    same(f.clean(20), 20);
-    try { f.clean(21); } catch (e) { equals(ve(e), "Ensure this value is less than or equal to 20."); }
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    cleanRaisesWithValidationError(f, "Ensure this value is greater than or equal to 10.", 1);
+    strictEqual(f.clean(10), 10);
+    strictEqual(f.clean(11), 11);
+    strictEqual(f.clean("10"), 10);
+    strictEqual(f.clean("11"), 11);
+    strictEqual(f.clean(20), 20);
+    cleanRaisesWithValidationError(f, "Ensure this value is less than or equal to 20.", 21);
 });
 
 test("FloatField", function()
 {
     expect(21);
     var f = new FloatField();
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    same(f.clean(1), 1.0);
-    same(f.clean(23), 23.0);
-    same(f.clean("3.14"), 3.1400000000000001);
-    same(f.clean(3.14), 3.1400000000000001);
-    same(f.clean(42), 42.0);
-    try { f.clean("a"); } catch (e) { equals(ve(e), "Enter a number."); }
-    same(f.clean("1.0 "), 1.0);
-    same(f.clean(" 1.0"), 1.0);
-    same(f.clean(" 1.0 "), 1.0);
-    try { f.clean("1.0a"); } catch (e) { equals(ve(e), "Enter a number."); }
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    strictEqual(f.clean(1), 1.0);
+    strictEqual(f.clean(23), 23.0);
+    strictEqual(f.clean("3.14"), 3.1400000000000001);
+    strictEqual(f.clean(3.14), 3.1400000000000001);
+    strictEqual(f.clean(42), 42.0);
+    cleanRaisesWithValidationError(f, "Enter a number.", "a");
+    strictEqual(f.clean("1.0 "), 1.0);
+    strictEqual(f.clean(" 1.0"), 1.0);
+    strictEqual(f.clean(" 1.0 "), 1.0);
+    cleanRaisesWithValidationError(f, "Enter a number.", "1.0a");
 
     f = new FloatField({required: false});
-    same(f.clean(""), null);
-    same(f.clean(null), null);
-    same(f.clean("1"), 1.0);
+    strictEqual(f.clean(""), null);
+    strictEqual(f.clean(null), null);
+    strictEqual(f.clean("1"), 1.0);
 
     // FloatField accepts minValue and maxValue just like IntegerField
     f = new FloatField({maxValue: 1.5, minValue: 0.5});
-    try { f.clean("1.6"); } catch (e) { equals(ve(e), "Ensure this value is less than or equal to 1.5."); }
-    try { f.clean("0.4"); } catch (e) { equals(ve(e), "Ensure this value is greater than or equal to 0.5."); }
-    same(f.clean("1.5"), 1.5);
-    same(f.clean("0.5"), 0.5);
+    cleanRaisesWithValidationError(f, "Ensure this value is less than or equal to 1.5.", "1.6");
+    cleanRaisesWithValidationError(f, "Ensure this value is greater than or equal to 0.5.", "0.4");
+    strictEqual(f.clean("1.5"), 1.5);
+    strictEqual(f.clean("0.5"), 0.5);
 
     // FloatField implements its own _hasChanged due to String coercion issues
-    same(f._hasChanged("0.0", 0.0), false);
-    same(f._hasChanged("1.0", 1.0), false);
+    strictEqual(f._hasChanged("0.0", 0.0), false);
+    strictEqual(f._hasChanged("1.0", 1.0), false);
 });
 
 test("DecimalField", function()
 {
     expect(31);
     var f = new DecimalField({maxDigits: 4, decimalPlaces: 2});
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    same(f.clean("1"), 1);
-    same(f.clean("23"), 23);
-    same(f.clean("3.14"), 3.1400000000000001);
-    same(f.clean(3.14), 3.1400000000000001);
-    try { f.clean("a"); } catch (e) { equals(ve(e), "Enter a number."); }
-    same(f.clean("1.0 "), 1.0);
-    same(f.clean(" 1.0"), 1.0);
-    same(f.clean(" 1.0 "), 1.0);
-    try { f.clean("1.0a"); } catch (e) { equals(ve(e), "Enter a number."); }
-    try { f.clean("123.45"); } catch(e) { equals(ve(e), "Ensure that there are no more than 4 digits in total."); }
-    try { f.clean("1.234"); } catch(e) { equals(ve(e), "Ensure that there are no more than 2 decimal places."); }
-    try { f.clean("123.4"); } catch(e) { equals(ve(e), "Ensure that there are no more than 2 digits before the decimal point."); }
-    same(f.clean("-12.34"), -12.34);
-    try { f.clean("-123.45"); } catch(e) { equals(ve(e), "Ensure that there are no more than 4 digits in total."); }
-    same(f.clean("-.12"), -0.12);
-    same(f.clean("-00.12"), -0.12);
-    same(f.clean("-000.12"), -0.12);
-    try { f.clean("-000.123"); } catch(e) { equals(ve(e), "Ensure that there are no more than 2 decimal places."); }
-    try { f.clean("-000.1234"); } catch(e) { equals(ve(e), "Ensure that there are no more than 4 digits in total."); }
-    try { f.clean("--0.12"); } catch (e) { equals(ve(e), "Enter a number."); }
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    strictEqual(f.clean("1"), 1);
+    strictEqual(f.clean("23"), 23);
+    strictEqual(f.clean("3.14"), 3.1400000000000001);
+    strictEqual(f.clean(3.14), 3.1400000000000001);
+    cleanRaisesWithValidationError(f, "Enter a number.", "a");
+    strictEqual(f.clean("1.0 "), 1.0);
+    strictEqual(f.clean(" 1.0"), 1.0);
+    strictEqual(f.clean(" 1.0 "), 1.0);
+    cleanRaisesWithValidationError(f, "Enter a number.", "1.0a");
+    cleanRaisesWithValidationError(f, "Ensure that there are no more than 4 digits in total.", "123.45");
+    cleanRaisesWithValidationError(f, "Ensure that there are no more than 2 decimal places.", "1.234");
+    cleanRaisesWithValidationError(f, "Ensure that there are no more than 2 digits before the decimal point.", "123.4");
+    strictEqual(f.clean("-12.34"), -12.34);
+    cleanRaisesWithValidationError(f, "Ensure that there are no more than 4 digits in total.", "-123.45");
+    strictEqual(f.clean("-.12"), -0.12);
+    strictEqual(f.clean("-00.12"), -0.12);
+    strictEqual(f.clean("-000.12"), -0.12);
+    cleanRaisesWithValidationError(f, "Ensure that there are no more than 2 decimal places.", "-000.123");
+    cleanRaisesWithValidationError(f, "Ensure that there are no more than 4 digits in total.", "-000.1234");
+    cleanRaisesWithValidationError(f, "Enter a number.", "--0.12");
 
     var f = new DecimalField({maxDigits: 4, decimalPlaces: 2, required: false});
-    same(f.clean(""), null);
-    same(f.clean(null), null);
-    same(f.clean(1), 1);
+    strictEqual(f.clean(""), null);
+    strictEqual(f.clean(null), null);
+    strictEqual(f.clean(1), 1);
 
     // DecimalField accepts min_value and max_value just like IntegerField
     var f = new DecimalField({maxDigits: 4, decimalPlaces: 2, maxValue: 1.5, minValue: 0.5});
-    try { f.clean("1.6"); } catch (e) { equals(ve(e), "Ensure this value is less than or equal to 1.5."); }
-    try { f.clean("0.4"); } catch (e) { equals(ve(e), "Ensure this value is greater than or equal to 0.5."); }
-    same(f.clean("1.5"), 1.5);
-    same(f.clean("0.5"), 0.5);
-    same(f.clean(".5"), 0.5);
-    same(f.clean("00.50"), 0.5);
+    cleanRaisesWithValidationError(f, "Ensure this value is less than or equal to 1.5.", "1.6");
+    cleanRaisesWithValidationError(f, "Ensure this value is greater than or equal to 0.5.", "0.4");
+    strictEqual(f.clean("1.5"), 1.5);
+    strictEqual(f.clean("0.5"), 0.5);
+    strictEqual(f.clean(".5"), 0.5);
+    strictEqual(f.clean("00.50"), 0.5);
 });
 
 test("DateField", function()
@@ -185,176 +203,176 @@ test("DateField", function()
     expect(24);
     var f = new DateField();
     var expected = new Date(2006, 9, 25).valueOf();
-    same(f.clean(new Date(2006, 9, 25)).valueOf(), expected);
-    same(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), expected);
-    same(f.clean(new Date(2006, 9, 25, 14, 30, 59)).valueOf(), expected);
-    same(f.clean(new Date(2006, 9, 25, 14, 30, 59, 200)).valueOf(), expected);
-    same(f.clean("2006-10-25").valueOf(), expected);
-    same(f.clean("10/25/2006").valueOf(), expected);
-    same(f.clean("10/25/06").valueOf(), expected);
-    same(f.clean("Oct 25 2006").valueOf(), expected);
-    same(f.clean("October 25 2006").valueOf(), expected);
-    same(f.clean("October 25, 2006").valueOf(), expected);
-    same(f.clean("25 October 2006").valueOf(), expected);
-    same(f.clean("25 October, 2006").valueOf(), expected);
-    try { f.clean("2006-4-31"); } catch (e) { equals(ve(e), "Enter a valid date."); }
-    try { f.clean("200a-10-25"); } catch (e) { equals(ve(e), "Enter a valid date."); }
-    try { f.clean("25/10/06"); } catch (e) { equals(ve(e), "Enter a valid date."); }
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), expected);
+    strictEqual(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), expected);
+    strictEqual(f.clean(new Date(2006, 9, 25, 14, 30, 59)).valueOf(), expected);
+    strictEqual(f.clean(new Date(2006, 9, 25, 14, 30, 59, 200)).valueOf(), expected);
+    strictEqual(f.clean("2006-10-25").valueOf(), expected);
+    strictEqual(f.clean("10/25/2006").valueOf(), expected);
+    strictEqual(f.clean("10/25/06").valueOf(), expected);
+    strictEqual(f.clean("Oct 25 2006").valueOf(), expected);
+    strictEqual(f.clean("October 25 2006").valueOf(), expected);
+    strictEqual(f.clean("October 25, 2006").valueOf(), expected);
+    strictEqual(f.clean("25 October 2006").valueOf(), expected);
+    strictEqual(f.clean("25 October, 2006").valueOf(), expected);
+    cleanRaisesWithValidationError(f, "Enter a valid date.", "2006-4-31");
+    cleanRaisesWithValidationError(f, "Enter a valid date.", "200a-10-25");
+    cleanRaisesWithValidationError(f, "Enter a valid date.", "25/10/06");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
 
     var f = new DateField({required: false});
-    same(f.clean(null), null);
-    same(f.clean(""), null);
+    strictEqual(f.clean(null), null);
+    strictEqual(f.clean(""), null);
 
     // DateField accepts an optional inputFormats parameter
     var f = new DateField({inputFormats: ["%Y %m %d"]});
-    same(f.clean(new Date(2006, 9, 25)).valueOf(), expected);
-    same(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), expected);
-    same(f.clean("2006 10 25").valueOf(), expected);
+    strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), expected);
+    strictEqual(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), expected);
+    strictEqual(f.clean("2006 10 25").valueOf(), expected);
 
     // The input_formats parameter overrides all default input formats, so the
     // default formats won't work unless you specify them.
-    try { f.clean("2006-10-25"); } catch (e) { equals(ve(e), "Enter a valid date."); }
-    try { f.clean("10/25/2006"); } catch (e) { equals(ve(e), "Enter a valid date."); }
-    try { f.clean("10/25/06"); } catch (e) { equals(ve(e), "Enter a valid date."); }
+    cleanRaisesWithValidationError(f, "Enter a valid date.", "2006-10-25");
+    cleanRaisesWithValidationError(f, "Enter a valid date.", "10/25/2006");
+    cleanRaisesWithValidationError(f, "Enter a valid date.", "10/25/06");
 });
 
 test("TimeField", function()
 {
     expect(11);
     var f = new TimeField();
-    same(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
-    same(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
-    same(f.clean("14:25").valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
-    same(f.clean("14:25:59").valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
-    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a valid time."); }
-    try { f.clean("1:24 p.m."); } catch (e) { equals(ve(e), "Enter a valid time."); }
+    strictEqual(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
+    strictEqual(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
+    strictEqual(f.clean("14:25").valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
+    strictEqual(f.clean("14:25:59").valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
+    cleanRaisesWithValidationError(f, "Enter a valid time.", "hello");
+    cleanRaisesWithValidationError(f, "Enter a valid time.", "1:24 p.m.");
 
     // TimeField accepts an optional inputFormats parameter
     var f = new TimeField({inputFormats: ["%I:%M %p"]});
-    same(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
-    same(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
-    same(f.clean("4:25 AM").valueOf(), new Date(1900, 0, 1, 4, 25).valueOf());
-    same(f.clean("4:25 PM").valueOf(), new Date(1900, 0, 1, 16, 25).valueOf());
+    strictEqual(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
+    strictEqual(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
+    strictEqual(f.clean("4:25 AM").valueOf(), new Date(1900, 0, 1, 4, 25).valueOf());
+    strictEqual(f.clean("4:25 PM").valueOf(), new Date(1900, 0, 1, 16, 25).valueOf());
 
     // The inputFormats parameter overrides all default input formats, so the
     // default formats won't work unless you specify them.
-    try { f.clean("14:30:45"); } catch (e) { equals(ve(e), "Enter a valid time."); }
+    cleanRaisesWithValidationError(f, "Enter a valid time.", "14:30:45");
 });
 
 test("DateTimeField", function()
 {
     expect(26);
     var f = new DateTimeField();
-    same(f.clean(new Date(2006, 9, 25)).valueOf(), new Date(2006, 9, 25).valueOf());
-    same(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
-    same(f.clean(new Date(2006, 9, 25, 14, 30, 59)).valueOf(), new Date(2006, 9, 25, 14, 30, 59).valueOf());
-    same(f.clean(new Date(2006, 9, 25, 14, 30, 59, 200)).valueOf(), new Date(2006, 9, 25, 14, 30, 59, 200).valueOf());
-    same(f.clean("2006-10-25 14:30:45").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
-    same(f.clean("2006-10-25 14:30:00").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
-    same(f.clean("2006-10-25 14:30").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
-    same(f.clean("2006-10-25").valueOf(), new Date(2006, 9, 25).valueOf());
-    same(f.clean("10/25/2006 14:30:45").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
-    same(f.clean("10/25/2006 14:30:00").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
-    same(f.clean("10/25/2006 14:30").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
-    same(f.clean("10/25/2006").valueOf(), new Date(2006, 9, 25).valueOf());
-    same(f.clean("10/25/06 14:30:45").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
-    same(f.clean("10/25/06 14:30:00").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
-    same(f.clean("10/25/06 14:30").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
-    same(f.clean("10/25/06").valueOf(), new Date(2006, 9, 25).valueOf());
-    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a valid date/time."); }
-    try { f.clean("2006-10-25 4:30 p.m."); } catch (e) { equals(ve(e), "Enter a valid date/time."); }
+    strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), new Date(2006, 9, 25).valueOf());
+    strictEqual(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    strictEqual(f.clean(new Date(2006, 9, 25, 14, 30, 59)).valueOf(), new Date(2006, 9, 25, 14, 30, 59).valueOf());
+    strictEqual(f.clean(new Date(2006, 9, 25, 14, 30, 59, 200)).valueOf(), new Date(2006, 9, 25, 14, 30, 59, 200).valueOf());
+    strictEqual(f.clean("2006-10-25 14:30:45").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
+    strictEqual(f.clean("2006-10-25 14:30:00").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    strictEqual(f.clean("2006-10-25 14:30").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    strictEqual(f.clean("2006-10-25").valueOf(), new Date(2006, 9, 25).valueOf());
+    strictEqual(f.clean("10/25/2006 14:30:45").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
+    strictEqual(f.clean("10/25/2006 14:30:00").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    strictEqual(f.clean("10/25/2006 14:30").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    strictEqual(f.clean("10/25/2006").valueOf(), new Date(2006, 9, 25).valueOf());
+    strictEqual(f.clean("10/25/06 14:30:45").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
+    strictEqual(f.clean("10/25/06 14:30:00").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    strictEqual(f.clean("10/25/06 14:30").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    strictEqual(f.clean("10/25/06").valueOf(), new Date(2006, 9, 25).valueOf());
+    cleanRaisesWithValidationError(f, "Enter a valid date/time.", "hello");
+    cleanRaisesWithValidationError(f, "Enter a valid date/time.", "2006-10-25 4:30 p.m.");
 
     // DateField accepts an optional input_formats parameter
     f = new DateTimeField({inputFormats: ["%Y %m %d %I:%M %p"]});
-    same(f.clean(new Date(2006, 9, 25)).valueOf(), new Date(2006, 9, 25).valueOf());
-    same(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
-    same(f.clean(new Date(2006, 9, 25, 14, 30, 59)).valueOf(), new Date(2006, 9, 25, 14, 30, 59).valueOf());
-    same(f.clean(new Date(2006, 9, 25, 14, 30, 59, 200)).valueOf(), new Date(2006, 9, 25, 14, 30, 59, 200).valueOf());
-    same(f.clean("2006 10 25 2:30 PM").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), new Date(2006, 9, 25).valueOf());
+    strictEqual(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    strictEqual(f.clean(new Date(2006, 9, 25, 14, 30, 59)).valueOf(), new Date(2006, 9, 25, 14, 30, 59).valueOf());
+    strictEqual(f.clean(new Date(2006, 9, 25, 14, 30, 59, 200)).valueOf(), new Date(2006, 9, 25, 14, 30, 59, 200).valueOf());
+    strictEqual(f.clean("2006 10 25 2:30 PM").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
 
     // The inputFormats parameter overrides all default input formats, so the
     // default formats won't work unless you specify them
-    try { f.clean("2006-10-25 14:30:45"); } catch (e) { equals(ve(e), "Enter a valid date/time."); }
+    cleanRaisesWithValidationError(f, "Enter a valid date/time.", "2006-10-25 14:30:45");
 
     f = new DateTimeField({required: false});
-    same(f.clean(null), null);
-    same(f.clean(""), null);
+    strictEqual(f.clean(null), null);
+    strictEqual(f.clean(""), null);
 });
 
 test("RegexField", function()
 {
     expect(24);
     var f = new RegexField("^\\d[A-F]\\d$");
-    equals(f.clean("2A2"), "2A2");
-    equals(f.clean("3F3"), "3F3");
-    try { f.clean("3G3"); } catch (e) { equals(ve(e), "Enter a valid value."); }
-    try { f.clean(" 2A2"); } catch (e) { equals(ve(e), "Enter a valid value."); }
-    try { f.clean("2A2 "); } catch (e) { equals(ve(e), "Enter a valid value."); }
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    equal(f.clean("2A2"), "2A2");
+    equal(f.clean("3F3"), "3F3");
+    cleanRaisesWithValidationError(f, "Enter a valid value.", "3G3");
+    cleanRaisesWithValidationError(f, "Enter a valid value.", " 2A2");
+    cleanRaisesWithValidationError(f, "Enter a valid value.", "2A2 ");
+    cleanRaisesWithValidationError(f, "This field is required.", "");
 
     f = new RegexField("^\\d[A-F]\\d$", {required: false});
-    equals(f.clean("2A2"), "2A2");
-    equals(f.clean("3F3"), "3F3");
-    try { f.clean("3G3"); } catch (e) { equals(ve(e), "Enter a valid value."); }
-    equals(f.clean(""), "");
+    equal(f.clean("2A2"), "2A2");
+    equal(f.clean("3F3"), "3F3");
+    cleanRaisesWithValidationError(f, "Enter a valid value.", "3G3");
+    equal(f.clean(""), "");
 
     // Alternatively, RegexField can take a compiled regular expression
     f = new RegexField(/^\d[A-F]\d$/);
-    equals(f.clean("2A2"), "2A2");
-    equals(f.clean("3F3"), "3F3");
-    try { f.clean("3G3"); } catch (e) { equals(ve(e), "Enter a valid value."); }
-    try { f.clean(" 2A2"); } catch (e) { equals(ve(e), "Enter a valid value."); }
-    try { f.clean("2A2 "); } catch (e) { equals(ve(e), "Enter a valid value."); }
+    equal(f.clean("2A2"), "2A2");
+    equal(f.clean("3F3"), "3F3");
+    cleanRaisesWithValidationError(f, "Enter a valid value.", "3G3");
+    cleanRaisesWithValidationError(f, "Enter a valid value.", " 2A2");
+    cleanRaisesWithValidationError(f, "Enter a valid value.", "2A2 ");
 
     f = new RegexField("^\\d\\d\\d\\d$", {errorMessages: {invalid: 'Enter a four-digit number.'}});
-    equals(f.clean("1234"), "1234");
-    try { f.clean("123"); } catch (e) { equals(ve(e), "Enter a four-digit number."); }
-    try { f.clean("abcd"); } catch (e) { equals(ve(e), "Enter a four-digit number."); }
+    equal(f.clean("1234"), "1234");
+    cleanRaisesWithValidationError(f, "Enter a four-digit number.", "123");
+    cleanRaisesWithValidationError(f, "Enter a four-digit number.", "abcd");
 
     // RegexField also has minLength and maxLength parameters, for convenience
     f = new RegexField("^\\d+$", {minLength: 5, maxLength: 10});
-    try { f.clean("123"); } catch (e) { equals(ve(e), "Ensure this value has at least 5 characters (it has 3)."); }
-    try { f.clean("abc"); } catch (e) { equals(ve(e), "Ensure this value has at least 5 characters (it has 3)."); }
-    equals(f.clean("12345"), "12345");
-    equals(f.clean("1234567890"), "1234567890");
-    try { f.clean("12345678901"); } catch (e) { equals(ve(e), "Ensure this value has at most 10 characters (it has 11)."); }
-    try { f.clean("12345a"); } catch (e) { equals(ve(e), "Enter a valid value."); }
+    cleanRaisesWithValidationError(f, "Ensure this value has at least 5 characters (it has 3).", "123");
+    cleanRaisesWithValidationError(f, ["Ensure this value has at least 5 characters (it has 3).", "Enter a valid value."], "abc");
+    equal(f.clean("12345"), "12345");
+    equal(f.clean("1234567890"), "1234567890");
+    cleanRaisesWithValidationError(f, "Ensure this value has at most 10 characters (it has 11).", "12345678901");
+    cleanRaisesWithValidationError(f, "Enter a valid value.", "12345a");
 });
 
 test("EmailField", function()
 {
     expect(22);
     var f = new EmailField();
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    equals(f.clean("person@example.com"), "person@example.com");
-    try { f.clean("foo"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    try { f.clean("foo@"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    try { f.clean("foo@bar"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    try { f.clean("example@invalid-.com"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    try { f.clean("example@-invalid.com"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    try { f.clean("example@inv-.alid-.com"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    try { f.clean("example@inv-.-alid.com"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    equals(f.clean("example@valid-----hyphens.com"), "example@valid-----hyphens.com");
-    equals(f.clean("example@valid-with-hyphens.com"), "example@valid-with-hyphens.com");
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    equal(f.clean("person@example.com"), "person@example.com");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "foo");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "foo@");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "foo@bar");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "example@invalid-.com");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "example@-invalid.com");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "example@inv-.alid-.com");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "example@inv-.-alid.com");
+    equal(f.clean("example@valid-----hyphens.com"), "example@valid-----hyphens.com");
+    equal(f.clean("example@valid-with-hyphens.com"), "example@valid-with-hyphens.com");
 
     // Hangs "forever" if catastrophic backtracking not fixed.
-    try { f.clean("viewx3dtextx26qx3d@yahoo.comx26latlngx3d15854521645943074058"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "viewx3dtextx26qx3d@yahoo.comx26latlngx3d15854521645943074058");
 
     f = new EmailField({required: false});
-    equals(f.clean(""), "");
-    equals(f.clean(null), "");
-    equals(f.clean("person@example.com"), "person@example.com");
-    try { f.clean("foo"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    try { f.clean("foo@"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    try { f.clean("foo@bar"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
+    strictEqual(f.clean(""), "");
+    strictEqual(f.clean(null), "");
+    equal(f.clean("person@example.com"), "person@example.com");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "foo");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "foo@");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "foo@bar");
 
     // EmailField also has minLength and maxLength parameters, for convenience.
     f = new EmailField({minLength: 10, maxLength: 15});
-    try { f.clean("a@foo.com"); } catch (e) { equals(ve(e), "Ensure this value has at least 10 characters (it has 9)."); }
-    equals(f.clean("alf@foo.com"), "alf@foo.com");
-    try { f.clean("alf123456788@foo.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 15 characters (it has 20)."); }
+    cleanRaisesWithValidationError(f, "Ensure this value has at least 10 characters (it has 9).", "a@foo.com");
+    equal(f.clean("alf@foo.com"), "alf@foo.com");
+    cleanRaisesWithValidationError(f, "Ensure this value has at most 15 characters (it has 20).", "alf123456788@foo.com");
 });
 
 test("FileField", function()
@@ -368,25 +386,25 @@ test("FileField", function()
 
     expect(18);
     var f = new FileField();
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean("", ""); } catch (e) { equals(ve(e), "This field is required."); }
-    equals(f.clean("", "files/test1.pdf"), "files/test1.pdf");
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(null, ""); } catch (e) { equals(ve(e), "This field is required."); }
-    equals(f.clean(null, "files/test2.pdf"), "files/test2.pdf");
-    try { f.clean(new SimpleUploadedFile("", "")); } catch (e) { equals(ve(e), "No file was submitted. Check the encoding type on the form."); }
-    try { f.clean(new SimpleUploadedFile("", ""), ""); } catch (e) { equals(ve(e), "No file was submitted. Check the encoding type on the form."); }
-    equals(f.clean(null, "files/test3.pdf"), "files/test3.pdf");
-    try { f.clean("some content that is not a file"); } catch (e) { equals(ve(e), "No file was submitted. Check the encoding type on the form."); }
-    try { f.clean(new SimpleUploadedFile("name", null)); } catch (e) { equals(ve(e), "The submitted file is empty."); }
-    try { f.clean(new SimpleUploadedFile("name", "")); } catch (e) { equals(ve(e), "The submitted file is empty."); }
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "This field is required.", "", "");
+    equal(f.clean("", "files/test1.pdf"), "files/test1.pdf");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    cleanRaisesWithValidationError(f, "This field is required.", null, "");
+    equal(f.clean(null, "files/test2.pdf"), "files/test2.pdf");
+    cleanRaisesWithValidationError(f, "No file was submitted. Check the encoding type on the form.", new SimpleUploadedFile("", ""));
+    cleanRaisesWithValidationError(f, "No file was submitted. Check the encoding type on the form.", new SimpleUploadedFile("", ""), "");
+    equal(f.clean(null, "files/test3.pdf"), "files/test3.pdf");
+    cleanRaisesWithValidationError(f, "No file was submitted. Check the encoding type on the form.", "some content that is not a file");
+    cleanRaisesWithValidationError(f, "The submitted file is empty.", new SimpleUploadedFile("name", null));
+    cleanRaisesWithValidationError(f, "The submitted file is empty.", new SimpleUploadedFile("name", ""));
     ok(f.clean(new SimpleUploadedFile("name", "Some File Content")) instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
     ok(f.clean(new SimpleUploadedFile("name", "Some File Content"), "files/test4.pdf") instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
 
     f = new FileField({maxLength: 5});
-    try { f.clean(new SimpleUploadedFile("test_maxlength.txt", "hello world")); } catch (e) { equals(ve(e), "Ensure this filename has at most 5 characters (it has 18)."); }
-    equals(f.clean("", "files/test1.pdf"), "files/test1.pdf");
-    equals(f.clean(null, "files/test2.pdf"), "files/test2.pdf");
+    cleanRaisesWithValidationError(f, "Ensure this filename has at most 5 characters (it has 18).", new SimpleUploadedFile("test_maxlength.txt", "hello world"));
+    equal(f.clean("", "files/test1.pdf"), "files/test1.pdf");
+    equal(f.clean(null, "files/test2.pdf"), "files/test2.pdf");
     ok(f.clean(new SimpleUploadedFile("name", "Some File Content")) instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
 });
 
@@ -399,31 +417,31 @@ test("URLField", function()
 
     expect(49);
     var f = new URLField();
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    equals(f.clean("http://localhost"), "http://localhost/");
-    equals(f.clean("http://example.com"), "http://example.com/");
-    equals(f.clean("http://www.example.com:8000/test"), "http://www.example.com:8000/test");
-    equals(f.clean("valid-with-hyphens.com"), "http://valid-with-hyphens.com/");
-    equals(f.clean("subdomain.domain.com"), "http://subdomain.domain.com/");
-    equals(f.clean("http://200.8.9.10"), "http://200.8.9.10/");
-    equals(f.clean("http://200.8.9.10:8000/test"), "http://200.8.9.10:8000/test");
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    equal(f.clean("http://localhost"), "http://localhost/");
+    equal(f.clean("http://example.com"), "http://example.com/");
+    equal(f.clean("http://www.example.com:8000/test"), "http://www.example.com:8000/test");
+    equal(f.clean("valid-with-hyphens.com"), "http://valid-with-hyphens.com/");
+    equal(f.clean("subdomain.domain.com"), "http://subdomain.domain.com/");
+    equal(f.clean("http://200.8.9.10"), "http://200.8.9.10/");
+    equal(f.clean("http://200.8.9.10:8000/test"), "http://200.8.9.10:8000/test");
     for (var i = 0, url; url = invalidURLs[i]; i++)
     {
-        try { f.clean(url); } catch (e) { equals(ve(e), "Enter a valid URL."); }
+        cleanRaisesWithValidationError(f, "Enter a valid URL.", url);
     }
 
     f = new URLField({required: false});
-    equals(f.clean(""), "");
-    equals(f.clean(null), "");
-    equals(f.clean("http://localhost"), "http://localhost/");
-    equals(f.clean("http://example.com"), "http://example.com/");
-    equals(f.clean("http://www.example.com:8000/test"), "http://www.example.com:8000/test");
-    equals(f.clean("http://200.8.9.10"), "http://200.8.9.10/");
-    equals(f.clean("http://200.8.9.10:8000/test"), "http://200.8.9.10:8000/test");
+    strictEqual(f.clean(""), "");
+    strictEqual(f.clean(null), "");
+    equal(f.clean("http://localhost"), "http://localhost/");
+    equal(f.clean("http://example.com"), "http://example.com/");
+    equal(f.clean("http://www.example.com:8000/test"), "http://www.example.com:8000/test");
+    equal(f.clean("http://200.8.9.10"), "http://200.8.9.10/");
+    equal(f.clean("http://200.8.9.10:8000/test"), "http://200.8.9.10:8000/test");
     for (var i = 0, url; url = invalidURLs[i]; i++)
     {
-        try { f.clean(url); } catch (e) { equals(ve(e), "Enter a valid URL."); }
+        cleanRaisesWithValidationError(f, "Enter a valid URL.", url);
     }
 
     function createCatastrophicTestUrl(length)
@@ -437,98 +455,102 @@ test("URLField", function()
     };
 
     // Hangs "forever" if catastrophic backtracking not fixed.
-    try { f.clean(createCatastrophicTestUrl(200)); } catch (e) { equals(ve(e), "Enter a valid URL."); }
+    cleanRaisesWithValidationError(f, "Enter a valid URL.", createCatastrophicTestUrl(200));
 
     // A second test, to make sure the problem is really addressed, even on
     // domains that don't fail the domain label length check in the regex.
-    try { f.clean(createCatastrophicTestUrl(60)); } catch (e) { equals(ve(e), "Enter a valid URL."); }
+    cleanRaisesWithValidationError(f, "Enter a valid URL.", createCatastrophicTestUrl(60));
 
     // URLField takes an optional verifyExists parameter, which is false by
     // default. This verifies that the URL is live on the Internet and doesn't
     // return a 404 or 500:
     f = new URLField({verifyExists: true});
-    equals(f.clean("http://www.google.com"), "http://www.google.com/");
-    try { f.clean("http://example"); } catch (e) { equals(ve(e), "Enter a valid URL."); }
-    try { f.clean("http://www.jfoiwjfoi23jfoijoaijfoiwjofiwjefewl.com") } catch (e) { equals(ve(e), "This URL appears to be a broken link.", "Bad domain"); }
-    try { f.clean("http://google.com/we-love-microsoft.html") } catch (e) { equals(ve(e), "This URL appears to be a broken link.", "Good domain, bad page"); }
+    equal(f.clean("http://www.google.com"), "http://www.google.com/");
+    cleanRaisesWithValidationError(f, "Enter a valid URL.", "http://example");
+
+    // TODO Run these tests when we can check the link
+    // Bad domain
+    //cleanRaisesWithValidationError(f, "This URL appears to be a broken link.", "http://www.jfoiwjfoi23jfoijoaijfoiwjofiwjefewl.com");
+    // Good domain, bad page
+    //cleanRaisesWithValidationError(f, "This URL appears to be a broken link.", "http://google.com/we-love-microsoft.html");
 
     f = new URLField({verifyExists: true, required: false});
-    equals(f.clean(""), "");
-    equals(f.clean("http://www.google.com"), "http://www.google.com/");
+    strictEqual(f.clean(""), "");
+    equal(f.clean("http://www.google.com"), "http://www.google.com/");
 
     // URLField also has minLength and maxLength parameters, for convenience
     f = new URLField({minLength: 15, maxLength: 20});
-    try { f.clean("http://f.com"); } catch (e) { equals(ve(e), "Ensure this value has at least 15 characters (it has 13)."); }
-    equals(f.clean("http://example.com"), "http://example.com/");
-    try { f.clean("http://abcdefghijklmnopqrstuvwxyz.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 20 characters (it has 38)."); }
+    cleanRaisesWithValidationError(f, "Ensure this value has at least 15 characters (it has 13).", "http://f.com");
+    equal(f.clean("http://example.com"), "http://example.com/");
+    cleanRaisesWithValidationError(f, "Ensure this value has at most 20 characters (it has 38).", "http://abcdefghijklmnopqrstuvwxyz.com");
 
     // URLField should prepend "http://" if no scheme was given
     f = new URLField({required: false});
-    equals(f.clean("example.com"), "http://example.com/");
-    equals(f.clean("https://example.com"), "https://example.com/");
+    equal(f.clean("example.com"), "http://example.com/");
+    equal(f.clean("https://example.com"), "https://example.com/");
 });
 
 test("BooleanField", function()
 {
     expect(19);
     var f = new BooleanField();
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    same(f.clean(true), true);
-    try { f.clean(false); } catch (e) { equals(ve(e), "This field is required."); }
-    same(f.clean(1), true);
-    try { f.clean(0); } catch (e) { equals(ve(e), "This field is required."); }
-    same(f.clean("Django rocks"), true);
-    same(f.clean("True"), true);
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    strictEqual(f.clean(true), true);
+    cleanRaisesWithValidationError(f, "This field is required.", false);
+    strictEqual(f.clean(1), true);
+    cleanRaisesWithValidationError(f, "This field is required.", 0);
+    strictEqual(f.clean("Django rocks"), true);
+    strictEqual(f.clean("True"), true);
     // A form's BooleanField with a hidden widget will output the string
     // "False", so that should clean to the boolean value false.
-    try { f.clean("False"); } catch (e) { equals(ve(e), "This field is required."); }
+    cleanRaisesWithValidationError(f, "This field is required.", "False");
 
     f = new BooleanField({required: false});
-    same(f.clean(""), false);
-    same(f.clean(null), false);
-    same(f.clean(true), true);
-    same(f.clean(false), false);
-    same(f.clean(1), true);
-    same(f.clean(0), false);
-    same(f.clean("1"), true);
-    same(f.clean("0"), false);
-    same(f.clean("Django rocks"), true);
+    strictEqual(f.clean(""), false);
+    strictEqual(f.clean(null), false);
+    strictEqual(f.clean(true), true);
+    strictEqual(f.clean(false), false);
+    strictEqual(f.clean(1), true);
+    strictEqual(f.clean(0), false);
+    strictEqual(f.clean("1"), true);
+    strictEqual(f.clean("0"), false);
+    strictEqual(f.clean("Django rocks"), true);
 
     // A form's BooleanField with a hidden widget will output the string
     // 'false', so that should clean to the boolean value false
-    same(f.clean("false"), false);
+    strictEqual(f.clean("false"), false);
 });
 
 test("ChoiceField", function()
 {
     expect(19);
     var f = new ChoiceField({choices: [["1", "One"], ["2", "Two"]]});
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    equals(f.clean(1), "1");
-    equals(f.clean("1"), "1");
-    try { f.clean("3"); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    strictEqual(f.clean(1), "1");
+    strictEqual(f.clean("1"), "1");
+    cleanRaisesWithValidationError(f, "Select a valid choice. 3 is not one of the available choices.", "3");
 
     var f = new ChoiceField({choices: [["1", "One"], ["2", "One"]], required: false});
-    equals(f.clean(""), "");
-    equals(f.clean(null), "");
-    equals(f.clean(1), "1");
-    equals(f.clean("1"), "1");
-    try { f.clean("3"); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
+    strictEqual(f.clean(""), "");
+    strictEqual(f.clean(null), "");
+    strictEqual(f.clean(1), "1");
+    strictEqual(f.clean("1"), "1");
+    cleanRaisesWithValidationError(f, "Select a valid choice. 3 is not one of the available choices.", "3");
 
     f = new ChoiceField({choices: [["J", "John"], ["P", "Paul"]]});
-    equals(f.clean("J"), "J");
-    try { f.clean("John"); } catch (e) { equals(ve(e), "Select a valid choice. John is not one of the available choices."); }
+    equal(f.clean("J"), "J");
+    cleanRaisesWithValidationError(f, "Select a valid choice. John is not one of the available choices.", "John");
 
     f = new ChoiceField({choices: [["Numbers", [["1", "One"], ["2", "Two"]]], ["Letters", [["3", "A"],["4", "B"]]], ["5", "Other"]]});
-    equals(f.clean(1), "1");
-    equals(f.clean("1"), "1");
-    equals(f.clean(3), "3");
-    equals(f.clean("3"), "3");
-    equals(f.clean(5), "5");
-    equals(f.clean("5"), "5");
-    try { f.clean("6"); } catch (e) { equals(ve(e), "Select a valid choice. 6 is not one of the available choices."); }
+    strictEqual(f.clean(1), "1");
+    strictEqual(f.clean("1"), "1");
+    strictEqual(f.clean(3), "3");
+    strictEqual(f.clean("3"), "3");
+    strictEqual(f.clean(5), "5");
+    strictEqual(f.clean("5"), "5");
+    cleanRaisesWithValidationError(f, "Select a valid choice. 6 is not one of the available choices.", "6");
 });
 
 test("TypedChoiceField", function()
@@ -540,25 +562,25 @@ test("TypedChoiceField", function()
         choices: [[1, "+1"], [-1, "-1"]],
         coerce: function(val) { return parseInt(val, 10); }
     });
-    same(f.clean("1"), 1);
-    same(f.clean("-1"), -1);
-    try { f.clean("2"); } catch (e) { equals(ve(e), "Select a valid choice. 2 is not one of the available choices."); }
+    strictEqual(f.clean("1"), 1);
+    strictEqual(f.clean("-1"), -1);
+    cleanRaisesWithValidationError(f, "Select a valid choice. 2 is not one of the available choices.", "2");
 
     // Different coercion, same validation
     f.coerce = parseFloat;
-    same(f.clean("1"), 1.0);
+    strictEqual(f.clean("1"), 1.0);
 
     // This can also cause weirdness: be careful (Booleanl(-1) == true, remember)
     f.coerce = Boolean;
-    same(f.clean("-1"), true);
+    strictEqual(f.clean("-1"), true);
 
     // Even more weirdness: if you have a valid choice but your coercion
     // function can't coerce, you'll still get a validation error. Don't do this!
     f.coerce = function(val) { return val.toFixed(2); }
-    try { f.clean("1"); } catch (e) { equals(ve(e), "Select a valid choice. 1 is not one of the available choices."); }
+    cleanRaisesWithValidationError(f, "Select a valid choice. 1 is not one of the available choices.", "1");
 
     // Required fields require values
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
+    cleanRaisesWithValidationError(f, "This field is required.", "");
 
     // Non-required fields aren't required
     f = new TypedChoiceField({
@@ -566,7 +588,7 @@ test("TypedChoiceField", function()
         coerce: function(val) { return parseInt(val, 10); },
         required: false
     });
-    same(f.clean(""), "");
+    strictEqual(f.clean(""), "");
 
     // If you want cleaning an empty value to return a different type, tell the
     // field.
@@ -576,22 +598,22 @@ test("TypedChoiceField", function()
         required: false,
         emptyValue: null
     });
-    same(f.clean(""), null);
+    strictEqual(f.clean(""), null);
 });
 
 test("NullBooleanField", function()
 {
     expect(14);
     var f = new NullBooleanField();
-    same(f.clean(""), null);
-    same(f.clean(true), true);
-    same(f.clean(false), false);
-    same(f.clean(null), null);
-    same(f.clean("0"), false);
-    same(f.clean("1"), true);
-    same(f.clean("2"), null);
-    same(f.clean("3"), null);
-    same(f.clean("hello"), null);
+    strictEqual(f.clean(""), null);
+    strictEqual(f.clean(true), true);
+    strictEqual(f.clean(false), false);
+    strictEqual(f.clean(null), null);
+    strictEqual(f.clean("0"), false);
+    strictEqual(f.clean("1"), true);
+    strictEqual(f.clean("2"), null);
+    strictEqual(f.clean("3"), null);
+    strictEqual(f.clean("hello"), null);
 
     // Make sure that the internal value is preserved if using HiddenInput (Django #7753)
     var HiddenNullBooleanForm = formFactory({
@@ -605,8 +627,8 @@ test("NullBooleanField", function()
     });
     f = new HiddenNullBooleanForm({data: {hidden_nullbool1: "true", hidden_nullbool2: "false"}});
     f.fullClean();
-    same(f.cleanedData.hidden_nullbool1, true);
-    same(f.cleanedData.hidden_nullbool2, false);
+    strictEqual(f.cleanedData.hidden_nullbool1, true);
+    strictEqual(f.cleanedData.hidden_nullbool2, false);
 
     // Make sure we're compatible with MySQL, which uses 0 and 1 for its boolean
     // values. (Django #9609)
@@ -623,44 +645,44 @@ test("NullBooleanField", function()
     });
     f = new MySQLNullBooleanForm({data: {nullbool0: "1", nullbool1: "0", nullbool2: ""}});
     f.fullClean();
-    same(f.cleanedData.nullbool0, true);
-    same(f.cleanedData.nullbool1, false);
-    same(f.cleanedData.nullbool2, null);
+    strictEqual(f.cleanedData.nullbool0, true);
+    strictEqual(f.cleanedData.nullbool1, false);
+    strictEqual(f.cleanedData.nullbool2, null);
 });
 
 test("MultipleChoiceField", function()
 {
     expect(25);
     var f = new MultipleChoiceField({choices: [["1", "1"], ["2", "2"]]});
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    same(f.clean([1]), ["1"]);
-    same(f.clean(["1"]), ["1"]);
-    same(f.clean(["1", "2"]), ["1", "2"]);
-    same(f.clean([1, "2"]), ["1", "2"]);
-    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
-    try { f.clean([]); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(["3"]); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    deepEqual(f.clean([1]), ["1"]);
+    deepEqual(f.clean(["1"]), ["1"]);
+    deepEqual(f.clean(["1", "2"]), ["1", "2"]);
+    deepEqual(f.clean([1, "2"]), ["1", "2"]);
+    cleanRaisesWithValidationError(f, "Enter a list of values.", "hello");
+    cleanRaisesWithValidationError(f, "This field is required.", []);
+    cleanRaisesWithValidationError(f, "Select a valid choice. 3 is not one of the available choices.", ["3"]);
 
     var f = new MultipleChoiceField({choices: [["1", "1"], ["2", "2"]], required: false});
-    same(f.clean(""), []);
-    same(f.clean(null), []);
-    same(f.clean([1]), ["1"]);
-    same(f.clean(["1"]), ["1"]);
-    same(f.clean(["1", "2"]), ["1", "2"]);
-    same(f.clean([1, "2"]), ["1", "2"]);
-    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
-    same(f.clean([]), []);
-    try { f.clean(["3"]); } catch (e) { equals(ve(e), "Select a valid choice. 3 is not one of the available choices."); }
+    deepEqual(f.clean(""), []);
+    deepEqual(f.clean(null), []);
+    deepEqual(f.clean([1]), ["1"]);
+    deepEqual(f.clean(["1"]), ["1"]);
+    deepEqual(f.clean(["1", "2"]), ["1", "2"]);
+    deepEqual(f.clean([1, "2"]), ["1", "2"]);
+    cleanRaisesWithValidationError(f, "Enter a list of values.", "hello");
+    deepEqual(f.clean([]), []);
+    cleanRaisesWithValidationError(f, "Select a valid choice. 3 is not one of the available choices.", ["3"]);
 
     f = new MultipleChoiceField({choices: [["Numbers", [["1", "One"], ["2", "Two"]]], ["Letters", [["3", "A"],["4", "B"]]], ["5", "Other"]]});
-    same(f.clean([1]), ["1"]);
-    same(f.clean([1, 5]), ["1", "5"]);
-    same(f.clean([1, "5"]), ["1", "5"]);
-    same(f.clean(["1", 5]), ["1", "5"]);
-    same(f.clean(["1", "5"]), ["1", "5"]);
-    try { f.clean(["6"]); } catch (e) { equals(ve(e), "Select a valid choice. 6 is not one of the available choices."); }
-    try { f.clean(["1", "6"]); } catch (e) { equals(ve(e), "Select a valid choice. 6 is not one of the available choices."); }
+    deepEqual(f.clean([1]), ["1"]);
+    deepEqual(f.clean([1, 5]), ["1", "5"]);
+    deepEqual(f.clean([1, "5"]), ["1", "5"]);
+    deepEqual(f.clean(["1", 5]), ["1", "5"]);
+    deepEqual(f.clean(["1", "5"]), ["1", "5"]);
+    cleanRaisesWithValidationError(f, "Select a valid choice. 6 is not one of the available choices.", ["6"]);
+    cleanRaisesWithValidationError(f, "Select a valid choice. 6 is not one of the available choices.", ["1", "6"]);
 });
 
 test("ComboField", function()
@@ -669,18 +691,18 @@ test("ComboField", function()
     // ComboField takes a list of fields that should be used to validate a
     // value, in that order.
     var f = new ComboField({fields: [new CharField({maxLength: 20}), new EmailField()]});
-    equals(f.clean("test@example.com"), "test@example.com");
-    try { f.clean("longemailaddress@example.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 20 characters (it has 28)."); }
-    try { f.clean("not an e-mail"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
+    equal(f.clean("test@example.com"), "test@example.com");
+    cleanRaisesWithValidationError(f, "Ensure this value has at most 20 characters (it has 28).", "longemailaddress@example.com");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "not an e-mail");
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
 
     var f = new ComboField({fields: [new CharField({maxLength: 20}), new EmailField()], required: false});
-    equals(f.clean("test@example.com"), "test@example.com");
-    try { f.clean("longemailaddress@example.com"); } catch (e) { equals(ve(e), "Ensure this value has at most 20 characters (it has 28)."); }
-    try { f.clean("not an e-mail"); } catch (e) { equals(ve(e), "Enter a valid e-mail address."); }
-    same(f.clean(""), "");
-    same(f.clean(null), "");
+    equal(f.clean("test@example.com"), "test@example.com");
+    cleanRaisesWithValidationError(f, "Ensure this value has at most 20 characters (it has 28).", "longemailaddress@example.com");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "not an e-mail");
+    strictEqual(f.clean(""), "");
+    strictEqual(f.clean(null), "");
 });
 
 // TODO FilePathField
@@ -689,53 +711,53 @@ test("SplitDateTimeField", function()
 {
     expect(20);
     var f = new SplitDateTimeField();
-    same(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
+    strictEqual(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
          new Date(2006, 0, 10, 7, 30).valueOf());
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
-    try { f.clean(["hello", "there"]); } catch (e) { same(e.messages.errors, ["Enter a valid date.", "Enter a valid time."]); }
-    try { f.clean(["2006-01-10", "there"]); } catch (e) { same(e.messages.errors, ["Enter a valid time."]); }
-    try { f.clean(["hello", "07:30"]); } catch (e) { same(e.messages.errors, ["Enter a valid date."]); }
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    cleanRaisesWithValidationError(f, "Enter a list of values.", "hello");
+    cleanRaisesWithValidationError(f, ["Enter a valid date.", "Enter a valid time."], ["hello", "there"]);
+    cleanRaisesWithValidationError(f, ["Enter a valid time."], ["2006-01-10", "there"]);
+    cleanRaisesWithValidationError(f, ["Enter a valid date."], ["hello", "07:30"]);
 
     var f = new SplitDateTimeField({required: false});
-    same(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
+    strictEqual(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
          new Date(2006, 0, 10, 7, 30).valueOf());
-    same(f.clean(["2006-01-10", "07:30"]).valueOf(),
+    strictEqual(f.clean(["2006-01-10", "07:30"]).valueOf(),
          new Date(2006, 0, 10, 7, 30).valueOf());
-    same(f.clean(null), null);
-    same(f.clean(""), null);
-    same(f.clean([""]), null);
-    same(f.clean(["", ""]), null);
-    try { f.clean("hello"); } catch (e) { equals(ve(e), "Enter a list of values."); }
-    try { f.clean(["hello", "there"]); } catch (e) { same(e.messages.errors, ["Enter a valid date.", "Enter a valid time."]); }
-    try { f.clean(["2006-01-10", "there"]); } catch (e) { same(e.messages.errors, ["Enter a valid time."]); }
-    try { f.clean(["hello", "07:30"]); } catch (e) { same(e.messages.errors, ["Enter a valid date."]); }
-    try { f.clean(["2006-01-10", ""]); } catch (e) { same(e.messages.errors, ["Enter a valid time."]); }
-    try { f.clean(["2006-01-10"]); } catch (e) { same(e.messages.errors, ["Enter a valid time."]); }
-    try { f.clean(["", "07:30"]); } catch (e) { same(e.messages.errors, ["Enter a valid date."]); }
+    strictEqual(f.clean(null), null);
+    strictEqual(f.clean(""), null);
+    strictEqual(f.clean([""]), null);
+    strictEqual(f.clean(["", ""]), null);
+    cleanRaisesWithValidationError(f, "Enter a list of values.", "hello");
+    cleanRaisesWithValidationError(f, ["Enter a valid date.", "Enter a valid time."], ["hello", "there"]);
+    cleanRaisesWithValidationError(f, ["Enter a valid time."], ["2006-01-10", "there"]);
+    cleanRaisesWithValidationError(f, ["Enter a valid date."], ["hello", "07:30"]);
+    cleanRaisesWithValidationError(f, ["Enter a valid time."], ["2006-01-10", ""]);
+    cleanRaisesWithValidationError(f, ["Enter a valid time."], ["2006-01-10"]);
+    cleanRaisesWithValidationError(f, ["Enter a valid date."], ["", "07:30"]);
 });
 
 test("IPAddressField", function()
 {
     expect(14);
     var f = new IPAddressField();
-    try { f.clean(""); } catch (e) { equals(ve(e), "This field is required."); }
-    try { f.clean(null); } catch (e) { equals(ve(e), "This field is required."); }
-    equals(f.clean("127.0.0.1"), "127.0.0.1");
-    try { f.clean("foo"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
-    try { f.clean("127.0.0."); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
-    try { f.clean("1.2.3.4.5"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
-    try { f.clean("256.125.1.5"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
+    cleanRaisesWithValidationError(f, "This field is required.", "");
+    cleanRaisesWithValidationError(f, "This field is required.", null);
+    equal(f.clean("127.0.0.1"), "127.0.0.1");
+    cleanRaisesWithValidationError(f, "Enter a valid IPv4 address.", "foo");
+    cleanRaisesWithValidationError(f, "Enter a valid IPv4 address.", "127.0.0.");
+    cleanRaisesWithValidationError(f, "Enter a valid IPv4 address.", "1.2.3.4.5");
+    cleanRaisesWithValidationError(f, "Enter a valid IPv4 address.", "256.125.1.5");
 
     f = new IPAddressField({required: false});
-    same(f.clean(""), "");
-    same(f.clean(null), "");
-    equals(f.clean("127.0.0.1"), "127.0.0.1");
-    try { f.clean("foo"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
-    try { f.clean("127.0.0."); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
-    try { f.clean("1.2.3.4.5"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
-    try { f.clean("256.125.1.5"); } catch (e) { equals(ve(e), "Enter a valid IPv4 address."); }
+    strictEqual(f.clean(""), "");
+    strictEqual(f.clean(null), "");
+    equal(f.clean("127.0.0.1"), "127.0.0.1");
+    cleanRaisesWithValidationError(f, "Enter a valid IPv4 address.", "foo");
+    cleanRaisesWithValidationError(f, "Enter a valid IPv4 address.", "127.0.0.");
+    cleanRaisesWithValidationError(f, "Enter a valid IPv4 address.", "1.2.3.4.5");
+    cleanRaisesWithValidationError(f, "Enter a valid IPv4 address.", "256.125.1.5");
 });
 
 })();

@@ -234,7 +234,7 @@ CharField.prototype.toJavaScript = function(value)
 {
     if (contains(EMPTY_VALUES, value))
         return "";
-    return value;
+    return ""+value;
 };
 
 /**
@@ -276,7 +276,7 @@ function IntegerField(kwargs)
     if (this.minValue !== null)
         this.validators.push(new MinValueValidator(this.minValue));
     if (this.maxValue !== null)
-        this.validators.push(new MaValueValidator(this.maxValue));
+        this.validators.push(new MaxValueValidator(this.maxValue));
 }
 inheritFrom(IntegerField, Field);
 IntegerField.prototype.defaultErrorMessages =
@@ -393,7 +393,7 @@ function DecimalField(kwargs)
     if (this.minValue !== null)
         this.validators.push(new MinValueValidator(this.minValue));
     if (this.maxValue !== null)
-        this.validators.push(new MaValueValidator(this.maxValue));
+        this.validators.push(new MaxValueValidator(this.maxValue));
 }
 inheritFrom(DecimalField, Field);
 /** Decimal validation regular expression, in lieu of a Decimal type. */
@@ -636,7 +636,7 @@ function RegexField(regex, kwargs)
     if (isString(regex))
         regex = new RegExp(regex);
     this.regex = regex;
-    this.validators.push(new RegexValidtor(this.regex));
+    this.validators.push(new RegexValidator(this.regex));
 }
 inheritFrom(RegexField, CharField);
 
@@ -1214,7 +1214,7 @@ MultiValueField.prototype.validate = function() {};
 MultiValueField.prototype.clean = function(value)
 {
     var cleanData = [],
-        errors = new ErrorList();
+        errors = [];
 
     if (!value || isArray(value))
     {
@@ -1232,10 +1232,12 @@ MultiValueField.prototype.clean = function(value)
         }
 
         if (!value || allValuesEmpty)
+        {
             if (this.required)
                 throw new ValidationError(this.errorMessages.required);
             else
                 return this.compress([]);
+        }
     }
     else
     {
@@ -1258,12 +1260,12 @@ MultiValueField.prototype.clean = function(value)
         {
             if (!(e instanceof ValidationError))
                 throw e;
-            errors.extend(e.messages);
+            errors = errors.concat(e.messages);
         }
     }
 
-    if (errors.isPopulated())
-        throw new ValidationError(errors.errors);
+    if (errors.length !== 0)
+        throw new ValidationError(errors);
 
     var out = this.compress(cleanData);
     this.validate(out);
