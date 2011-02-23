@@ -688,19 +688,93 @@ test("Max num with initial data", function()
 
 });
 
-// TODO test(max_num_zero
-// TODO test(more_initial_than_max_num
-// TODO test(regression_6926
-// TODO test(regression_12878
-// TODO test(forset_iteration
+test("maxNum zero", function()
+{
+    expect(1);
+    // If maxNum is 0 then no form is rendered at all, even if extra and initial
+    // are specified..
+    var initial = [
+        {"name": "Fernet and Coke"},
+        {"name": "Bloody Mary"}
+    ];
+    var LimitedFavouriteDrinkFormSet = formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 0});
+    var formset = new LimitedFavouriteDrinkFormSet({initial: initial})
+    form_output = []
+
+    strictEqual(formset.forms.join("\n"), "");
+});
+
+test("Nore initial than maxNum", function()
+{
+    expect(2);
+    // More initial forms than maxNum will result in only the first maxNum of
+    // them being displayed, with no extra forms.
+    var initial = [
+        {"name": "Fernet and Coke"},
+        {"name": "Bloody Mary"},
+        {"name": "Jack and Coke"}
+    ];
+    var LimitedFavouriteDrinkFormSet = formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2});
+    var formset = new LimitedFavouriteDrinkFormSet({initial: initial});
+    strictEqual(formset.forms.join("\n"),
+"<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Fernet and Coke\"></td></tr>\n" +
+"<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\" value=\"Bloody Mary\"></td></tr>");
+
+    // One form from initial and extra=3 with max_num=2 should result in the one
+    // initial form and one extra.
+    initial = [
+        {"name": "Gin Tonic"}
+    ];
+    var LimitedFavouriteDrinkFormSet = formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2});
+    var formset = new LimitedFavouriteDrinkFormSet({initial: initial});
+    strictEqual(formset.forms.join("\n"),
+"<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin Tonic\"></td></tr>\n" +
+"<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>");
+});
+
+//Regression tests for Django issue #6926
+test("Management form prefix", function()
+{
+    expect(3);
+    // Make sure the management form has the correct prefix
+    var formset = new FavouriteDrinksFormSet()
+    equal(formset.managementForm().prefix, "form");
+
+    var data = {
+        "form-TOTAL_FORMS": "2",
+        "form-INITIAL_FORMS": "0",
+        "form-MAX_NUM_FORMS": "0"
+    };
+    formset = new FavouriteDrinksFormSet({data: data});
+    equal(formset.managementForm().prefix, "form");
+
+    formset = new FavouriteDrinksFormSet({initial: {}});
+    equal(formset.managementForm().prefix, "form");
+});
+
+// Regression tests for Django issue #regression_12878
+test("Formset clean errors", function()
+{
+    expect(2);
+    var data = {
+        "drinks-TOTAL_FORMS": "2",
+        "drinks-INITIAL_FORMS": "0",
+        "drinks-MAX_NUM_FORMS": "0",
+        "drinks-0-name": "Gin and Tonic",
+        "drinks-1-name": "Gin and Tonic"
+    };
+    var formset = new FavouriteDrinksFormSet({data: data, prefix: "drinks"});
+    strictEqual(formset.isValid(), false);
+    deepEqual(formset.nonFormErrors().errors, ["You may only specify a drink once."]);
+});
 
 var remderTestData = {
     "choices-TOTAL_FORMS": "1",
     "choices-INITIAL_FORMS": "0",
     "choices-MAX_NUM_FORMS": "0",
     "choices-0-choice": "Calexico",
-    "choices-0-votes": "100",
-}
+    "choices-0-votes": "100"
+};
 
 test("FormSet asTable", function()
 {
