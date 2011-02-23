@@ -409,51 +409,50 @@ DecimalField.prototype.defaultErrorMessages =
     });
 
 /**
- * Validates that the input looks like a decimal number. In lieu of a built-in
- * Decimal type for JavaScript, this method uses parseFloat().
- *
- * @param value the value to be validated.
- *
- * @return a Number obtained from parseFloat, or <code>null</code> for empty
- *         values.
+ * DecimalField overrides the clean() method as it performs its own validation
+ * against a different value than that given to any defined validators, due to
+ * JavaScript lacking a built-in Decimal type. Decimal format and component size
+ * checks will be performed against a normalised string representation of the
+ * input, whereas Validators will be passed a float version of teh value for
+ * min/max checking.
+ * @param {{string|Number}}} value
+ * @return {string} a normalised version of the input.
  */
-DecimalField.prototype.toJavaScript = function(value)
+DecimalField.prototype.clean = function(value)
 {
-    if (contains(EMPTY_VALUES, value))
-        return null;
-    value = strip(value);
-    // TODO We should be attempting to create a Decimal object instead - are
-    //      there any decent JavaScript implementations?
-    if (!DecimalField.DECIMAL_REGEXP.test(value))
-        throw new ValidationError(this.errorMessages.invalid);
-    value = parseFloat(value);
-    if (isNaN(value))
-        throw new ValidationError(this.errorMessages.invalid);
-    return value;
-};
-
-/**
- * Ensures that there are no more than maxDigits in the number, and no more than
- * decimalPlaces digits after the decimal point.
- */
-DecimalField.prototype.validate = function(value)
-{
+    // Take care of empty, required validation
     Field.prototype.validate.call(this, value);
-    if (contains(EMPTY_VALUES, value))
-        return;
-    // Check for NaN, Inf and -Inf values
-    if (isNaN(value) || value == Number.POSITIVE_INFINITY || value == Number.NEGATIVE_INFINITY)
+    if (contains(EMPTY_VALUES, value)) {
+        return null;
+    }
+
+    // Coerce to string and validate that it looks Decimal-like
+    value = strip(""+value);
+    if (!DecimalField.DECIMAL_REGEXP.test(value)) {
         throw new ValidationError(this.errorMessages.invalid);
-    // Perform remaining checks against a string representation...
-    value = ""+value;
-    // Strip sign, if present
-    if (value.charAt(0) == "-")
+    }
+
+    // In lieu of a Decimal type, DecimalField validates against a string
+    // representation of a Decimal, in which:
+    // * Any leading sign has been stripped
+    var negative = false;
+    if (value.charAt(0) == "+" || value.charAt(0) == "-") {
+        negative = (value.charAt(0) == "-");
         value = value.substr(1);
+    }
+    // * Leading zeros have been stripped from digits before the decimal point,
+    //   but trailing digits are retained after the decimal point.
+    value = value.replace(/^0+/, "");
+    // * Values which did not have a leading zero gain a single leading zero
+    if (value.charAt(0) == ".") {
+        value = "0" + value;
+    }
+
+    // Perform own validation
     var pieces = value.split("."),
         wholeDigits = pieces[0].length,
         decimals = (pieces.length == 2 ? pieces[1].length : 0),
         digits = wholeDigits + decimals;
-
     if (this.maxDigits !== null && digits > this.maxDigits)
         throw new ValidationError(format(this.errorMessages.maxDigits,
                                   {maxDigits: this.maxDigits}));
@@ -465,6 +464,17 @@ DecimalField.prototype.validate = function(value)
         wholeDigits > (this.maxDigits - this.decimalPlaces))
         throw new ValidationError(format(this.errorMessages.maxWholeDigits,
                                   {maxWholeDigits: (this.maxDigits - this.decimalPlaces)}));
+
+    // Restore sign if necessary
+    if (negative) {
+        value = "-" + value;
+    }
+
+    // Validate against a float value - best we can do in the meantime
+    this.runValidators(parseFloat(value));
+
+    // Return the normalited String representation
+    return value;
 };
 
 /**

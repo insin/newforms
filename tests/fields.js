@@ -186,28 +186,26 @@ test("FloatField", function()
 test("DecimalField", function()
 {
     expect(31);
-    // TODO Catch up with Django tests - make the field return normalised
-    // Strings, as there's no point duplicating FloatField.
     var f = new DecimalField({maxDigits: 4, decimalPlaces: 2});
     cleanRaisesWithValidationError(f, "This field is required.", "");
     cleanRaisesWithValidationError(f, "This field is required.", null);
-    strictEqual(f.clean("1"), 1);
-    strictEqual(f.clean("23"), 23);
-    strictEqual(f.clean("3.14"), 3.1400000000000001);
-    strictEqual(f.clean(3.14), 3.1400000000000001);
+    strictEqual(f.clean("1"), "1");
+    strictEqual(f.clean("23"), "23");
+    strictEqual(f.clean("3.14"), "3.14");
+    strictEqual(f.clean(3.14), "3.14");
     cleanRaisesWithValidationError(f, "Enter a number.", "a");
-    strictEqual(f.clean("1.0 "), 1.0);
-    strictEqual(f.clean(" 1.0"), 1.0);
-    strictEqual(f.clean(" 1.0 "), 1.0);
+    strictEqual(f.clean("1.0 "), "1.0");
+    strictEqual(f.clean(" 1.0"), "1.0");
+    strictEqual(f.clean(" 1.0 "), "1.0");
     cleanRaisesWithValidationError(f, "Enter a number.", "1.0a");
     cleanRaisesWithValidationError(f, "Ensure that there are no more than 4 digits in total.", "123.45");
     cleanRaisesWithValidationError(f, "Ensure that there are no more than 2 decimal places.", "1.234");
     cleanRaisesWithValidationError(f, "Ensure that there are no more than 2 digits before the decimal point.", "123.4");
-    strictEqual(f.clean("-12.34"), -12.34);
+    strictEqual(f.clean("-12.34"), "-12.34");
     cleanRaisesWithValidationError(f, "Ensure that there are no more than 4 digits in total.", "-123.45");
-    strictEqual(f.clean("-.12"), -0.12);
-    strictEqual(f.clean("-00.12"), -0.12);
-    strictEqual(f.clean("-000.12"), -0.12);
+    strictEqual(f.clean("-.12"), "-0.12");
+    strictEqual(f.clean("-00.12"), "-0.12");
+    strictEqual(f.clean("-000.12"), "-0.12");
     cleanRaisesWithValidationError(f, "Ensure that there are no more than 2 decimal places.", "-000.123");
     cleanRaisesWithValidationError(f, "Ensure that there are no more than 4 digits in total.", "-000.1234");
     cleanRaisesWithValidationError(f, "Enter a number.", "--0.12");
@@ -215,16 +213,16 @@ test("DecimalField", function()
     var f = new DecimalField({maxDigits: 4, decimalPlaces: 2, required: false});
     strictEqual(f.clean(""), null);
     strictEqual(f.clean(null), null);
-    strictEqual(f.clean(1), 1);
+    strictEqual(f.clean(1), "1");
 
     // DecimalField accepts min_value and max_value just like IntegerField
     var f = new DecimalField({maxDigits: 4, decimalPlaces: 2, maxValue: 1.5, minValue: 0.5});
     cleanRaisesWithValidationError(f, "Ensure this value is less than or equal to 1.5.", "1.6");
     cleanRaisesWithValidationError(f, "Ensure this value is greater than or equal to 0.5.", "0.4");
-    strictEqual(f.clean("1.5"), 1.5);
-    strictEqual(f.clean("0.5"), 0.5);
-    strictEqual(f.clean(".5"), 0.5);
-    strictEqual(f.clean("00.50"), 0.5);
+    strictEqual(f.clean("1.5"), "1.5");
+    strictEqual(f.clean("0.5"), "0.5");
+    strictEqual(f.clean(".5"), "0.5");
+    strictEqual(f.clean("00.50"), "0.50");
 });
 
 test("DateField", function()
