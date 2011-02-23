@@ -612,4 +612,4 @@ var time = {
 // Expose time to the global object
 window.time = time;
 
-})(window, undefined);
+})(window);

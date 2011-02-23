@@ -3,12 +3,12 @@ import os
 
 DIRNAME = os.path.dirname(__file__)
 TIME_SOURCE_FILES = ('../time.js',)
-FORMS_SOURCE_FILES = ('../util.js', '../widgets.js', '../fields.js',
+FORMS_SOURCE_FILES = ('../util.js', '../validators.js', '../widgets.js', '../fields.js',
                       '../forms.js', '../formsets.js')
 FORMS_NAMESPACE = 'formsnamespace.js'
 CODE_TEMPLATE = """%(timenamespace)s
 
-var forms = (function()
+(function()
 {
 %(formscode)s
 %(formsnamepace)s

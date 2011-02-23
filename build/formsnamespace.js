@@ -1,7 +1,24 @@
-return {
+var forms = {
+    // util.js
+    callValidator: callValidator,
+    inheritFrom: inheritFrom,
     ErrorObject: ErrorObject,
     ErrorList: ErrorList,
     ValidationError: ValidationError,
+    // validators.js
+    EMPTY_VALUES: EMPTY_VALUES,
+    RegexValidator: RegexValidator,
+    URLValidator: URLValidator,
+    EmailValidator: EmailValidator,
+    validateEmail: validateEmail,
+    validateSlug: validateSlug,
+    validateIPV4Address: validateIPV4Address,
+    validateCommaSeparatedIntegerList: validateCommaSeparatedIntegerList,
+    BaseValidator: BaseValidator,
+    MaxValueValidator: MaxValueValidator,
+    MinValueValidator: MinValueValidator,
+    MaxLengthValidator: MaxLengthValidator,
+    MinLengthValidator: MinLengthValidator,
     // widgets.js
     Widget: Widget,
     Input: Input,
@@ -63,3 +80,6 @@ return {
     formsetFactory: formsetFactory,
     allValid: allValid
 };
+
+// Expose forms to the global object
+window.forms = forms;
