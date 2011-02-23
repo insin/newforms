@@ -31,13 +31,15 @@ function cleanRaisesWithValidationError(field, message, var_args)
 
 test("CharField", function()
 {
-    expect(20);
+    expect(30);
     var f = new CharField();
     strictEqual(f.clean(1), "1");
     equal(f.clean("hello"), "hello");
     cleanRaisesWithValidationError(f, "This field is required.", null);
     cleanRaisesWithValidationError(f, "This field is required.", "");
     strictEqual(f.clean([1, 2, 3]), "1,2,3");
+    strictEqual(f.maxLength, null);
+    strictEqual(f.minLength, null);
 
     f = new CharField({required: false});
     strictEqual(f.clean(1), "1");
@@ -45,29 +47,37 @@ test("CharField", function()
     strictEqual(f.clean(null), "");
     strictEqual(f.clean(""), "");
     strictEqual(f.clean([1, 2, 3]), "1,2,3");
+    strictEqual(f.maxLength, null);
+    strictEqual(f.minLength, null);
 
     // CharField accepts an optional maxLength parameter
     f = new CharField({maxLength: 10, required: false});
     equal(f.clean("12345"), "12345");
     equal(f.clean("1234567890"), "1234567890");
     cleanRaisesWithValidationError(f, "Ensure this value has at most 10 characters (it has 11).", "1234567890a");
+    strictEqual(f.maxLength, 10);
+    strictEqual(f.minLength, null);
 
     // CharField accepts an optional minLength parameter
     f = new CharField({minLength: 10, required: false});
     cleanRaisesWithValidationError(f, "Ensure this value has at least 10 characters (it has 5).", "12345");
     equal(f.clean("1234567890"), "1234567890");
     equal(f.clean("1234567890a"), "1234567890a");
+    strictEqual(f.maxLength, null);
+    strictEqual(f.minLength, 10);
 
     f = new CharField({minLength: 10, required: true});
     cleanRaisesWithValidationError(f, "This field is required.", "");
     cleanRaisesWithValidationError(f, "Ensure this value has at least 10 characters (it has 5).", "12345");
     equal(f.clean("1234567890"), "1234567890");
     equal(f.clean("1234567890a"), "1234567890a");
+    strictEqual(f.maxLength, null);
+    strictEqual(f.minLength, 10);
 });
 
 test("IntegerField", function()
 {
-    expect(40);
+    expect(50);
     var f = new IntegerField();
     cleanRaisesWithValidationError(f, "This field is required.", null);
     cleanRaisesWithValidationError(f, "This field is required.", "");
@@ -80,6 +90,8 @@ test("IntegerField", function()
     strictEqual(f.clean(" 1"), 1);
     strictEqual(f.clean(" 1 "), 1);
     cleanRaisesWithValidationError(f, "Enter a whole number.", "1a");
+    strictEqual(f.maxValue, null);
+    strictEqual(f.minValue, null);
 
     f = new IntegerField({required: false});
     strictEqual(f.clean(""), null);
@@ -91,6 +103,8 @@ test("IntegerField", function()
     strictEqual(f.clean(" 1"), 1);
     strictEqual(f.clean(" 1 "), 1);
     cleanRaisesWithValidationError(f, "Enter a whole number.", "1a");
+    strictEqual(f.maxValue, null);
+    strictEqual(f.minValue, null);
 
     // IntegerField accepts an optional maxValue parameter
     f = new IntegerField({maxValue: 10})
@@ -100,6 +114,8 @@ test("IntegerField", function()
     cleanRaisesWithValidationError(f, "Ensure this value is less than or equal to 10.", 11);
     strictEqual(f.clean("10"), 10);
     cleanRaisesWithValidationError(f, "Ensure this value is less than or equal to 10.", "11");
+    strictEqual(f.maxValue, 10);
+    strictEqual(f.minValue, null);
 
     // IntegerField accepts an optional minValue parameter
     f = new IntegerField({minValue: 10});
@@ -109,6 +125,8 @@ test("IntegerField", function()
     strictEqual(f.clean(11), 11);
     strictEqual(f.clean("10"), 10);
     strictEqual(f.clean("11"), 11);
+    strictEqual(f.maxValue, null);
+    strictEqual(f.minValue, 10);
 
     // minValue and maxValue can be used together
     f = new IntegerField({minValue: 10, maxValue: 20});
@@ -120,11 +138,13 @@ test("IntegerField", function()
     strictEqual(f.clean("11"), 11);
     strictEqual(f.clean(20), 20);
     cleanRaisesWithValidationError(f, "Ensure this value is less than or equal to 20.", 21);
+    strictEqual(f.maxValue, 20);
+    strictEqual(f.minValue, 10);
 });
 
 test("FloatField", function()
 {
-    expect(21);
+    expect(27);
     var f = new FloatField();
     cleanRaisesWithValidationError(f, "This field is required.", "");
     cleanRaisesWithValidationError(f, "This field is required.", null);
@@ -138,11 +158,15 @@ test("FloatField", function()
     strictEqual(f.clean(" 1.0"), 1.0);
     strictEqual(f.clean(" 1.0 "), 1.0);
     cleanRaisesWithValidationError(f, "Enter a number.", "1.0a");
+    strictEqual(f.maxValue, null);
+    strictEqual(f.minValue, null);
 
     f = new FloatField({required: false});
     strictEqual(f.clean(""), null);
     strictEqual(f.clean(null), null);
     strictEqual(f.clean("1"), 1.0);
+    strictEqual(f.maxValue, null);
+    strictEqual(f.minValue, null);
 
     // FloatField accepts minValue and maxValue just like IntegerField
     f = new FloatField({maxValue: 1.5, minValue: 0.5});
@@ -150,8 +174,11 @@ test("FloatField", function()
     cleanRaisesWithValidationError(f, "Ensure this value is greater than or equal to 0.5.", "0.4");
     strictEqual(f.clean("1.5"), 1.5);
     strictEqual(f.clean("0.5"), 0.5);
+    strictEqual(f.maxValue, 1.5);
+    strictEqual(f.minValue, 0.5);
 
     // FloatField implements its own _hasChanged due to String coercion issues
+    // in JavaScript.
     strictEqual(f._hasChanged("0.0", 0.0), false);
     strictEqual(f._hasChanged("1.0", 1.0), false);
 });
@@ -159,6 +186,8 @@ test("FloatField", function()
 test("DecimalField", function()
 {
     expect(31);
+    // TODO Catch up with Django tests - make the field return normalised
+    // Strings, as there's no point duplicating FloatField.
     var f = new DecimalField({maxDigits: 4, decimalPlaces: 2});
     cleanRaisesWithValidationError(f, "This field is required.", "");
     cleanRaisesWithValidationError(f, "This field is required.", null);
