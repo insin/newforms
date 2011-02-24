@@ -60,18 +60,8 @@ URLValidator.prototype.__call__ = function(value)
         if (!(e instanceof ValidationError) || !value)
             throw e;
 
-        var urlParts = urlparse.urlsplit(value);
-        try
-        {
-            urlParts.netloc = punycode.ToASCII(value);
-        }
-        catch (_e)
-        {
-            throw e;
-        }
-
-        url = urlparse.urlunsplit(urlParts);
-        RegexValidator.prototype.__call__.call(this, url);
+        // TODO Re-test with IDNA encoding
+        throw e;
     }
 
     // TODO Implement URL verification when js-forms can be run in
@@ -96,17 +86,8 @@ EmailValidator.prototype.__call__ = function(value)
         if (!(e instanceof ValidationError) || !value || value.indexOf("@") == -1)
             throw e;
 
-        var parts = value.split("@"),
-            domainPart = parts[parts.length - 1];
-        try
-        {
-            parts[parts.length - 1] = punycode.ToASCII(domainPart);
-        }
-        catch (_e)
-        {
-            throw e;
-        }
-        RegexValidator.prototype.__call__.call(this, parts.join("@"));
+        // TODO Re-test with IDNA encoding
+        throw e;
     }
 };
 

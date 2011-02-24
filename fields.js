@@ -1105,7 +1105,7 @@ MultipleChoiceField.prototype.validate = function(value)
 function TypedMultipleChoiceField(kwargs)
 {
     kwargs = extend({
-        coerce: function(val) { return val; }, emptyValue: ""
+        coerce: function(val) { return val; }, emptyValue: []
     }, kwargs || {});
     this.coerce = kwargs.coerce;
     this.emptyValue = kwargs.emptyValue;
@@ -1119,19 +1119,22 @@ TypedMultipleChoiceField.prototype.toJavaScript = function(value)
 {
     value = MultipleChoiceField.prototype.toJavaScript.call(this, value);
     MultipleChoiceField.prototype.validate.call(this, value);
-    if (value === this.emptyValue || contains(EMPTY_VALUES, value))
+    if (value === this.emptyValue || contains(EMPTY_VALUES, value) ||
+        (isArray(value) && value.length === 0))
         return this.emptyValue;
     var newValue = [];
     for (var i = 0, l = value.length; i < l; i++)
+    {
         try
         {
-            newValie.push(this.coerce(value[i]));
+            newValue.push(this.coerce(value[i]));
         }
         catch (e)
         {
             throw new ValidationError(format(
                 this.errorMessages.invalidChoice, {value: value[i]}));
         }
+    }
     return newValue;
 };
 

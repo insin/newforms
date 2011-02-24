@@ -193,7 +193,7 @@ test("FloatField", function()
 
 test("DecimalField", function()
 {
-    expect(56);
+    expect(57);
     var f = new DecimalField({maxDigits: 4, decimalPlaces: 2});
     cleanRaisesWithValidationError(f, "This field is required.", "");
     cleanRaisesWithValidationError(f, "This field is required.", null);
@@ -206,7 +206,7 @@ test("DecimalField", function()
     cleanRaisesWithValidationError(f, "Enter a number.", "Infinity");
     cleanRaisesWithValidationError(f, "Enter a number.", "-Infinity");
     cleanRaisesWithValidationError(f, "Enter a number.", "a");
-    // TODO Unicode characters test
+    cleanRaisesWithValidationError(f, "Enter a number.", "łąść");
     strictEqual(f.clean("1.0 "), "1.0");
     strictEqual(f.clean(" 1.0"), "1.0");
     strictEqual(f.clean(" 1.0 "), "1.0");
@@ -412,7 +412,7 @@ test("RegexField", function()
 
 test("EmailField", function()
 {
-    expect(22);
+    expect(24);
     var f = new EmailField();
     cleanRaisesWithValidationError(f, "This field is required.", "");
     cleanRaisesWithValidationError(f, "This field is required.", null);
@@ -426,14 +426,17 @@ test("EmailField", function()
     cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "example@inv-.-alid.com");
     equal(f.clean("example@valid-----hyphens.com"), "example@valid-----hyphens.com");
     equal(f.clean("example@valid-with-hyphens.com"), "example@valid-with-hyphens.com");
+    cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "example@.com");
+    // TODO Unicode email
 
-    // Hangs "forever" if catastrophic backtracking not fixed.
+    // Hangs "forever" if catastrophic backtracking not fixed
     cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "viewx3dtextx26qx3d@yahoo.comx26latlngx3d15854521645943074058");
 
     f = new EmailField({required: false});
     strictEqual(f.clean(""), "");
     strictEqual(f.clean(null), "");
     equal(f.clean("person@example.com"), "person@example.com");
+    equal(f.clean("      example@example.com  \t   \t "), "example@example.com");
     cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "foo");
     cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "foo@");
     cleanRaisesWithValidationError(f, "Enter a valid e-mail address.", "foo@bar");
@@ -454,7 +457,7 @@ test("FileField", function()
         this.size = (content !== null ? content.length : 0);
     }
 
-    expect(18);
+    expect(19);
     var f = new FileField();
     cleanRaisesWithValidationError(f, "This field is required.", "");
     cleanRaisesWithValidationError(f, "This field is required.", "", "");
@@ -469,6 +472,7 @@ test("FileField", function()
     cleanRaisesWithValidationError(f, "The submitted file is empty.", new SimpleUploadedFile("name", null));
     cleanRaisesWithValidationError(f, "The submitted file is empty.", new SimpleUploadedFile("name", ""));
     ok(f.clean(new SimpleUploadedFile("name", "Some File Content")) instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
+    ok(f.clean(new SimpleUploadedFile("我隻氣墊船裝滿晒鱔.txt", "मेरी मँडराने वाली नाव सर्पमीनों से भरी ह")) instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
     ok(f.clean(new SimpleUploadedFile("name", "Some File Content"), "files/test4.pdf") instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
 
     f = new FileField({maxLength: 5});
@@ -481,16 +485,18 @@ test("FileField", function()
 test("URLField", function()
 {
     var invalidURLs =
-        ["foo", "http://", "http://example", "http://example.", "http://.com",
-         "http://invalid-.com", "http://-invalid.com", "http://inv-.alid-.com",
-         "http://inv-.-alid.com", ".", "com."];
+        ["foo", "http://", "http://example", "http://example.", "com.", ".",
+         "http://.com", "http://invalid-.com", "http://-invalid.com",
+         "http://inv-.alid-.com", "http://inv-.-alid.com"];
 
-    expect(49);
+    expect(53);
     var f = new URLField();
     cleanRaisesWithValidationError(f, "This field is required.", "");
     cleanRaisesWithValidationError(f, "This field is required.", null);
     equal(f.clean("http://localhost"), "http://localhost/");
     equal(f.clean("http://example.com"), "http://example.com/");
+    equal(f.clean("http://example.com."), "http://example.com./");
+    equal(f.clean("http://www.example.com"), "http://www.example.com/");
     equal(f.clean("http://www.example.com:8000/test"), "http://www.example.com:8000/test");
     equal(f.clean("valid-with-hyphens.com"), "http://valid-with-hyphens.com/");
     equal(f.clean("subdomain.domain.com"), "http://subdomain.domain.com/");
@@ -500,6 +506,10 @@ test("URLField", function()
     {
         cleanRaisesWithValidationError(f, "Enter a valid URL.", url);
     }
+    equal(f.clean("http://valid-----hyphens.com"), "http://valid-----hyphens.com/");
+    // TODO Test Unicode URL
+    equal(f.clean("www.example.com/s/http://code.djangoproject.com/ticket/13804"),
+          "http://www.example.com/s/http://code.djangoproject.com/ticket/13804");
 
     f = new URLField({required: false});
     strictEqual(f.clean(""), "");
@@ -531,22 +541,22 @@ test("URLField", function()
     // domains that don't fail the domain label length check in the regex.
     cleanRaisesWithValidationError(f, "Enter a valid URL.", createCatastrophicTestUrl(60));
 
+    // TODO Run commented out tests when we can check the link
     // URLField takes an optional verifyExists parameter, which is false by
-    // default. This verifies that the URL is live on the Internet and doesn't
-    // return a 404 or 500:
+    // default. This verifies that the URL is live on the Internet.
     f = new URLField({verifyExists: true});
-    equal(f.clean("http://www.google.com"), "http://www.google.com/");
+    //equal(f.clean("http://www.google.com"), "http://www.google.com/");
     cleanRaisesWithValidationError(f, "Enter a valid URL.", "http://example");
-
-    // TODO Run these tests when we can check the link
     // Bad domain
-    //cleanRaisesWithValidationError(f, "This URL appears to be a broken link.", "http://www.jfoiwjfoi23jfoijoaijfoiwjofiwjefewl.com");
+    //cleanRaisesWithValidationError(f, "This URL appears to be a broken link.", "http://www.broken.djangoproject.com");
+    // Method not allowed
+    //cleanRaisesWithValidationError(f, "This URL appears to be a broken link.", "http://qa-dev.w3.org/link-testsuite/http.php?code=405");
     // Good domain, bad page
     //cleanRaisesWithValidationError(f, "This URL appears to be a broken link.", "http://google.com/we-love-microsoft.html");
 
     f = new URLField({verifyExists: true, required: false});
     strictEqual(f.clean(""), "");
-    equal(f.clean("http://www.google.com"), "http://www.google.com/");
+    //equal(f.clean("http://www.google.com"), "http://www.google.com/");
 
     // URLField also has minLength and maxLength parameters, for convenience
     f = new URLField({minLength: 15, maxLength: 20});
@@ -557,7 +567,13 @@ test("URLField", function()
     // URLField should prepend "http://" if no scheme was given
     f = new URLField({required: false});
     equal(f.clean("example.com"), "http://example.com/");
+    equal(f.clean(""), "");
     equal(f.clean("https://example.com"), "https://example.com/");
+
+    // Django #11826
+    equal(f.clean("http://example.com?some_param=some_value"), "http://example.com/?some_param=some_value");
+
+    // TODO Test Unicode URLs
 });
 
 test("BooleanField", function()
@@ -573,8 +589,8 @@ test("BooleanField", function()
     strictEqual(f.clean("Django rocks"), true);
     strictEqual(f.clean("True"), true);
     // A form's BooleanField with a hidden widget will output the string
-    // "False", so that should clean to the boolean value false.
-    cleanRaisesWithValidationError(f, "This field is required.", "False");
+    // "false", so that should clean to the boolean value false.
+    cleanRaisesWithValidationError(f, "This field is required.", "false");
 
     f = new BooleanField({required: false});
     strictEqual(f.clean(""), false);
@@ -755,6 +771,52 @@ test("MultipleChoiceField", function()
     cleanRaisesWithValidationError(f, "Select a valid choice. 6 is not one of the available choices.", ["1", "6"]);
 });
 
+test("TypedMultipleChoiceFIeld", function()
+{
+    var f = new TypedMultipleChoiceField({
+        choices: [[1, "+1"], [-1, "-1"]],
+        coerce: function(val) { return parseInt(val, 10); }
+    });
+    deepEqual(f.clean(["1"]), [1]);
+    deepEqual(f.clean(["1", "-1"]), [1, -1]);
+    cleanRaisesWithValidationError(f, "Select a valid choice. 2 is not one of the available choices.", ["2"]);
+    cleanRaisesWithValidationError(f, "Select a valid choice. 2 is not one of the available choices.", ["1", "2"]);
+
+    // Different coercion, same validation
+    f.coerce = parseFloat;
+    deepEqual(f.clean(["1"]), [1.0]);
+
+    // This can also cause weirdness: be careful (Booleanl(-1) == true, remember)
+    f.coerce = Boolean;
+    deepEqual(f.clean(["-1"]), [true]);
+
+    // Even more weirdness: if you have a valid choice but your coercion
+    // function can't coerce, you'll still get a validation error. Don't do this!
+    f.coerce = function(val) { return val.toFixed(2); }
+    cleanRaisesWithValidationError(f, "Select a valid choice. 1 is not one of the available choices.", ["1"]);
+
+    // Required fields require values
+    cleanRaisesWithValidationError(f, "This field is required.", []);
+
+    // Non-required fields aren't required
+    f = new TypedMultipleChoiceField({
+        choices: [[1, "+1"], [-1, "-1"]],
+        coerce: function(val) { return parseInt(val, 10); },
+        required: false
+    });
+    deepEqual(f.clean([]), []);
+
+    // If you want cleaning an empty value to return a different type, tell the
+    // field.
+    f = new TypedMultipleChoiceField({
+        choices: [[1, "+1"], [-1, "-1"]],
+        coerce: function(val) { return parseInt(val, 10); },
+        required: false,
+        emptyValue: null
+    });
+    strictEqual(f.clean([]), null);
+});
+
 test("ComboField", function()
 {
     expect(10);
@@ -775,7 +837,7 @@ test("ComboField", function()
     strictEqual(f.clean(null), "");
 });
 
-// TODO FilePathField
+// TODO Tests for FilePathField when we can access a filesystem
 
 test("SplitDateTimeField", function()
 {
