@@ -76,7 +76,8 @@ function Field(kwargs)
     // Increment the creation counter and save our local copy
     this.creationCounter = Field.creationCounter++;
 
-    // Copy error messages for this instance into a new object
+    // Copy error messages for this instance into a new object and override
+    // with any provided error messages.
     this.errorMessages =
         extend({}, this.defaultErrorMessages, kwargs.errorMessages || {});
 
@@ -138,7 +139,8 @@ Field.prototype.runValidators = function(value)
         {
             if (!(e instanceof ValidationError))
                 throw e;
-            if (typeof e.code != "undefined" && e.code in this.errorMessages)
+            if (typeof e.code != "undefined" &&
+                typeof this.errorMessages[e.code] != "undefined")
             {
                 var message = this.errorMessages[e.code];
                 if (typeof e.params != "undefined")
@@ -282,8 +284,8 @@ inheritFrom(IntegerField, Field);
 IntegerField.prototype.defaultErrorMessages =
     extend({}, IntegerField.prototype.defaultErrorMessages, {
         invalid: "Enter a whole number.",
-        maxValue: "Ensure this value is less than or equal to %(limit_value)s.",
-        minValue: "Ensure this value is greater than or equal to %(limit_value)s."
+        maxValue: "Ensure this value is less than or equal to %(limitValue)s.",
+        minValue: "Ensure this value is greater than or equal to %(limitValue)s."
     });
 
 /**
@@ -401,8 +403,8 @@ DecimalField.DECIMAL_REGEXP = /^[-+]?(?:\d+(?:\.\d+)?|(?:\d+)?\.\d+)$/;
 DecimalField.prototype.defaultErrorMessages =
     extend({}, DecimalField.prototype.defaultErrorMessages, {
         invalid: "Enter a number.",
-        maxValue: "Ensure this value is less than or equal to %(limit_value)s.",
-        minValue: "Ensure this value is greater than or equal to %(limit_value)s.",
+        maxValue: "Ensure this value is less than or equal to %(limitValue)s.",
+        minValue: "Ensure this value is greater than or equal to %(limitValue)s.",
         maxDigits: "Ensure that there are no more than %(maxDigits)s digits in total.",
         maxDecimalPlaces: "Ensure that there are no more than %(maxDecimalPlaces)s decimal places.",
         maxWholeDigits: "Ensure that there are no more than %(maxWholeDigits)s digits before the decimal point."

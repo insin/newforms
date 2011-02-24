@@ -1,30 +1,17 @@
 module("error messages");
 
-// Tests that custom error messages are used, when provided
-
-(function()
-{
-
-/**
- * Retrieves the first error message from a ValidatonError.
- */
-function ve(e)
-{
-    return e.messages.errors[0];
-}
-
 test("CharField", function()
 {
     expect(3);
     var e = {
         required: "REQUIRED",
-        minLength: "LENGTH %(length)s, MIN LENGTH %(min)s",
-        maxLength: "LENGTH %(length)s, MAX LENGTH %(max)s"
+        minLength: "LENGTH %(showValue)s, MIN LENGTH %(limitValue)s",
+        maxLength: "LENGTH %(showValue)s, MAX LENGTH %(limitValue)s"
     };
     var f = new CharField({minLength: 5, maxLength: 10, errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("1234"); } catch (e) { equals(ve(e), "LENGTH 4, MIN LENGTH 5"); }
-    try { f.clean("12345678901"); } catch (e) { equals(ve(e), "LENGTH 11, MAX LENGTH 10"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "LENGTH 4, MIN LENGTH 5", "1234");
+    cleanErrorEqual(f, "LENGTH 11, MAX LENGTH 10", "12345678901");
 });
 
 test("IntegerField", function()
@@ -33,14 +20,14 @@ test("IntegerField", function()
     var e = {
         required: "REQUIRED",
         invalid: "INVALID",
-        minValue: "MIN VALUE IS %(minValue)s",
-        maxValue: "MAX VALUE IS %(maxValue)s"
+        minValue: "MIN VALUE IS %(limitValue)s",
+        maxValue: "MAX VALUE IS %(limitValue)s"
     };
     var f = new IntegerField({minValue: 5, maxValue: 10, errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("abc"); } catch (e) { equals(ve(e), "INVALID"); }
-    try { f.clean("4"); } catch (e) { equals(ve(e), "MIN VALUE IS 5"); }
-    try { f.clean("11"); } catch (e) { equals(ve(e), "MAX VALUE IS 10"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID", "abc");
+    cleanErrorEqual(f, "MIN VALUE IS 5", "4");
+    cleanErrorEqual(f, "MAX VALUE IS 10", "11");
 });
 
 test("FloatField", function()
@@ -49,14 +36,14 @@ test("FloatField", function()
     var e = {
         required: "REQUIRED",
         invalid: "INVALID",
-        minValue: "MIN VALUE IS %(minValue)s",
-        maxValue: "MAX VALUE IS %(maxValue)s"
+        minValue: "MIN VALUE IS %(limitValue)s",
+        maxValue: "MAX VALUE IS %(limitValue)s"
     };
     var f = new FloatField({minValue: 5, maxValue: 10, errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("abc"); } catch (e) { equals(ve(e), "INVALID"); }
-    try { f.clean("4"); } catch (e) { equals(ve(e), "MIN VALUE IS 5"); }
-    try { f.clean("11"); } catch (e) { equals(ve(e), "MAX VALUE IS 10"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID", "abc");
+    cleanErrorEqual(f, "MIN VALUE IS 5", "4");
+    cleanErrorEqual(f, "MAX VALUE IS 10", "11");
 });
 
 test("DecimalField", function()
@@ -65,21 +52,21 @@ test("DecimalField", function()
     var e = {
         required: "REQUIRED",
         invalid: "INVALID",
-        minValue: "MIN VALUE IS %(minValue)s",
-        maxValue: "MAX VALUE IS %(maxValue)s",
+        minValue: "MIN VALUE IS %(limitValue)s",
+        maxValue: "MAX VALUE IS %(limitValue)s",
         maxDigits: "MAX DIGITS IS %(maxDigits)s",
         maxDecimalPlaces: "MAX DP IS %(maxDecimalPlaces)s",
         maxWholeDigits: "MAX DIGITS BEFORE DP IS %(maxWholeDigits)s"
     };
     var f = new DecimalField({minValue: 5, maxValue: 10, errorMessages: e});
     var f2 = new DecimalField({maxDigits: 4, decimalPlaces: 2, errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("abc"); } catch (e) { equals(ve(e), "INVALID"); }
-    try { f.clean("4"); } catch (e) { equals(ve(e), "MIN VALUE IS 5"); }
-    try { f.clean("11"); } catch (e) { equals(ve(e), "MAX VALUE IS 10"); }
-    try { f2.clean("123.45"); } catch (e) { equals(ve(e), "MAX DIGITS IS 4"); }
-    try { f2.clean("1.234"); } catch (e) { equals(ve(e), "MAX DP IS 2"); }
-    try { f2.clean("123.4"); } catch (e) { equals(ve(e), "MAX DIGITS BEFORE DP IS 2"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID", "abc");
+    cleanErrorEqual(f, "MIN VALUE IS 5", "4");
+    cleanErrorEqual(f, "MAX VALUE IS 10", "11");
+    cleanErrorEqual(f2, "MAX DIGITS IS 4", "123.45");
+    cleanErrorEqual(f2, "MAX DP IS 2", "1.234");
+    cleanErrorEqual(f2, "MAX DIGITS BEFORE DP IS 2", "123.4");
 });
 
 test("DateField", function()
@@ -90,8 +77,8 @@ test("DateField", function()
         invalid: "INVALID"
     };
     var f = new DateField({errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("abc"); } catch (e) { equals(ve(e), "INVALID"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID", "abc");
 });
 
 test("TimeField", function()
@@ -102,8 +89,8 @@ test("TimeField", function()
         invalid: "INVALID"
     };
     var f = new TimeField({errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("abc"); } catch (e) { equals(ve(e), "INVALID"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID", "abc");
 });
 
 test("DateTimeField", function()
@@ -114,8 +101,8 @@ test("DateTimeField", function()
         invalid: "INVALID"
     };
     var f = new DateTimeField({errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("abc"); } catch (e) { equals(ve(e), "INVALID"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID", "abc");
 });
 
 test("RegexField", function()
@@ -124,14 +111,14 @@ test("RegexField", function()
     var e = {
         required: "REQUIRED",
         invalid: "INVALID",
-        minLength: "LENGTH %(length)s, MIN LENGTH %(min)s",
-        maxLength: "LENGTH %(length)s, MAX LENGTH %(max)s"
+        minLength: "LENGTH %(showValue)s, MIN LENGTH %(limitValue)s",
+        maxLength: "LENGTH %(showValue)s, MAX LENGTH %(limitValue)s"
     };
     var f = new RegexField("^\\d+$", {minLength: 5, maxLength: 10, errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("abcde"); } catch (e) { equals(ve(e), "INVALID"); }
-    try { f.clean("1234"); } catch (e) { equals(ve(e), "LENGTH 4, MIN LENGTH 5"); }
-    try { f.clean("12345678901"); } catch (e) { equals(ve(e), "LENGTH 11, MAX LENGTH 10"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID", "abcde");
+    cleanErrorEqual(f, "LENGTH 4, MIN LENGTH 5", "1234");
+    cleanErrorEqual(f, "LENGTH 11, MAX LENGTH 10", "12345678901");
 });
 
 test("EmailField", function()
@@ -140,14 +127,14 @@ test("EmailField", function()
     var e = {
         required: "REQUIRED",
         invalid: "INVALID",
-        minLength: "LENGTH %(length)s, MIN LENGTH %(min)s",
-        maxLength: "LENGTH %(length)s, MAX LENGTH %(max)s"
+        minLength: "LENGTH %(showValue)s, MIN LENGTH %(limitValue)s",
+        maxLength: "LENGTH %(showValue)s, MAX LENGTH %(limitValue)s"
     };
     var f = new EmailField({minLength: 8, maxLength: 10, errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("abcdefgh"); } catch (e) { equals(ve(e), "INVALID"); }
-    try { f.clean("a@b.com"); } catch (e) { equals(ve(e), "LENGTH 7, MIN LENGTH 8"); }
-    try { f.clean("aye@bee.com"); } catch (e) { equals(ve(e), "LENGTH 11, MAX LENGTH 10"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID", "abcdefgh");
+    cleanErrorEqual(f, "LENGTH 7, MIN LENGTH 8", "a@b.com");
+    cleanErrorEqual(f, "LENGTH 11, MAX LENGTH 10", "aye@bee.com");
 });
 
 test("FileField", function()
@@ -164,14 +151,14 @@ test("FileField", function()
     var e = {
         required: "REQUIRED",
         invalid: "INVALID",
-        empty: "EMPTY FILE",
-        maxLength: "LENGTH %(length)s, MAX LENGTH %(max)s"
+        missing: "MISSING",
+        empty: "EMPTY FILE"
     };
     var f = new FileField({maxLength: 10, errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("abc"); } catch (e) { equals(ve(e), "INVALID"); }
-    try { f.clean(new SimpleUploadedFile("name", "")); } catch (e) { equals(ve(e), "EMPTY FILE"); }
-    try { f.clean(new SimpleUploadedFile("12345678901", "content")); } catch (e) { equals(ve(e), "LENGTH 11, MAX LENGTH 10"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID", "abc");
+    cleanErrorEqual(f, "EMPTY FILE", new SimpleUploadedFile("name", null));
+    cleanErrorEqual(f, "EMPTY FILE", new SimpleUploadedFile("name", ""));
 });
 
 test("URLField", function()
@@ -183,9 +170,9 @@ test("URLField", function()
         invalidLink: "INVALID LINK"
     };
     var f = new URLField({verifyExists: true, errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("abc.c"); } catch (e) { equals(ve(e), "INVALID"); }
-    //try { f.clean("http://www.broken.djangoproject.com"); } catch (e) { equals(ve(e), "INVALID LINK"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID", "abc.c");
+    //cleanErrorEqual(f, "INVALID LINK", "http://www.broken.djangoproject.com");
 });
 
 test("BooleanField", function()
@@ -195,7 +182,7 @@ test("BooleanField", function()
         required: "REQUIRED"
     };
     var f = new BooleanField({errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
+    cleanErrorEqual(f, "REQUIRED", "");
 });
 
 test("ChoiceField", function()
@@ -206,8 +193,8 @@ test("ChoiceField", function()
         invalidChoice: "%(value)s IS INVALID CHOICE"
     };
     var f = new ChoiceField({choices: [["a", "aye"]], errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("b"); } catch (e) { equals(ve(e), "b IS INVALID CHOICE"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "b IS INVALID CHOICE", "b");
 });
 
 test("MultipleChoiceField", function()
@@ -219,9 +206,9 @@ test("MultipleChoiceField", function()
         invalidList: "NOT A LIST"
     };
     var f = new MultipleChoiceField({choices: [["a", "aye"]], errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("b"); } catch (e) { equals(ve(e), "NOT A LIST"); }
-    try { f.clean(["b"]); } catch (e) { equals(ve(e), "b IS INVALID CHOICE"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "NOT A LIST", "b");
+    cleanErrorEqual(f, "b IS INVALID CHOICE", ["b"]);
 });
 
 test("SplitDateTimeField", function()
@@ -233,8 +220,8 @@ test("SplitDateTimeField", function()
         invalidTime: "INVALID TIME"
     };
     var f = new SplitDateTimeField({errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean(["a", "b"]); } catch (e) { same(e.messages.errors, ["INVALID DATE", "INVALID TIME"]); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, ["INVALID DATE", "INVALID TIME"], ["a", "b"]);
 });
 
 test("IPAddressField", function()
@@ -245,8 +232,8 @@ test("IPAddressField", function()
         invalid: "INVALID IP ADDRESS"
     };
     var f = new IPAddressField({errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("127.0.0"); } catch (e) { equals(ve(e), "INVALID IP ADDRESS"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID IP ADDRESS", "127.0.0");
 });
 
 test("SlugField", function()
@@ -257,8 +244,49 @@ test("SlugField", function()
         invalid: "INVALID SLUG"
     };
     var f = new SlugField({errorMessages: e});
-    try { f.clean(""); } catch (e) { equals(ve(e), "REQUIRED"); }
-    try { f.clean("a b"); } catch (e) { equals(ve(e), "INVALID SLUG"); }
+    cleanErrorEqual(f, "REQUIRED", "");
+    cleanErrorEqual(f, "INVALID SLUG", "a b");
 });
 
-})();
+test("Overriding ErrorList", function()
+{
+    expect(4);
+
+    var TestForm = formFactory({
+      fields: function() {
+        return {
+          first_name: new CharField(),
+          last_name: new CharField(),
+          birthday: new DateField()
+        };
+      },
+      clean: function() {
+        throw new ValidationError("I like to be awkward.");
+      }
+    });
+
+    function CustomErrorList() {
+      ErrorList.apply(this, arguments);
+    }
+    inheritFrom(CustomErrorList, ErrorList);
+    CustomErrorList.prototype.defaultRendering = function() {
+      return this.asDIV();
+    }
+    CustomErrorList.prototype.asDIV = function() {
+      return DOMBuilder.createElement("div", {"class": "error"},
+                                      DOMBuilder.map("p", this.errors));
+    };
+
+    // This form should render errors the default way.
+    var f = new TestForm({data: {first_name: "John"}});
+    equal(""+f.boundField("last_name").errors(),
+          "<ul class=\"errorlist\"><li>This field is required.</li></ul>");
+    equal(""+f.errors()["__all__"],
+          "<ul class=\"errorlist\"><li>I like to be awkward.</li></ul>");
+
+    f = new TestForm({data: {first_name: "John"}, errorConstructor: CustomErrorList});
+    equal(""+f.boundField("last_name").errors(),
+          "<div class=\"error\"><p>This field is required.</p></div>");
+    equal(""+f.errors()["__all__"],
+          "<div class=\"error\"><p>I like to be awkward.</p></div>");
+});

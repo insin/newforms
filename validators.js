@@ -134,13 +134,13 @@ function BaseValidator(limitValue)
 }
 BaseValidator.prototype.compare = function(a, b) { return a !== b; };
 BaseValidator.prototype.clean = function(x) { return x };
-BaseValidator.prototype.message = "Ensure this value is %(limit_value)s (it is %(show_value)s).";
-BaseValidator.prototype.code = "limit_value";
+BaseValidator.prototype.message = "Ensure this value is %(limitValue)s (it is %(showValue)s).";
+BaseValidator.prototype.code = "limitValue";
 
 BaseValidator.prototype.__call__ = function(value)
 {
     var cleaned = this.clean(value),
-        params = {"limit_value": this.limitValue, "show_value": cleaned};
+        params = {"limitValue": this.limitValue, "showValue": cleaned};
     if (this.compare(cleaned, this.limitValue))
         throw new ValidationError(format(this.message, params),
                                   {code: this.code, params: params});
@@ -156,8 +156,8 @@ function MaxValueValidator(limitValue)
 inheritFrom(MaxValueValidator, BaseValidator);
 extend(MaxValueValidator.prototype, {
     compare: function(a, b) { return a > b; },
-    message: "Ensure this value is less than or equal to %(limit_value)s.",
-    code: "max_value"
+    message: "Ensure this value is less than or equal to %(limitValue)s.",
+    code: "maxValue"
 });
 
 /**
@@ -170,8 +170,8 @@ BaseValidator.call(this, limitValue);
 inheritFrom(MinValueValidator, BaseValidator);
 extend(MinValueValidator.prototype, {
     compare: function(a, b) { return a < b; },
-    message: "Ensure this value is greater than or equal to %(limit_value)s.",
-    code: "min_value"
+    message: "Ensure this value is greater than or equal to %(limitValue)s.",
+    code: "minValue"
 });
 
 /**
@@ -185,8 +185,8 @@ inheritFrom(MinLengthValidator, BaseValidator);
 extend(MinLengthValidator.prototype, {
     compare: function(a, b) { return a < b; },
     clean: function(x) { return x.length; },
-    message: "Ensure this value has at least %(limit_value)d characters (it has %(show_value)d).",
-    code: "min_length"
+    message: "Ensure this value has at least %(limitValue)d characters (it has %(showValue)d).",
+    code: "minLength"
 });
 
 /**
@@ -200,6 +200,6 @@ inheritFrom(MaxLengthValidator, BaseValidator);
 extend(MaxLengthValidator.prototype, {
     compare: function(a, b) { return a > b; },
     clean: function(x) { return x.length; },
-    message: "Ensure this value has at most %(limit_value)d characters (it has %(show_value)d).",
-    code: "max_length"
+    message: "Ensure this value has at most %(limitValue)d characters (it has %(showValue)d).",
+    code: "maxLength"
 });

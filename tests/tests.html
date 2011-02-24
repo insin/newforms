@@ -8,6 +8,32 @@
   <link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen">
   <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
   <script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+  <script type="text/javascript">
+  /**
+   * Asserts that when a field's clean method is called with given arguments,
+   * a {@code ValidationError} is thrown containing the specified error message(s).
+   * @param {Field} the field to be tested.
+   * @param {{string|Array.<string>}} the error message or messages which should
+   *     be contained in the resulting {@code ValidationError}.
+   * @param {...*} var_args arguments for the call to the field's clean method.
+   */
+  function cleanErrorEqual(field, message, var_args) {
+    if (!isArray(message)) {
+        message = [message];
+    }
+    try {
+      field.clean.apply(field, Array.prototype.slice.call(arguments, 2));
+    }
+    catch (e) {
+      if (!(e instanceof ValidationError)) {
+        throw new Error("Method did not throw a ValidationError:" + e);
+      }
+      deepEqual(e.messages, message);
+      return;
+    }
+    throw new Error("Method did not throw an exception");
+  }
+  </script>
   <!-- Supporting libraries -->
   <script type="text/javascript" src="https://github.com/insin/DOMBuilder/raw/master/DOMBuilder.js"></script>
   <script type="text/javascript">
@@ -28,8 +54,8 @@
   <script type="text/javascript" src="forms.js"></script>
   <script type="text/javascript" src="formsets.js"></script>
   <script type="text/javascript" src="fields.js"></script>
-  <!--script type="text/javascript" src="errormessages.js"></script>
-  <script type="text/javascript" src="widgets.js"></script>
+  <script type="text/javascript" src="errormessages.js"></script>
+  <!--script type="text/javascript" src="widgets.js"></script>
   <script type="text/javascript" src="extra.js"></script-->
 </head>
 <body>

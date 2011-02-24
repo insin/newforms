@@ -2093,43 +2093,4 @@ test("Multipart-encoded forms", function()
     strictEqual(new FormWithImage().isMultipart(), true);
 });
 
-test("Overriding ErrorList", function()
-{
-    expect(1);
-
-    function DivErrorList()
-    {
-        ErrorList.apply(this, arguments);
-    }
-    inheritFrom(DivErrorList, ErrorList);
-    DivErrorList.prototype.defaultRendering = function()
-    {
-        return this.asDIV();
-    }
-    DivErrorList.prototype.asDIV = function()
-    {
-        var items = [];
-        for (var i = 0, l = this.errors.length; i < l; i++)
-            items.push(DOMBuilder.createElement("div", {"class": "error"}, [this.errors[i]]));
-        return DOMBuilder.createElement("div", {"class": "errorlist"}, items);
-    };
-
-    var CommentForm = formFactory({fields: function() {
-        return {
-            name: new CharField({maxLength: 50, required: false}),
-            email: new EmailField(),
-            comment: new CharField()
-        };
-    }});
-
-    var data = {email: "invalid"};
-    var f = new CommentForm({data: data, autoId: false, errorConstructor: DivErrorList});
-    equal(""+f.asP(),
-"<p>Name: <input maxlength=\"50\" type=\"text\" name=\"name\"></p>\n" +
-"<div class=\"errorlist\"><div class=\"error\">Enter a valid e-mail address.</div></div>\n" +
-"<p>Email: <input type=\"text\" name=\"email\" value=\"invalid\"></p>\n" +
-"<div class=\"errorlist\"><div class=\"error\">This field is required.</div></div>\n" +
-"<p>Comment: <input type=\"text\" name=\"comment\"></p>");
-});
-
 })();
