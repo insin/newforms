@@ -1,11 +1,11 @@
-(function(window, undefined)
+(function(window)
 {
-    /**
-     * Maps directive codes to regular expression patterns which will capture the
-     * data the directive corresponds to, or in the case of locale-dependent
-     * directives, a function which takes a locale and generates a regular
-     * expression pattern.
-     */
+/**
+ * Maps directive codes to regular expression patterns which will capture the
+ * data the directive corresponds to, or in the case of locale-dependent
+ * directives, a function which takes a locale and generates a regular
+ * expression pattern.
+ */
 var parserDirectives = {
         // Locale's abbreviated month name
         "b": function(l) { return "(" + l.b.join("|") + ")"; },
@@ -40,7 +40,9 @@ var parserDirectives = {
         "w": function(d) { return d.getDay(); },
         "Y": function(d) { return d.getFullYear(); },
         "%": function(d) { return "%"; }
-    };
+    },
+    /** Test for hanging percentage symbols. */
+    strftimeFormatCheck = /[^%]%$/;
 
 function isFunction(o)
 {
@@ -48,24 +50,11 @@ function isFunction(o)
 }
 
 /**
- * Pads a number to a given size with a given string.
- *
- * @param {Number} number the number to be padded.
- * @param {Number} size the size the given number should be padded to.
- * @param {String} [padding] the string to be used to pad the number -
- *                           defaults to <code>"0"</code>.
- *
- * @return a padded version of the given number.
+ * Pads a number with a leading zero if necessary.
  */
-function pad(number, size, padding)
+function pad(number)
 {
-    var padded = "" + number;
-    padding = padding || "0";
-    while (padded.length < size)
-    {
-        padded = padding + padded;
-    }
-    return padded;
+    return (number < 10 ?  "0" + number : number);
 }
 
 /**
@@ -439,7 +428,7 @@ TimeParser.prototype.parse = function(input)
 
 var time = {
     /**
-     * Default locale name.
+     * Default locale name - must always exist in time.locales.
      */
     defaultLocale: "en",
 
@@ -508,8 +497,18 @@ var time = {
     },
 
     /**
+     * Convenience wrapper around time.strptime which returns a JavaScript Date.
+     */
+    strpdate: function(input, format, locale)
+    {
+        var t = this.strptime(input, format, locale);
+        return new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
+    },
+
+    /**
      * A partial implementation of <code>strftime</code>, which formats a date
-     * according to a format string.
+     * according to a format string. An Error will be thrown if an invalid
+     * format string is given.
      *
      * Supported formatting directives are:
      * <table>
@@ -580,36 +579,21 @@ var time = {
      */
     strftime: function(date, format, locale)
     {
-        locale = this.getLocale(locale);
-        var formatted = [], c, directive;
-
-        for (var i = 0, l = format.length; i < l; i++)
-        {
-            c = format.charAt(i);
-            if (c != "%")
-            {
-                formatted.push(c);
-                continue;
-            }
-
-            if (i == l - 1)
-            {
-                throw new Error("strftime format ends with raw %");
-            }
-
-            c = format.charAt(++i);
-            directive = formatterDirectives[c];
-            if (isFunction(directive))
-            {
-                formatted.push(directive(date, locale));
-            }
+        if (strftimeFormatCheck.test(format)) {
+            throw new Error("strftime format ends with raw %");
         }
-
-        return formatted.join("");
+        locale = this.getLocale(locale);
+        return format.replace(/(%.)/g, function(s, f)
+        {
+            var code = f.charAt(1);
+            if (typeof formatterDirectives[code] == "undefined") {
+                throw new Error("Invalid format string");
+            }
+            return formatterDirectives[code](date, locale);
+        });
     }
 };
 
-// Expose time to the global object
 window.time = time;
 
 })(window);

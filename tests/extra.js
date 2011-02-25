@@ -20,8 +20,7 @@ test("MultiWidget and MultiValueField", function()
         if (value)
         {
             var data = value.split(",");
-            var t = time.strptime(data[2], "%Y-%m-%d %H:%M:%S");
-            return [data[0], data[1], new Date(t[0], t[1] -1, t[2], t[3], t[4], t[5])];
+            return [data[0], data[1], time.strpdate(data[2], "%Y-%m-%d %H:%M:%S")];
         }
         return [null, null, null];
     }

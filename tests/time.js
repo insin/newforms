@@ -146,6 +146,14 @@ test("strptime", function()
     }
 });
 
+test("strpdate", function()
+{
+    expect(2);
+    var d = time.strpdate("2006-10-25 14:30:59", "%Y-%m-%d %H:%M:%S");
+    ok(d instanceof Date, "strpdate returns Date objects");
+    equal(d.valueOf(), new Date(2006, 9, 25, 14, 30, 59).valueOf());
+});
+
 test("strftime", function()
 {
     expect(6);
@@ -155,17 +163,10 @@ test("strftime", function()
            "2006-10-25 14:30:59");
 
     // Invalid format strings
-    equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%Y-%m-%d %q %H:%M:%S"),
-           "2006-10-25  14:30:59",
-           "Invalid directives are silently dropped");
-    try
-    {
-        time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%Y-%m-%d %H:%M:%S%")
-    }
-    catch(e)
-    {
-        ok(true, "Hanging % throws an Error");
-    }
+    raises(function() { time.strftime(new Date(), "%Y-%m-%d %q %H:%M:%S"); },
+           "Invalid directives throw an Error");
+    raises(function() { time.strftime(new Date(), "%Y-%m-%d %H:%M:%S%"); },
+           "Hanging % throws an Error");
 
     equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%a %d %b"), "Wed 25 Oct");
     equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%A %d %B"), "Wednesday 25 October");
