@@ -2,8 +2,6 @@
  * @fileOverview Form Widgets, which render an HTML representation of a Field.
  */
 
- // TODO Media
-
 /**
  * An HTML form widget.
  *

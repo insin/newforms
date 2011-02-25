@@ -401,7 +401,7 @@ test("EmailField", function()
     equal(f.clean("example@valid-----hyphens.com"), "example@valid-----hyphens.com");
     equal(f.clean("example@valid-with-hyphens.com"), "example@valid-with-hyphens.com");
     cleanErrorEqual(f, "Enter a valid e-mail address.", "example@.com");
-    // TODO Unicode email
+    // TODO Test Unicode addresses when when IDNA encoding fallback is implemented
 
     // Hangs "forever" if catastrophic backtracking not fixed
     cleanErrorEqual(f, "Enter a valid e-mail address.", "viewx3dtextx26qx3d@yahoo.comx26latlngx3d15854521645943074058");
@@ -481,7 +481,7 @@ test("URLField", function()
         cleanErrorEqual(f, "Enter a valid URL.", url);
     }
     equal(f.clean("http://valid-----hyphens.com"), "http://valid-----hyphens.com/");
-    // TODO Test Unicode URL
+    // TODO Test Unicode URL when IDNA encoding fallback is implemented
     equal(f.clean("www.example.com/s/http://code.djangoproject.com/ticket/13804"),
           "http://www.example.com/s/http://code.djangoproject.com/ticket/13804");
 
@@ -515,7 +515,7 @@ test("URLField", function()
     // domains that don't fail the domain label length check in the regex.
     cleanErrorEqual(f, "Enter a valid URL.", createCatastrophicTestUrl(60));
 
-    // TODO Run commented out tests when we can check the link
+    // TODO Test verifying URLs when js-forms can be run on the backend
     // URLField takes an optional verifyExists parameter, which is false by
     // default. This verifies that the URL is live on the Internet.
     f = new URLField({verifyExists: true});
@@ -547,7 +547,7 @@ test("URLField", function()
     // Django #11826
     equal(f.clean("http://example.com?some_param=some_value"), "http://example.com/?some_param=some_value");
 
-    // TODO Test Unicode URLs
+    // TODO Test Unicode URLs when IDNA encoding fallback is implemented
 });
 
 test("BooleanField", function()
@@ -811,7 +811,7 @@ test("ComboField", function()
     strictEqual(f.clean(null), "");
 });
 
-// TODO Tests for FilePathField when we can access a filesystem
+// TODO Test FilePathField when js-forms can be run on the backend
 
 test("SplitDateTimeField", function()
 {

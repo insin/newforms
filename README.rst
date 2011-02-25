@@ -4,10 +4,6 @@ js-forms
 
 A JavaScript port of `Django`_'s `form-handling library`_.
 
-Due to having been on hiatus for a while, the port is currently at about
-where Django's version was before Model Validation landed, introducing a
-different approach to data cleaning and validation.
-
 - `Demo page`_
 - `Unit tests`_
 

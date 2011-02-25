@@ -315,11 +315,12 @@ function Form(kwargs)
     this._errors = null; // Stores errors after clean() has been called
     this._changedData = null;
 
-    // TODO Basefields/deep copying? Assume subclasses will set fields in their
-    //      constructor for now, but is there a nice way to get anything like
-    //      the more declarative syntax Python's metaclassing gives Django?
+    // TODO Basefields/deep copying?
+    // Assume subclasses will set fields in their constructor for now, but is
+    // there a nice way to get anything like the more declarative syntax
+    // Python's metaclassing gives Django?
 
-    /* TODO Is there any hope of ever replacing __getitem__ properly?
+    /* Is there any hope of ever replacing __getitem__ properly?
     if (typeof this.fields != "undefined")
     {
         for (var name in this.fields)
@@ -399,7 +400,7 @@ Form.prototype =
         return this._changedData;
     },
 
-    // TODO Implement
+    // TODO Implement Media functionality
     /*get */media: function()
     {
     }
@@ -415,7 +416,7 @@ Form.prototype.defaultRendering = function()
     return this.asTable();
 };
 
-/* TODO Come up with a suitable cross-browser replacement for __iter__
+/* Is there a decent cross-browser replacement for __iter__?
 //def __iter__(self):
 //    for name, field in self.fields.items():
 //        yield BoundField(self, field, name)

@@ -782,8 +782,7 @@ ImageField.prototype.toJavaScript = function(data, initial)
     if (f === null)
         return null;
 
-    // TODO Plug in image processing code when js-forms can be run in
-    //           appropriate environments.
+    // TODO Plug in image processing code when js-forms can be run on the backend
 
     return f;
 };
@@ -1343,8 +1342,7 @@ function FilePathField(path, kwargs)
     if (this.match !== null)
         this.matchRE = new RegExp(this.match);
 
-    // TODO Populate this.choices with file paths when js-forms can be run in
-    //      appropriate environments.
+    // TODO Plug in file paths when js-forms can be run on the backend
 
     this.widget.choices = this.choices();
 }

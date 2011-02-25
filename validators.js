@@ -60,12 +60,11 @@ URLValidator.prototype.__call__ = function(value)
         if (!(e instanceof ValidationError) || !value)
             throw e;
 
-        // TODO Re-test with IDNA encoding
+        // TODO Implement retrying validation after IDNA encoding
         throw e;
     }
 
-    // TODO Implement URL verification when js-forms can be run in
-    //      appropriate environments.
+    // TODO Plug in URL verification when js-forms can run on the backend
     //if (this.verifyExists === true) {}
 };
 
@@ -86,7 +85,7 @@ EmailValidator.prototype.__call__ = function(value)
         if (!(e instanceof ValidationError) || !value || value.indexOf("@") == -1)
             throw e;
 
-        // TODO Re-test with IDNA encoding
+        // TODO Implement retrying validation after IDNA encoding
         throw e;
     }
 };
