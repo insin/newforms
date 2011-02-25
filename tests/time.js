@@ -64,14 +64,8 @@ test("strptime", function()
     equals(time.strptime("2000-02-29", "%Y-%m-%d").join(","),
            [2000, 2, 29, 0, 0, 0, 0, 1, -1].join(","),
            "Divisibile by 400");
-    try
-    {
-        time.strptime("2200-02-29", "%Y-%m-%d");
-    }
-    catch (e)
-    {
-        ok(true, "Divisible by 4 and 100, but not by 400, so not a leap year");
-    }
+    errorEqual(function() { time.strptime("2200-02-29", "%Y-%m-%d"); },
+               "Day is out of range: 29");
 
     // Boundary tests
     var months = [
@@ -127,23 +121,10 @@ test("strptime", function()
     }
 
     // Invalid format strings
-    try
-    {
-        time.strptime("2006-10-25", "%Y-%m-%d%");
-    }
-    catch (e)
-    {
-        ok(true, "Hanging % throws an Error");
-    }
-
-    try
-    {
-        time.strptime("2006-10-25", "%Y-%m-%d%q");
-    }
-    catch (e)
-    {
-        ok(true, "Invalid directive throws an Error");
-    }
+    errorEqual(function() { time.strptime("2006-10-25", "%Y-%m-%d%"); },
+               "strptime format ends with raw %");
+    errorEqual(function() { time.strptime("2006-10-25", "%Y-%m-%d%q"); },
+               "strptime format contains an unknown directive: %q");
 });
 
 test("strpdate", function()
@@ -163,10 +144,10 @@ test("strftime", function()
            "2006-10-25 14:30:59");
 
     // Invalid format strings
-    raises(function() { time.strftime(new Date(), "%Y-%m-%d %q %H:%M:%S"); },
-           "Invalid directives throw an Error");
-    raises(function() { time.strftime(new Date(), "%Y-%m-%d %H:%M:%S%"); },
-           "Hanging % throws an Error");
+    errorEqual(function() { time.strftime(new Date(), "%Y-%m-%d %q %H:%M:%S"); },
+               "strftime format contains an unknown directive: %q");
+    errorEqual(function() { time.strftime(new Date(), "%Y-%m-%d %H:%M:%S%"); },
+               "strftime format ends with raw %");
 
     equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%a %d %b"), "Wed 25 Oct");
     equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%A %d %B"), "Wednesday 25 October");

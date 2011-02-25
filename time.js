@@ -195,8 +195,7 @@ TimeParser.prototype.compilePattern = function()
         directive = parserDirectives[c];
         if (directive === undefined)
         {
-            throw new Error("strptime format contains an unknown directive: '%" +
-                            c + "'")
+            throw new Error("strptime format contains an unknown directive: %" + c)
         }
         else if (isFunction(directive))
         {
@@ -420,7 +419,7 @@ TimeParser.prototype.parse = function(input)
         (month == 2 && day > ((year % 4 == 0 && year % 100 != 0 ||
                                year % 400 == 0) ? 29 : 28)))
     {
-        throw new Error("Day " + day + " is out of range for month " + month);
+        throw new Error("Day is out of range: " + day);
     }
 
     return time;
@@ -587,7 +586,7 @@ var time = {
         {
             var code = f.charAt(1);
             if (typeof formatterDirectives[code] == "undefined") {
-                throw new Error("Invalid format string");
+                throw new Error("strftime format contains an unknown directive: " + f);
             }
             return formatterDirectives[code](date, locale);
         });

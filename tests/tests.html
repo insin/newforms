@@ -10,6 +10,14 @@
   <script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
   <script type="text/javascript">
   /**
+   * Asserts that a function call throws an error with a given error message.
+   */
+  function errorEqual(func, message) {
+    raises(func,
+           function(e) { return e.message == message; },
+           'Error message is: "' + message.replace(/"/g, '\\"') + '"');
+  }
+  /**
    * Asserts that when a field's clean method is called with given arguments,
    * a {@code ValidationError} is thrown containing the specified error message(s).
    * @param {Field} the field to be tested.
