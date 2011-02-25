@@ -84,6 +84,19 @@ function inheritFrom(child, parent)
 }
 
 /**
+ * Creates a lookup object from an array, casting each item to a string.
+ */
+function createLookup(a)
+{
+    var obj = {};
+    for (var i = 0, l = a.length; i < l; i++)
+    {
+        obj[""+a[i]] = true;
+    }
+    return obj;
+}
+
+/**
  * Performs replacement of named placeholders in a String, specified in
  * <code>%(placeholder)s</code> format.
  *

@@ -146,7 +146,7 @@ BoundField.prototype.asWidget = function(kwargs)
 {
     kwargs = extend({widget: null, attrs: null, onlyInitial: false}, kwargs || {});
     var widget = (kwargs.widget !== null ? kwargs.widget : this.field.widget),
-        attrs = kwargs.attrs || {},
+        attrs = (kwargs.attrs !== null ? kwargs.attrs : {}),
         autoId = this.autoId(),
         name = !kwargs.onlyInitial ? this.htmlName : this.htmlInitialName;
 
@@ -155,7 +155,7 @@ BoundField.prototype.asWidget = function(kwargs)
         typeof widget.attrs.id == "undefined")
         attrs.id = (!kwargs.onlyInitial ? autoId : this.htmlInitialId);
 
-    return widget.render(name, this.value(), attrs);
+    return widget.render(name, this.value(), {attrs: attrs});
 };
 
 /**

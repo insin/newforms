@@ -607,10 +607,10 @@ test("Hidden data", function()
     // <input type="hidden"> tags.
     var f = new SongForm({data: {name: "Yesterday", composers: ["P"]}, autoId: false});
     equal(""+f.boundField("composers").asHidden(),
-"<span><input type=\"hidden\" name=\"composers\" value=\"P\"></span>");
+"<input type=\"hidden\" name=\"composers\" value=\"P\">");
     f = new SongForm({data: {name: "Yesterday", composers: ["P", "J"]}, autoId: false});
     equal(""+f.boundField("composers").asHidden(),
-"<span><input type=\"hidden\" name=\"composers\" value=\"P\"><input type=\"hidden\" name=\"composers\" value=\"J\"></span>");
+"<input type=\"hidden\" name=\"composers\" value=\"P\"><input type=\"hidden\" name=\"composers\" value=\"J\">");
 
     // DateTimeField rendered asHidden() is special too
     var MessageForm = formFactory({fields: function() {
@@ -718,7 +718,7 @@ test("Multiple hidden", function()
 
     var f = new SongFormHidden({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false});
     equal(""+f.asUL(),
-"<li>Name: <input type=\"text\" name=\"name\" value=\"Yesterday\"><span><input type=\"hidden\" name=\"composers\" value=\"J\"><input type=\"hidden\" name=\"composers\" value=\"P\"></span></li>");
+"<li>Name: <input type=\"text\" name=\"name\" value=\"Yesterday\"><input type=\"hidden\" name=\"composers\" value=\"J\"><input type=\"hidden\" name=\"composers\" value=\"P\"></li>");
 
     // When using MultipleChoiceField, the framework expects a list of input and
     // returns a list of input.
@@ -849,13 +849,13 @@ test("Validating multiple fields", function()
     equal(f.asTable(),
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
 "<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></td></tr>\n" +
-"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\" value=\"foo\"></td></tr>\n" +
-"<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\" value=\"bar\"></td></tr>");
+"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\"></td></tr>\n" +
+"<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\"></td></tr>");
     equal(f.asUL(),
 "<li><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></li>\n" +
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></li>\n" +
-"<li>Password1: <input type=\"password\" name=\"password1\" value=\"foo\"></li>\n" +
-"<li>Password2: <input type=\"password\" name=\"password2\" value=\"bar\"></li>");
+"<li>Password1: <input type=\"password\" name=\"password1\"></li>\n" +
+"<li>Password2: <input type=\"password\" name=\"password2\"></li>");
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false});
     strictEqual(f.errors().isPopulated(), false);
     equal(f.cleanedData.username, "adrian");
@@ -1918,8 +1918,8 @@ test("Basic form processing", function()
 "<table>\n" +
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
 "<tr><th>Username:</th><td><ul class=\"errorlist\"><li>Ensure this value has at most 10 characters (it has 23).</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"this-is-a-long-username\"></td></tr>\n" +
-"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\" value=\"foo\"></td></tr>\n" +
-"<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\" value=\"bar\"></td></tr>\n" +
+"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\"></td></tr>\n" +
+"<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\"></td></tr>\n" +
 "</table>\n" +
 "<input type=\"submit\">\n" +
 "</form>");

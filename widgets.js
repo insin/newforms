@@ -31,7 +31,7 @@ Widget.prototype.isRequired = false;
  * The 'value' given is not guaranteed to be valid input, so subclass
  * implementations should program defensively.
  */
-Widget.prototype.render = function(value)
+Widget.prototype.render = function(value, value, kwargs)
 {
     throw new Error("Subclasses must implement this method.");
 };
@@ -106,12 +106,13 @@ inheritFrom(Input, Widget);
 /** The type of this input. */
 Input.prototype.inputType = null;
 
-Input.prototype.render = function(name, value, attrs)
+Input.prototype.render = function(name, value, kwargs)
 {
+    kwargs = extend({attrs: null}, kwargs || {});
     if (value === null)
         value = "";
-    var finalAttrs = this.buildAttrs(attrs, {type: this.inputType,
-                                             name: name});
+    var finalAttrs = this.buildAttrs(kwargs.attrs, {type: this.inputType,
+                                                    name: name});
     if (value !== "")
         // Only add the "value" attribute if value is non-empty
         finalAttrs.value = value;
@@ -139,23 +140,23 @@ TextInput.prototype.inputType = "text";
  *                          in {@link Input}.
  * @config {Boolean} [renderValue] if <code>false</code> a value will not be
  *                                 rendered for this field - defaults to
- *                                 <code>true</code>.
+ *                                 <code>false</code>.
  * @constructor
  */
 function PasswordInput(kwargs)
 {
-    kwargs = extend({renderValue: true}, kwargs || {});
+    kwargs = extend({renderValue: false}, kwargs || {});
     Input.call(this, kwargs);
     this.renderValue = kwargs.renderValue;
 }
 inheritFrom(PasswordInput, Input);
 PasswordInput.prototype.inputType = "password";
 
-PasswordInput.prototype.render = function(name, value, attrs)
+PasswordInput.prototype.render = function(name, value, kwargs)
 {
     if (!this.renderValue)
         value = "";
-    return Input.prototype.render.call(this, name, value, attrs);
+    return Input.prototype.render.call(this, name, value, kwargs);
 };
 
 /**
@@ -187,11 +188,13 @@ function MultipleHiddenInput(kwargs)
 }
 inheritFrom(MultipleHiddenInput, HiddenInput);
 
-MultipleHiddenInput.prototype.render = function(name, value, attrs)
+MultipleHiddenInput.prototype.render = function(name, value, kwargs)
 {
+    kwargs = extend({attrs: null}, kwargs || {})
     if (value === null)
         value = [];
-    var finalAttrs = this.buildAttrs(attrs, {type: this.inputType, name: name}),
+    var finalAttrs = this.buildAttrs(kwargs.attrs, {type: this.inputType,
+                                                    name: name}),
         id = getDefault(finalAttrs, "id", null),
         inputs = [];
     for (var i = 0, l = value.length; i < l; i++)
@@ -204,7 +207,7 @@ MultipleHiddenInput.prototype.render = function(name, value, attrs)
         inputs.push(
             DOMBuilder.createElement("input", inputAttrs));
     }
-    return DOMBuilder.createElement("span", {}, inputs);
+    return DOMBuilder.fragment(inputs);
 };
 
 MultipleHiddenInput.prototype.valueFromData = function(data, files, name)
@@ -229,9 +232,9 @@ inheritFrom(FileInput, Input);
 FileInput.prototype.inputType = "file";
 FileInput.prototype.needsMultipartForm = true;
 
-FileInput.prototype.render = function(name, value, attrs)
+FileInput.prototype.render = function(name, value, kwargs)
 {
-    return Input.prototype.render.call(this, name, null, attrs);
+    return Input.prototype.render.call(this, name, null, kwargs);
 };
 
 /**
@@ -280,9 +283,9 @@ ClearableFileInput.prototype.clearCheckboxId = function(name)
     return name + "_id";
 };
 
-ClearableFileInput.prototype.render = function(name, value, attrs)
+ClearableFileInput.prototype.render = function(name, value, kwargs)
 {
-    var input = FileInput.prototype.render.call(this, name, value, attrs);
+    var input = FileInput.prototype.render.call(this, name, value, kwargs);
     if (value && typeof value.url != "undefined")
     {
         var contents = [
@@ -346,11 +349,12 @@ function Textarea(kwargs)
 }
 inheritFrom(Textarea, Widget);
 
-Textarea.prototype.render = function(name, value, attrs)
+Textarea.prototype.render = function(name, value, kwargs)
 {
+    kwargs = extend({attrs: null}, kwargs || {});
     if (value === null)
         value = "";
-    var finalAttrs = this.buildAttrs(attrs, {name: name});
+    var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name});
     return DOMBuilder.createElement("textarea", finalAttrs, [value]);
 };
 
@@ -381,10 +385,10 @@ DateInput.prototype._formatValue = function(value)
     return value;
 };
 
-DateInput.prototype.render = function(name, value, attrs)
+DateInput.prototype.render = function(name, value, kwargs)
 {
     value = this._formatValue(value);
-    return Input.prototype.render.call(this, name, value, attrs);
+    return Input.prototype.render.call(this, name, value, kwargs);
 };
 
 DateInput.prototype._hasChanged = function(initial, data)
@@ -419,10 +423,10 @@ DateTimeInput.prototype._formatValue = function(value)
     return value;
 };
 
-DateTimeInput.prototype.render = function(name, value, attrs)
+DateTimeInput.prototype.render = function(name, value, kwargs)
 {
     value = this._formatValue(value);
-    return Input.prototype.render.call(this, name, value, attrs);
+    return Input.prototype.render.call(this, name, value, kwargs);
 };
 
 DateTimeInput.prototype._hasChanged = function(initial, data)
@@ -458,10 +462,10 @@ TimeInput.prototype._formatValue = function(value)
     return value;
 };
 
-TimeInput.prototype.render = function(name, value, attrs)
+TimeInput.prototype.render = function(name, value, kwargs)
 {
     value = this._formatValue(value);
-    return Input.prototype.render.call(this, name, value, attrs);
+    return Input.prototype.render.call(this, name, value, kwargs);
 };
 
 TimeInput.prototype._hasChanged = function(initial, data)
@@ -488,8 +492,9 @@ function CheckboxInput(kwargs)
 
 inheritFrom(CheckboxInput, Widget);
 
-CheckboxInput.prototype.render = function(name, value, attrs)
+CheckboxInput.prototype.render = function(name, value, kwargs)
 {
+    kwargs = extend({attrs: null}, kwargs || {});
     var checked;
     try
     {
@@ -501,7 +506,8 @@ CheckboxInput.prototype.render = function(name, value, attrs)
         checked = false;
     }
 
-    var finalAttrs = this.buildAttrs(attrs, {type: "checkbox", name: name});
+    var finalAttrs = this.buildAttrs(kwargs.attrs, {type: "checkbox",
+                                                    name: name});
     if (value !== "" && value !== true && value !== false && value !== null &&
         value !== undefined)
         // Only add the "value" attribute if value is non-empty
@@ -564,12 +570,13 @@ inheritFrom(Select, Widget);
  *
  * @return a <code>&lt;select&gt;</code> element.
  */
-Select.prototype.render = function(name, selectedValue, attrs, choices)
+Select.prototype.render = function(name, selectedValue, kwargs)
 {
+    kwargs = extend({attrs: null, choices: []}, kwargs || {});
     if (selectedValue === null)
         selectedValue = "";
-    var finalAttrs = this.buildAttrs(attrs, {name: name});
-    var options = this.renderOptions(choices, [selectedValue]);
+    var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name});
+    var options = this.renderOptions(kwargs.choices, [selectedValue]);
     options.push("\n");
     return DOMBuilder.createElement("select", finalAttrs, options);
 };
@@ -578,8 +585,8 @@ Select.prototype.renderOptions = function(choices, selectedValues)
 {
     // Normalise to strings
     var selectedValuesLookup = {};
-    // We can't duck type passing of a String instead, as IE < 8 doesn't allow
-    // numeric property access to grab chars out of a String.
+    // We don't duck type passing of a String instead, as index access to
+    // characters isn't part of the spec.
     var selectedValueString = (isString(selectedValues));
     for (var i = 0, l = selectedValues.length; i < l; i++)
         selectedValuesLookup[""+(selectedValueString
@@ -646,7 +653,7 @@ function NullBooleanSelect(kwargs)
 
 inheritFrom(NullBooleanSelect, Select);
 
-NullBooleanSelect.prototype.render = function(name, value, attrs, choices)
+NullBooleanSelect.prototype.render = function(name, value, kwargs)
 {
     if (value === true || value == "2")
         value = "2";
@@ -654,7 +661,7 @@ NullBooleanSelect.prototype.render = function(name, value, attrs, choices)
         value = "3";
     else
         value = "1";
-    return Select.prototype.render.call(this, name, value, attrs, choices);
+    return Select.prototype.render.call(this, name, value, kwargs);
 };
 
 NullBooleanSelect.prototype.valueFromData = function(data, files, name)
@@ -711,12 +718,14 @@ inheritFrom(SelectMultiple, Select);
  * @return a <code>&lt;select&gt;</code> element which allows multiple
  *         selections.
  */
-SelectMultiple.prototype.render = function(name, selectedValues, attrs, choices)
+SelectMultiple.prototype.render = function(name, selectedValues, kwargs)
 {
+    kwargs = extend({attrs: null, choices: []}, kwargs || {});
     if (selectedValues === null)
         selectedValues = [];
-    var finalAttrs = this.buildAttrs(attrs, {name: name, multiple: "multiple"});
-    var options = this.renderOptions(choices, selectedValues);
+    var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name,
+                                                    multiple: "multiple"});
+    var options = this.renderOptions(kwargs.choices, selectedValues);
     options.push("\n");
     return DOMBuilder.createElement("select", finalAttrs, options);
 };
@@ -746,8 +755,9 @@ SelectMultiple.prototype._hasChanged = function(initial, data)
         data = [];
     if (initial.length != data.length)
         return true;
+    var dataLookup = createLookup(data);
     for (var i = 0, l = initial.length; i < l; i++)
-        if ("" + initial[i] != "" + data[i])
+        if (typeof dataLookup[""+initial[i]] == "undefined")
             return true;
     return false;
 };
@@ -786,6 +796,11 @@ RadioInput.prototype.labelTag = function()
         labelAttrs["for"] = this.attrs.id + "_" + this.index;
     return DOMBuilder.createElement("label", labelAttrs,
                                     [this.tag(), " ", this.choiceLabel]);
+};
+
+RadioInput.prototype.toString = function()
+{
+    return ""+this.labelTag();
 };
 
 RadioInput.prototype.isChecked = function()
@@ -837,6 +852,14 @@ RadioFieldRenderer.prototype.radioInputs = function()
     return inputs;
 };
 
+RadioFieldRenderer.prototype.radioInput = function(i)
+{
+    if (i >= this.choices.length)
+        throw new Error("Index out of bounds")
+    return new RadioInput(this.name, this.value, extend({}, this.attrs),
+                          this.choices[i], i);
+};
+
 /**
  * Outputs a &lt;ul&gt; for this set of radio fields.
  */
@@ -875,19 +898,18 @@ RadioSelect.prototype.renderer = RadioFieldRenderer;
 /**
  * @return an instance of the renderer to be used to render this widget.
  */
-RadioSelect.prototype.getRenderer = function(name, value, attrs, choices)
+RadioSelect.prototype.getRenderer = function(name, value, kwargs)
 {
-    if (value === null)
-        value = "";
-    value = ""+value;
-    var finalAttrs = this.buildAttrs(attrs);
-    choices = this.choices.concat(choices || []);
+    kwargs = extend({attrs: null, choices: []}, kwargs || {});
+    value = (value === null ? "" : ""+value);
+    var finalAttrs = this.buildAttrs(kwargs.attrs),
+        choices = this.choices.concat(kwargs.choices || []);
     return new this.renderer(name, value, finalAttrs, choices);
 };
 
-RadioSelect.prototype.render = function(name, value, attrs, choices)
+RadioSelect.prototype.render = function(name, value, kwargs)
 {
-    return this.getRenderer(name, value, attrs, choices).render();
+    return this.getRenderer(name, value, kwargs).render();
 };
 
 /**
@@ -917,19 +939,19 @@ function CheckboxSelectMultiple(kwargs)
 }
 inheritFrom(CheckboxSelectMultiple, SelectMultiple);
 
-CheckboxSelectMultiple.prototype.render = function(name, selectedValues, attrs, choices)
+CheckboxSelectMultiple.prototype.render = function(name, selectedValues, kwargs)
 {
+    kwargs = extend({attrs: null, choices: []}, kwargs || {});
     if (selectedValues === null)
         selectedValues = [];
-    var hasId = (attrs && typeof attrs.id != "undefined"),
-        finalAttrs = this.buildAttrs(attrs),
-        selectedValuesLookup = {};
-    // Normalise to strings
-    for (var i = 0, l = selectedValues.length; i < l; i++)
-        selectedValuesLookup["" + selectedValues[i]] = true;
-    var checkTest = function(value) { return (typeof selectedValuesLookup[""+value] != "undefined"); },
+    var hasId = (kwargs.attrs !== null && typeof kwargs.attrs.id != "undefined"),
+        finalAttrs = this.buildAttrs(kwargs.attrs),
+        selectedValuesLookup = createLookup(selectedValues),
+        checkTest = function(value) {
+            return (typeof selectedValuesLookup[""+value] != "undefined");
+        },
         items = [],
-        finalChoices = this.choices.concat(choices || []);
+        finalChoices = this.choices.concat(kwargs.choices);
     for (var i = 0, l = finalChoices.length; i < l; i++)
     {
         var optValue = "" + finalChoices[i][0],
@@ -940,7 +962,7 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, attrs, 
         // that the checkboxes don't all have the same ID attribute.
         if (hasId)
         {
-            extend(checkboxAttrs, {id: attrs.id + "_" + i});
+            extend(checkboxAttrs, {id: kwargs.attrs.id + "_" + i});
             labelAttrs["for"] = checkboxAttrs.id;
         }
 
@@ -1001,12 +1023,13 @@ inheritFrom(MultiWidget, Widget);
  *
  * @return a rendered collection of widgets.
  */
-MultiWidget.prototype.render = function(name, value, attrs)
+MultiWidget.prototype.render = function(name, value, kwargs)
 {
+    kwargs = extend({attrs: null}, kwargs || {});
     if (!(isArray(value)))
         value = this.decompress(value);
-    var finalAttrs = this.buildAttrs(attrs),
-        id = finalAttrs.id || null,
+    var finalAttrs = this.buildAttrs(kwargs.attrs),
+        id = (typeof finalAttrs.id != "undefined" ? finalAttrs.id : null),
         renderedWidgets = [];
     for (var i = 0, l = this.widgets.length; i < l; i++)
     {
@@ -1017,7 +1040,7 @@ MultiWidget.prototype.render = function(name, value, attrs)
         if (id)
             extend(finalAttrs, {"id": id + "_" + i});
         renderedWidgets.push(
-            widget.render(name + "_" + i, widgetValue, finalAttrs));
+            widget.render(name + "_" + i, widgetValue, {attrs: finalAttrs}));
     }
     return this.formatOutput(renderedWidgets);
 };

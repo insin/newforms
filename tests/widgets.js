@@ -4,146 +4,142 @@ test("TextInput", function()
 {
     expect(9);
     var w = new TextInput();
-    equals(""+w.render("email", ""),
+    equal(""+w.render("email", ""),
            "<input type=\"text\" name=\"email\">");
-    equals(""+w.render("email", null),
+    equal(""+w.render("email", null),
            "<input type=\"text\" name=\"email\">");
-    equals(""+w.render("email", "test@example.com"),
+    equal(""+w.render("email", "test@example.com"),
            "<input type=\"text\" name=\"email\" value=\"test@example.com\">");
-    equals(""+w.render("email", "some \"quoted\" & ampersanded value"),
+    equal(""+w.render("email", "some \"quoted\" & ampersanded value"),
            "<input type=\"text\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">");
-    equals(""+w.render("email", "test@example.com", {"class": "fun"}),
+    equal(""+w.render("email", "test@example.com", {attrs: {"class": "fun"}}),
            "<input type=\"text\" name=\"email\" class=\"fun\" value=\"test@example.com\">");
 
     // You can also pass "attrs" to the constructor
     w = new TextInput({attrs: {"class": "fun"}});
-    equals(""+w.render("email", ""),
+    equal(""+w.render("email", ""),
            "<input class=\"fun\" type=\"text\" name=\"email\">");
-    equals(""+w.render("email", "foo@example.com"),
+    equal(""+w.render("email", "foo@example.com"),
            "<input class=\"fun\" type=\"text\" name=\"email\" value=\"foo@example.com\">");
 
     // Attributes passed to render() get precedence over those passed to the constructor
     w = new TextInput({attrs: {"class": "pretty"}});
-    equals(""+w.render("email", "", {"class": "special"}),
+    equal(""+w.render("email", "", {attrs: {"class": "special"}}),
            "<input class=\"special\" type=\"text\" name=\"email\">");
 
     // Attributes can be safe strings if needed
     w = new TextInput({attrs: {"onblur": DOMBuilder.markSafe("function('foo')")}});
-    equals(""+w.render("email", ""),
+    equal(""+w.render("email", ""),
            "<input onblur=\"function('foo')\" type=\"text\" name=\"email\">");
 });
 
 test("PasswordInput", function()
 {
-    expect(13);
+    expect(11);
     var w = new PasswordInput();
-    equals(""+w.render("email", ""),
+    equal(""+w.render("email", ""),
            "<input type=\"password\" name=\"email\">");
-    equals(""+w.render("email", null),
+    equal(""+w.render("email", null),
            "<input type=\"password\" name=\"email\">");
-    equals(""+w.render("email", "test@example.com"),
-           "<input type=\"password\" name=\"email\" value=\"test@example.com\">");
-    equals(""+w.render("email", "some \"quoted\" & ampersanded value"),
-           "<input type=\"password\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">");
-    equals(""+w.render("email", "test@example.com", {"class": "fun"}),
-           "<input type=\"password\" name=\"email\" class=\"fun\" value=\"test@example.com\">");
-
-    // You can also pass "attrs" to the constructor
-    w = new PasswordInput({attrs: {"class": "fun"}});
-    equals(""+w.render("email", ""),
-           "<input class=\"fun\" type=\"password\" name=\"email\">");
-    equals(""+w.render("email", "foo@example.com"),
-           "<input class=\"fun\" type=\"password\" name=\"email\" value=\"foo@example.com\">");
-
-    // Attributes passed to render() get precedence over those passed to the constructor
-    w = new PasswordInput({attrs: {"class": "pretty"}});
-    equals(""+w.render("email", "", {"class": "special"}),
-           "<input class=\"special\" type=\"password\" name=\"email\">");
+    equal(""+w.render("email", "secret"),
+           "<input type=\"password\" name=\"email\">");
 
     // The renderValue argument lets you specify whether the widget should
     // render its value. You may want to do this for security reasons.
     w = new PasswordInput({renderValue: true});
-    equals(""+w.render("email", "secret"),
-           "<input type=\"password\" name=\"email\" value=\"secret\">");
-    w = new PasswordInput({renderValue: false});
-    equals(""+w.render("email", ""),
+    equal(""+w.render("email", ""),
            "<input type=\"password\" name=\"email\">");
-    equals(""+w.render("email", null),
+    equal(""+w.render("email", null),
            "<input type=\"password\" name=\"email\">");
-    equals(""+w.render("email", "secret"),
-           "<input type=\"password\" name=\"email\">");
-    w = new PasswordInput({attrs: {"class": "fun"}, renderValue: false});
-    equals(""+w.render("email", "secret"),
+    equal(""+w.render("email", "test@example.com"),
+           "<input type=\"password\" name=\"email\" value=\"test@example.com\">");
+    equal(""+w.render("email", "some \"quoted\" & ampersanded value"),
+           "<input type=\"password\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">");
+    equal(""+w.render("email", "test@example.com", {attrs: {"class": "fun"}}),
+           "<input type=\"password\" name=\"email\" class=\"fun\" value=\"test@example.com\">");
+
+    // You can also pass "attrs" to the constructor
+    w = new PasswordInput({attrs: {"class": "fun"}, renderValue: true});
+    equal(""+w.render("email", ""),
            "<input class=\"fun\" type=\"password\" name=\"email\">");
+    equal(""+w.render("email", "foo@example.com"),
+           "<input class=\"fun\" type=\"password\" name=\"email\" value=\"foo@example.com\">");
+
+    // Attributes passed to render() get precedence over those passed to the constructor
+    w = new PasswordInput({attrs: {"class": "pretty"}, renderValue: true});
+    equal(""+w.render("email", "", {attrs: {"class": "special"}}),
+           "<input class=\"special\" type=\"password\" name=\"email\">");
 });
 
 test("HiddenInput", function()
 {
     expect(10);
     var w = new HiddenInput();
-    equals(""+w.render("email", ""),
+    equal(""+w.render("email", ""),
            "<input type=\"hidden\" name=\"email\">");
-    equals(""+w.render("email", null),
+    equal(""+w.render("email", null),
            "<input type=\"hidden\" name=\"email\">");
-    equals(""+w.render("email", "test@example.com"),
+    equal(""+w.render("email", "test@example.com"),
            "<input type=\"hidden\" name=\"email\" value=\"test@example.com\">");
-    equals(""+w.render("email", "some \"quoted\" & ampersanded value"),
+    equal(""+w.render("email", "some \"quoted\" & ampersanded value"),
            "<input type=\"hidden\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">");
-    equals(""+w.render("email", "test@example.com", {"class": "fun"}),
+    equal(""+w.render("email", "test@example.com", {attrs: {"class": "fun"}}),
            "<input type=\"hidden\" name=\"email\" class=\"fun\" value=\"test@example.com\">");
 
     // You can also pass "attrs" to the constructor
     w = new HiddenInput({attrs: {"class": "fun"}});
-    equals(""+w.render("email", ""),
+    equal(""+w.render("email", ""),
            "<input class=\"fun\" type=\"hidden\" name=\"email\">");
-    equals(""+w.render("email", "foo@example.com"),
+    equal(""+w.render("email", "foo@example.com"),
            "<input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\">");
 
     // Attributes passed to render() get precedence over those passed to the constructor
     w = new HiddenInput({attrs: {"class": "pretty"}});
-    equals(""+w.render("email", "", {"class": "special"}),
+    equal(""+w.render("email", "", {attrs: {"class": "special"}}),
            "<input class=\"special\" type=\"hidden\" name=\"email\">");
 
     // Boolean values are rendered to their string forms ("true" and "false")
     w = new HiddenInput();
-    equals(""+w.render('get_spam', false),
+    equal(""+w.render('get_spam', false),
            "<input type=\"hidden\" name=\"get_spam\" value=\"false\">");
-    equals(""+w.render('get_spam', true),
+    equal(""+w.render('get_spam', true),
            "<input type=\"hidden\" name=\"get_spam\" value=\"true\">");
 });
 
 test("MultipleHiddenInput", function()
 {
-    expect(11);
+    expect(12);
     var w = new MultipleHiddenInput();
-    equals(""+w.render("email", []),
-           "<span></span>");
-    equals(""+w.render("email", null),
-           "<span></span>");
-    equals(""+w.render("email", ["test@example.com"]),
-           "<span><input type=\"hidden\" name=\"email\" value=\"test@example.com\"></span>");
-    equals(""+w.render("email", ["some \"quoted\" & ampersanded value"]),
-           "<span><input type=\"hidden\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\"></span>");
-    equals(""+w.render("email", ["test@example.com", "foo@example.com"]),
-           "<span><input type=\"hidden\" name=\"email\" value=\"test@example.com\"><input type=\"hidden\" name=\"email\" value=\"foo@example.com\"></span>");
-    equals(""+w.render("email", ["test@example.com"], {"class": "fun"}),
-           "<span><input type=\"hidden\" name=\"email\" class=\"fun\" value=\"test@example.com\"></span>");
-    equals(""+w.render("email", ["test@example.com", "foo@example.com"], {"class": "fun"}),
-           "<span><input type=\"hidden\" name=\"email\" class=\"fun\" value=\"test@example.com\"><input type=\"hidden\" name=\"email\" class=\"fun\" value=\"foo@example.com\"></span>");
+    strictEqual(""+w.render("email", []), "");
+    strictEqual(""+w.render("email", null), "");
+    equal(""+w.render("email", ["test@example.com"]),
+           "<input type=\"hidden\" name=\"email\" value=\"test@example.com\">");
+    equal(""+w.render("email", ["some \"quoted\" & ampersanded value"]),
+           "<input type=\"hidden\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">");
+    equal(""+w.render("email", ["test@example.com", "foo@example.com"]),
+           "<input type=\"hidden\" name=\"email\" value=\"test@example.com\"><input type=\"hidden\" name=\"email\" value=\"foo@example.com\">");
+    equal(""+w.render("email", ["test@example.com"], {attrs: {"class": "fun"}}),
+           "<input type=\"hidden\" name=\"email\" class=\"fun\" value=\"test@example.com\">");
+    equal(""+w.render("email", ["test@example.com", "foo@example.com"], {attrs: {"class": "fun"}}),
+           "<input type=\"hidden\" name=\"email\" class=\"fun\" value=\"test@example.com\"><input type=\"hidden\" name=\"email\" class=\"fun\" value=\"foo@example.com\">");
 
     // You can also pass "attrs" to the constructor
     w = new MultipleHiddenInput({attrs: {"class": "fun"}});
-    equals(""+w.render("email", []),
-           "<span></span>");
-    equals(""+w.render("email", ["foo@example.com"]),
-           "<span><input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\"></span>");
-    equals(""+w.render("email", ["foo@example.com", "test@example.com"]),
-           "<span><input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\"><input class=\"fun\" type=\"hidden\" name=\"email\" value=\"test@example.com\"></span>");
+    strictEqual(""+w.render("email", []), "");
+    equal(""+w.render("email", ["foo@example.com"]),
+           "<input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\">");
+    equal(""+w.render("email", ["foo@example.com", "test@example.com"]),
+           "<input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\"><input class=\"fun\" type=\"hidden\" name=\"email\" value=\"test@example.com\">");
 
     // Attributes passed to render() get precedence over those passed to the constructor
     w = new MultipleHiddenInput({attrs: {"class": "pretty"}});
-    equals(""+w.render("email", ["foo@example.com"], {"class": "special"}),
-           "<span><input class=\"special\" type=\"hidden\" name=\"email\" value=\"foo@example.com\"></span>");
+    equal(""+w.render("email", ["foo@example.com"], {attrs: {"class": "special"}}),
+           "<input class=\"special\" type=\"hidden\" name=\"email\" value=\"foo@example.com\">");
+
+    // Each input gets a unique id
+    w = new MultipleHiddenInput();
+    equal(""+w.render("letters", ["a", "b", "c"], {attrs: {'id': 'hideme'}}),
+           "<input type=\"hidden\" name=\"letters\" id=\"hideme_0\" value=\"a\"><input type=\"hidden\" name=\"letters\" id=\"hideme_1\" value=\"b\"><input type=\"hidden\" name=\"letters\" id=\"hideme_2\" value=\"c\">");
 });
 
 test("FileInput", function()
@@ -153,22 +149,22 @@ test("FileInput", function()
     // no use if you are updating the form or if the provided file generated an
     // error.
     var w = new FileInput();
-    equals(""+w.render("email", ""),
+    equal(""+w.render("email", ""),
            "<input type=\"file\" name=\"email\">");
-    equals(""+w.render("email", null),
+    equal(""+w.render("email", null),
            "<input type=\"file\" name=\"email\">");
-    equals(""+w.render("email", "test@example.com"),
+    equal(""+w.render("email", "test@example.com"),
            "<input type=\"file\" name=\"email\">");
-    equals(""+w.render("email", "some \"quoted\" & ampersanded value"),
+    equal(""+w.render("email", "some \"quoted\" & ampersanded value"),
            "<input type=\"file\" name=\"email\">");
-    equals(""+w.render("email", "test@example.com", {"class": "fun"}),
+    equal(""+w.render("email", "test@example.com", {attrs: {"class": "fun"}}),
            "<input type=\"file\" name=\"email\" class=\"fun\">");
 
     // You can also pass "attrs" to the constructor
     w = new FileInput({attrs: {"class": "fun"}});
-    equals(""+w.render("email", ""),
+    equal(""+w.render("email", ""),
            "<input class=\"fun\" type=\"file\" name=\"email\">");
-    equals(""+w.render("email", "foo@example.com"),
+    equal(""+w.render("email", "foo@example.com"),
            "<input class=\"fun\" type=\"file\" name=\"email\">");
 
     // Test for the behavior of _hasChanged for FileInput. The value of data
@@ -178,46 +174,46 @@ test("FileInput", function()
     w = new FileInput();
 
     // No file was uploaded and no initial data
-    same(w._hasChanged("", null), false);
+    strictEqual(w._hasChanged("", null), false);
 
     // A file was uploaded and no initial data
-    same(w._hasChanged("", {filename: "resume.txt", content: "My resume"}), true);
+    strictEqual(w._hasChanged("", {filename: "resume.txt", content: "My resume"}), true);
 
     // A file was not uploaded, but there is initial data
-    same(w._hasChanged("resume.txt", null), false);
+    strictEqual(w._hasChanged("resume.txt", null), false);
 
     // A file was uploaded and there is initial data (file identity is not dealt
     // with here).
-    same(w._hasChanged("resume.txt", {filename: "resume.txt", content: "My resume"}), true);
+    strictEqual(w._hasChanged("resume.txt", {filename: "resume.txt", content: "My resume"}), true);
 });
 
 test("Textarea", function()
 {
     expect(9);
     var w = new Textarea();
-    equals(""+w.render("msg", ""),
+    equal(""+w.render("msg", ""),
            "<textarea rows=\"10\" cols=\"40\" name=\"msg\"></textarea>");
-    equals(""+w.render("msg", null),
+    equal(""+w.render("msg", null),
            "<textarea rows=\"10\" cols=\"40\" name=\"msg\"></textarea>");
-    equals(""+w.render("msg", "value"),
+    equal(""+w.render("msg", "value"),
            "<textarea rows=\"10\" cols=\"40\" name=\"msg\">value</textarea>");
-    equals(""+w.render("msg", "some \"quoted\" & ampersanded value"),
+    equal(""+w.render("msg", "some \"quoted\" & ampersanded value"),
            "<textarea rows=\"10\" cols=\"40\" name=\"msg\">some &quot;quoted&quot; &amp; ampersanded value</textarea>");
-    equals(""+w.render("msg", DOMBuilder.markSafe("pre &quot;quoted&quot; value")),
+    equal(""+w.render("msg", DOMBuilder.markSafe("pre &quot;quoted&quot; value")),
            "<textarea rows=\"10\" cols=\"40\" name=\"msg\">pre &quot;quoted&quot; value</textarea>");
-    equals(""+w.render("msg", "value", {"class": "pretty", rows: 20}),
+    equal(""+w.render("msg", "value", {attrs: {"class": "pretty", rows: 20}}),
            "<textarea rows=\"20\" cols=\"40\" name=\"msg\" class=\"pretty\">value</textarea>");
 
     // You can also pass "attrs" to the constructor
     w = new Textarea({attrs: {"class": "pretty"}});
-    equals(""+w.render("msg", ""),
+    equal(""+w.render("msg", ""),
            "<textarea rows=\"10\" cols=\"40\" class=\"pretty\" name=\"msg\"></textarea>");
-    equals(""+w.render("msg", "example"),
+    equal(""+w.render("msg", "example"),
            "<textarea rows=\"10\" cols=\"40\" class=\"pretty\" name=\"msg\">example</textarea>");
 
     // Attributes passed to render() get precedence over those passed to the constructor
     w = new Textarea({attrs: {"class": "pretty"}});
-    equals(""+w.render("msg", "", {"class": "special"}),
+    equal(""+w.render("msg", "", {attrs: {"class": "special"}}),
            "<textarea rows=\"10\" cols=\"40\" class=\"special\" name=\"msg\"></textarea>");
 });
 
@@ -225,74 +221,74 @@ test("CheckboxInput", function()
 {
     expect(22);
     var w = new CheckboxInput();
-    equals(""+w.render("is_cool", ""),
+    equal(""+w.render("is_cool", ""),
            "<input type=\"checkbox\" name=\"is_cool\">");
-    equals(""+w.render("is_cool", null),
+    equal(""+w.render("is_cool", null),
            "<input type=\"checkbox\" name=\"is_cool\">");
-    equals(""+w.render("is_cool", false),
+    equal(""+w.render("is_cool", false),
            "<input type=\"checkbox\" name=\"is_cool\">");
-    equals(""+w.render("is_cool", true),
+    equal(""+w.render("is_cool", true),
            "<input type=\"checkbox\" name=\"is_cool\" checked=\"checked\">");
 
     // Using any value that's not in ("", null, false, true) will check the
     // checkbox and set the "value" attribute.
-    equals(""+w.render("is_cool", "foo"),
+    equal(""+w.render("is_cool", "foo"),
            "<input type=\"checkbox\" name=\"is_cool\" value=\"foo\" checked=\"checked\">");
 
-    equals(""+w.render("is_cool", false, {"class": "pretty"}),
+    equal(""+w.render("is_cool", false, {attrs: {"class": "pretty"}}),
            "<input type=\"checkbox\" name=\"is_cool\" class=\"pretty\">");
 
     // You can also pass "attrs" to the constructor
     w = new CheckboxInput({attrs: {"class": "pretty"}});
-    equals(""+w.render("is_cool", ""),
+    equal(""+w.render("is_cool", ""),
            "<input class=\"pretty\" type=\"checkbox\" name=\"is_cool\">");
 
     // Attributes passed to render() get precedence over those passed to the constructor
     w = new CheckboxInput({attrs: {"class": "pretty"}});
-    equals(""+w.render("is_cool", false, {"class": "special"}),
+    equal(""+w.render("is_cool", false, {attrs: {"class": "special"}}),
            "<input class=\"special\" type=\"checkbox\" name=\"is_cool\">");
 
     // You can pass "checkTest" to the constructor. This is a function that
     // takes the value and returns true if the box should be checked.
     w = new CheckboxInput({checkTest: function(value) { return value.indexOf("hello") == 0; }});
-    equals(""+w.render("greeting", ""),
+    equal(""+w.render("greeting", ""),
            "<input type=\"checkbox\" name=\"greeting\">");
-    equals(""+w.render("greeting", "hello"),
+    equal(""+w.render("greeting", "hello"),
            "<input type=\"checkbox\" name=\"greeting\" value=\"hello\" checked=\"checked\">");
-    equals(""+w.render("greeting", "hello there"),
+    equal(""+w.render("greeting", "hello there"),
            "<input type=\"checkbox\" name=\"greeting\" value=\"hello there\" checked=\"checked\">");
-    equals(""+w.render("greeting", "hello & goodbye"),
+    equal(""+w.render("greeting", "hello & goodbye"),
            "<input type=\"checkbox\" name=\"greeting\" value=\"hello &amp; goodbye\" checked=\"checked\">");
 
     // A subtlety: If the "checkTest" argument cannot handle a value and throws
     // an exception,  the exception will be swallowed and the box will not be
     // checked. In this example, the "checkTest" assumes the value has an
     // indexOf() method, which fails for the values true, false and null.
-    equals(""+w.render("greeting", true),
+    equal(""+w.render("greeting", true),
            "<input type=\"checkbox\" name=\"greeting\">");
-    equals(""+w.render("greeting", false),
+    equal(""+w.render("greeting", false),
            "<input type=\"checkbox\" name=\"greeting\">");
-    equals(""+w.render("greeting", null),
+    equal(""+w.render("greeting", null),
            "<input type=\"checkbox\" name=\"greeting\">");
 
     // The CheckboxInput widget will return False if the key is not found in
     // the data (because HTML form submission doesn't send any result for
     // unchecked checkboxes).
-    same(w.valueFromData({}, {}, 'testing'), false);
+    strictEqual(w.valueFromData({}, {}, 'testing'), false);
 
-    same(w._hasChanged(null, null), false);
-    same(w._hasChanged(null, ""), false);
-    same(w._hasChanged("", ""), false);
-    same(w._hasChanged(false, "on"), true);
-    same(w._hasChanged(true, "on"), false);
-    same(w._hasChanged(true, ""), true);
+    strictEqual(w._hasChanged(null, null), false);
+    strictEqual(w._hasChanged(null, ""), false);
+    strictEqual(w._hasChanged("", ""), false);
+    strictEqual(w._hasChanged(false, "on"), true);
+    strictEqual(w._hasChanged(true, "on"), false);
+    strictEqual(w._hasChanged(true, ""), true);
 });
 
 test("Select", function()
 {
     expect(12);
     var w = new Select();
-    equals(""+w.render("beatle", "J", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatle\">\n" +
 "<option value=\"J\" selected=\"selected\">John</option>\n" +
 "<option value=\"P\">Paul</option>\n" +
@@ -301,7 +297,7 @@ test("Select", function()
 "</select>");
 
     // If the value is null, none of the options are selected
-    equals(""+w.render("beatle", null, {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatle", null, {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatle\">\n" +
 "<option value=\"J\">John</option>\n" +
 "<option value=\"P\">Paul</option>\n" +
@@ -310,7 +306,7 @@ test("Select", function()
 "</select>");
 
     // If the value corresponds to a label (but not to an option value), none of the options are selected
-    equals(""+w.render("beatle", "John", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatle", "John", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatle\">\n" +
 "<option value=\"J\">John</option>\n" +
 "<option value=\"P\">Paul</option>\n" +
@@ -319,19 +315,19 @@ test("Select", function()
 "</select>");
 
     // The value is compared to its String representation
-    equals(""+w.render("num", 2, {}, [['1', '1'], ['2', '2'], ['3', '3']]),
+    equal(""+w.render("num", 2, {choices: [['1', '1'], ['2', '2'], ['3', '3']]}),
 "<select name=\"num\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\" selected=\"selected\">2</option>\n" +
 "<option value=\"3\">3</option>\n" +
 "</select>");
-    equals(""+w.render("num", "2", {}, [[1, 1], [2, 2], [3, 3]]),
+    equal(""+w.render("num", "2", {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<select name=\"num\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\" selected=\"selected\">2</option>\n" +
 "<option value=\"3\">3</option>\n" +
 "</select>");
-    equals(""+w.render("num", 2, {}, [[1, 1], [2, 2], [3, 3]]),
+    equal(""+w.render("num", 2, {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<select name=\"num\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\" selected=\"selected\">2</option>\n" +
@@ -340,7 +336,7 @@ test("Select", function()
 
     // You can also pass "choices" to the constructor:
     w = new Select({choices: [[1, 1], [2, 2], [3, 3]]});
-    equals(""+w.render("num", 2),
+    equal(""+w.render("num", 2),
 "<select name=\"num\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\" selected=\"selected\">2</option>\n" +
@@ -348,7 +344,7 @@ test("Select", function()
 "</select>");
 
     // If "choices" is passed to both the constructor and render(), then they'll both be in the output
-    equals(""+w.render("num", 2, {}, [[4, 4], [5, 5]]),
+    equal(""+w.render("num", 2, {choices: [[4, 4], [5, 5]]}),
 "<select name=\"num\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\" selected=\"selected\">2</option>\n" +
@@ -358,7 +354,7 @@ test("Select", function()
 "</select>");
 
     // Choices are escaped correctly
-    equals(""+w.render("num", null, {}, [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]),
+    equal(""+w.render("num", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]}),
 "<select name=\"num\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\">2</option>\n" +
@@ -369,7 +365,7 @@ test("Select", function()
 
     // Choices can be nested one level in order to create HTML optgroups
     w.choices = [['outer1', 'Outer 1'], ['Group "1"', [['inner1', 'Inner 1'], ['inner2', 'Inner 2']]]];
-    equals(""+w.render("nestchoice", null),
+    equal(""+w.render("nestchoice", null),
 "<select name=\"nestchoice\">\n" +
 "<option value=\"outer1\">Outer 1</option>\n" +
 "<optgroup label=\"Group &quot;1&quot;\">\n" +
@@ -377,7 +373,7 @@ test("Select", function()
 "<option value=\"inner2\">Inner 2</option>\n" +
 "</optgroup>\n" +
 "</select>");
-    equals(""+w.render("nestchoice", "outer1"),
+    equal(""+w.render("nestchoice", "outer1"),
 "<select name=\"nestchoice\">\n" +
 "<option value=\"outer1\" selected=\"selected\">Outer 1</option>\n" +
 "<optgroup label=\"Group &quot;1&quot;\">\n" +
@@ -385,7 +381,7 @@ test("Select", function()
 "<option value=\"inner2\">Inner 2</option>\n" +
 "</optgroup>\n" +
 "</select>");
-    equals(""+w.render("nestchoice", "inner1"),
+    equal(""+w.render("nestchoice", "inner1"),
 "<select name=\"nestchoice\">\n" +
 "<option value=\"outer1\">Outer 1</option>\n" +
 "<optgroup label=\"Group &quot;1&quot;\">\n" +
@@ -397,59 +393,66 @@ test("Select", function()
 
 test("NullBooleanSelect", function()
 {
-    expect(5);
+    expect(12);
     var w = new NullBooleanSelect();
-    equals(""+w.render("is_cool", true),
+    equal(""+w.render("is_cool", true),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
 "<option value=\"2\" selected=\"selected\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select>");
-    equals(""+w.render("is_cool", false),
+    equal(""+w.render("is_cool", false),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\" selected=\"selected\">No</option>\n" +
 "</select>");
-    equals(""+w.render("is_cool", null),
+    equal(""+w.render("is_cool", null),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select>");
-    equals(""+w.render("is_cool", "2"),
+    equal(""+w.render("is_cool", "2"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
 "<option value=\"2\" selected=\"selected\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select>");
-    equals(""+w.render("is_cool", "3"),
+    equal(""+w.render("is_cool", "3"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\" selected=\"selected\">No</option>\n" +
 "</select>");
+    strictEqual(w._hasChanged(false, null), true);
+    strictEqual(w._hasChanged(null, false), true);
+    strictEqual(w._hasChanged(null, null), false);
+    strictEqual(w._hasChanged(false, false), false);
+    strictEqual(w._hasChanged(true, false), true);
+    strictEqual(w._hasChanged(true, null), true);
+    strictEqual(w._hasChanged(true, false), true);
 });
 
 test("SelectMultiple", function()
 {
-    expect(22);
+    expect(23);
     var w = new SelectMultiple();
-    equals(""+w.render("beatles", ["J"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatles\" multiple=\"multiple\">\n" +
 "<option value=\"J\" selected=\"selected\">John</option>\n" +
 "<option value=\"P\">Paul</option>\n" +
 "<option value=\"G\">George</option>\n" +
 "<option value=\"R\">Ringo</option>\n" +
 "</select>");
-    equals(""+w.render("beatles", ["J", "P"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", ["J", "P"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatles\" multiple=\"multiple\">\n" +
 "<option value=\"J\" selected=\"selected\">John</option>\n" +
 "<option value=\"P\" selected=\"selected\">Paul</option>\n" +
 "<option value=\"G\">George</option>\n" +
 "<option value=\"R\">Ringo</option>\n" +
 "</select>");
-    equals(""+w.render("beatles", ["J", "P", "R"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", ["J", "P", "R"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatles\" multiple=\"multiple\">\n" +
 "<option value=\"J\" selected=\"selected\">John</option>\n" +
 "<option value=\"P\" selected=\"selected\">Paul</option>\n" +
@@ -458,7 +461,7 @@ test("SelectMultiple", function()
 "</select>");
 
     // If the value is null, none of the options are selected
-    equals(""+w.render("beatles", null, {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", null, {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatles\" multiple=\"multiple\">\n" +
 "<option value=\"J\">John</option>\n" +
 "<option value=\"P\">Paul</option>\n" +
@@ -467,7 +470,7 @@ test("SelectMultiple", function()
 "</select>");
 
     // If the value corresponds to a label (but not to an option value), none of the options are selected
-    equals(""+w.render("beatles", ["John"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", ["John"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatles\" multiple=\"multiple\">\n" +
 "<option value=\"J\">John</option>\n" +
 "<option value=\"P\">Paul</option>\n" +
@@ -476,7 +479,7 @@ test("SelectMultiple", function()
 "</select>");
 
     // If multiple values are given, but some of them are not valid, the valid ones are selected
-    equals(""+w.render("beatles", ["J", "G", "foo"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", ["J", "G", "foo"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatles\" multiple=\"multiple\">\n" +
 "<option value=\"J\" selected=\"selected\">John</option>\n" +
 "<option value=\"P\">Paul</option>\n" +
@@ -485,19 +488,19 @@ test("SelectMultiple", function()
 "</select>");
 
     // The value is compared to its String representation
-    equals(""+w.render("nums", [2], {}, [['1', '1'], ['2', '2'], ['3', '3']]),
+    equal(""+w.render("nums", [2], {choices: [['1', '1'], ['2', '2'], ['3', '3']]}),
 "<select name=\"nums\" multiple=\"multiple\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\" selected=\"selected\">2</option>\n" +
 "<option value=\"3\">3</option>\n" +
 "</select>");
-    equals(""+w.render("nums", ["2"], {}, [[1, 1], [2, 2], [3, 3]]),
+    equal(""+w.render("nums", ["2"], {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<select name=\"nums\" multiple=\"multiple\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\" selected=\"selected\">2</option>\n" +
 "<option value=\"3\">3</option>\n" +
 "</select>");
-    equals(""+w.render("nums", [2], {}, [[1, 1], [2, 2], [3, 3]]),
+    equal(""+w.render("nums", [2], {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<select name=\"nums\" multiple=\"multiple\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\" selected=\"selected\">2</option>\n" +
@@ -506,7 +509,7 @@ test("SelectMultiple", function()
 
     // You can also pass "choices" to the constructor:
     w = new SelectMultiple({choices: [[1, 1], [2, 2], [3, 3]]});
-    equals(""+w.render("nums", [2]),
+    equal(""+w.render("nums", [2]),
 "<select name=\"nums\" multiple=\"multiple\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\" selected=\"selected\">2</option>\n" +
@@ -514,7 +517,7 @@ test("SelectMultiple", function()
 "</select>");
 
     // If "choices" is passed to both the constructor and render(), then they'll both be in the output
-    equals(""+w.render("nums", [2], {}, [[4, 4], [5, 5]]),
+    equal(""+w.render("nums", [2], {choices: [[4, 4], [5, 5]]}),
 "<select name=\"nums\" multiple=\"multiple\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\" selected=\"selected\">2</option>\n" +
@@ -524,7 +527,7 @@ test("SelectMultiple", function()
 "</select>");
 
     // Choices are escaped correctly
-    equals(""+w.render("nums", null, {}, [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]),
+    equal(""+w.render("nums", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]}),
 "<select name=\"nums\" multiple=\"multiple\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\">2</option>\n" +
@@ -534,16 +537,17 @@ test("SelectMultiple", function()
 "</select>");
 
     // Test the usage of _hasChanged
-    same(w._hasChanged(null, null), false);
-    same(w._hasChanged([], null), false);
-    same(w._hasChanged(null, [""]), true);
-    same(w._hasChanged([1, 2], ["1", "2"]), false);
-    same(w._hasChanged([1, 2], ["1"]), true);
-    same(w._hasChanged([1, 2], ["1", "3"]), true);
+    strictEqual(w._hasChanged(null, null), false);
+    strictEqual(w._hasChanged([], null), false);
+    strictEqual(w._hasChanged(null, [""]), true);
+    strictEqual(w._hasChanged([1, 2], ["1", "2"]), false);
+    strictEqual(w._hasChanged([1, 2], ["1"]), true);
+    strictEqual(w._hasChanged([1, 2], ["1", "3"]), true);
+    strictEqual(w._hasChanged([2, 1], ["1", "2"]), false);
 
     // Choices can be nested one level in order to create HTML optgroups
     w.choices = [['outer1', 'Outer 1'], ['Group "1"', [['inner1', 'Inner 1'], ['inner2', 'Inner 2']]]];
-    equals(""+w.render("nestchoice", null),
+    equal(""+w.render("nestchoice", null),
 "<select name=\"nestchoice\" multiple=\"multiple\">\n" +
 "<option value=\"outer1\">Outer 1</option>\n" +
 "<optgroup label=\"Group &quot;1&quot;\">\n" +
@@ -551,7 +555,7 @@ test("SelectMultiple", function()
 "<option value=\"inner2\">Inner 2</option>\n" +
 "</optgroup>\n" +
 "</select>");
-    equals(""+w.render("nestchoice", ["outer1"]),
+    equal(""+w.render("nestchoice", ["outer1"]),
 "<select name=\"nestchoice\" multiple=\"multiple\">\n" +
 "<option value=\"outer1\" selected=\"selected\">Outer 1</option>\n" +
 "<optgroup label=\"Group &quot;1&quot;\">\n" +
@@ -559,7 +563,7 @@ test("SelectMultiple", function()
 "<option value=\"inner2\">Inner 2</option>\n" +
 "</optgroup>\n" +
 "</select>");
-    equals(""+w.render("nestchoice", ["inner1"]),
+    equal(""+w.render("nestchoice", ["inner1"]),
 "<select name=\"nestchoice\" multiple=\"multiple\">\n" +
 "<option value=\"outer1\">Outer 1</option>\n" +
 "<optgroup label=\"Group &quot;1&quot;\">\n" +
@@ -567,7 +571,7 @@ test("SelectMultiple", function()
 "<option value=\"inner2\">Inner 2</option>\n" +
 "</optgroup>\n" +
 "</select>");
-    equals(""+w.render("nestchoice", ["outer1", "inner2"]),
+    equal(""+w.render("nestchoice", ["outer1", "inner2"]),
  "<select name=\"nestchoice\" multiple=\"multiple\">\n" +
 "<option value=\"outer1\" selected=\"selected\">Outer 1</option>\n" +
 "<optgroup label=\"Group &quot;1&quot;\">\n" +
@@ -579,9 +583,9 @@ test("SelectMultiple", function()
 
 test("RadioSelect", function()
 {
-    expect(13);
+    expect(22);
     var w = new RadioSelect();
-    equals(""+w.render("beatle", "J", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>\n" +
@@ -590,7 +594,7 @@ test("RadioSelect", function()
 "</ul>");
 
     // If the value is null, none of the options are checked
-    equals(""+w.render("beatle", null, {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatle", null, {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>\n" +
@@ -599,7 +603,7 @@ test("RadioSelect", function()
 "</ul>");
 
     // If the value corresponds to a label (but not to an option value), none of the options are checked
-    equals(""+w.render("beatle", "John", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatle", "John", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>\n" +
@@ -608,19 +612,19 @@ test("RadioSelect", function()
 "</ul>");
 
     // The value is compared to its String representation
-    equals(""+w.render("num", 2, {}, [['1', '1'], ['2', '2'], ['3', '3']]),
+    equal(""+w.render("num", 2, {choices: [['1', '1'], ['2', '2'], ['3', '3']]}),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>\n" +
 "</ul>");
-    equals(""+w.render("num", "2", {}, [[1, 1], [2, 2], [3, 3]]),
+    equal(""+w.render("num", "2", {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>\n" +
 "</ul>");
-    equals(""+w.render("num", 2, {}, [[1, 1], [2, 2], [3, 3]]),
+    equal(""+w.render("num", 2, {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
@@ -629,7 +633,7 @@ test("RadioSelect", function()
 
     // You can also pass "choices" to the constructor:
     w = new RadioSelect({choices: [[1, 1], [2, 2], [3, 3]]});
-    equals(""+w.render("num", 2),
+    equal(""+w.render("num", 2),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
@@ -637,7 +641,7 @@ test("RadioSelect", function()
 "</ul>");
 
     // If 'choices' is passed to both the constructor and render(), then they'll both be in the output
-    equals(""+w.render("num", 2, {}, [[4, 4], [5, 5]]),
+    equal(""+w.render("num", 2, {choices: [[4, 4], [5, 5]]}),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
@@ -646,53 +650,87 @@ test("RadioSelect", function()
 "<li><label><input type=\"radio\" name=\"num\" value=\"5\"> 5</label></li>\n" +
 "</ul>");
 
-    // TODO RadioSelect uses a RadioFieldRenderer to render the individual radio
-    //      inputs. You can manipulate that object directly to customize the way
-    //      the RadioSelect is rendered.
+    // RadioSelect uses a RadioFieldRenderer to render the individual radio
+    // inputs. You can manipulate that object directly to customise the way
+    // the RadioSelect is rendered.
+    w = new RadioSelect();
+    var r = w.getRenderer("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]});
+    var inputs1 = [], inputs2 = [], inputs3 = [], inputs4 = [];
+    var radioInputs = r.radioInputs();
+    for (var i = 0, inp; inp = radioInputs[i]; i++)
+    {
+        inputs1.push(""+inp);
+        inputs2.push(""+DOMBuilder.fragment(inp.labelTag(), DOMBuilder.createElement("br")));
+        inputs3.push(""+DOMBuilder.createElement("p", {}, [inp.tag(), " ", inp.choiceLabel]));
+        inputs4.push(""+DOMBuilder.fragment(
+            inp.name, " ", inp.value, " ", inp.choiceValue, " ", inp.choiceLabel, " ", inp.isChecked()));
+    }
+    equal(inputs1.join("\n"),
+"<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label>\n" +
+"<label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label>\n" +
+"<label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label>\n" +
+"<label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label>");
+    equal(inputs2.join("\n"),
+"<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label><br>\n" +
+"<label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br>\n" +
+"<label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label><br>\n" +
+"<label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label><br>");
+    equal(inputs3.join("\n"),
+"<p><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</p>\n" +
+"<p><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</p>\n" +
+"<p><input type=\"radio\" name=\"beatle\" value=\"G\"> George</p>\n" +
+"<p><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</p>");
+    equal(inputs4.join("\n"),
+"beatle J J John true\n" +
+"beatle J P Paul false\n" +
+"beatle J G George false\n" +
+"beatle J R Ringo false");
 
     // You can create your own custom renderers for RadioSelect to use.
-    function MyRenderer()
-    {
-        RadioFieldRenderer.apply(this, arguments);
+    function MyRenderer() {
+      RadioFieldRenderer.apply(this, arguments);
     }
     inheritFrom(MyRenderer, RadioFieldRenderer);
-    MyRenderer.prototype.render = function()
-    {
-        var inputs = this.radioInputs();
-        var items = [];
-        for (var i = 0, l = inputs.length; i < l; i++)
-        {
-            items.push(inputs[i].labelTag());
-            if (i != l - 1)
-            {
-                items.push(DOMBuilder.createElement("br"));
-            }
+    MyRenderer.prototype.render = function() {
+      var inputs = this.radioInputs();
+      var items = [];
+      for (var i = 0, l = inputs.length; i < l; i++) {
+        items.push(inputs[i].labelTag());
+        if (i != l - 1) {
+          items.push(DOMBuilder.createElement("br"));
         }
-        return DOMBuilder.createElement("div", {}, items);
+      }
+      return DOMBuilder.fragment(items);
     };
 
     w = new RadioSelect({renderer: MyRenderer});
-    equals(""+w.render("beatle", "G", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked=\"checked\"> George</label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></div>");
+    equal(""+w.render("beatle", "G", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
+           "<label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked=\"checked\"> George</label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label>");
 
     // Or you can use custom RadioSelect fields that use your custom renderer
-    function CustomRadioSelect(kwargs)
-    {
-        kwargs = extend({}, kwargs, {renderer: MyRenderer});
-        RadioSelect.call(this, kwargs);
+    function CustomRadioSelect(kwargs) {
+      kwargs = extend({}, kwargs, {renderer: MyRenderer});
+      RadioSelect.call(this, kwargs);
     }
     inheritFrom(CustomRadioSelect, RadioSelect);
 
     w = new CustomRadioSelect();
-    equals(""+w.render("beatle", "G", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
-           "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked=\"checked\"> George</label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></div>");
+    equal(""+w.render("beatle", "G", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
+           "<label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked=\"checked\"> George</label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label>");
 
-    // TODO A RadioFieldRenderer object also allows index access to individual
-    //      RadioInput objects.
+    // A RadioFieldRenderer object also allows index access to individual
+    // RadioInput objects.
+    w = new RadioSelect();
+    r = w.getRenderer("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]});
+    equal(""+r.radioInput(1), "<label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label>");
+    equal(""+r.radioInput(0), "<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label>");
+    strictEqual(r.radioInput(0).isChecked(), true);
+    strictEqual(r.radioInput(1).isChecked(), false);
+    raises(function() { r.radioInput(10); });
 
     // Choices are escaped correctly
     w = new RadioSelect();
-    equals(""+w.render("escape", null, {}, [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]),
+    equal(""+w.render("escape", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]}),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"escape\" value=\"bad\"> you &amp; me</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"escape\" value=\"good\"> you &gt; me</label></li>\n" +
@@ -700,7 +738,7 @@ test("RadioSelect", function()
 
     // Attributes provided at instantiation are passed to the constituent inputs
     w = new RadioSelect({attrs: {id: "foo"}});
-    equals(""+w.render("beatle", "J", {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label for=\"foo_0\"><input id=\"foo_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
 "<li><label for=\"foo_1\"><input id=\"foo_1\" type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>\n" +
@@ -710,7 +748,7 @@ test("RadioSelect", function()
 
     // Attributes provided at render-time are passed to the constituent inputs
     w = new RadioSelect();
-    equals(""+w.render("beatle", "J", {id: "bar"}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatle", "J", {attrs: {id: "bar"}, choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label for=\"bar_0\"><input id=\"bar_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
 "<li><label for=\"bar_1\"><input id=\"bar_1\" type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>\n" +
@@ -721,23 +759,23 @@ test("RadioSelect", function()
 
 test("CheckboxSelectMultiple", function()
 {
-    expect(18);
+    expect(19);
     var w = new CheckboxSelectMultiple();
-    equals(""+w.render("beatles", ["J"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>\n" +
 "</ul>");
-    equals(""+w.render("beatles", ["J", "P"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", ["J", "P"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked=\"checked\"> Paul</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>\n" +
 "</ul>");
-    equals(""+w.render("beatles", ["J", "P", "R"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", ["J", "P", "R"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked=\"checked\"> Paul</label></li>\n" +
@@ -746,7 +784,7 @@ test("CheckboxSelectMultiple", function()
 "</ul>");
 
     // If the value is null, none of the options are selected
-    equals(""+w.render("beatles", null, {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", null, {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\"> John</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>\n" +
@@ -755,7 +793,7 @@ test("CheckboxSelectMultiple", function()
 "</ul>");
 
     // If the value corresponds to a label (but not to an option value), none of the options are selected
-    equals(""+w.render("beatles", ["John"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", ["John"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\"> John</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>\n" +
@@ -764,7 +802,7 @@ test("CheckboxSelectMultiple", function()
 "</ul>");
 
     // If multiple values are given, but some of them are not valid, the valid ones are selected
-    equals(""+w.render("beatles", ["J", "G", "foo"], {}, [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]),
+    equal(""+w.render("beatles", ["J", "G", "foo"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>\n" +
@@ -773,19 +811,19 @@ test("CheckboxSelectMultiple", function()
 "</ul>");
 
     // The value is compared to its String representation
-    equals(""+w.render("nums", [2], {}, [['1', '1'], ['2', '2'], ['3', '3']]),
+    equal(""+w.render("nums", [2], {choices: [['1', '1'], ['2', '2'], ['3', '3']]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>\n" +
 "</ul>");
-    equals(""+w.render("nums", ["2"], {}, [[1, 1], [2, 2], [3, 3]]),
+    equal(""+w.render("nums", ["2"], {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>\n" +
 "</ul>");
-    equals(""+w.render("nums", [2], {}, [[1, 1], [2, 2], [3, 3]]),
+    equal(""+w.render("nums", [2], {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
@@ -794,7 +832,7 @@ test("CheckboxSelectMultiple", function()
 
     // You can also pass 'choices' to the constructor
     w = new CheckboxSelectMultiple({choices: [[1, 1], [2, 2], [3, 3]]});
-    equals(""+w.render("nums", [2]),
+    equal(""+w.render("nums", [2]),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
@@ -802,7 +840,7 @@ test("CheckboxSelectMultiple", function()
 "</ul>");
 
     // If 'choices' is passed to both the constructor and render(), then they'll both be in the output
-    equals(""+w.render("nums", [2], {}, [[4, 4], [5, 5]]),
+    equal(""+w.render("nums", [2], {choices: [[4, 4], [5, 5]]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"> 2</label></li>\n" +
@@ -812,7 +850,7 @@ test("CheckboxSelectMultiple", function()
 "</ul>");
 
     // Choices are escaped correctly
-    equals(""+w.render("escape", null, {}, [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]),
+    equal(""+w.render("escape", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"escape\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"escape\" value=\"2\"> 2</label></li>\n" +
@@ -822,12 +860,13 @@ test("CheckboxSelectMultiple", function()
 "</ul>");
 
     // Test the usage of _hasChanged
-    same(w._hasChanged(null, null), false);
-    same(w._hasChanged([], null), false);
-    same(w._hasChanged(null, [""]), true);
-    same(w._hasChanged([1, 2], ["1", "2"]), false);
-    same(w._hasChanged([1, 2], ["1"]), true);
-    same(w._hasChanged([1, 2], ["1", "3"]), true);
+    strictEqual(w._hasChanged(null, null), false);
+    strictEqual(w._hasChanged([], null), false);
+    strictEqual(w._hasChanged(null, [""]), true);
+    strictEqual(w._hasChanged([1, 2], ["1", "2"]), false);
+    strictEqual(w._hasChanged([1, 2], ["1"]), true);
+    strictEqual(w._hasChanged([1, 2], ["1", "3"]), true);
+    strictEqual(w._hasChanged([2, 1], ["1", "2"]), false);
 });
 
 test("MultiWidget", function()
@@ -848,131 +887,131 @@ test("MultiWidget", function()
 
     expect(8);
     var w = new MyMultiWidget([new TextInput({attrs: {"class": "big"}}), new TextInput({attrs: {"class": "small"}})]);
-    equals(""+w.render("name", ["john", "lennon"]),
-           "<span><input class=\"big\" type=\"text\" name=\"name_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" value=\"lennon\"></span>");
-    equals(""+w.render("name", "john__lennon"),
-           "<span><input class=\"big\" type=\"text\" name=\"name_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" value=\"lennon\"></span>");
-    equals(""+w.render("name", "john__lennon", {id: "foo"}),
-           "<span><input class=\"big\" type=\"text\" name=\"name_0\" id=\"foo_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"foo_1\" value=\"lennon\"></span>");
+    equal(""+w.render("name", ["john", "lennon"]),
+           "<input class=\"big\" type=\"text\" name=\"name_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" value=\"lennon\">");
+    equal(""+w.render("name", "john__lennon"),
+           "<input class=\"big\" type=\"text\" name=\"name_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" value=\"lennon\">");
+    equal(""+w.render("name", "john__lennon", {attrs: {id: "foo"}}),
+           "<input class=\"big\" type=\"text\" name=\"name_0\" id=\"foo_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"foo_1\" value=\"lennon\">");
 
     w = new MyMultiWidget([new TextInput({attrs: {"class": "big"}}), new TextInput({attrs: {"class": "small"}})], {attrs: {id: "bar"}});
-    equals(""+w.render("name", ["john", "lennon"]),
-           "<span><input class=\"big\" type=\"text\" name=\"name_0\" id=\"bar_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"bar_1\" value=\"lennon\"></span>");
+    equal(""+w.render("name", ["john", "lennon"]),
+           "<input class=\"big\" type=\"text\" name=\"name_0\" id=\"bar_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"bar_1\" value=\"lennon\">");
 
     w = new MyMultiWidget([new TextInput(), new TextInput()])
     // Test with no initial data
-    same(w._hasChanged(null, ["john", "lennon"]), true);
+    strictEqual(w._hasChanged(null, ["john", "lennon"]), true);
     // Test when data is the same as initial
-    same(w._hasChanged("john__lennon", ["john", "lennon"]), false);
+    strictEqual(w._hasChanged("john__lennon", ["john", "lennon"]), false);
     // Test when the first widget's data has changed
-    same(w._hasChanged("john__lennon", ["alfred", "lennon"]), true);
+    strictEqual(w._hasChanged("john__lennon", ["alfred", "lennon"]), true);
     // Test when the last widget's data has changed. This ensures that it is
     // not short circuiting while testing the widgets.
-    same(w._hasChanged("john__lennon", ["john", "denver"]), true);
+    strictEqual(w._hasChanged("john__lennon", ["john", "denver"]), true);
 });
 
 test("SplitDateTimeWidget", function()
 {
     expect(8);
     var w = new SplitDateTimeWidget();
-    equals(""+w.render("date", ""),
+    equal(""+w.render("date", ""),
            "<input type=\"text\" name=\"date_0\"><input type=\"text\" name=\"date_1\">");
-    equals(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
+    equal(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
            "<input type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" value=\"07:30:00\">");
-    equals(""+w.render("date", [new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]),
+    equal(""+w.render("date", [new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]),
            "<input type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" value=\"07:30:00\">");
 
     // You can also pass "attrs" to the constructor. In this case, the attrs
     // will be included on both widgets.
     w = new SplitDateTimeWidget({attrs: {"class": "pretty"}});
-    equals(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
+    equal(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
            "<input class=\"pretty\" type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input class=\"pretty\" type=\"text\" name=\"date_1\" value=\"07:30:00\">");
 
     // Use "dateFormat" and "timeFormat" to change the way a value is displayed
     w = new SplitDateTimeWidget({dateFormat: "%d/%m/%Y", timeFormat: "%H:%M"});
-    equals(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
+    equal(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
            "<input type=\"text\" name=\"date_0\" value=\"10/01/2006\"><input type=\"text\" name=\"date_1\" value=\"07:30\">");
 
-    same(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["2008-05-05", "12:40:00"]), true);
-    same(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:40"]), false);
-    same(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:41"]), true);
+    strictEqual(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["2008-05-05", "12:40:00"]), true);
+    strictEqual(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:40"]), false);
+    strictEqual(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:41"]), true);
 });
 
 test("DateTimeInput", function()
 {
     expect(5);
     var w = new DateTimeInput();
-    equals(""+w.render("date", null),
+    equal(""+w.render("date", null),
            "<input type=\"text\" name=\"date\">");
     var d = new Date(2007, 8, 17, 12, 51, 34);
 
-    equals(""+w.render("date", d),
+    equal(""+w.render("date", d),
            "<input type=\"text\" name=\"date\" value=\"2007-09-17 12:51:34\">");
-    equals(""+w.render("date", new Date(2007, 8, 17, 12, 51)),
+    equal(""+w.render("date", new Date(2007, 8, 17, 12, 51)),
            "<input type=\"text\" name=\"date\" value=\"2007-09-17 12:51:00\">");
 
     // Use "format" to change the way a value is displayed
     w = new DateTimeInput({format: "%d/%m/%Y %H:%M"});
-    equals(""+w.render("date", d),
+    equal(""+w.render("date", d),
            "<input type=\"text\" name=\"date\" value=\"17/09/2007 12:51\">");
-    same(w._hasChanged(d, "17/09/2007 12:51"), false);
+    strictEqual(w._hasChanged(d, "17/09/2007 12:51"), false);
 });
 
 test("DateInput", function()
 {
     expect(5);
     var w = new DateInput();
-    equals(""+w.render("date", null),
+    equal(""+w.render("date", null),
            "<input type=\"text\" name=\"date\">");
     var d = new Date(2007, 8, 17);
 
-    equals(""+w.render("date", d),
+    equal(""+w.render("date", d),
            "<input type=\"text\" name=\"date\" value=\"2007-09-17\">");
 
     // We should be able to initialise from a String
-    equals(""+w.render("date", "2007-09-17"),
+    equal(""+w.render("date", "2007-09-17"),
            "<input type=\"text\" name=\"date\" value=\"2007-09-17\">");
 
     // Use "format" to change the way a value is displayed
     w = new DateInput({format: "%d/%m/%Y"});
-    equals(""+w.render("date", d),
+    equal(""+w.render("date", d),
            "<input type=\"text\" name=\"date\" value=\"17/09/2007\">");
-    same(w._hasChanged(d, "17/09/2007"), false);
+    strictEqual(w._hasChanged(d, "17/09/2007"), false);
 });
 
 test("TimeInput", function()
 {
     expect(6);
     var w = new TimeInput();
-    equals(""+w.render("time", null),
+    equal(""+w.render("time", null),
            "<input type=\"text\" name=\"time\">");
     var t = new Date(1900, 0, 1, 12, 51, 34);
 
-    equals(""+w.render("time", t),
+    equal(""+w.render("time", t),
            "<input type=\"text\" name=\"time\" value=\"12:51:34\">");
-    equals(""+w.render("time", new Date(1900, 0, 1, 12, 51)),
+    equal(""+w.render("time", new Date(1900, 0, 1, 12, 51)),
            "<input type=\"text\" name=\"time\" value=\"12:51:00\">");
 
     // We should be able to initialise from a String
-    equals(""+w.render("time", "13:12:11"),
+    equal(""+w.render("time", "13:12:11"),
            "<input type=\"text\" name=\"time\" value=\"13:12:11\">");
 
     // Use "format" to change the way a value is displayed
     w = new TimeInput({format: "%H:%M"});
-    equals(""+w.render("time", t),
+    equal(""+w.render("time", t),
            "<input type=\"text\" name=\"time\" value=\"12:51\">");
-    same(w._hasChanged(t, "12:51"), false);
+    strictEqual(w._hasChanged(t, "12:51"), false);
 });
 
 test("SplitHiddenDateTimeWidget", function()
 {
     expect(3);
     var w = new SplitHiddenDateTimeWidget();
-    equals(""+w.render("date", ""),
+    equal(""+w.render("date", ""),
            "<input type=\"hidden\" name=\"date_0\"><input type=\"hidden\" name=\"date_1\">");
     var d = new Date(2007, 8, 17, 12, 51, 34);
-    equals(""+w.render("date", d),
+    equal(""+w.render("date", d),
            "<input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:34\">");
-    equals(""+w.render("date", new Date(2007, 8, 17, 12, 51)),
+    equal(""+w.render("date", new Date(2007, 8, 17, 12, 51)),
            "<input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:00\">");
 });
