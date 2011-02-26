@@ -373,10 +373,8 @@ ErrorList.prototype.extend = function(errorList)
  */
 ErrorList.prototype.asUL = function()
 {
-    var items = [];
-    for (var i = 0, l = this.errors.length; i < l; i++)
-        items.push(DOMBuilder.createElement("li", {}, [this.errors[i]]));
-    return DOMBuilder.createElement("ul", {"class": "errorlist"}, items);
+    return DOMBuilder.createElement("ul", {"class": "errorlist"},
+        DOMBuilder.map("li", this.errors));
 };
 
 /**
