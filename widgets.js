@@ -292,10 +292,10 @@ ClearableFileInput.prototype.render = function(name, value, kwargs)
         ];
         if (!this.isRequired)
         {
-            var clearCheckboxName = this.clearCheckboxName();
-            var clearCheckboxId = this.clearCheckboxId();
+            var clearCheckboxName = this.clearCheckboxName(name);
+            var clearCheckboxId = this.clearCheckboxId(clearCheckboxName);
             contents = contents.concat([
-                CheckboxInput().render(clearCheckboxName, false, {'id': clearCheckboxId}), " ",
+                new CheckboxInput().render(clearCheckboxName, false, {attrs: {'id': clearCheckboxId}}), " ",
                 DOMBuilder.createElement("label", {"for": clearCheckboxId}, [this.clearCheckboxLabel])
             ]);
         }
@@ -315,7 +315,7 @@ ClearableFileInput.prototype.render = function(name, value, kwargs)
 ClearableFileInput.prototype.valueFromData = function(data, files, name)
 {
     var upload = FileInput.prototype.valueFromData(data, files, name);
-    if (!this.isRequired && new CheckboxInput().valueFromData(data, files, this.clearCheckboxName()))
+    if (!this.isRequired && new CheckboxInput().valueFromData(data, files, this.clearCheckboxName(name)))
     {
         if (upload)
             // If the user contradicts themselves (uploads a new file AND

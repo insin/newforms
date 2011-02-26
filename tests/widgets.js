@@ -912,7 +912,7 @@ test("MultiWidget", function()
 
 test("SplitDateTimeWidget", function()
 {
-    expect(8);
+    expect(12);
     var w = new SplitDateTimeWidget();
     equal(""+w.render("date", ""),
            "<input type=\"text\" name=\"date_0\"><input type=\"text\" name=\"date_1\">");
@@ -935,6 +935,28 @@ test("SplitDateTimeWidget", function()
     strictEqual(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["2008-05-05", "12:40:00"]), true);
     strictEqual(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:40"]), false);
     strictEqual(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:41"]), true);
+
+    // Django #13390  - SplitDateTimeWidget should recognise when it's no
+    // longer required.
+    var SplitDateForm = formFactory({fields: function() {
+        return {
+            field: new DateTimeField({required: false, widget: SplitDateTimeWidget})
+        };
+    }});
+    var f = new SplitDateForm({data: {field: ""}});
+    strictEqual(f.isValid(), true);
+    f = new SplitDateForm({data: {field: ["", ""]}});
+    strictEqual(f.isValid(), true);
+
+    var SplitDateRequiredForm = formFactory({fields: function() {
+        return {
+            field: new DateTimeField({required: true, widget: SplitDateTimeWidget})
+        };
+    }});
+    f = new SplitDateRequiredForm({data: {field: ""}});
+    strictEqual(f.isValid(), false);
+    f = new SplitDateRequiredForm({data: {field: ["", ""]}});
+    strictEqual(f.isValid(), false);
 });
 
 test("DateTimeInput", function()
@@ -1014,4 +1036,60 @@ test("SplitHiddenDateTimeWidget", function()
            "<input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:34\">");
     equal(""+w.render("date", new Date(2007, 8, 17, 12, 51)),
            "<input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:00\">");
+});
+
+test("ClearableFileInput", function()
+{
+    expect(10);
+
+    // Quacks like a FieldFile (has a .url and string representation), but
+    // doesn't require us to care about anything else.
+    var FakeFieldFile = function() { this.url = "something"; };
+    FakeFieldFile.prototype.toString = function() { return this.url;};
+
+    // Clear input renders
+    var w = new ClearableFileInput();
+    w.isRequired = false;
+    equal(""+w.render("myfile", new FakeFieldFile()),
+"Currently: <a href=\"something\">something</a> <input type=\"checkbox\" name=\"myfile-clear\" id=\"myfile-clear_id\"> <label for=\"myfile-clear_id\">Clear</label><br>Change: <input type=\"file\" name=\"myfile\">");
+
+    // A ClearableFileInput should escape name, filename and URL when rendering
+    // HTML.
+    var StrangeFieldFile = function() { this.url = "something?chapter=1&sect=2&copy=3&lang=en"; };
+    StrangeFieldFile.prototype.toString = function() { return "something<div onclick=\"alert('oops')\">.jpg"; };
+    var file = new StrangeFieldFile();
+    var output = ""+w.render("my<div>file", file);
+    equal(output.indexOf(file.url), -1);
+    ok(output.indexOf('href="something?chapter=1&amp;sect=2&amp;copy=3&amp;lang=en"') > -1);
+    equal(output.indexOf(""+file), -1);
+    ok(output.indexOf("my&lt;div&gt;file") > -1);
+    equal(output.indexOf("my<div>file"), -1);
+
+    // A ClearableFileInput instantiated with no initial value does not render
+    // a clear checkbox.
+    equal(""+w.render("myfile", null),
+"<input type=\"file\" name=\"myfile\">");
+
+    // ClearableFileInput.valueFromData returns false if the clear checkbox is
+    // checked, if not required.
+    strictEqual(w.valueFromData({"myfile-clear": true}, {}, "myfile"),
+                false);
+
+    w.isRequired = true;
+
+    // A ClearableFileInput with isRequired=True does not render a clear
+    // checkbox.
+    equal(""+w.render("myfile", new FakeFieldFile()),
+"Currently: <a href=\"something\">something</a> <br>Change: <input type=\"file\" name=\"myfile\">");
+
+    // ClearableFileInput.valueFromData never returns False if the field
+    // is required.
+    function SimpleUploadedFile(name, content)
+    {
+        this.name = name;
+        this.content = content;
+        this.size = (content !== null ? content.length : 0);
+    }
+    var f = new SimpleUploadedFile("something.txt", "content");
+    strictEqual(w.valueFromData({"myfile-clear": true}, {"myfile": f}, "myfile"), f);
 });
