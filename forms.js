@@ -67,7 +67,7 @@ BoundField.prototype =
 {
     /*get */errors: function()
     {
-        return this.form.errors()[this.name] || new this.form.errorConstructor();
+        return this.form.errors(this.name) || new this.form.errorConstructor();
     },
 
     /*get */isHidden: function()
@@ -355,10 +355,12 @@ Form.prototype =
      *
      * @return errors for the data provided for the form.
      */
-    /*get */errors: function()
+    /*get */errors: function(name)
     {
         if (this._errors === null)
             this.fullClean();
+        if (name)
+            return this._errors.get(name);
         return this._errors;
     },
 
@@ -786,9 +788,7 @@ Form.prototype.asP = (function()
  */
 Form.prototype.nonFieldErrors = function()
 {
-    return getDefault(this.errors(),
-                      Form.NON_FIELD_ERRORS,
-                      new this.errorConstructor());
+    return (this.errors(Form.NON_FIELD_ERRORS) || new this.errorConstructor());
 };
 
 /**
@@ -873,7 +873,7 @@ Form.prototype._cleanFields = function()
             if (!(e instanceof ValidationError))
                 throw e;
 
-            this._errors[name] = new this.errorConstructor(e.messages);
+            this._errors.set(name, new this.errorConstructor(e.messages));
             if (typeof this.cleanedData[name] != "undefined")
                 delete this.cleanedData[name];
         }
@@ -890,7 +890,7 @@ Form.prototype._cleanForm = function()
     {
         if (!(e instanceof ValidationError))
             throw e;
-        this._errors[Form.NON_FIELD_ERRORS] = new this.errorConstructor(e.messages);
+        this._errors.set(Form.NON_FIELD_ERRORS, new this.errorConstructor(e.messages));
     }
 };
 

@@ -81,9 +81,9 @@ test("Empty data object", function()
     // Empty objects are valid, too
     var p = new Person({data: {}});
     strictEqual(p.isBound, true);
-    deepEqual(p.errors()["first_name"].errors, ["This field is required."]);
-    deepEqual(p.errors()["last_name"].errors, ["This field is required."]);
-    deepEqual(p.errors()["birthday"].errors, ["This field is required."]);
+    deepEqual(p.errors("first_name").errors, ["This field is required."]);
+    deepEqual(p.errors("last_name").errors, ["This field is required."]);
+    deepEqual(p.errors("birthday").errors, ["This field is required."]);
     deepEqual(p.isValid(), false);
     equal(typeof p.cleanedData, "undefined");
     equal(""+p,
@@ -140,8 +140,8 @@ test("Validation errors", function()
 {
     expect(12);
     var p = new Person({data: {last_name: "Lennon"}});
-    deepEqual(p.errors()["first_name"].errors, ["This field is required."]);
-    deepEqual(p.errors()["birthday"].errors, ["This field is required."]);
+    deepEqual(p.errors("first_name").errors, ["This field is required."]);
+    deepEqual(p.errors("birthday").errors, ["This field is required."]);
     deepEqual(p.isValid(), false);
     equal(""+p.errors().asUL(),
            "<ul class=\"errorlist\"><li>first_name<ul class=\"errorlist\"><li>This field is required.</li></ul></li><li>birthday<ul class=\"errorlist\"><li>This field is required.</li></ul></li></ul>");
@@ -723,7 +723,7 @@ test("Multiple hidden", function()
     // When using MultipleChoiceField, the framework expects a list of input and
     // returns a list of input.
     f = new SongForm({data: {name: "Yesterday"}, autoId: false});
-    deepEqual(f.errors()["composers"].errors, ["This field is required."]);
+    deepEqual(f.errors("composers").errors, ["This field is required."]);
     f = new SongForm({data: {name: "Yesterday", composers: ["J"]}, autoId: false});
     strictEqual(f.errors().isPopulated(), false);
     deepEqual(f.cleanedData["composers"], ["J"]);
@@ -801,11 +801,11 @@ test("Validating multiple fields", function()
     var f = new UserRegistration({autoId: false});
     strictEqual(f.errors().isPopulated(), false);
     f = new UserRegistration({data: {}, autoId: false});
-    deepEqual(f.errors()["username"].errors, ["This field is required."]);
-    deepEqual(f.errors()["password1"].errors, ["This field is required."]);
-    deepEqual(f.errors()["password2"].errors, ["This field is required."]);
+    deepEqual(f.errors("username").errors, ["This field is required."]);
+    deepEqual(f.errors("password1").errors, ["This field is required."]);
+    deepEqual(f.errors("password2").errors, ["This field is required."]);
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false});
-    deepEqual(f.errors()["password2"].errors, ["Please make sure your passwords match."]);
+    deepEqual(f.errors("password2").errors, ["Please make sure your passwords match."]);
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false});
     strictEqual(f.errors().isPopulated(), false);
     equal(f.cleanedData.username, "adrian");
@@ -841,11 +841,11 @@ test("Validating multiple fields", function()
 "<tr><th>Username:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>\n" +
 "<tr><th>Password1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password1\"></td></tr>\n" +
 "<tr><th>Password2:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password2\"></td></tr>")
-    deepEqual(f.errors()["username"].errors, ["This field is required."]);
-    deepEqual(f.errors()["password1"].errors, ["This field is required."]);
-    deepEqual(f.errors()["password2"].errors, ["This field is required."]);
+    deepEqual(f.errors("username").errors, ["This field is required."]);
+    deepEqual(f.errors("password1").errors, ["This field is required."]);
+    deepEqual(f.errors("password2").errors, ["This field is required."]);
     f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false});
-    deepEqual(f.errors()["__all__"].errors, ["Please make sure your passwords match."]);
+    deepEqual(f.errors("__all__").errors, ["Please make sure your passwords match."]);
     equal(f.asTable(),
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
 "<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></td></tr>\n" +
@@ -1329,7 +1329,7 @@ test("Initial data", function()
     // raises a validation error rather than using the initial value for
     // "username".
     p = new UserRegistration({data: {password: "secret"}});
-    deepEqual(p.errors()["username"].errors, ["This field is required."]);
+    deepEqual(p.errors("username").errors, ["This field is required."]);
     strictEqual(p.isValid(), false);
 });
 
@@ -1377,7 +1377,7 @@ test("Dynamic initial data", function()
     // the form raises a validation error rather than using the initial value
     // for "username".
     p = new UserRegistration({data: {password: "secret"}, initial: {username: "django"}});
-    deepEqual(p.errors()["username"].errors, ["This field is required."]);
+    deepEqual(p.errors("username").errors, ["This field is required."]);
     strictEqual(p.isValid(), false);
 
     // If a Form defines "initial" *and* "initial" is passed as a parameter
@@ -1459,7 +1459,7 @@ test("Callable initial data", function()
     // the form raises a validation error rather than using the initial value
     // for 'username'.
     p = new UserRegistration({data: {password: "secret"}, initial: {username: initialDjango, options: initialOptions}});
-    deepEqual(p.errors()["username"].errors, ["This field is required."]);
+    deepEqual(p.errors("username").errors, ["This field is required."]);
     strictEqual(p.isValid(), false);
 
     // If a Form defines "initial" *and* "initial" is passed as a parameter
@@ -1631,9 +1631,9 @@ test("Subclassing forms", function()
 "<li>Haircut type: <input type=\"text\" name=\"haircut_type\"></li>");
 
     var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}});
-    deepEqual(b.errors()["first_name"].errors, ["Method from Person."]);
-    deepEqual(b.errors()["birthday"].errors, ["Method from Instrument."]);
-    deepEqual(b.errors()["last_name"].errors, ["Method from Beatle."]);
+    deepEqual(b.errors("first_name").errors, ["Method from Person."]);
+    deepEqual(b.errors("birthday").errors, ["Method from Instrument."]);
+    deepEqual(b.errors("last_name").errors, ["Method from Beatle."]);
 
     // JavaScript doesn't support multiple inheritance, so this is actually a
     // bit of a hack. These tests will highlight the fallout from this (well,
@@ -1693,9 +1693,9 @@ test("Forms with prefixes", function()
         "person1-birthday": ""
     };
     p = new Person({data: data, prefix: "person1"});
-    deepEqual(p.errors()["first_name"].errors, ["This field is required."]);
-    deepEqual(p.errors()["last_name"].errors, ["This field is required."]);
-    deepEqual(p.errors()["birthday"].errors, ["This field is required."]);
+    deepEqual(p.errors("first_name").errors, ["This field is required."]);
+    deepEqual(p.errors("last_name").errors, ["This field is required."]);
+    deepEqual(p.errors("birthday").errors, ["This field is required."]);
     deepEqual(p.boundField("first_name").errors().errors, ["This field is required."]);
     try { p.boundField("person1-first_name"); } catch(e) { equal(e.message, "Form does not have a 'person1-first_name' field."); }
 
@@ -1707,9 +1707,9 @@ test("Forms with prefixes", function()
         "birthday": "1940-10-9"
     };
     p = new Person({data: data, prefix: "person1"});
-    deepEqual(p.errors()["first_name"].errors, ["This field is required."]);
-    deepEqual(p.errors()["last_name"].errors, ["This field is required."]);
-    deepEqual(p.errors()["birthday"].errors, ["This field is required."]);
+    deepEqual(p.errors("first_name").errors, ["This field is required."]);
+    deepEqual(p.errors("last_name").errors, ["This field is required."]);
+    deepEqual(p.errors("birthday").errors, ["This field is required."]);
 
     // With prefixes, a single data object can hold data for multiple instances
     // of the same form.
@@ -1946,8 +1946,8 @@ test("emptyPermitted", function()
     var data = {artist: "", name: ""};
     var form = new SongForm({data: data, emptyPermitted: false});
     strictEqual(form.isValid(), false)
-    deepEqual(form.errors()["artist"].errors, ["This field is required."]);
-    deepEqual(form.errors()["name"].errors, ["This field is required."]);
+    deepEqual(form.errors("artist").errors, ["This field is required."]);
+    deepEqual(form.errors("name").errors, ["This field is required."]);
     equal(typeof form.cleanedData, "undefined");
 
     // Now let's show what happens when emptyPermitted == true and the form is
@@ -1962,7 +1962,7 @@ test("emptyPermitted", function()
     data = {artist: "The Doors", name: ""};
     form = new SongForm({data: data, emptyPermitted: true});
     strictEqual(form.isValid(), false)
-    deepEqual(form.errors()["name"].errors, ["This field is required."]);
+    deepEqual(form.errors("name").errors, ["This field is required."]);
     equal(typeof form.cleanedData, "undefined");
 
     // If a field is not given in the data then null is returned for its data.

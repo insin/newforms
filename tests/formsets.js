@@ -93,7 +93,7 @@ test("Formset validation", function()
     };
     var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     strictEqual(formset.isValid(), false);
-    deepEqual(formset.errors()[0].votes.errors, ["This field is required."]);
+    deepEqual(formset.errors()[0].get("votes").errors, ["This field is required."]);
 });
 
 test("Formset initial data", function()
@@ -145,7 +145,7 @@ test("Second form partially filled", function()
     };
     var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     strictEqual(formset.isValid(), false);
-    deepEqual([formset.errors()[0].isPopulated(), formset.errors()[1].votes.errors],
+    deepEqual([formset.errors()[0].isPopulated(), formset.errors()[1].get("votes").errors],
          [false, ["This field is required."]]);
 });
 
@@ -166,7 +166,7 @@ test("Delete prefilled data", function()
     };
     var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     strictEqual(formset.isValid(), false);
-    deepEqual([formset.errors()[0].choice.errors, formset.errors()[0].votes.errors],
+    deepEqual([formset.errors()[0].get("choice").errors, formset.errors()[0].get("votes").errors],
          [["This field is required."], ["This field is required."]]);
 });
 
@@ -246,7 +246,7 @@ test("Second form partially filled", function()
     };
     var formset = new MoreChoiceFormSet({data: data, autoId: false, prefix: "choices"});
     strictEqual(formset.isValid(), false);
-    deepEqual([formset.errors()[0].isPopulated(), formset.errors()[1].votes.errors, formset.errors()[2].isPopulated()],
+    deepEqual([formset.errors()[0].isPopulated(), formset.errors()[1].get("votes").errors, formset.errors()[2].isPopulated()],
          [false, ["This field is required."], false]);
 });
 
@@ -851,7 +851,7 @@ test("Form errors are caught by FormSet", function()
     strictEqual(formset.isValid(), false);
     strictEqual(formset.errors()[0].isPopulated(), false);
     strictEqual(formset.errors()[1].isPopulated(), true);
-    deepEqual(formset.errors()[1].pub_date.errors, ["This field is required."]);
+    deepEqual(formset.errors()[1].get("pub_date").errors, ["This field is required."]);
 });
 
 test("Empty formset is valid", function()

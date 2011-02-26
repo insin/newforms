@@ -281,12 +281,12 @@ test("Overriding ErrorList", function()
     var f = new TestForm({data: {first_name: "John"}});
     equal(""+f.boundField("last_name").errors(),
           "<ul class=\"errorlist\"><li>This field is required.</li></ul>");
-    equal(""+f.errors()["__all__"],
+    equal(""+f.errors("__all__"),
           "<ul class=\"errorlist\"><li>I like to be awkward.</li></ul>");
 
     f = new TestForm({data: {first_name: "John"}, errorConstructor: CustomErrorList});
     equal(""+f.boundField("last_name").errors(),
           "<div class=\"error\"><p>This field is required.</p></div>");
-    equal(""+f.errors()["__all__"],
+    equal(""+f.errors("__all__"),
           "<div class=\"error\"><p>I like to be awkward.</p></div>");
 });

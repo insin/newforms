@@ -275,9 +275,20 @@ function strip(s)
  *
  * @constructor
  */
-function ErrorObject()
+function ErrorObject(errors)
 {
+    this.errors = errors || {};
 }
+
+ErrorObject.prototype.set = function(name, error)
+{
+    this.errors[name] = error;
+};
+
+ErrorObject.prototype.get = function(name)
+{
+    return this.errors[name];
+};
 
 ErrorObject.prototype.toString = function()
 {
@@ -297,8 +308,8 @@ ErrorObject.prototype.defaultRendering = function()
  */
 ErrorObject.prototype.isPopulated = function()
 {
-    for (var name in this)
-        if (this.hasOwnProperty(name))
+    for (var name in this.errors)
+        if (this.errors.hasOwnProperty(name))
             return true;
     return false;
 };
@@ -309,9 +320,10 @@ ErrorObject.prototype.isPopulated = function()
 ErrorObject.prototype.asUL = function()
 {
     var items = [];
-    for (var name in this)
-        if (this.hasOwnProperty(name))
-            items.push(DOMBuilder.createElement("li", {}, [name, this[name].defaultRendering()]));
+    for (var name in this.errors)
+        if (this.errors.hasOwnProperty(name))
+            items.push(DOMBuilder.createElement("li", {},
+                           [name, this.errors[name].defaultRendering()]));
 
     if (items.length === 0)
         return DOMBuilder.fragment();
@@ -324,12 +336,12 @@ ErrorObject.prototype.asUL = function()
 ErrorObject.prototype.asText = function()
 {
     var items = [];
-    for (var name in this)
+    for (var name in this.errors)
     {
-        if (this.hasOwnProperty(name))
+        if (this.errors.hasOwnProperty(name))
         {
             items.push("* " + name);
-            var errorList = this[name];
+            var errorList = this.errors[name];
             for (var i = 0, l = errorList.errors.length; i < l; i++)
                 items.push("  * " + errorList.errors[i]);
         }
