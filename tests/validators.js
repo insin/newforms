@@ -1,15 +1,14 @@
-// # -*- coding: utf-8 -*-
 module("validators");
 
 test("validators", function()
 {
-    expect(76);
+    expect(75);
 
     var now = new Date(90000);
     var later = new Date(100000);
     var earlier = new Date(80000);
 
-jQuery.each([
+    var tests = [
     [validateEmail, "email@here.com", null],
     [validateEmail, "weirder-email@here.and.there.com", null],
 
@@ -28,7 +27,6 @@ jQuery.each([
     [validateSlug, " text ", ValidationError],
     [validateSlug, " ", ValidationError],
     [validateSlug, "some@mail.com", ValidationError],
-    [validateSlug, "你好", ValidationError],
     [validateSlug, "\n", ValidationError],
 
     [validateIPV4Address, "1.1.1.1", null],
@@ -106,16 +104,19 @@ jQuery.each([
 
     [new RegexValidator("x"), "y", ValidationError],
     [new RegexValidator(/x/), "y", ValidationError]
-], function(i, a) {
-    if (a[2] === null)
-    {
-        callValidator(a[0], a[1]);
-        ok(true, "valid value '" + a[1] + "' shouldn't raise");
-    }
-    else
-    {
-        raises(function() { callValidator(a[0], a[1]); }, "invalid value '" + a[1] + "' should raise");
-    }
-});
+    ];
 
+    for (var i =0, l = tests.length; i < l; i++)
+    {
+        var a = tests[i];
+        if (a[2] === null)
+        {
+            callValidator(a[0], a[1]);
+            ok(true, "valid value '" + a[1] + "' shouldn't raise");
+        }
+        else
+        {
+            raises(function() { callValidator(a[0], a[1]); }, "invalid value '" + a[1] + "' should raise");
+        }
+    }
 });
