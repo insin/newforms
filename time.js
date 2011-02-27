@@ -54,7 +54,7 @@ function isFunction(o)
  */
 function pad(number)
 {
-    return (number < 10 ?  "0" + number : number);
+    return (number < 10 ? "0" + number : number);
 }
 
 /**
@@ -195,7 +195,8 @@ TimeParser.prototype.compilePattern = function()
         directive = parserDirectives[c];
         if (directive === undefined)
         {
-            throw new Error("strptime format contains an unknown directive: %" + c)
+            throw new Error(
+                "strptime format contains an unknown directive: %" + c);
         }
         else if (isFunction(directive))
         {
@@ -214,7 +215,8 @@ TimeParser.prototype.compilePattern = function()
 
     this.re = new RegExp("^" + pattern.join("") + "$");
     this.matchOrder = matchOrder;
-    TimeParser._cache[this.locale.name + "|" + this.format] = [this.re, matchOrder];
+    TimeParser._cache[this.locale.name + "|" + this.format] = [this.re,
+                                                               matchOrder];
 };
 
 /**
@@ -414,8 +416,7 @@ TimeParser.prototype.parse = function(input)
     // Validate day of month
     var day = time[2], month = time[1], year = time[0];
     if (((month == 4 || month == 6 || month == 9 || month == 11) &&
-        day > 30)
-        ||
+        day > 30) ||
         (month == 2 && day > ((year % 4 == 0 && year % 100 != 0 ||
                                year % 400 == 0) ? 29 : 28)))
     {
@@ -438,11 +439,11 @@ var time = {
         "en": {
             name: "en",
             a: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-            A: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
-                "Saturday"],
+            A: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
+                "Friday", "Saturday"],
             AM: "AM",
-            b: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
-                "Nov", "Dec"],
+            b: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+                "Oct", "Nov", "Dec"],
             B: ["January", "February", "March", "April", "May", "June", "July",
                 "August", "September", "October", "November", "December"],
             PM: "PM"
@@ -450,12 +451,12 @@ var time = {
     },
 
     /**
-     * Retrieves the locale with the given name, falling back to just the language
-     * code finally to the default locale if a locale can't be found; retrieves the
-     * default locale when called without arguments
+     * Retrieves the locale with the given name, falling back to just the
+     * language code finally to the default locale if a locale can't be found;
+     * retrieves the default locale when called without arguments
      *
-     * Locale names can consist of a language code (e.g. ``"en"``) or a language and
-     * region code (e.g. ``"en-GB"``).
+     * Locale names can consist of a language code (e.g. ``"en"``) or a language
+     * and region code (e.g. ``"en-GB"``).
      */
     getLocale: function(code)
     {
@@ -467,8 +468,8 @@ var time = {
             }
             else if (code.length > 2)
             {
-                // If we appear to have more than a language code, try the language
-                // code on its own.
+                // If we appear to have more than a language code, try the
+                // language code on its own.
                 var languageCode = code.substring(0, 2);
                 if (languageCode in this.locales)
                 {
@@ -570,9 +571,10 @@ var time = {
      * </table>
      *
      * @param {Date} date the date to be formatted.
-     * @param {String} format a string specifying how the date should be formatted.
-     * @param {String} [locale] a locale name - if not supplied, the default locale
-     *                          will be used.
+     * @param {String} format a string specifying how the date should be
+     *                        formatted.
+     * @param {String} [locale] a locale name - if not supplied, the default
+     8                          locale will be used.
      *
      * @return a formatted version of the given date.
      */
@@ -586,7 +588,8 @@ var time = {
         {
             var code = f.charAt(1);
             if (typeof formatterDirectives[code] == "undefined") {
-                throw new Error("strftime format contains an unknown directive: " + f);
+                throw new Error(
+                    "strftime format contains an unknown directive: " + f);
             }
             return formatterDirectives[code](date, locale);
         });

@@ -188,7 +188,7 @@ inheritFrom(MultipleHiddenInput, HiddenInput);
 
 MultipleHiddenInput.prototype.render = function(name, value, kwargs)
 {
-    kwargs = extend({attrs: null}, kwargs || {})
+    kwargs = extend({attrs: null}, kwargs || {});
     if (value === null)
         value = [];
     var finalAttrs = this.buildAttrs(kwargs.attrs, {type: this.inputType,
@@ -288,15 +288,18 @@ ClearableFileInput.prototype.render = function(name, value, kwargs)
     {
         var contents = [
             this.initialText, ": ",
-            DOMBuilder.createElement("a", {href:value.url}, [""+value]), " "
+            DOMBuilder.createElement("a", {href: value.url}, [""+value]), " "
         ];
         if (!this.isRequired)
         {
             var clearCheckboxName = this.clearCheckboxName(name);
             var clearCheckboxId = this.clearCheckboxId(clearCheckboxName);
             contents = contents.concat([
-                new CheckboxInput().render(clearCheckboxName, false, {attrs: {'id': clearCheckboxId}}), " ",
-                DOMBuilder.createElement("label", {"for": clearCheckboxId}, [this.clearCheckboxLabel])
+                new CheckboxInput().render(
+                    clearCheckboxName, false, {attrs: {'id': clearCheckboxId}}),
+                " ",
+                DOMBuilder.createElement("label", {"for": clearCheckboxId},
+                                         [this.clearCheckboxLabel])
             ]);
         }
         contents = contents.concat([
@@ -315,13 +318,15 @@ ClearableFileInput.prototype.render = function(name, value, kwargs)
 ClearableFileInput.prototype.valueFromData = function(data, files, name)
 {
     var upload = FileInput.prototype.valueFromData(data, files, name);
-    if (!this.isRequired && new CheckboxInput().valueFromData(data, files, this.clearCheckboxName(name)))
+    if (!this.isRequired &&
+        new CheckboxInput().valueFromData(data, files,
+                                          this.clearCheckboxName(name)))
     {
         if (upload)
             // If the user contradicts themselves (uploads a new file AND
             // checks the "clear" checkbox), we return a unique marker
             // object that FileField will turn into a ValidationError.
-            return FILE_INPUT_CONTRADICTION
+            return FILE_INPUT_CONTRADICTION;
         // false signals to clear any existing value, as opposed to just null
         return false;
     }
@@ -333,8 +338,9 @@ ClearableFileInput.prototype.valueFromData = function(data, files, name)
  *
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Widget}.
- * @config {Object} [attrs] HTML attributes for the rendered widget. Default rows
- *                          and cols attributes will be used if not provided.
+ * @config {Object} [attrs] HTML attributes for the rendered widget. Default
+ *                          rows and cols attributes will be used if not
+ *                          provided.
  * @constructor
  */
 function Textarea(kwargs)
@@ -391,7 +397,8 @@ DateInput.prototype.render = function(name, value, kwargs)
 
 DateInput.prototype._hasChanged = function(initial, data)
 {
-    return Input.prototype._hasChanged.call(this, this._formatValue(initial), data);
+    return Input.prototype._hasChanged.call(
+        this, this._formatValue(initial), data);
 };
 
 /**
@@ -429,7 +436,8 @@ DateTimeInput.prototype.render = function(name, value, kwargs)
 
 DateTimeInput.prototype._hasChanged = function(initial, data)
 {
-    return Input.prototype._hasChanged.call(this, this._formatValue(initial), data);
+    return Input.prototype._hasChanged.call(
+        this, this._formatValue(initial), data);
 };
 
 /**
@@ -448,10 +456,9 @@ function TimeInput(kwargs)
     if (kwargs.format !== null)
         this.format = kwargs.format;
 }
-
 inheritFrom(TimeInput, Input);
 TimeInput.prototype.inputType = "text";
-TimeInput.prototype.format = "%H:%M:%S" // "14:30:59"
+TimeInput.prototype.format = "%H:%M:%S"; // "14:30:59"
 
 TimeInput.prototype._formatValue = function(value)
 {
@@ -468,7 +475,8 @@ TimeInput.prototype.render = function(name, value, kwargs)
 
 TimeInput.prototype._hasChanged = function(initial, data)
 {
-    return Input.prototype._hasChanged.call(this, this._formatValue(initial), data);
+    return Input.prototype._hasChanged.call(
+        this, this._formatValue(initial), data);
 };
 
 /**
@@ -487,7 +495,6 @@ function CheckboxInput(kwargs)
     Widget.call(this, kwargs);
     this.checkTest = kwargs.checkTest;
 }
-
 inheritFrom(CheckboxInput, Widget);
 
 CheckboxInput.prototype.render = function(name, value, kwargs)
@@ -587,9 +594,9 @@ Select.prototype.renderOptions = function(choices, selectedValues)
     // characters isn't part of the spec.
     var selectedValueString = (isString(selectedValues));
     for (var i = 0, l = selectedValues.length; i < l; i++)
-        selectedValuesLookup[""+(selectedValueString
-                                 ? selectedValues.charAt(i)
-                                 : selectedValues[i])] = true;
+        selectedValuesLookup[""+(selectedValueString ?
+                                 selectedValues.charAt(i) :
+                                 selectedValues[i])] = true;
 
     var options = [],
         finalChoices = this.choices.concat(choices || []);
@@ -622,7 +629,8 @@ Select.prototype.renderOptions = function(choices, selectedValues)
     return options;
 };
 
-Select.prototype.renderOption = function(selectedValuesLookup, optValue, optLabel)
+Select.prototype.renderOption = function(selectedValuesLookup, optValue,
+                                         optLabel)
 {
     optValue = ""+optValue;
     var attrs = {value: optValue};
@@ -647,8 +655,7 @@ function NullBooleanSelect(kwargs)
     // Set or overrride choices
     kwargs.choices = [["1", "Unknown"], ["2", "Yes"], ["3", "No"]];
     Select.call(this, kwargs);
-};
-
+}
 inheritFrom(NullBooleanSelect, Select);
 
 NullBooleanSelect.prototype.render = function(name, value, kwargs)
@@ -668,9 +675,11 @@ NullBooleanSelect.prototype.valueFromData = function(data, files, name)
     if (typeof data[name] != "undefined")
     {
         var dataValue = data[name];
-        if (dataValue === true || dataValue == "True" || dataValue == "true" || dataValue == "2")
+        if (dataValue === true || dataValue == "True" || dataValue == "true" ||
+            dataValue == "2")
             value = true;
-        else if (dataValue === false || dataValue == "False" || dataValue == "false" || dataValue == "3")
+        else if (dataValue === false || dataValue == "False" ||
+                 dataValue == "false" || dataValue == "3")
             value = false;
     }
     return value;
@@ -683,7 +692,7 @@ NullBooleanSelect.prototype._hasChanged = function(initial, data)
     if (initial !== null)
         initial = Boolean(initial);
     if (data !== null)
-        data = Boolean(data)
+        data = Boolean(data);
     return initial != data;
 };
 
@@ -845,7 +854,8 @@ RadioFieldRenderer.prototype.radioInputs = function()
 {
     var inputs = [];
     for (var i = 0, l = this.choices.length; i < l; i++)
-        inputs.push(new RadioInput(this.name, this.value, extend({}, this.attrs),
+        inputs.push(new RadioInput(this.name, this.value,
+                                   extend({}, this.attrs),
                                    this.choices[i], i));
     return inputs;
 };
@@ -853,7 +863,7 @@ RadioFieldRenderer.prototype.radioInputs = function()
 RadioFieldRenderer.prototype.radioInput = function(i)
 {
     if (i >= this.choices.length)
-        throw new Error("Index out of bounds")
+        throw new Error("Index out of bounds");
     return new RadioInput(this.name, this.value, extend({}, this.attrs),
                           this.choices[i], i);
 };
@@ -942,7 +952,8 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, kwargs)
     kwargs = extend({attrs: null, choices: []}, kwargs || {});
     if (selectedValues === null)
         selectedValues = [];
-    var hasId = (kwargs.attrs !== null && typeof kwargs.attrs.id != "undefined"),
+    var hasId = (kwargs.attrs !== null &&
+                 typeof kwargs.attrs.id != "undefined"),
         finalAttrs = this.buildAttrs(kwargs.attrs),
         selectedValuesLookup = createLookup(selectedValues),
         checkTest = function(value) {
@@ -964,12 +975,14 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, kwargs)
             labelAttrs["for"] = checkboxAttrs.id;
         }
 
-        var cb = new CheckboxInput({attrs: checkboxAttrs, checkTest: checkTest});
+        var cb = new CheckboxInput({attrs: checkboxAttrs,
+                                    checkTest: checkTest});
         items.push("\n");
         items.push(
             DOMBuilder.createElement("li", {},
                 [DOMBuilder.createElement("label", labelAttrs,
-                                          [cb.render(name, optValue), " ", optLabel])]));
+                                          [cb.render(name, optValue), " ",
+                                           optLabel])]));
     }
     items.push("\n");
     return DOMBuilder.createElement("ul", {}, items);
@@ -996,9 +1009,9 @@ function MultiWidget(widgets, kwargs)
 {
     this.widgets = [];
     for (var i = 0, l = widgets.length; i < l; i++)
-        this.widgets.push(widgets[i] instanceof Widget
-                          ? widgets[i]
-                          : new widgets[i]);
+        this.widgets.push(widgets[i] instanceof Widget ?
+                          widgets[i] :
+                          new widgets[i]);
     Widget.call(this, kwargs);
 }
 inheritFrom(MultiWidget, Widget);

@@ -1,6 +1,7 @@
 /**
  * @fileOverview Formsets are a layer of abstraction to working with multiple
- *               forms on the same page. They can be best compared to data grids.
+ *               forms on the same page. They can be best compared to data
+ *               grids.
  */
 
 // Special field names
@@ -21,7 +22,8 @@ function ManagementForm(kwargs)
     this.fields = {};
     this.fields[TOTAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
     this.fields[INITIAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
-    this.fields[MAX_NUM_FORM_COUNT] = new IntegerField({required: false, widget: HiddenInput});
+    this.fields[MAX_NUM_FORM_COUNT] =
+        new IntegerField({required: false, widget: HiddenInput});
     Form.call(this, kwargs);
 }
 inheritFrom(ManagementForm, Form);
@@ -42,10 +44,10 @@ inheritFrom(ManagementForm, Form);
  *                           <code>"id_%(name)s"</code>.
  * @config {String} [prefix] a prefix to be applied to the name of each field in
  *                           each form instance.
- * @config {Object} [initial] a list of initial form data objects, where property
- *                            names are field names - if a field's value is not
- *                            specified in <code>data</code>, these values will be
- *                            used when rendering field widgets.
+ * @config {Object} [initial] a list of initial form data objects, where
+ *                            property names are field names - if a field's
+ *                            value is not specified in <code>data</code>, these
+ *                            values will be used when rendering field widgets.
  * @config {Function} [errorConstructor] the constructor function to be used
  *                                       when creating error details - defaults
  *                                       to {@link ErrorList}.
@@ -70,7 +72,7 @@ function BaseFormSet(kwargs)
     // Construct the forms in the formset
     this._constructForms();
 }
-BaseFormSet.getDefaultPrefix = function() { return "form"; }
+BaseFormSet.getDefaultPrefix = function() { return "form"; };
 
 BaseFormSet.prototype =
 {
@@ -81,9 +83,11 @@ BaseFormSet.prototype =
     {
         if (this.isBound)
         {
-            var form = new ManagementForm({data: this.data, autoId: this.autoId, prefix: this.prefix});
+            var form = new ManagementForm({data: this.data, autoId: this.autoId,
+                                           prefix: this.prefix});
             if (!form.isValid())
-                throw new ValidationError("ManagementForm data is missing or has been tampered with");
+                throw new ValidationError(
+                    "ManagementForm data is missing or has been tampered with");
         }
         else
         {
@@ -91,7 +95,9 @@ BaseFormSet.prototype =
             initial[TOTAL_FORM_COUNT] = this.totalFormCount();
             initial[INITIAL_FORM_COUNT] = this.initialFormCount();
             initial[MAX_NUM_FORM_COUNT] = this.maxNum;
-            var form = new ManagementForm({autoId: this.autoId, prefix: this.prefix, initial: initial});
+            var form = new ManagementForm({autoId: this.autoId,
+                                           prefix: this.prefix,
+                                           initial: initial});
         }
         return form;
     },
@@ -120,7 +126,7 @@ BaseFormSet.prototype =
             defaults["files"] = this.files;
         }
 
-        var formKwargs = extend(defaults, kwargs || {})
+        var formKwargs = extend(defaults, kwargs || {});
         var form = new this.form(formKwargs);
         this.addFields(form, null);
         return form;
@@ -132,7 +138,8 @@ BaseFormSet.prototype =
     /*get */cleanedData: function()
     {
         if (!this.isValid())
-            throw new Error(this.constructor.name + " object has no attribute 'cleanedData'");
+            throw new Error(this.constructor.name +
+                            " object has no attribute 'cleanedData'");
         var cleaned = [];
         for (var i = 0, l = this.forms.length; i < l; i++)
             cleaned.push(this.forms[i].cleanedData);
@@ -146,7 +153,8 @@ BaseFormSet.prototype =
     /*get */deletedForms: function()
     {
         if (!this.isValid() || !this.canDelete)
-            throw new Error(this.constructor.name + " object has no attribute 'deletedForms'");
+            throw new Error(this.constructor.name +
+                            " object has no attribute 'deletedForms'");
 
         // Construct _deletedFormIndexes, which is just a list of form indexes
         // that have had their deletion widget set to true.
@@ -157,7 +165,7 @@ BaseFormSet.prototype =
             for (var i = 0; i < totalFormCount; i++)
             {
                 var form = this.forms[i];
-                // If this is an extra form and hasn't changed, don't consider it
+                // If this is an extra form and hasn't changed, ignore it
                 if (i >= this.initialFormCount() && !form.hasChanged())
                     continue;
                 if (this._shouldDeleteForm(form))
@@ -178,7 +186,8 @@ BaseFormSet.prototype =
     /*get */orderedForms: function()
     {
         if (!this.isValid() || !this.canOrder)
-            throw new Error(this.constructor.name + " object has no attribute 'orderedForms'");
+            throw new Error(this.constructor.name +
+                            " object has no attribute 'orderedForms'");
 
         // Construct _ordering, which is a list of [form index, orderFieldValue]
         // pairs. After constructing this list, we'll sort it by orderFieldValue
@@ -191,7 +200,7 @@ BaseFormSet.prototype =
             for (var i = 0; i < totalFormCount; i++)
             {
                 var form = this.forms[i];
-                // If this is an extra form and hasn't changed, don't consider it
+                // If this is an extra form and hasn't changed, ignore it
                 if (i >= this.initialFormCount() && !form.hasChanged())
                     continue;
                 // Don't add data marked for deletion
@@ -258,11 +267,13 @@ BaseFormSet.prototype.totalFormCount = function()
             totalForms = this.initialFormCount() + this.extra;
         // Allow all existing related objects/inlines to be displayed, but don't
         // allow extra beyond max_num.
-        if (this.maxNum  !== null && initialForms > this.maxNum && this.maxNum >= 0)
+        if (this.maxNum !== null && initialForms > this.maxNum &&
+            this.maxNum >= 0)
             totalForms = initialForms;
-        if (this.maxNum  !== null && totalForms > this.maxNum && this.maxNum >= 0)
+        if (this.maxNum !== null && totalForms > this.maxNum &&
+            this.maxNum >= 0)
             totalForms = this.maxNum;
-        return totalForms
+        return totalForms;
     }
 };
 
@@ -279,12 +290,13 @@ BaseFormSet.prototype.initialFormCount = function()
     else
     {
         // Use the length of the inital data if it's there, 0 otherwise.
-        var initialForms = (this.initial !== null && this.initial.length > 0
-                            ? this.initial.length
-                            : 0);
-        if (this.maxNum  !== null && initialForms > this.maxNum && this.maxNum >= 0)
+        var initialForms = (this.initial !== null && this.initial.length > 0 ?
+                            this.initial.length :
+                            0);
+        if (this.maxNum !== null && initialForms > this.maxNum &&
+            this.maxNum >= 0)
             initialForms = this.maxNum;
-        return initialForms
+        return initialForms;
     }
 };
 
@@ -369,7 +381,7 @@ BaseFormSet.prototype.isValid = function()
         totalFormCount = this.totalFormCount();
     for (var i = 0; i < totalFormCount; i++)
     {
-        var form = this.forms[i]
+        var form = this.forms[i];
         if (this.canDelete)
             if (this._shouldDeleteForm(form))
                 // This form is going to be deleted so any of its errors should
@@ -432,7 +444,8 @@ BaseFormSet.prototype.addFields = function(form, index)
         // Only pre-fill the ordering field for initial forms.
         if (index !== null && index < this.initialFormCount())
             form.fields[ORDERING_FIELD_NAME] =
-                new IntegerField({label: "Order", initial: index + 1, required: false});
+                new IntegerField({label: "Order", initial: index + 1,
+                                  required: false});
         else
             form.fields[ORDERING_FIELD_NAME] =
                 new IntegerField({label: "Order", required: false});
@@ -454,8 +467,8 @@ BaseFormSet.prototype.addPrefix = function(index)
 };
 
 /**
- * Returns <code>true</code> if the formset needs to be multipart-encrypted, i.e. it has
- * FileInput. Otherwise, <code>false</code>.
+ * Returns <code>true</code> if the formset needs to be multipart-encrypted,
+ * i.e. it has FileInput. Otherwise, <code>false</code>.
  */
 BaseFormSet.prototype.isMultipart = function()
 {
@@ -531,7 +544,8 @@ BaseFormSet.prototype.asUL = function(doNotCoerce)
 function formsetFactory(form, kwargs)
 {
     kwargs = extend({
-        formset: BaseFormSet, extra: 1, canOrder: false, canDelete: false, maxNum: null
+        formset: BaseFormSet, extra: 1, canOrder: false, canDelete: false,
+        maxNum: null
     }, kwargs || {});
 
     var formset = kwargs.formset,

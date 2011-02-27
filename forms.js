@@ -76,8 +76,8 @@ BoundField.prototype =
     },
 
     /**
-     * Calculates and returns the <code>id</code> attribute for this BoundFIeld if
-     * the associated form has an autoId. Returns an empty string otherwise.
+     * Calculates and returns the <code>id</code> attribute for this BoundFIeld
+     * if the associated form has an autoId. Returns an empty string otherwise.
      */
     /*get */autoId: function()
     {
@@ -128,7 +128,8 @@ BoundField.prototype.toString = function()
 BoundField.prototype.defaultRendering = function()
 {
     if (this.field.showHiddenInitial)
-        return DOMBuilder.fragment(this.asWidget(), this.asHidden({onlyInitial: true}));
+        return DOMBuilder.fragment(this.asWidget(),
+                                   this.asHidden({onlyInitial: true}));
     return this.asWidget();
 };
 
@@ -144,7 +145,9 @@ BoundField.prototype.defaultRendering = function()
  */
 BoundField.prototype.asWidget = function(kwargs)
 {
-    kwargs = extend({widget: null, attrs: null, onlyInitial: false}, kwargs || {});
+    kwargs = extend({
+        widget: null, attrs: null, onlyInitial: false
+    }, kwargs || {});
     var widget = (kwargs.widget !== null ? kwargs.widget : this.field.widget),
         attrs = (kwargs.attrs !== null ? kwargs.attrs : {}),
         autoId = this.autoId(),
@@ -203,21 +206,22 @@ BoundField.prototype.value = function()
     {
         data = getDefault(this.form.initial, this.name, this.field.initial);
         if (isFunction(data))
-            data = data()
+            data = data();
     }
     else
     {
-        data = this.field.boundData(this.data(), getDefault(this.form.initial,
-                                                            this.name,
-                                                            this.field.initial));
+        data = this.field.boundData(this.data(),
+                                    getDefault(this.form.initial,
+                                               this.name,
+                                               this.field.initial));
     }
     return this.field.prepareValue(data);
 };
 
 /**
- * Wraps the given contents in a &lt;label&gt;, if the field has an ID attribute.
- * Does not HTML-escape the contents. If contents aren't given, uses the field's
- * HTML-escaped label.
+ * Wraps the given contents in a &lt;label&gt;, if the field has an ID
+ * attribute. Does not HTML-escape the contents. If contents aren't given, uses
+ * the field's HTML-escaped label.
  *
  * If attrs are given, they're used as HTML attributes on the <label> tag.
  *
@@ -254,10 +258,11 @@ BoundField.prototype.cssClasses = function(extraClasses)
     if (extraClasses !== null && isFunction(extraClasses.split))
         extraClasses = extraClasses.split();
     extraClasses = extraClasses || [];
-    if (this.errors().isPopulated() && typeof this.form.errorCssClass != "undefined")
+    if (this.errors().isPopulated() &&
+        typeof this.form.errorCssClass != "undefined")
         extraClasses.push(this.form.errorCssClass);
     if (this.field.required && typeof this.form.requiredCssClass != "undefined")
-        extraClasses.push(this.form.requiredCssClass)
+        extraClasses.push(this.form.requiredCssClass);
     return extraClasses.join(" ");
 };
 
@@ -300,8 +305,9 @@ BoundField.prototype.cssClasses = function(extraClasses)
 function Form(kwargs)
 {
     kwargs = extend({
-        data: null, files: null, autoId: "id_%(name)s", prefix: null, initial: null,
-        errorConstructor: ErrorList, labelSuffix: ":", emptyPermitted: false
+        data: null, files: null, autoId: "id_%(name)s", prefix: null,
+        initial: null, errorConstructor: ErrorList, labelSuffix: ":",
+        emptyPermitted: false
     }, kwargs || {});
     this.isBound = kwargs.data !== null || kwargs.files !== null;
     this.data = kwargs.data || {};
@@ -385,7 +391,8 @@ Form.prototype =
                     dataValue = field.widget.valueFromData(this.data,
                                                            this.files,
                                                            prefixedName),
-                    initialValue = getDefault(this.initial, name, field.initial);
+                    initialValue = getDefault(this.initial, name,
+                                              field.initial);
 
                 if (field.showHiddenInitial)
                 {
@@ -524,7 +531,8 @@ Form.prototype.addPrefix = function(fieldName)
  */
 Form.prototype.addInitialPrefix = function(fieldName)
 {
-    return format("initial-%(fieldName)s", {fieldName: this.addPrefix(fieldName)});
+    return format("initial-%(fieldName)s",
+                  {fieldName: this.addPrefix(fieldName)});
 };
 
 /**
@@ -543,9 +551,11 @@ Form.prototype.addInitialPrefix = function(fieldName)
  *         representing rows, otherwise returns an HTML string, with rows
  *         separated by linebreaks.
  */
-Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, doNotCoerce)
+Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow,
+                                      doNotCoerce)
 {
-    var topErrors = this.nonFieldErrors(), // Errors that should be displayed above all fields
+    // Errors that should be displayed above all fields
+    var topErrors = this.nonFieldErrors(),
         rows = [],
         hiddenFields = [],
         htmlClassAttr = null,
@@ -570,7 +580,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
         htmlClassAttr = "";
         cssClasses = bf.cssClasses();
         if (cssClasses)
-            htmlClassAttr = cssClasses
+            htmlClassAttr = cssClasses;
 
         // Variables which can be optional in each row
         var errors = null, label = null, helpText = null, extraContent = null;
@@ -612,7 +622,8 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
         if (errors !== null)
             errors = errors.defaultRendering();
 
-        rows.push(normalRow(label, bf.defaultRendering(), helpText, errors, htmlClassAttr, extraContent));
+        rows.push(normalRow(label, bf.defaultRendering(), helpText, errors,
+                            htmlClassAttr, extraContent));
     }
 
     if (topErrors.isPopulated())
@@ -646,7 +657,8 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow, 
  */
 Form.prototype.asTable = (function()
 {
-    var normalRow = function(label, field, helpText, errors, htmlClassAttr, extraContent)
+    var normalRow = function(label, field, helpText, errors, htmlClassAttr,
+                             extraContent)
     {
         var contents = [];
         if (errors)
@@ -695,7 +707,8 @@ Form.prototype.asTable = (function()
  */
 Form.prototype.asUL = (function()
 {
-    var normalRow = function(label, field, helpText, errors, htmlClassAttr, extraContent)
+    var normalRow = function(label, field, helpText, errors, htmlClassAttr,
+                             extraContent)
     {
         var contents = [];
         if (errors)
@@ -741,7 +754,8 @@ Form.prototype.asUL = (function()
  */
 Form.prototype.asP = (function()
 {
-    var normalRow = function(label, field, helpText, errors, htmlClassAttr, extraContent)
+    var normalRow = function(label, field, helpText, errors, htmlClassAttr,
+                             extraContent)
     {
         var contents = [];
         if (label)
@@ -768,7 +782,8 @@ Form.prototype.asP = (function()
         {
             // When provided extraContent is usually hidden fields, so we need
             // to give it a block scope wrapper in this case for HTML validity.
-            return DOMBuilder.createElement("div", {}, [errors].concat(extraContent));
+            return DOMBuilder.createElement(
+                "div", {}, [errors].concat(extraContent));
         }
         // Otherwise, just display errors as they are
         return errors;
@@ -855,15 +870,18 @@ Form.prototype._cleanFields = function()
 
             // Try clean_name
             var customClean = "clean_" + name;
-            if (typeof this[customClean] != "undefined" && isFunction(this[customClean]))
+            if (typeof this[customClean] != "undefined" &&
+                isFunction(this[customClean]))
             {
                  this.cleanedData[name] = this[customClean]();
                  continue;
             }
 
             // Try cleanName
-            customClean = "clean" + name.charAt(0).toUpperCase() + name.substr(1);
-            if (typeof this[customClean] != "undefined" && isFunction(this[customClean]))
+            customClean = "clean" + name.charAt(0).toUpperCase() +
+                          name.substr(1);
+            if (typeof this[customClean] != "undefined" &&
+                isFunction(this[customClean]))
             {
                 this.cleanedData[name] = this[customClean]();
             }
@@ -890,7 +908,8 @@ Form.prototype._cleanForm = function()
     {
         if (!(e instanceof ValidationError))
             throw e;
-        this._errors.set(Form.NON_FIELD_ERRORS, new this.errorConstructor(e.messages));
+        this._errors.set(Form.NON_FIELD_ERRORS,
+                         new this.errorConstructor(e.messages));
     }
 };
 
@@ -1017,7 +1036,6 @@ function formFactory(kwargs)
         preInit = kwargs.preInit,
         postInit = kwargs.postInit;
 
-    /** @ignore */
     var formConstructor = function(kwargs)
     {
         if (preInit !== null)
@@ -1055,9 +1073,9 @@ function formFactory(kwargs)
         // Really inherit from the first Form we were passed
         inheritFrom(formConstructor, form[0]);
         // Borrow methods from any additional Forms - this is a bit of a hack to
-        // fake multiple inheritance, using any additonal forms as mixins. We can
-        // only use instanceof for the form we really inherited from, but we can
-        // access methods from all our parents.
+        // fake multiple inheritance, using any additonal forms as mixins. We
+        // can only use instanceof for the form we really inherited from, but we
+        // can access methods from all our parents.
         for (var i = 1, l = form.length; i < l; i++)
         {
             extend(formConstructor.prototype, form[i].prototype);

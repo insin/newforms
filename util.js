@@ -37,7 +37,7 @@ function isCallable(o)
 function callValidator(v, value)
 {
     if (isFunction(v))
-        v(value)
+        v(value);
     else if (isFunction(v.__call__))
         v.__call__(value);
 }
@@ -46,13 +46,13 @@ function callValidator(v, value)
  * Updates an object's properties with other objects' properties.
  *
  * @param {Object} destination the object to be updated.
- * @param {Object} [source] all further arguments will have their properties
- *                          copied to the <code>destination</code> object in the
- *                          order given.
+ * @param {...Object} var_args all further arguments will have their properties
+ *                             copied to the <code>destination</code> object in
+ *                             the order given.
  *
  * @return the <code>destination</code> object.
  */
-function extend(destination)
+function extend(destination, var_args)
 {
     for (var i = 1, l = arguments.length; i < l; i++)
     {
@@ -110,17 +110,6 @@ var format = (function()
     // Closure for accessing a context object from the replacement function
     var replacer = function(context)
     {
-        /**
-         * A replacement function which looks up replacements for a named
-         * placeholder.
-         *
-         * See http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:String:replace#Specifying_a_function_as_a_parameter
-         *
-         * @param {String} s the matched substring to be replaced.
-         * @param {String} name the name of a placeholder.
-         *
-         * @return the replacement for the placeholder with the given name.
-         */
         return function(s, name)
         {
             return context[name];
@@ -396,7 +385,7 @@ ErrorList.prototype.asText = function()
 {
     var items = [];
     for (var i = 0, l = this.errors.length; i < l; i++)
-        items.push( "* " + this.errors[i]);
+        items.push("* " + this.errors[i]);
     return items.join("\n");
 };
 
@@ -456,7 +445,7 @@ urlparse.urlsplit = function(url, default_scheme, allow_fragments)
     if (parts) {
         o.scheme = parts[1] || default_scheme || '';
         o.hostname = parts[3].toLowerCase() || '';
-        o.port = parseInt(parts[4],10) || '';
+        o.port = parseInt(parts[4], 10) || '';
         // Probably should grab the netloc from regexp
         //  and then parse again for hostname/port
 
@@ -476,7 +465,7 @@ urlparse.urlsplit = function(url, default_scheme, allow_fragments)
 
     parts = leftover.match(parse_leftovers);
 
-    o.path =  parts[1] || '';
+    o.path = parts[1] || '';
     o.query = parts[2] || '';
 
     if (allow_fragments) {
@@ -498,7 +487,7 @@ urlparse.urlunsplit = function(o) {
         if (s == '') {
             s += '//';
         }
-        s +=  o.netloc;
+        s += o.netloc;
     } else if (o.hostname) {
         // extension.  Python only uses netloc
         if (s == '') {
