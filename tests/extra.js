@@ -62,12 +62,11 @@ test("MultiWidget and MultiValueField", function()
     var f = new ComplexField({widget: w});
     equals(f.clean(["some text", ["J", "P"], ["2007-04-25", "6:24:00"]]),
            "some text,JP,2007-04-25 06:24:00");
-    try { f.clean(["some text", ["X"], ["2007-04-25", "6:24:00"]]); }
-        catch (e) { equals(e.messages.errors[0], "Select a valid choice. X is not one of the available choices."); }
+    cleanErrorEqual(f, "Select a valid choice. X is not one of the available choices.",
+                    ["some text", ["X"], ["2007-04-25", "6:24:00"]]);
 
     // If insufficient data is provided, null is substituted
-    try { f.clean(["some text", ["JP"]]); }
-        catch (e) { equals(e.messages.errors[0], "This field is required."); }
+    cleanErrorEqual(f, "This field is required.", ["some text", ["JP"]])
 
     var ComplexFieldForm = formFactory({fields: function() {
         return {
@@ -93,4 +92,48 @@ test("MultiWidget and MultiValueField", function()
 "</select><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\" value=\"06:24:00\"></div></td></tr>");
 
     equals(f.cleanedData["field1"], "some text,JP,2007-04-25 06:24:00");
+});
+
+test("Extra attrs", function()
+{
+    expect(1);
+    var extraAttrs = {"class": "special"};
+    var TestForm = formFactory({fields: function() {
+        return {
+            f1: new CharField({maxLength: 10, widget: new TextInput({attrs: extraAttrs})}),
+            f2: new CharField({widget: new TextInput({attrs: extraAttrs})})
+        };
+    }});
+
+    equal(""+new TestForm({autoId: false}).asP(),
+"<p>F1: <input class=\"special\" maxlength=\"10\" type=\"text\" name=\"f1\"></p>\n" +
+"<p>F2: <input class=\"special\" type=\"text\" name=\"f2\"></p>");
+});
+
+
+test("Data field", function()
+{
+    expect(4);
+    var DataForm = formFactory({fields: function() {
+        return {
+            data: new CharField({maxLength: 10})
+        };
+    }})
+
+    var f = new DataForm({data: {data: "xyzzy"}});
+    strictEqual(f.isValid(), true);
+    deepEqual(f.cleanedData, {data: "xyzzy"});
+
+    //  A form with *only* hidden fields that has errors is going to be very
+    // unusual.
+    var HiddenForm = formFactory({fields: function() {
+        return {
+            data: new IntegerField({widget: HiddenInput})
+        };
+    }})
+    f = new HiddenForm({data: {}});
+    equal(""+f.asP(),
+"<div><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>");
+    equal(""+f.asTable(),
+"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>");
 });
