@@ -25,6 +25,9 @@
   <script type="text/javascript" src="forms.js"></script>
   <script type="text/javascript" src="formsets.js"></script>
   <script type="text/javascript">
+  var FakeFile = function() { this.url = "something"; };
+  FakeFile.prototype.toString = function() { return this.url;};
+
   SOURCE_CHOICES = [
     ["", "----------"],
     [1, "In a specialist catalogue"],
@@ -85,9 +88,9 @@
             new EmailField({widget: new TextInput({attrs: {maxlength: "200"}}),
                             label: "Your email address"}),
         zeeMikrofilm:
-            new FileField({label: "Please upload zee mikrofilm"}),
+            new FileField({required: false, label: "Please upload zee mikrofilm"}),
         photo:
-            new ImageField({label: "Photo or it didn't happen"}),
+            new ImageField({required: false, label: "Photo or it didn't happen"}),
         website:
             new URLField({widget: new TextInput({attrs: {size: "50"}}),
                           label: "Your website URL"}),
@@ -158,7 +161,8 @@
       body: "Testing\n\nTesting",
       source: 2,
       stuff: [1,3],
-      checkTheBoxes: [1,5]
+      checkTheBoxes: [1,5],
+      zeeMikrofilm: new FakeFile()
     }];
 
   var formset = new ContactFormFormSet({
