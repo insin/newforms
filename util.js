@@ -420,6 +420,11 @@ function ValidationError(message, kwargs)
     }
 }
 
+ValidationError.prototype.toString = function()
+{
+    return ("ValidationError: " + this.messages.join("; "));
+};
+
 /**
  * Copyright (c) 2010 Nick Galbreath
  * http://code.google.com/p/stringencoders/source/browse/#svn/trunk/javascript
