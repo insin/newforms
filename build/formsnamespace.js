@@ -54,7 +54,6 @@ var forms = {
     DateTimeField: DateTimeField,
     RegexField: RegexField,
     EmailField: EmailField,
-    UploadedFile: UploadedFile,
     FileField: FileField,
     ImageField: ImageField,
     URLField: URLField,
@@ -81,5 +80,12 @@ var forms = {
     allValid: allValid
 };
 
-// Expose forms to the global object
-window.forms = forms;
+// Expose forms to the outside world
+if (modules)
+{
+    module.exports = forms;
+}
+else
+{
+    window.forms = forms;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "js-forms",
+  "description": "Form validation and display library",
+  "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com>",
+  "main": "./js-forms.js"
+}

@@ -1,4 +1,4 @@
-(function(window)
+var time = (function()
 {
 /**
  * Maps directive codes to regular expression patterns which will capture the
@@ -596,6 +596,6 @@ var time = {
     }
 };
 
-window.time = time;
+return time;
 
-})(window);
+})();
