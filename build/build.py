@@ -30,7 +30,7 @@ def main():
         os.mkdir('out')
 
     open('../js-forms.js', 'w').write(js)
-    #open('../js-forms-min.js', 'w').write(google_closure_compress(js))
+    open('../js-forms-min.js', 'w').write(google_closure_compress(js))
 
 def google_closure_compress(js):
     """Optimises and compresses with the Google Closure compiler."""

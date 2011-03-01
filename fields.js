@@ -425,7 +425,7 @@ DecimalField.prototype.defaultErrorMessages =
  * checks will be performed against a normalised string representation of the
  * input, whereas Validators will be passed a float version of teh value for
  * min/max checking.
- * @param {{string|Number}}} value
+ * @param {string|Number} value
  * @return {string} a normalised version of the input.
  */
 DecimalField.prototype.clean = function(value)

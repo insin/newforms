@@ -29,7 +29,7 @@ Widget.prototype.isRequired = false;
  * The 'value' given is not guaranteed to be valid input, so subclass
  * implementations should program defensively.
  */
-Widget.prototype.render = function(value, value, kwargs)
+Widget.prototype.render = function(value, kwargs)
 {
     throw new Error("Subclasses must implement this method.");
 };
