@@ -810,6 +810,17 @@ var copy = (function() {
     }
   });
 
+  // RegExp copier
+  deepCopy.register({
+    canCopy: function(source) {
+      return ( source instanceof RegExp );
+    },
+
+    create: function(source) {
+      return source;
+    }
+  });
+
   return {
     DeepCopyAlgorithm: DeepCopyAlgorithm,
     copy: copy,
