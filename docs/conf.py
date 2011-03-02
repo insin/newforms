@@ -42,6 +42,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'js-forms'
 copyright = u'2011, Jonathan Buchanan'
+highlight_language = 'javascript'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
