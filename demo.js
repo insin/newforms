@@ -18,7 +18,7 @@ function renderToResponse(res, template, context) {
   )
 }
 
-var TestForm = forms.formFactory({
+var TestForm = forms.Form({
   username: new forms.CharField(),
   password: new forms.CharField({widget: forms.PasswordInput}),
 

@@ -3,4 +3,4 @@ FormSets
 
 .. js:class:: BaseFormSet([kwargs])
 
-.. js:function:: formsetFactory(form, [kwargs])
+.. js:function:: FormSet(form, [kwargs])

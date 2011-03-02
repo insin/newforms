@@ -938,7 +938,7 @@ test("SplitDateTimeWidget", function()
 
     // Django #13390  - SplitDateTimeWidget should recognise when it's no
     // longer required.
-    var SplitDateForm = formFactory({
+    var SplitDateForm = Form({
       field: new DateTimeField({required: false, widget: SplitDateTimeWidget})
     });
     var f = new SplitDateForm({data: {field: ""}});
@@ -946,7 +946,7 @@ test("SplitDateTimeWidget", function()
     f = new SplitDateForm({data: {field: ["", ""]}});
     strictEqual(f.isValid(), true);
 
-    var SplitDateRequiredForm = formFactory({
+    var SplitDateRequiredForm = Form({
       field: new DateTimeField({required: true, widget: SplitDateTimeWidget})
     });
     f = new SplitDateRequiredForm({data: {field: ""}});

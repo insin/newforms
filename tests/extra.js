@@ -68,7 +68,7 @@ test("MultiWidget and MultiValueField", function()
     // If insufficient data is provided, null is substituted
     cleanErrorEqual(f, "This field is required.", ["some text", ["JP"]])
 
-    var ComplexFieldForm = formFactory({
+    var ComplexFieldForm = Form({
       field1: new ComplexField({widget: w})
     });
     f = new ComplexFieldForm();
@@ -96,7 +96,7 @@ test("Extra attrs", function()
 {
     expect(1);
     var extraAttrs = {"class": "special"};
-    var TestForm = formFactory({
+    var TestForm = Form({
       f1: new CharField({maxLength: 10, widget: new TextInput({attrs: extraAttrs})}),
       f2: new CharField({widget: new TextInput({attrs: extraAttrs})})
     });
@@ -110,7 +110,7 @@ test("Extra attrs", function()
 test("Data field", function()
 {
     expect(4);
-    var DataForm = formFactory({
+    var DataForm = Form({
       data: new CharField({maxLength: 10})
     })
 
@@ -120,7 +120,7 @@ test("Data field", function()
 
     //  A form with *only* hidden fields that has errors is going to be very
     // unusual.
-    var HiddenForm = formFactory({
+    var HiddenForm = Form({
       data: new IntegerField({widget: HiddenInput})
     })
     f = new HiddenForm({data: {}});

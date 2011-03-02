@@ -676,7 +676,7 @@ test("NullBooleanField", function()
     strictEqual(f.clean("hello"), null);
 
     // Make sure that the internal value is preserved if using HiddenInput (Django #7753)
-    var HiddenNullBooleanForm = formFactory({
+    var HiddenNullBooleanForm = Form({
       hidden_nullbool1: new NullBooleanField({widget: HiddenInput, initial: true}),
       hidden_nullbool2: new NullBooleanField({widget: HiddenInput, initial: false})
     });
@@ -688,7 +688,7 @@ test("NullBooleanField", function()
     // Make sure we're compatible with MySQL, which uses 0 and 1 for its boolean
     // values. (Django #9609)
     var NULLBOOL_CHOICES = [["1", "Yes"], ["0", "No"], ["", "Unknown"]];
-    var MySQLNullBooleanForm = formFactory({
+    var MySQLNullBooleanForm = Form({
       nullbool0: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})}),
       nullbool1: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})}),
       nullbool2: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})})

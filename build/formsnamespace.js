@@ -72,11 +72,11 @@ var forms = {
     // forms.js
     BoundField: BoundField,
     BaseForm: BaseForm,
-    formFactory: formFactory,
+    Form: Form,
     // formsets.js
     ManagementForm: ManagementForm,
     BaseFormSet: BaseFormSet,
-    formsetFactory: formsetFactory,
+    FormSet: FormSet,
     allValid: allValid
 };
 

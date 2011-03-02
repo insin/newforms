@@ -252,7 +252,7 @@ test("Overriding ErrorList", function()
 {
     expect(4);
 
-    var TestForm = formFactory({
+    var TestForm = Form({
       first_name: new CharField(),
       last_name: new CharField(),
       birthday: new DateField(),

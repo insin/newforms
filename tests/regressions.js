@@ -5,7 +5,7 @@ test("deepCopy", function()
     expect(1);
 
     // Copied RegExps were throwing a "called on incompatible Object" exception
-    var TestForm = formFactory({
+    var TestForm = Form({
       regex: new RegexField(/test/),
       email: new EmailField(),
       url: new URLField()

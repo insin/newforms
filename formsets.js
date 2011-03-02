@@ -24,7 +24,7 @@ var ManagementForm = (function()
     fields[INITIAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
     fields[MAX_NUM_FORM_COUNT] =
       new IntegerField({required: false, widget: HiddenInput});
-    return formFactory(fields);
+    return Form(fields);
 })();
 
 /**
@@ -523,14 +523,13 @@ BaseFormSet.prototype.asUL = function(doNotCoerce)
  *
  * @param {Form} form the constructor for the Form to be managed.
  * @param {Object} [kwargs] arguments defining options for the created FormSet
- *                          constructor - all arguments other than those
- *                          defined below will be added to the new formset
- *                          constructor's prototype, so this object can also be
- *                          used to define new methods on the resulting formset,
- *                          such as a custom <code>clean</code> method.
+ *     constructor - all arguments other than those defined below will be added
+ *     to the new formset constructor's <code>prototype</code>, so this object
+ *     can also be used to define new methods on the resulting formset, such as
+ *     a custom <code>clean</code> method.
  * @config {Function} [formset] the constructuer which will provide the
- *                              prototype for the created FormSet constructor
- *                              - defaults to {@link BaseFormSet}.
+ *     prototype for the created FormSet constructor - defaults to
+ *     <code>BaseFormSet</code>.
  * @config {Number} [extra] the number of extra forms to be displayed - defaults
  *                          to <code>1</code>.
  * @config {Boolean} [canOrder] if <code>true</code>, forms can be ordered -
@@ -540,7 +539,7 @@ BaseFormSet.prototype.asUL = function(doNotCoerce)
  * @config {Number} [maxNum] the maximum number of forms to be displayed -
  *                           defaults to <code>0</code>.
  */
-function formsetFactory(form, kwargs)
+function FormSet(form, kwargs)
 {
     kwargs = extend({
         formset: BaseFormSet, extra: 1, canOrder: false, canDelete: false,

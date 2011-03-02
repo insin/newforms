@@ -986,36 +986,31 @@ BaseForm.prototype.visibleFields = function()
  * manually defining a new form class and wiring up convenience hooks into the
  * form initialisation process.
  *
- * @param {Object} kwargs arguments defining options for the created Form
- *                        constructor - all arguments other than those defined
- *                        below will be added to the new form constructor's
- *                        prototype, so this object can also be used to define
- *                        new methods on the resulting form, such as custom
- *                        <code>clean</code> and <code>cleanFIELD_NAME</code>
- *                        methods.
+ * @param {Object} kwargs arguments defining options for the created form
+ *     constructor. Arguments which are <code>Field</code> instances will
+ *     contribute towards the form's <code>baseFields</code>. All remaining
+ *     arguments other than those defined below will be added to the new form
+ *     constructor's <code>prototype</code>, so this object can also be used to
+ *     define new methods on the resulting form, such as custom
+ *     <code>clean</code> and <code>cleanFieldName</code> methods.
  * @config {Function} [form] the Form constructor which will provide the
- *                           prototype for the new Form constructor - defaults
- *                           to {@link Form}.
+ *     prototype for the new Form constructor - defaults to
+ *     <code>BaseForm</code>.
  * @config {Function} [preInit] if provided, this function will be invoked with
- *                              any keyword arguments which are passed when a
- *                              new instance of the form is being created,
- *                              before fields have been created and the
- *                              prototype constructor called - if a value is
- *                              returned from the function, it will be used as
- *                              the kwargs object for further processing, so
- *                              typical usage of this function would be to set
- *                              default kwarg arguments or pop and store kwargs
- *                              as properties of the form object being created.
+ *     any keyword arguments which are passed when a new instance of the form is
+ *     being created, *before* fields have been created and the prototype
+ *     constructor called - if a value is returned from the function, it will be
+ *     used as the kwargs object for further processing, so typical usage of
+ *     this argument would be to set default kwarg arguments or pop and store
+ *     kwargs as properties of the form object being created.
  * @config {Function} [postInit] if provided, this function will be invoked with
- *                               any keyword arguments which are passed when a
- *                               new instance of the form is being created,
- *                               after fields have been created and the
- *                               prototype constructor called - typical usage of
- *                               this function would be to dynamically alter the
- *                               form fields which have just been created or to
- *                               add/remove fields in this.fields.
+ *     any keyword arguments which are passed when a new instance of the form is
+ *     being created, *after* fields have been created and the prototype
+ *     constructor called - typical usage of this function would be to
+ *     dynamically alter the form fields which have just been created or to
+ *     add/remove fields by altering <code>this.fields</code>.
  */
-function formFactory(kwargs)
+function Form(kwargs)
 {
     kwargs = extend({
        form: BaseForm, preInit: null, postInit: null
@@ -1027,7 +1022,7 @@ function formFactory(kwargs)
         preInit = kwargs.preInit,
         postInit = kwargs.postInit;
 
-    // Deliberately shadowing the formFactory's kwargs so we can't accidentally
+    // Deliberately shadowing the Form's kwargs so we can't accidentally
     // use it.
     var formConstructor = function(kwargs)
     {

@@ -5,4 +5,4 @@ Forms
 
 .. js:class:: BoundField(form, field, name)
 
-.. js:function:: formFactory(kwargs)
+.. js:function:: Form(kwargs)
