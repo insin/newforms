@@ -74,9 +74,9 @@ URLValidator.prototype.__call__ = function(value)
     //if (this.verifyExists === true) {}
 };
 
-function EmailValidator()
+function EmailValidator(regex, message, code)
 {
-    RegexValidator.apply(this, arguments);
+    RegexValidator.call(this, regex, message, code);
 }
 inheritFrom(EmailValidator, RegexValidator);
 
