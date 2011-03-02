@@ -1441,8 +1441,7 @@ test("Help text", function()
 
 test("Subclassing forms", function()
 {
-    // TODO Re-enable when faux-multiple inheritance is reimplemented
-    //expect(9);
+    expect(9);
     // You can subclass a Form to add fields. The resulting form subclass will
     // have all of the fields of the parent Form, plus whichever fields you
     // define in the subclass.
@@ -1466,10 +1465,8 @@ test("Subclassing forms", function()
 "<li>Birthday: <input type=\"text\" name=\"birthday\"></li>\n" +
 "<li>Instrument: <input type=\"text\" name=\"instrument\"></li>");
 
-    // TODO Re-enable when faux-multiple inheritance is reimplemented
-    // You can subclass multiple forms by passing a list of constructors. The
+    // You can "subclass" multiple forms by passing a list of constructors. The
     // fields are added in the order in which the parent Forms are listed.
-    /*
     var Person = Form({
       first_name: new CharField(),
       last_name: new CharField(),
@@ -1513,13 +1510,12 @@ test("Subclassing forms", function()
     // JavaScript doesn't support multiple inheritance, so this is actually a
     // bit of a hack. These tests will highlight the fallout from this (well,
     // the ones I know about, at least).
-    strictEqual(b instanceof Form, true);
+    strictEqual(b instanceof BaseForm, true);
     strictEqual(b instanceof Person, true);
     // An instance of the first Form passed as a parent is used as the base
     // prototype object for our new Form - methods are merely borrowed from any
     // additional Forms, so instanceof only works for the first Form passed.
     strictEqual(b instanceof Instrument, false);
-    */
 });
 
 test("Forms with prefixes", function()

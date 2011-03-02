@@ -2,8 +2,6 @@
 TODO
 ====
 
-- Re-implement faux-multiple inheritance.
-
 Porting Django Modules / Changesets
 ===================================
 

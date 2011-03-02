@@ -1016,14 +1016,14 @@ function Form(kwargs)
        form: BaseForm, preInit: null, postInit: null
     }, kwargs || {});
 
-    // Create references to special functions which will be closed over by the
+    // Create references to special kwargs which will be closed over by the
     // new form constructor.
-    var form = kwargs.form,
-        preInit = kwargs.preInit,
+    var bases = isArray(kwargs.form) ? kwargs.form : [kwargs.form],
+        preInit = kwargs.preInit
         postInit = kwargs.postInit;
 
-    // Deliberately shadowing the Form's kwargs so we can't accidentally
-    // use it.
+    // Deliberately shadowing the outer function's kwargs so it won't be
+    // accessible.
     var formConstructor = function(kwargs)
     {
         if (preInit !== null)
@@ -1031,13 +1031,24 @@ function Form(kwargs)
             // as the kwargs object for further processing.
             kwargs = preInit.call(this, kwargs) || kwargs;
 
-        form.call(this, kwargs);
+        // Instantiate using the first base form we were given
+        bases[0].call(this, kwargs);
 
         if (postInit !== null)
             postInit.call(this, kwargs);
     };
 
-    // Grab fields from kwargs to contribute towards baseFields.
+    // *Really* inherit from the first base form we were passed
+    inheritFrom(formConstructor, bases[0]);
+
+    // Borrow methods from any additional base forms - this is a bit of a hack
+    // to fake multiple inheritance, using any additonal base forms as mixins.
+    // We can only use instanceof for the form we really inherited from, but we
+    // can access methods from all our "parents".
+    for (var i = 1, l = bases.length; i < l; i++)
+        extend(formConstructor.prototype, bases[i].prototype);
+
+    // Pop fields from kwargs to contribute towards baseFields.
     var fields = [];
     for (var name in kwargs)
     {
@@ -1051,51 +1062,23 @@ function Form(kwargs)
     {
         return a[1].creationCounter - b[1].creationCounter;
     });
+    // Note that we loop over the base forms in *reverse* to preserve the
+    // correct order of fields. Fields from any given base forms will be first,
+    // in the order they were given; fields from kwargs will be last.
+    for (var i = bases.length - 1; i >= 0; i--)
+        if (typeof bases[i].prototype.baseFields != "undefined")
+            fields =
+                objectItems(bases[i].prototype.baseFields).concat(fields);
+    // Instantiate baseFields from our list of [name, field] pairs
+    formConstructor.prototype.baseFields = itemsToObject(fields);
 
-    // Remove special properties from kwargs, as they will now be used to add
-    // properties to the prototype.
+    // Remove any "special" properties from kwargs, as they will now be used to
+    // add remaining properties to the new prototype.
     delete kwargs.form;
     delete kwargs.preInit;
     delete kwargs.postInit;
-
-    /* TODO Get faux-multiple inheritance working again - it's just too late for this right now ;-(
-    if (isArray(form))
-    {
-        // Really inherit from the first Form we were passed
-        inheritFrom(formConstructor, form[0]);
-
-        // Note that we loop over the forms in *reverse*. This is necessary in
-        // order to preserve the correct order of fields.
-        for (var i = form.length - 1; i >= 0; i--)
-            if (typeof form[i].prototype.baseFields != "undefined")
-                fields =
-                    objectItems(form[i].prototype.baseFields).concat(fields);
-
-        // Borrow methods from any additional Forms - this is a bit of a hack to
-        // fake multiple inheritance, using any additonal forms as mixins. We
-        // can only use instanceof for the form we really inherited from, but we
-        // can access methods from all our parents.
-        for (var i = 1, l = form.length; i < l; i++)
-        {
-            extend(formConstructor.prototype, form[i].prototype);
-        }
-
-        // Anything else defined in kwargs should take precedence
-        extend(formConstructor.prototype, kwargs);
-    }
-    else
-    {
-        // Single inheritance, as below
-    }
-    */
-
-    inheritFrom(formConstructor, form);
+    // Anything else defined in kwargs should take precedence
     extend(formConstructor.prototype, kwargs);
-    // Create the baseFields Object and set it on the new form constructor's
-    // prototype.
-    if (typeof form.prototype.baseFields != "undefined")
-        fields = objectItems(form.prototype.baseFields).concat(fields);
-    formConstructor.prototype.baseFields = itemsToObject(fields);
 
     return formConstructor;
 }
