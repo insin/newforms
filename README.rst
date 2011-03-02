@@ -42,8 +42,9 @@ and feedback, will be the focus of future work.
 In lieu of documentation and an official distribution build - which will
 be forthcoming - here's a quick guide to getting started with js-forms.
 
-* Run ``build/build.py`` to generate a single ``js-forms.js`` file, which
-  defines a ``forms`` namespace object from the component source files.
+* Run ``build/build.py`` to generate a single ``js-forms.js``
+  distribution file, which assembles the component source files and
+  defines a ``forms`` namespace object.
 
   The API exposed by this object is defined in ``build/formsnamespace.js``.
 

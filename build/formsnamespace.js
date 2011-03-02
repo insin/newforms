@@ -1,4 +1,5 @@
 var forms = {
+    version: "0.1 (alpha)",
     // util.js
     callValidator: callValidator,
     inheritFrom: inheritFrom,

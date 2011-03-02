@@ -1,9 +1,10 @@
 import os
 
 DIRNAME = os.path.dirname(__file__)
-TIME_SOURCE_FILES = ('../time.js',)
-FORMS_SOURCE_FILES = ('../util.js', '../validators.js', '../widgets.js',
-                      '../fields.js', '../forms.js', '../formsets.js')
+TIME_SOURCE_FILES = ('../src/time.js',)
+FORMS_SOURCE_FILES = ('../src/util.js', '../src/validators.js',
+                      '../src/widgets.js', '../src/fields.js',
+                      '../src/forms.js', '../src/formsets.js')
 FORMS_NAMESPACE = 'formsnamespace.js'
 CODE_TEMPLATE = """(function(__global__)
 {
@@ -25,9 +26,6 @@ def main():
                                 for f in FORMS_SOURCE_FILES]),
         'formsnamepace': open(os.path.normpath(FORMS_NAMESPACE), 'r').read(),
     }
-
-    if not os.path.isdir('out'):
-        os.mkdir('out')
 
     open('../js-forms.js', 'w').write(js)
     open('../js-forms-min.js', 'w').write(google_closure_compress(js))
