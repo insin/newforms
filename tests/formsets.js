@@ -3,23 +3,19 @@ module("formsets");
 (function()
 {
 
-var ChoiceForm = formFactory({fields: function() {
-    return {
-        choice: new CharField(),
-        votes: new IntegerField()
-    };
-}});
+var ChoiceForm = formFactory({
+  choice: new CharField(),
+  votes: new IntegerField()
+});
 
 // FormSet allows us to use multiple instance of the same form on 1 page.
 // For now, the best way to create a FormSet is by using the formsetFactory
 // function.
 var ChoiceFormSet = formsetFactory(ChoiceForm);
 
-var FavouriteDrinkForm = formFactory({fields: function() {
-    return {
-        name: new CharField()
-    };
-}});
+var FavouriteDrinkForm = formFactory({
+  name: new CharField()
+});
 
 // Utility methods for displaying results
 function allAsUL(forms)
@@ -323,9 +319,9 @@ test("FormSet with deletion", function()
     // If we fill a form with something and then we check the canDelete checkbox
     // for that form, that form's errors should not make the entire formset
     // invalid since it's going to be deleted.
-    var CheckForm = formFactory({fields: function() {
-        return { field: new IntegerField({minValue: 100}) };
-    }});
+    var CheckForm = formFactory({
+        field: new IntegerField({minValue: 100})
+    });
 
     data = {
         "check-TOTAL_FORMS": "3",
@@ -509,11 +505,9 @@ test("Invalid deleted form with ordering", function()
     expect(2);
     // Should be able to get ordered forms from a valid formset even if a
     // deleted form would have been invalid.
-    var PersonForm = formFactory({fields: function() {
-        return {
-            name: new CharField()
-        };
-    }});
+    var PersonForm = formFactory({
+      name: new CharField()
+    });
     var PeopleFormSet = formsetFactory(PersonForm, {canDelete: true, canOrder: true});
     var p = new PeopleFormSet({data: {
         "form-0-name": "",
@@ -804,12 +798,10 @@ test("FormSet asUL", function()
 });
 
 // 3 Regression tests for Django issue #11418
-var ArticleForm = formFactory({fields: function() {
-    return {
-        title: new CharField(),
-        pub_date: new DateField()
-    };
-}});
+var ArticleForm = formFactory({
+  title: new CharField(),
+  pub_date: new DateField()
+});
 
 var ArticleFormSet = formsetFactory(ArticleForm);
 

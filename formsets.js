@@ -17,16 +17,15 @@ var TOTAL_FORM_COUNT = "TOTAL_FORMS",
  * count field of this form as well.
  * @constructor
  */
-function ManagementForm(kwargs)
+var ManagementForm = (function()
 {
-    this.fields = {};
-    this.fields[TOTAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
-    this.fields[INITIAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
-    this.fields[MAX_NUM_FORM_COUNT] =
-        new IntegerField({required: false, widget: HiddenInput});
-    Form.call(this, kwargs);
-}
-inheritFrom(ManagementForm, Form);
+    var fields = {};
+    fields[TOTAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
+    fields[INITIAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
+    fields[MAX_NUM_FORM_COUNT] =
+      new IntegerField({required: false, widget: HiddenInput});
+    return formFactory(fields);
+})();
 
 /**
  * A collection of instances of the same Form.

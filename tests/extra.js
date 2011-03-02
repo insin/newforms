@@ -68,11 +68,9 @@ test("MultiWidget and MultiValueField", function()
     // If insufficient data is provided, null is substituted
     cleanErrorEqual(f, "This field is required.", ["some text", ["JP"]])
 
-    var ComplexFieldForm = formFactory({fields: function() {
-        return {
-            field1: new ComplexField({widget: w})
-        };
-    }});
+    var ComplexFieldForm = formFactory({
+      field1: new ComplexField({widget: w})
+    });
     f = new ComplexFieldForm();
     equals(""+f,
 "<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" id=\"id_field1_0\"><select name=\"field1_1\" multiple=\"multiple\" id=\"id_field1_1\">\n" +
@@ -98,12 +96,10 @@ test("Extra attrs", function()
 {
     expect(1);
     var extraAttrs = {"class": "special"};
-    var TestForm = formFactory({fields: function() {
-        return {
-            f1: new CharField({maxLength: 10, widget: new TextInput({attrs: extraAttrs})}),
-            f2: new CharField({widget: new TextInput({attrs: extraAttrs})})
-        };
-    }});
+    var TestForm = formFactory({
+      f1: new CharField({maxLength: 10, widget: new TextInput({attrs: extraAttrs})}),
+      f2: new CharField({widget: new TextInput({attrs: extraAttrs})})
+    });
 
     equal(""+new TestForm({autoId: false}).asP(),
 "<p>F1: <input class=\"special\" maxlength=\"10\" type=\"text\" name=\"f1\"></p>\n" +
@@ -114,11 +110,9 @@ test("Extra attrs", function()
 test("Data field", function()
 {
     expect(4);
-    var DataForm = formFactory({fields: function() {
-        return {
-            data: new CharField({maxLength: 10})
-        };
-    }})
+    var DataForm = formFactory({
+      data: new CharField({maxLength: 10})
+    })
 
     var f = new DataForm({data: {data: "xyzzy"}});
     strictEqual(f.isValid(), true);
@@ -126,11 +120,9 @@ test("Data field", function()
 
     //  A form with *only* hidden fields that has errors is going to be very
     // unusual.
-    var HiddenForm = formFactory({fields: function() {
-        return {
-            data: new IntegerField({widget: HiddenInput})
-        };
-    }})
+    var HiddenForm = formFactory({
+      data: new IntegerField({widget: HiddenInput})
+    })
     f = new HiddenForm({data: {}});
     equal(""+f.asP(),
 "<div><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>");

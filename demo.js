@@ -19,12 +19,9 @@ function renderToResponse(res, template, context) {
 }
 
 var TestForm = forms.formFactory({
-  fields: function() {
-    return {
-      username: new forms.CharField(),
-      password: new forms.CharField({widget: forms.PasswordInput})
-    };
-  },
+  username: new forms.CharField(),
+  password: new forms.CharField({widget: forms.PasswordInput}),
+
   clean: function() {
     if (this.cleanedData.username && this.cleanedData.password &&
         (this.cleanedData.username != 'admin' ||
@@ -52,3 +49,4 @@ app.post('/', function(req, res) {
 });
 
 app.listen(3000);
+console.log('js-forms demo running on http://127.0.0.1:3000');

@@ -677,13 +677,8 @@ test("NullBooleanField", function()
 
     // Make sure that the internal value is preserved if using HiddenInput (Django #7753)
     var HiddenNullBooleanForm = formFactory({
-        fields: function()
-        {
-            return {
-                hidden_nullbool1: new NullBooleanField({widget: HiddenInput, initial: true}),
-                hidden_nullbool2: new NullBooleanField({widget: HiddenInput, initial: false})
-            };
-        }
+      hidden_nullbool1: new NullBooleanField({widget: HiddenInput, initial: true}),
+      hidden_nullbool2: new NullBooleanField({widget: HiddenInput, initial: false})
     });
     f = new HiddenNullBooleanForm({data: {hidden_nullbool1: "true", hidden_nullbool2: "false"}});
     f.fullClean();
@@ -694,14 +689,9 @@ test("NullBooleanField", function()
     // values. (Django #9609)
     var NULLBOOL_CHOICES = [["1", "Yes"], ["0", "No"], ["", "Unknown"]];
     var MySQLNullBooleanForm = formFactory({
-        fields: function()
-        {
-            return {
-                nullbool0: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})}),
-                nullbool1: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})}),
-                nullbool2: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})})
-            };
-        }
+      nullbool0: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})}),
+      nullbool1: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})}),
+      nullbool2: new NullBooleanField({widget: new RadioSelect({choices: NULLBOOL_CHOICES})})
     });
     f = new MySQLNullBooleanForm({data: {nullbool0: "1", nullbool1: "0", nullbool2: ""}});
     f.fullClean();

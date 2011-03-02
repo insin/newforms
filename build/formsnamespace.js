@@ -71,7 +71,7 @@ var forms = {
     SlugField: SlugField,
     // forms.js
     BoundField: BoundField,
-    Form: Form,
+    BaseForm: BaseForm,
     formFactory: formFactory,
     // formsets.js
     ManagementForm: ManagementForm,

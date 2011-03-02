@@ -302,7 +302,7 @@ BoundField.prototype.cssClasses = function(extraClasses)
  *                                    <code>false</code>.
  * @constructor
  */
-function Form(kwargs)
+function BaseForm(kwargs)
 {
     kwargs = extend({
         data: null, files: null, autoId: "id_%(name)s", prefix: null,
@@ -321,10 +321,11 @@ function Form(kwargs)
     this._errors = null; // Stores errors after clean() has been called
     this._changedData = null;
 
-    // TODO Basefields/deep copying?
-    // Assume subclasses will set fields in their constructor for now, but is
-    // there a nice way to get anything like the more declarative syntax
-    // Python's metaclassing gives Django?
+    // The baseFields  attribute is the *prototype-wide* definition of fields.
+    // Because a particular *instance* might want to alter this.fields, we
+    // create this.fields here by deep copying baseFields. Instances should
+    // always modify this.fields; they should not modify baseFields.
+    this.fields = copy.deepCopy(this.baseFields)
 
     /* Is there any hope of ever replacing __getitem__ properly?
     if (typeof this.fields != "undefined")
@@ -351,9 +352,9 @@ function Form(kwargs)
 }
 
 /** Property under which non-field-specific errors are stored. */
-Form.NON_FIELD_ERRORS = '__all__';
+BaseForm.NON_FIELD_ERRORS = '__all__';
 
-Form.prototype =
+BaseForm.prototype =
 {
     /**
      * Getter for errors, which first cleans the form if there are no errors
@@ -415,12 +416,12 @@ Form.prototype =
     }
 };
 
-Form.prototype.toString = function()
+BaseForm.prototype.toString = function()
 {
     return ""+this.defaultRendering();
 };
 
-Form.prototype.defaultRendering = function()
+BaseForm.prototype.defaultRendering = function()
 {
     return this.asTable();
 };
@@ -432,7 +433,7 @@ Form.prototype.defaultRendering = function()
 
 // The yield keyword is only available in Firefox - adding the necessary
 // ";version=1.7" to the script tag breaks other browsers, so leave be for now.
-Form.prototype.__iterator__ = function()
+BaseForm.prototype.__iterator__ = function()
 {
     var fields = [];
     for (var name in this.fields)
@@ -467,7 +468,7 @@ Form.prototype.__iterator__ = function()
  * @return a list of <code>BoundField</code> objects - one for each field in
  *         the form, in the order in which the fields were created.
  */
-Form.prototype.boundFields = function(test)
+BaseForm.prototype.boundFields = function(test)
 {
     test = test || function() { return true; };
 
@@ -488,7 +489,7 @@ Form.prototype.boundFields = function(test)
  * @return a <code>BoundField</code> for the field with the given name, if one
  *         exists.
  */
-Form.prototype.boundField = function(name)
+BaseForm.prototype.boundField = function(name)
 {
     if (!this.fields.hasOwnProperty(name))
         throw new Error("Form does not have a '" + name + "' field.");
@@ -501,7 +502,7 @@ Form.prototype.boundField = function(name)
  * @return <code>true</code> if the form has no errors, <code>false</code>
  *         otherwise. If errors are being ignored, returns <code>false</code>.
  */
-Form.prototype.isValid = function()
+BaseForm.prototype.isValid = function()
 {
     if (!this.isBound)
         return false;
@@ -516,7 +517,7 @@ Form.prototype.isValid = function()
  * @return a field name with a prefix appended, if this Form has a prefix set,
  *         otherwise <code>fieldName</code> is returned as-is.
  */
-Form.prototype.addPrefix = function(fieldName)
+BaseForm.prototype.addPrefix = function(fieldName)
 {
     if (this.prefix !== null)
     {
@@ -529,7 +530,7 @@ Form.prototype.addPrefix = function(fieldName)
 /**
  * Add an "initial" prefix for checking dynamic initial values.
  */
-Form.prototype.addInitialPrefix = function(fieldName)
+BaseForm.prototype.addInitialPrefix = function(fieldName)
 {
     return format("initial-%(fieldName)s",
                   {fieldName: this.addPrefix(fieldName)});
@@ -551,7 +552,7 @@ Form.prototype.addInitialPrefix = function(fieldName)
  *         representing rows, otherwise returns an HTML string, with rows
  *         separated by linebreaks.
  */
-Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow,
+BaseForm.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow,
                                       doNotCoerce)
 {
     // Errors that should be displayed above all fields
@@ -655,7 +656,7 @@ Form.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateRow,
  *                                not be coerced to a String if we're operating
  *                                in HTML mode - defaults to <code>false</code>.
  */
-Form.prototype.asTable = (function()
+BaseForm.prototype.asTable = (function()
 {
     var normalRow = function(label, field, helpText, errors, htmlClassAttr,
                              extraContent)
@@ -705,7 +706,7 @@ Form.prototype.asTable = (function()
  *                                not be coerced to a String if we're operating
  *                                in HTML mode - defaults to <code>false</code>.
  */
-Form.prototype.asUL = (function()
+BaseForm.prototype.asUL = (function()
 {
     var normalRow = function(label, field, helpText, errors, htmlClassAttr,
                              extraContent)
@@ -752,7 +753,7 @@ Form.prototype.asUL = (function()
  *                                not be coerced to a String if we're operating
  *                                in HTML mode - defaults to <code>false</code>.
  */
-Form.prototype.asP = (function()
+BaseForm.prototype.asP = (function()
 {
     var normalRow = function(label, field, helpText, errors, htmlClassAttr,
                              extraContent)
@@ -801,16 +802,16 @@ Form.prototype.asP = (function()
  * @return errors that aren't associated with a particular field - i.e., errors
  *         generated by <code>clean()</code>. Will be empty if there are none.
  */
-Form.prototype.nonFieldErrors = function()
+BaseForm.prototype.nonFieldErrors = function()
 {
-    return (this.errors(Form.NON_FIELD_ERRORS) || new this.errorConstructor());
+    return (this.errors(BaseForm.NON_FIELD_ERRORS) || new this.errorConstructor());
 };
 
 /**
  * Returns the raw value for a particular field name. This is just a convenient
  * wrapper around widget.valueFromData.
  */
-Form.prototype._rawValue = function(fieldname)
+BaseForm.prototype._rawValue = function(fieldname)
 {
     var field = this.fields[fieldname];
     var prefix = this.addPrefix(fieldname);
@@ -821,7 +822,7 @@ Form.prototype._rawValue = function(fieldname)
  * Cleans all of <code>data</code> and populates <code>_errors</code> and
  * <code>cleanedData</code>.
  */
-Form.prototype.fullClean = function()
+BaseForm.prototype.fullClean = function()
 {
     this._errors = new ErrorObject();
     if (!this.isBound)
@@ -842,7 +843,7 @@ Form.prototype.fullClean = function()
         delete this.cleanedData;
 };
 
-Form.prototype._cleanFields = function()
+BaseForm.prototype._cleanFields = function()
 {
     for (var name in this.fields)
     {
@@ -898,7 +899,7 @@ Form.prototype._cleanFields = function()
     }
 };
 
-Form.prototype._cleanForm = function()
+BaseForm.prototype._cleanForm = function()
 {
     try
     {
@@ -908,7 +909,7 @@ Form.prototype._cleanForm = function()
     {
         if (!(e instanceof ValidationError))
             throw e;
-        this._errors.set(Form.NON_FIELD_ERRORS,
+        this._errors.set(BaseForm.NON_FIELD_ERRORS,
                          new this.errorConstructor(e.messages));
     }
 };
@@ -917,7 +918,7 @@ Form.prototype._cleanForm = function()
  * An internal hook for performing additional cleaning after form cleaning is
  * complete.
  */
-Form.prototype._postClean = function() {};
+BaseForm.prototype._postClean = function() {};
 
 /**
  * Hook for doing any extra form-wide cleaning after each Field's
@@ -927,7 +928,7 @@ Form.prototype._postClean = function() {};
  *
  * @return validated, cleaned data.
  */
-Form.prototype.clean = function()
+BaseForm.prototype.clean = function()
 {
     return this.cleanedData;
 };
@@ -935,7 +936,7 @@ Form.prototype.clean = function()
 /**
  * Determines if data differs from initial.
  */
-Form.prototype.hasChanged = function()
+BaseForm.prototype.hasChanged = function()
 {
     return (this.changedData().length > 0);
 };
@@ -947,7 +948,7 @@ Form.prototype.hasChanged = function()
  * @return <code>true</code> if the form needs to be multipart-encrypted,
  *         <code>false</code> otherwise.
  */
-Form.prototype.isMultipart = function()
+BaseForm.prototype.isMultipart = function()
 {
     for (var name in this.fields)
         if (this.fields.hasOwnProperty(name))
@@ -960,7 +961,7 @@ Form.prototype.isMultipart = function()
  * Returns a list of all the {@link BoundField} objects that correspond to
  * hidden fields. Useful for manual form layout.
  */
-Form.prototype.hiddenFields = function()
+BaseForm.prototype.hiddenFields = function()
 {
     return this.boundFields(function(field)
     {
@@ -972,7 +973,7 @@ Form.prototype.hiddenFields = function()
  * Returns a list of {@link BoundField} objects that do not correspond to
  * hidden fields. The opposite of the hiddenFields() method.
  */
-Form.prototype.visibleFields = function()
+BaseForm.prototype.visibleFields = function()
 {
     return this.boundFields(function(field)
     {
@@ -992,10 +993,6 @@ Form.prototype.visibleFields = function()
  *                        new methods on the resulting form, such as custom
  *                        <code>clean</code> and <code>cleanFIELD_NAME</code>
  *                        methods.
- * @config {Function} fields a function which returns an object containing form
- *                           fields, which will be invoked each time a new form
- *                           instance is created - an Error will be thrown if
- *                           this Function is not provided.
  * @config {Function} [form] the Form constructor which will provide the
  *                           prototype for the new Form constructor - defaults
  *                           to {@link Form}.
@@ -1016,26 +1013,22 @@ Form.prototype.visibleFields = function()
  *                               prototype constructor called - typical usage of
  *                               this function would be to dynamically alter the
  *                               form fields which have just been created or to
- *                               add/remove fields.
+ *                               add/remove fields in this.fields.
  */
 function formFactory(kwargs)
 {
-    if (!isFunction(kwargs.fields))
-    {
-        throw new Error("You must provide a function named 'fields'");
-    }
-
     kwargs = extend({
-       form: Form, preInit: null, postInit: null
+       form: BaseForm, preInit: null, postInit: null
     }, kwargs || {});
 
     // Create references to special functions which will be closed over by the
     // new form constructor.
     var form = kwargs.form,
-        createFields = kwargs.fields,
         preInit = kwargs.preInit,
         postInit = kwargs.postInit;
 
+    // Deliberately shadowing the formFactory's kwargs so we can't accidentally
+    // use it.
     var formConstructor = function(kwargs)
     {
         if (preInit !== null)
@@ -1043,35 +1036,46 @@ function formFactory(kwargs)
             // as the kwargs object for further processing.
             kwargs = preInit.call(this, kwargs) || kwargs;
 
-        // Any pre-existing fields will have been created by a form which uses
-        // this form as its base. As such, pre-existing fields should overwrite
-        // any fields with the same name and pre-existing fields with new names
-        // should appear after fields created by this form.
-        this.fields = extend(createFields.call(this), this.fields || {});
-
-        // Tell whatever number of parents we have to do their instantiation bit
-        if (isArray(form))
-            // Loop backwards because fields are instantiated "bottom up"
-            for (var i = form.length - 1; i >= 0; i--)
-                form[i].call(this, kwargs);
-        else
-            form.call(this, kwargs);
+        form.call(this, kwargs);
 
         if (postInit !== null)
             postInit.call(this, kwargs);
     };
 
-    // Remove special functions from kwargs, as they will now be used to add
+    // Grab fields from kwargs to contribute towards baseFields.
+    var fields = [];
+    for (var name in kwargs)
+    {
+        if (kwargs.hasOwnProperty(name) && kwargs[name] instanceof Field)
+        {
+            fields.push([name, kwargs[name]]);
+            delete kwargs[name];
+        }
+    }
+    fields.sort(function(a, b)
+    {
+        return a[1].creationCounter - b[1].creationCounter;
+    });
+
+    // Remove special properties from kwargs, as they will now be used to add
     // properties to the prototype.
     delete kwargs.form;
-    delete kwargs.fields;
     delete kwargs.preInit;
     delete kwargs.postInit;
 
+    /* TODO Get faux-multiple inheritance working again - it's just too late for this right now ;-(
     if (isArray(form))
     {
         // Really inherit from the first Form we were passed
         inheritFrom(formConstructor, form[0]);
+
+        // Note that we loop over the forms in *reverse*. This is necessary in
+        // order to preserve the correct order of fields.
+        for (var i = form.length - 1; i >= 0; i--)
+            if (typeof form[i].prototype.baseFields != "undefined")
+                fields =
+                    objectItems(form[i].prototype.baseFields).concat(fields);
+
         // Borrow methods from any additional Forms - this is a bit of a hack to
         // fake multiple inheritance, using any additonal forms as mixins. We
         // can only use instanceof for the form we really inherited from, but we
@@ -1086,9 +1090,17 @@ function formFactory(kwargs)
     }
     else
     {
-        inheritFrom(formConstructor, form);
-        extend(formConstructor.prototype, kwargs);
+        // Single inheritance, as below
     }
+    */
+
+    inheritFrom(formConstructor, form);
+    extend(formConstructor.prototype, kwargs);
+    // Create the baseFields Object and set it on the new form constructor's
+    // prototype.
+    if (typeof form.prototype.baseFields != "undefined")
+        fields = objectItems(form.prototype.baseFields).concat(fields);
+    formConstructor.prototype.baseFields = itemsToObject(fields);
 
     return formConstructor;
 }

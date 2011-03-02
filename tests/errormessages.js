@@ -253,13 +253,10 @@ test("Overriding ErrorList", function()
     expect(4);
 
     var TestForm = formFactory({
-      fields: function() {
-        return {
-          first_name: new CharField(),
-          last_name: new CharField(),
-          birthday: new DateField()
-        };
-      },
+      first_name: new CharField(),
+      last_name: new CharField(),
+      birthday: new DateField(),
+
       clean: function() {
         throw new ValidationError("I like to be awkward.");
       }
