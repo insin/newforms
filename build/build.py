@@ -6,13 +6,13 @@ FORMS_SOURCE_FILES = ('../src/util.js', '../src/validators.js',
                       '../src/widgets.js', '../src/fields.js',
                       '../src/forms.js', '../src/formsets.js')
 FORMS_NAMESPACE = 'formsnamespace.js'
-CODE_TEMPLATE = """(function(__global__)
+CODE_TEMPLATE = """(function(__global__, undefined)
 {
+
+// Pull in dependencies appropriately depending on the execution environment
 var modules = (typeof module !== 'undefined' && module.exports);
-if (modules)
-{
-    var DOMBuilder = require('DOMBuilder');
-}
+var DOMBuilder = modules ? require('DOMBuilder') : __global__.DOMBuilder;
+
 %(timecode)s
 %(formscode)s
 %(formsnamepace)s

@@ -1,11 +1,32 @@
 var forms = {
     version: "0.1 (alpha)",
-    // util.js
+    // util.js utilities end users may want to make use of
     callValidator: callValidator,
-    inheritFrom: inheritFrom,
     ErrorObject: ErrorObject,
     ErrorList: ErrorList,
+    formData: formData,
+    inheritFrom: inheritFrom,
     ValidationError: ValidationError,
+    // util.js utilities used when implementing js-forms
+    util: {
+        contains: contains,
+        createLookup: createLookup,
+        extend: extend,
+        format: format,
+        getDefault: getDefault,
+        isArray: isArray,
+        isCallable: isCallable,
+        isFunction: isFunction,
+        isNumber: isNumber,
+        isObject: isObject,
+        isString: isString,
+        itemsToObject: itemsToObject,
+        objectItems: objectItems,
+        prettyName: prettyName,
+        strip: strip,
+        urlparse: urlparse,
+        copy: copy
+    },
     // validators.js
     EMPTY_VALUES: EMPTY_VALUES,
     RegexValidator: RegexValidator,

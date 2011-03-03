@@ -3,36 +3,36 @@ module("forms");
 (function()
 {
 
-var Person = Form({
-  first_name: new CharField(),
-  last_name: new CharField(),
-  birthday: new DateField()
+var Person = forms.Form({
+  first_name: new forms.CharField(),
+  last_name: new forms.CharField(),
+  birthday: new forms.DateField()
 });
 
-var PersonNew = Form({
-  first_name: new CharField({
-      widget: new TextInput({attrs: {id: "first_name_id"}})
+var PersonNew = forms.Form({
+  first_name: new forms.CharField({
+      widget: new forms.TextInput({attrs: {id: "first_name_id"}})
   }),
-  last_name: new CharField(),
-  birthday: new DateField()
+  last_name: new forms.CharField(),
+  birthday: new forms.DateField()
 });
 
 test("prettyName", function()
 {
     expect(7);
     // Pretty names we want to support
-    equals(prettyName("under_score_name"), "Under score name");
-    equals(prettyName("camelCaseName"), "Camel case name");
-    equals(prettyName("CONSTANT_STYLE"), "CONSTANT STYLE");
+    equals(forms.util.prettyName("under_score_name"), "Under score name");
+    equals(forms.util.prettyName("camelCaseName"), "Camel case name");
+    equals(forms.util.prettyName("CONSTANT_STYLE"), "CONSTANT STYLE");
 
     // These also happen to work...
-    equals(prettyName("under_LASER_flooring"), "Under LASER flooring");
-    equals(prettyName("endsWithAcronymLikeLASER"), "Ends with acronym like LASER");
-    equals(prettyName("StudlyCaps"), "Studly caps");
+    equals(forms.util.prettyName("under_LASER_flooring"), "Under LASER flooring");
+    equals(forms.util.prettyName("endsWithAcronymLikeLASER"), "Ends with acronym like LASER");
+    equals(forms.util.prettyName("StudlyCaps"), "Studly caps");
 
     // ...but if you insist on using camelCase with acronyms in the middle,
     // you're on your own.
-    equals(prettyName("butNOTThatClever"), "But nOTThat clever");
+    equals(forms.util.prettyName("butNOTThatClever"), "But nOTThat clever");
 });
 
 test("Form", function()
@@ -187,10 +187,10 @@ test("Optional data", function()
     // not required. In this example, the data object doesn't include a value
     // for the "nick_name" field, but cleanedData includes it. For CharFields,
     // it's set to the empty String.
-    var OptionalPersonForm = Form({
-      first_name: new CharField(),
-      last_name: new CharField(),
-      nick_name: new CharField({required: false})
+    var OptionalPersonForm = forms.Form({
+      first_name: new forms.CharField(),
+      last_name: new forms.CharField(),
+      nick_name: new forms.CharField({required: false})
     });
     var data = {first_name: "John", last_name: "Lennon"};
     var f = new OptionalPersonForm({data: data});
@@ -200,10 +200,10 @@ test("Optional data", function()
     equal(f.cleanedData.last_name, "Lennon");
 
     // For DateFields, it's set to null
-    OptionalPersonForm = Form({
-      first_name: new CharField(),
-      last_name: new CharField(),
-      birth_date: new DateField({required: false})
+    OptionalPersonForm = forms.Form({
+      first_name: new forms.CharField(),
+      last_name: new forms.CharField(),
+      birth_date: new forms.DateField({required: false})
     });
     data = {first_name: "John", last_name: "Lennon"};
     f = new OptionalPersonForm({data: data});
@@ -287,9 +287,9 @@ test("autoId on form and field", function()
 test("Various boolean values", function()
 {
     expect(8);
-    var SignupForm = Form({
-      email: new EmailField(),
-      get_spam: new BooleanField()
+    var SignupForm = forms.Form({
+      email: new forms.EmailField(),
+      get_spam: new forms.BooleanField()
     });
     var f = new SignupForm({autoId: false});
     equal(""+f.boundField("email"),
@@ -326,9 +326,9 @@ test("Widget output", function()
 {
     expect(10);
     // Any Field can have a Widget constructor passed to its constructor
-    var ContactForm = Form({
-      subject: new CharField(),
-      message: new CharField({widget: Textarea})
+    var ContactForm = forms.Form({
+      subject: new forms.CharField(),
+      message: new forms.CharField({widget: forms.Textarea})
     });
     var f = new ContactForm({autoId: false});
     equal(""+f.boundField("subject"),
@@ -346,10 +346,10 @@ test("Widget output", function()
            "<input type=\"hidden\" name=\"subject\">");
 
     //The "widget" parameter to a Field can also be an instance
-    var ContactForm = Form({
-      subject: new CharField(),
-      message: new CharField({
-          widget: new Textarea({attrs: {rows: 80, cols: 20}})
+    var ContactForm = forms.Form({
+      subject: new forms.CharField(),
+      message: new forms.CharField({
+          widget: new forms.Textarea({attrs: {rows: 80, cols: 20}})
       })
     });
     f = new ContactForm({autoId: false});
@@ -373,9 +373,9 @@ test("Forms with choices", function()
 {
     expect(9);
     // For a form with a <select>, use ChoiceField
-    var FrameworkForm = Form({
-      name: new CharField(),
-      language: new ChoiceField({choices: [["P", "Python"], ["J", "Java"]]})
+    var FrameworkForm = forms.Form({
+      name: new forms.CharField(),
+      language: new forms.ChoiceField({choices: [["P", "Python"], ["J", "Java"]]})
     });
     var f = new FrameworkForm({autoId: false});
     equal(""+f.boundField("language"),
@@ -393,9 +393,9 @@ test("Forms with choices", function()
     // A subtlety: If one of the choices' value is the empty string and the form
     // is unbound, then the <option> for the empty-string choice will get
     // selected="selected".
-    FrameworkForm = Form({
-      name: new CharField(),
-      language: new ChoiceField({choices: [["", "------"],["P", "Python"], ["J", "Java"]]})
+    FrameworkForm = forms.Form({
+      name: new forms.CharField(),
+      language: new forms.ChoiceField({choices: [["", "------"],["P", "Python"], ["J", "Java"]]})
     });
     f = new FrameworkForm({autoId: false});
     equal(""+f.boundField("language"),
@@ -406,11 +406,11 @@ test("Forms with choices", function()
 "</select>");
 
     // You can specify widget attributes in the Widget constructor
-    FrameworkForm = Form({
-      name: new CharField(),
-      language: new ChoiceField({
+    FrameworkForm = forms.Form({
+      name: new forms.CharField(),
+      language: new forms.ChoiceField({
           choices: [["P", "Python"], ["J", "Java"]],
-          widget: new Select({attrs: {"class": "foo"}})
+          widget: new forms.Select({attrs: {"class": "foo"}})
       })
     });
     f = new FrameworkForm({autoId: false});
@@ -429,11 +429,11 @@ test("Forms with choices", function()
     // When passing a custom widget instance to ChoiceField, note that setting
     // "choices" on the widget is meaningless. The widget will use the choices
     // defined on the Field, not the ones defined on the Widget.
-    FrameworkForm = Form({
-      name: new CharField(),
-      language: new ChoiceField({
+    FrameworkForm = forms.Form({
+      name: new forms.CharField(),
+      language: new forms.ChoiceField({
           choices: [["P", "Python"], ["J", "Java"]],
-          widget: new Select({
+          widget: new forms.Select({
               choices: [["R", "Ruby"], ["P", "Perl"]],
               attrs: {"class": "foo"}
           })
@@ -453,9 +453,9 @@ test("Forms with choices", function()
 "</select>");
 
     // You can set a ChoiceField's choices after the fact
-    FrameworkForm = Form({
-      name: new CharField(),
-      language: new ChoiceField()
+    FrameworkForm = forms.Form({
+      name: new forms.CharField(),
+      language: new forms.ChoiceField()
     });
     f = new FrameworkForm({autoId: false});
     equal(""+f.boundField("language"),
@@ -473,9 +473,9 @@ test("Forms with radio", function()
 {
     expect(7);
     // Add {widget: RadioSelect} to use that widget with a ChoiceField
-    var FrameworkForm = Form({
-      name: new CharField(),
-      language: new ChoiceField({choices: [["P", "Python"], ["J", "Java"]], widget: RadioSelect})
+    var FrameworkForm = forms.Form({
+      name: new forms.CharField(),
+      language: new forms.ChoiceField({choices: [["P", "Python"], ["J", "Java"]], widget: forms.RadioSelect})
     });
     var f = new FrameworkForm({autoId: false});
     equal(""+f.boundField("language"),
@@ -534,17 +534,17 @@ test("Forms with multiple choice", function()
     expect(4);
     // MultipleChoiceField is a special case, as its data is required to be a
     // list.
-    var SongForm = Form({
-      name: new CharField(),
-      composers: new MultipleChoiceField()
+    var SongForm = forms.Form({
+      name: new forms.CharField(),
+      composers: new forms.MultipleChoiceField()
     });
     var f = new SongForm({autoId: false});
     equal(""+f.boundField("composers"),
 "<select name=\"composers\" multiple=\"multiple\">\n" +
 "</select>")
-    SongForm = Form({
-      name: new CharField(),
-      composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
+    SongForm = forms.Form({
+      name: new forms.CharField(),
+      composers: new forms.MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
     });
     f = new SongForm({autoId: false});
     equal(""+f.boundField("composers"),
@@ -565,9 +565,9 @@ test("Forms with multiple choice", function()
 test("Hidden data", function()
 {
     expect(5);
-    var SongForm = Form({
-      name: new CharField(),
-      composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
+    var SongForm = forms.Form({
+      name: new forms.CharField(),
+      composers: new forms.MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
     });
 
     // MultipleChoiceField rendered asHidden() is a special case. Because it can
@@ -581,8 +581,8 @@ test("Hidden data", function()
 "<input type=\"hidden\" name=\"composers\" value=\"P\"><input type=\"hidden\" name=\"composers\" value=\"J\">");
 
     // DateTimeField rendered asHidden() is special too
-    var MessageForm = Form({
-      when: new SplitDateTimeField()
+    var MessageForm = forms.Form({
+      when: new forms.SplitDateTimeField()
     });
     f = new MessageForm({data: {when_0: "1992-01-01", when_1: "01:01"}});
     strictEqual(f.isValid(), true);
@@ -597,9 +597,9 @@ test("Mutiple choice checkbox", function()
     expect(3);
     // MultipleChoiceField can also be used with the CheckboxSelectMultiple
     // widget.
-    var SongForm = Form({
-      name: new CharField(),
-      composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: CheckboxSelectMultiple})
+    var SongForm = forms.Form({
+      name: new forms.CharField(),
+      composers: new forms.MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: forms.CheckboxSelectMultiple})
     });
     var f = new SongForm({autoId: false});
     equal(""+f.boundField("composers"),
@@ -624,9 +624,9 @@ test("Mutiple choice checkbox", function()
 test("Checkbox autoId", function()
 {
     expect(1);
-    var SongForm = Form({
-      name: new CharField(),
-      composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: CheckboxSelectMultiple})
+    var SongForm = forms.Form({
+      name: new forms.CharField(),
+      composers: new forms.MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: forms.CheckboxSelectMultiple})
     });
     // Regarding autoId, CheckboxSelectMultiple is another special case. Each
     // checkbox gets a distinct ID, formed by appending an underscore plus the
@@ -642,9 +642,9 @@ test("Checkbox autoId", function()
 test("Multiple choice list data", function()
 {
     expect(2);
-    var SongForm = Form({
-      name: new CharField(),
-      composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: CheckboxSelectMultiple})
+    var SongForm = forms.Form({
+      name: new forms.CharField(),
+      composers: new forms.MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: forms.CheckboxSelectMultiple})
     });
 
     var data = {name: "Yesterday", composers: ["J", "P"]};
@@ -661,15 +661,15 @@ test("Multiple choice list data", function()
 test("Multiple hidden", function()
 {
     expect(8);
-    var SongForm = Form({
-      name: new CharField(),
-      composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: CheckboxSelectMultiple})
+    var SongForm = forms.Form({
+      name: new forms.CharField(),
+      composers: new forms.MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: forms.CheckboxSelectMultiple})
     });
 
     // The MultipleHiddenInput widget renders multiple values as hidden fields
-    var SongFormHidden = Form({
-      name: new CharField(),
-      composers: new MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: MultipleHiddenInput})
+    var SongFormHidden = forms.Form({
+      name: new forms.CharField(),
+      composers: new forms.MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]], widget: forms.MultipleHiddenInput})
     });
 
     var f = new SongFormHidden({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false});
@@ -694,15 +694,15 @@ test("Escaping", function()
 {
     expect(2);
     // Validation errors are HTML-escaped when output as HTML
-    var EscapingForm = Form({
-      specialName: new CharField({label: "<em>Special</em> Field"}),
-      specialSafeName: new CharField({label: DOMBuilder.markSafe("<em>Special</em> Field")}),
+    var EscapingForm = forms.Form({
+      specialName: new forms.CharField({label: "<em>Special</em> Field"}),
+      specialSafeName: new forms.CharField({label: DOMBuilder.markSafe("<em>Special</em> Field")}),
 
       cleanSpecialName: function() {
-          throw new ValidationError("Something's wrong with '" + this.cleanedData.specialName + "'");
+          throw new forms.ValidationError("Something's wrong with '" + this.cleanedData.specialName + "'");
       },
       cleanSpecialSafeName: function() {
-          throw new ValidationError(
+          throw new forms.ValidationError(
               DOMBuilder.markSafe(
                   "'<b>" + this.cleanedData.specialSafeName + "</b>' is a safe string"));
       }
@@ -734,14 +734,14 @@ test("Validating multiple fields", function()
     // this.cleanedData, which is an object containing all the data that has
     // been cleaned *so far*, in order by the fields, including the current
     // field (e.g., the field XXX if you're in clean_XXX()).
-    var UserRegistration = Form({
-      username: new CharField({maxLength: 10}),
-      password1: new CharField({widget: PasswordInput}),
-      password2: new CharField({widget: PasswordInput}),
+    var UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10}),
+      password1: new forms.CharField({widget: forms.PasswordInput}),
+      password2: new forms.CharField({widget: forms.PasswordInput}),
 
       clean_password2: function() {
           if (this.cleanedData.password1 != this.cleanedData.password2)
-              throw new ValidationError("Please make sure your passwords match.");
+              throw new forms.ValidationError("Please make sure your passwords match.");
           return this.cleanedData.password2;
       }
     });
@@ -767,15 +767,15 @@ test("Validating multiple fields", function()
     // containing all the fields/values that have *not* raised a
     // ValidationError. Also note Form.clean() is required to return a
     // dictionary of all clean data.
-    UserRegistration = Form({
-      username: new CharField({maxLength: 10}),
-      password1: new CharField({widget: PasswordInput}),
-      password2: new CharField({widget: PasswordInput}),
+    UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10}),
+      password1: new forms.CharField({widget: forms.PasswordInput}),
+      password2: new forms.CharField({widget: forms.PasswordInput}),
 
       clean: function() {
           if (this.cleanedData.password1 && this.cleanedData.password2 &&
               this.cleanedData.password1 != this.cleanedData.password2)
-              throw new ValidationError("Please make sure your passwords match.");
+              throw new forms.ValidationError("Please make sure your passwords match.");
           return this.cleanedData;
       }
     });
@@ -812,12 +812,12 @@ test("Dynamic construction", function()
     // It's possible to construct a Form dynamically by adding to this.fields
     // during construction. Don't forget to initialise any parent constructors
     // first. Form provides a postInit() hook suitable for this purpose.
-    var Person = Form({
-      first_name: new CharField(),
-      last_name: new CharField(),
+    var Person = forms.Form({
+      first_name: new forms.CharField(),
+      last_name: new forms.CharField(),
 
       postInit: function(kwargs) {
-          this.fields["birthday"] = new DateField();
+          this.fields["birthday"] = new forms.DateField();
       }
     });
     var p = new Person({autoId: false});
@@ -828,9 +828,9 @@ test("Dynamic construction", function()
 
     // Instances of a dynamic Form do not persist fields from one Form instance to
     // the next.
-    var MyForm = Form({
+    var MyForm = forms.Form({
       preInit: function(kwargs) {
-          return extend({
+          return forms.util.extend({
               data: null, autoId: false, fieldList: []
           }, kwargs || {});
       },
@@ -840,23 +840,23 @@ test("Dynamic construction", function()
           }
       }
     });
-    var fieldList = [["field1", new CharField()], ["field2", new CharField()]];
+    var fieldList = [["field1", new forms.CharField()], ["field2", new forms.CharField()]];
     var myForm = new MyForm({fieldList: fieldList});
     equal(""+myForm,
 "<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
 "<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>");
-    fieldList = [["field3", new CharField()], ["field4", new CharField()]];
+    fieldList = [["field3", new forms.CharField()], ["field4", new forms.CharField()]];
     myForm = new MyForm({fieldList: fieldList});
     equal(""+myForm,
 "<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
 "<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>");
 
-    MyForm = Form({
-      default_field_1: new CharField(),
-      default_field_2: new CharField(),
+    MyForm = forms.Form({
+      default_field_1: new forms.CharField(),
+      default_field_2: new forms.CharField(),
 
       preInit: function(kwargs) {
-          return extend({
+          return forms.util.extend({
               data: null, autoId: false, fieldList: []
           }, kwargs || {});
       },
@@ -866,14 +866,14 @@ test("Dynamic construction", function()
           }
       }
     });
-    fieldList = [["field1", new CharField()], ["field2", new CharField()]];
+    fieldList = [["field1", new forms.CharField()], ["field2", new forms.CharField()]];
     myForm = new MyForm({fieldList: fieldList});
     equal(""+myForm,
 "<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>\n" +
 "<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>\n" +
 "<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
 "<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>");
-    fieldList = [["field3", new CharField()], ["field4", new CharField()]];
+    fieldList = [["field3", new forms.CharField()], ["field4", new forms.CharField()]];
     myForm = new MyForm({fieldList: fieldList});
     equal(""+myForm,
 "<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>\n" +
@@ -883,12 +883,12 @@ test("Dynamic construction", function()
 
     // Similarly, changes to field attributes do not persist from one Form
     // instance to the next.
-    Person = Form({
-      first_name: new CharField({required: false}),
-      last_name: new CharField({required: false}),
+    Person = forms.Form({
+      first_name: new forms.CharField({required: false}),
+      last_name: new forms.CharField({required: false}),
 
       preInit: function(kwargs) {
-          return extend({namesRequired: false}, kwargs || {});
+          return forms.util.extend({namesRequired: false}, kwargs || {});
       },
       postInit: function(kwargs) {
           if (kwargs.namesRequired) {
@@ -915,12 +915,12 @@ test("Dynamic construction", function()
     deepEqual([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
          [{}, {}]);
 
-    Person = Form({
-      first_name: new CharField({maxLength: 30}),
-      last_name: new CharField({maxLength: 30}),
+    Person = forms.Form({
+      first_name: new forms.CharField({maxLength: 30}),
+      last_name: new forms.CharField({maxLength: 30}),
 
       preInit: function(kwargs) {
-          return extend({nameMaxLength: null}, kwargs || {});
+          return forms.util.extend({nameMaxLength: null}, kwargs || {});
       },
       postInit: function(kwargs) {
           if (kwargs.nameMaxLength) {
@@ -947,11 +947,11 @@ test("Hidden widget", function()
     // and asP() output of a Form - their verbose names are not displayed, and a
     // separate row is not displayed. They're displayed in the last row of the
     // form, directly after that row's form element.
-    var Person = Form({
-      first_name: new CharField(),
-      last_name: new CharField(),
-      hidden_text: new CharField({widget: HiddenInput}),
-      birthday: new DateField()
+    var Person = forms.Form({
+      first_name: new forms.CharField(),
+      last_name: new forms.CharField(),
+      hidden_text: new forms.CharField({widget: forms.HiddenInput}),
+      birthday: new forms.DateField()
     });
     var p = new Person({autoId: false});
     equal(""+p,
@@ -1010,9 +1010,9 @@ test("Hidden widget", function()
     // the case of asP(), form inputs must reside inside a block-level container
     // to qualify as valid HTML, so the inputs will be wrapped in a <div> in
     // this scenario.
-    var TestForm = Form({
-      foo: new CharField({widget: HiddenInput}),
-      bar: new CharField({widget: HiddenInput})
+    var TestForm = forms.Form({
+      foo: new forms.CharField({widget: forms.HiddenInput}),
+      bar: new forms.CharField({widget: forms.HiddenInput})
     });
     p = new TestForm({autoId: false});
     equal(""+p.asTable(),
@@ -1027,21 +1027,21 @@ test("Field order", function()
 {
     expect(1);
     // A Form's fields are displayed in the same order they were defined
-    var TestForm = Form({
-      field1: new CharField(),
-      field2: new CharField(),
-      field3: new CharField(),
-      field4: new CharField(),
-      field5: new CharField(),
-      field6: new CharField(),
-      field7: new CharField(),
-      field8: new CharField(),
-      field9: new CharField(),
-      field10: new CharField(),
-      field11: new CharField(),
-      field12: new CharField(),
-      field13: new CharField(),
-      field14: new CharField()
+    var TestForm = forms.Form({
+      field1: new forms.CharField(),
+      field2: new forms.CharField(),
+      field3: new forms.CharField(),
+      field4: new forms.CharField(),
+      field5: new forms.CharField(),
+      field6: new forms.CharField(),
+      field7: new forms.CharField(),
+      field8: new forms.CharField(),
+      field9: new forms.CharField(),
+      field10: new forms.CharField(),
+      field11: new forms.CharField(),
+      field12: new forms.CharField(),
+      field13: new forms.CharField(),
+      field14: new forms.CharField()
     });
     var p = new TestForm({autoId: false});
     equal(""+p,
@@ -1068,11 +1068,11 @@ test("Form HTML attributes", function()
     // associated Widget. If you set maxLength in a CharField and its associated
     // widget is either a TextInput or PasswordInput, then the widget's rendered
     // HTML will include the "maxlength" attribute.
-    var UserRegistration = Form({
-      username: new CharField({maxLength: 10}), // Uses TextInput by default
-      password: new CharField({maxLength: 10, widget: PasswordInput}),
-      realname: new CharField({maxLength: 10, widget: TextInput}), // Redundantly degine widget, just to test
-      address: new CharField()
+    var UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10}), // Uses forms.TextInput by default
+      password: new forms.CharField({maxLength: 10, widget: forms.PasswordInput}),
+      realname: new forms.CharField({maxLength: 10, widget: forms.TextInput}), // Redundantly degine widget, just to test
+      address: new forms.CharField()
     });
     var p = new UserRegistration({autoId: false});
     equal(""+p.asUL(),
@@ -1084,9 +1084,9 @@ test("Form HTML attributes", function()
     // If you specify a custom "attrs" that includes the "maxlength" attribute,
     // the Field's maxLength attribute will override whatever "maxlength" you
     // specify in "attrs".
-    UserRegistration = Form({
-      username: new CharField({maxLength: 10, widget: new TextInput({attrs: {maxlength: 20}})}),
-      password: new CharField({maxLength: 10, widget: PasswordInput})
+    UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10, widget: new forms.TextInput({attrs: {maxlength: 20}})}),
+      password: new forms.CharField({maxLength: 10, widget: forms.PasswordInput})
     });
     p = new UserRegistration({autoId: false});
     equal(""+p.asUL(),
@@ -1101,10 +1101,10 @@ test("Specifying labels", function()
     // Field class. If you don't specify 'label', js-forms will use the field
     // name with underscores converted to spaces, and the initial letter
     // capitalised.
-    var UserRegistration = Form({
-      username: new CharField({maxLength: 10, label: "Your username"}),
-      password1: new CharField({widget: PasswordInput}),
-      password2: new CharField({widget: PasswordInput, label: "Password (again)"})
+    var UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10, label: "Your username"}),
+      password1: new forms.CharField({widget: forms.PasswordInput}),
+      password2: new forms.CharField({widget: forms.PasswordInput, label: "Password (again)"})
     });
     var p = new UserRegistration({autoId: false});
     equal(""+p.asUL(),
@@ -1114,12 +1114,12 @@ test("Specifying labels", function()
 
     // Labels for as* methods will only end in a colon if they don't end in
     // other punctuation already.
-    var Questions = Form({
-      q1: new CharField({label: "The first question"}),
-      q2: new CharField({label: "What is your name?"}),
-      q3: new CharField({label: "The answer to life is:"}),
-      q4: new CharField({label: "Answer this question!"}),
-      q5: new CharField({label: "The last question. Period."})
+    var Questions = forms.Form({
+      q1: new forms.CharField({label: "The first question"}),
+      q2: new forms.CharField({label: "What is your name?"}),
+      q3: new forms.CharField({label: "The answer to life is:"}),
+      q4: new forms.CharField({label: "Answer this question!"}),
+      q5: new forms.CharField({label: "The last question. Period."})
     });
     p = new Questions({autoId: false});
     equal(""+p.asP(),
@@ -1131,9 +1131,9 @@ test("Specifying labels", function()
 
     // If a label is set to the empty string for a field, that field won't get a
     // label.
-    UserRegistration = Form({
-      username: new CharField({maxLength: 10, label: ""}),
-      password1: new CharField({widget: PasswordInput})
+    UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10, label: ""}),
+      password1: new forms.CharField({widget: forms.PasswordInput})
     });
     p = new UserRegistration({autoId: false});
     equal(""+p.asUL(),
@@ -1146,9 +1146,9 @@ test("Specifying labels", function()
 
     // If label is null, js-forms will auto-create the label from the field
     // name. This is the default behavior.
-    UserRegistration = Form({
-      username: new CharField({maxLength: 10, label: null}),
-      password1: new CharField({widget: PasswordInput})
+    UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10, label: null}),
+      password1: new forms.CharField({widget: forms.PasswordInput})
     });
     p = new UserRegistration({autoId: false});
     equal(""+p.asUL(),
@@ -1167,9 +1167,9 @@ test("Label suffix", function()
     // punctuation symbol used at the end of a label.  By default, the colon
     // (:) is used, and is only appended to the label if the label doesn't
     // already end with a punctuation symbol: ., !, ? or :.
-    var FavouriteForm = Form({
-      colour: new CharField({label: "Favourite colour?"}),
-      animal: new CharField({label: "Favourite animal"})
+    var FavouriteForm = forms.Form({
+      colour: new forms.CharField({label: "Favourite colour?"}),
+      animal: new forms.CharField({label: "Favourite animal"})
     });
     var f = new FavouriteForm({autoId: false});
     equal(""+f.asUL(),
@@ -1197,9 +1197,9 @@ test("Initial data", function()
     // with *no* data. It is not displayed when a Form is rendered with any data
     // (including an empty object). Also, the initial value is *not* used if
     // data for a particular required field isn't provided.
-    var UserRegistration = Form({
-      username: new CharField({maxLength: 10, initial: "django"}),
-      password: new CharField({widget: PasswordInput})
+    var UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10, initial: "django"}),
+      password: new forms.CharField({widget: forms.PasswordInput})
     });
 
     // Here, we're not submitting any data, so the initial value will be
@@ -1240,9 +1240,9 @@ test("Dynamic initial data", function()
     // Form class (i.e., at runtime). Use the "initial" parameter to the Form
     // constructor. This should be an object containing initial values for one
     // or more fields in the form, keyed by field name.
-    var UserRegistration = Form({
-      username: new CharField({maxLength: 10}),
-      password: new CharField({widget: PasswordInput})
+    var UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10}),
+      password: new forms.CharField({widget: forms.PasswordInput})
     });
 
     // Here, we're not submitting any data, so the initial value will be displayed.
@@ -1279,9 +1279,9 @@ test("Dynamic initial data", function()
 
     // If a Form defines "initial" *and* "initial" is passed as a parameter
     // during construction, then the latter will get precedence.
-    UserRegistration = Form({
-      username: new CharField({maxLength: 10, initial: "django"}),
-      password: new CharField({widget: PasswordInput})
+    UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10, initial: "django"}),
+      password: new forms.CharField({widget: forms.PasswordInput})
     });
     p = new UserRegistration({initial: {username: "babik"}, autoId: false});
     equal(""+p.asUL(),
@@ -1294,10 +1294,10 @@ test("Callable initial data", function()
     expect(8);
     // The previous technique dealt with raw values as initial data, but it's
     // also possible to specify callable data.
-    var UserRegistration = Form({
-      username: new CharField({maxLength: 10}),
-      password: new CharField({widget: PasswordInput}),
-      options: new MultipleChoiceField({choices: [["f", "foo"], ["b", "bar"], ["w", "whiz"]]})
+    var UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10}),
+      password: new forms.CharField({widget: forms.PasswordInput}),
+      options: new forms.MultipleChoiceField({choices: [["f", "foo"], ["b", "bar"], ["w", "whiz"]]})
     });
 
     // We need to define functions that get called later
@@ -1357,10 +1357,10 @@ test("Callable initial data", function()
 
     // If a Form defines "initial" *and* "initial" is passed as a parameter
     // during construction, then the latter will get precedence.
-    UserRegistration = Form({
-      username: new CharField({maxLength: 10, initial: initialDjango}),
-      password: new CharField({widget: PasswordInput}),
-      options: new MultipleChoiceField({choices: [["f", "foo"], ["b", "bar"], ["w", "whiz"]], initial: initialOtherOptions})
+    UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10, initial: initialDjango}),
+      password: new forms.CharField({widget: forms.PasswordInput}),
+      options: new forms.MultipleChoiceField({choices: [["f", "foo"], ["b", "bar"], ["w", "whiz"]], initial: initialOtherOptions})
     });
     p = new UserRegistration({autoId: false});
     equal(""+p.asUL(),
@@ -1387,9 +1387,9 @@ test("Boundfield values", function()
     expect(4);
     // It's possible to get to the value which would be used for rendering
     // the widget for a field by using the BoundField's value method.
-    var UserRegistration = Form({
-      username: new CharField({maxLength: 10, initial: "djangonaut"}),
-      password: new CharField({widget: PasswordInput})
+    var UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10, initial: "djangonaut"}),
+      password: new forms.CharField({widget: forms.PasswordInput})
     });
     var unbound = new UserRegistration();
     var bound = new UserRegistration({data: {password: "foo"}});
@@ -1405,9 +1405,9 @@ test("Help text", function()
     // You can specify descriptive text for a field by using the "helpText"
     // argument to a Field class. This help text is displayed when a Form is
     // rendered.
-    var UserRegistration = Form({
-      username: new CharField({maxLength: 10, helpText: "e.g., user@example.com"}),
-      password: new CharField({widget: PasswordInput, helpText: "Choose wisely."})
+    var UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10, helpText: "e.g., user@example.com"}),
+      password: new forms.CharField({widget: forms.PasswordInput, helpText: "Choose wisely."})
     });
     var p = new UserRegistration({autoId: false});
     equal(""+p.asUL(),
@@ -1428,10 +1428,10 @@ test("Help text", function()
 
     // Help text is not displayed for hidden fields. It can be used for
     // documentation purposes, though.
-    UserRegistration = Form({
-      username: new CharField({maxLength: 10, helpText: "e.g., user@example.com"}),
-      password: new CharField({widget: PasswordInput}),
-      next: new CharField({widget: HiddenInput, initial: "/", helpText: "Redirect destination"})
+    UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10, helpText: "e.g., user@example.com"}),
+      password: new forms.CharField({widget: forms.PasswordInput}),
+      next: new forms.CharField({widget: forms.HiddenInput, initial: "/", helpText: "Redirect destination"})
     });
     p  = new UserRegistration({autoId: false});
     equal(""+p.asUL(),
@@ -1445,13 +1445,13 @@ test("Subclassing forms", function()
     // You can subclass a Form to add fields. The resulting form subclass will
     // have all of the fields of the parent Form, plus whichever fields you
     // define in the subclass.
-    var Person = Form({
-      first_name: new CharField(),
-      last_name: new CharField(),
-      birthday: new DateField()
+    var Person = forms.Form({
+      first_name: new forms.CharField(),
+      last_name: new forms.CharField(),
+      birthday: new forms.DateField()
     });
-    var Musician = Form({form: Person,
-      instrument: new CharField()
+    var Musician = forms.Form({form: Person,
+      instrument: new forms.CharField()
     });
     var p = new Person({autoId: false});
     equal(""+p.asUL(),
@@ -1467,31 +1467,31 @@ test("Subclassing forms", function()
 
     // You can "subclass" multiple forms by passing a list of constructors. The
     // fields are added in the order in which the parent Forms are listed.
-    var Person = Form({
-      first_name: new CharField(),
-      last_name: new CharField(),
-      birthday: new DateField(),
+    var Person = forms.Form({
+      first_name: new forms.CharField(),
+      last_name: new forms.CharField(),
+      birthday: new forms.DateField(),
 
       clean_first_name: function() {
-          throw new ValidationError("Method from Person.");
+          throw new forms.ValidationError("Method from Person.");
       },
       clean_last_name: function() {
-          throw new ValidationError("Method from Person.");
+          throw new forms.ValidationError("Method from Person.");
       }
     });
-    var Instrument = Form({
-      instrument: new CharField(),
+    var Instrument = forms.Form({
+      instrument: new forms.CharField(),
 
       clean_birthday: function() {
-          throw new ValidationError("Method from Instrument.");
+          throw new forms.ValidationError("Method from Instrument.");
       }
     });
-    var Beatle = Form({
+    var Beatle = forms.Form({
         form: [Person, Instrument],
-        haircut_type: new CharField(),
+        haircut_type: new forms.CharField(),
 
         clean_last_name: function() {
-            throw new ValidationError("Method from Beatle.");
+            throw new forms.ValidationError("Method from Beatle.");
         }
     });
     var b = new Beatle({autoId: false});
@@ -1510,7 +1510,7 @@ test("Subclassing forms", function()
     // JavaScript doesn't support multiple inheritance, so this is actually a
     // bit of a hack. These tests will highlight the fallout from this (well,
     // the ones I know about, at least).
-    strictEqual(b instanceof BaseForm, true);
+    strictEqual(b instanceof forms.BaseForm, true);
     strictEqual(b instanceof Person, true);
     // An instance of the first Form passed as a parent is used as the base
     // prototype object for our new Form - methods are merely borrowed from any
@@ -1528,10 +1528,10 @@ test("Forms with prefixes", function()
     // One way to think about this is "namespaces for HTML forms". Notice that
     // in the data argument, each field's key has the prefix, in this case
     // "person1", prepended to the actual field name.
-    var Person = Form({
-      first_name: new CharField(),
-      last_name: new CharField(),
-      birthday: new DateField()
+    var Person = forms.Form({
+      first_name: new forms.CharField(),
+      last_name: new forms.CharField(),
+      birthday: new forms.DateField()
     });
     var data = {
         "person1-first_name": "John",
@@ -1606,10 +1606,10 @@ test("Forms with prefixes", function()
     // but a form can alter that behavior by implementing the addPrefix()
     // method. This method takes a field name and returns the prefixed field,
     // according to this.prefix.
-    Person = Form({
-      first_name: new CharField(),
-      last_name: new CharField(),
-      birthday: new DateField(),
+    Person = forms.Form({
+      first_name: new forms.CharField(),
+      last_name: new forms.CharField(),
+      birthday: new forms.DateField(),
 
       addPrefix: function(fieldName) {
           if (this.prefix) {
@@ -1641,9 +1641,9 @@ test("Forms with null boolean", function()
     // NullBooleanField is a bit of a special case because its presentation
     // (widget) is different than its data. This is handled transparently,
     // though.
-    var Person = Form({
-      name: new CharField(),
-      is_cool: new NullBooleanField()
+    var Person = forms.Form({
+      name: new forms.CharField(),
+      is_cool: new forms.NullBooleanField()
     });
     var p = new Person({data: {name: "Joe"}, autoId: false});
     equal(""+p.boundField("is_cool"),
@@ -1702,7 +1702,7 @@ test("Forms with file fields", function()
 
     // FileFields are a special case because they take their data from the
     // "files" data object, not "data".
-    var FileForm = Form({file1: new FileField()});
+    var FileForm = forms.Form({file1: new forms.FileField()});
     var f = new FileForm({autoId: false});
     equal(""+f,
            "<tr><th>File1:</th><td><input type=\"file\" name=\"file1\"></td></tr>");
@@ -1729,16 +1729,16 @@ test("Basic form processing", function()
 {
     expect(3);
 
-    var UserRegistration = Form({
-      username: new CharField({maxLength: 10}),
-      password1: new CharField({widget: PasswordInput}),
-      password2: new CharField({widget: PasswordInput}),
+    var UserRegistration = forms.Form({
+      username: new forms.CharField({maxLength: 10}),
+      password1: new forms.CharField({widget: forms.PasswordInput}),
+      password2: new forms.CharField({widget: forms.PasswordInput}),
 
       clean: function() {
           if (this.cleanedData.password1 && this.cleanedData.password2 &&
               this.cleanedData.password1 != this.cleanedData.password2)
           {
-              throw new ValidationError("Please make sure your passwords match.");
+              throw new forms.ValidationError("Please make sure your passwords match.");
           }
           return this.cleanedData;
       }
@@ -1757,7 +1757,7 @@ test("Basic form processing", function()
             var form = new UserRegistration({autoId: false});
         }
         var template = "<form action=\"\" method=\"POST\">\n<table>\n%(form)s\n</table>\n<input type=\"submit\">\n</form>";
-        return format(template, {form: form});
+        return forms.util.format(template, {form: form});
     }
 
     // Case 1: GET (and empty form, with no errors)
@@ -1794,9 +1794,9 @@ test("emptyPermitted", function()
     // Sometimes (pretty much in formsets) we want to allow a form to pass
     // validation if it is completely empty. We can accomplish this by using the
     // emptyPermitted argument to a form constructor.
-    var SongForm = Form({
-      artist: new CharField(),
-      name: new CharField()
+    var SongForm = forms.Form({
+      artist: new forms.CharField(),
+      name: new forms.CharField()
     });
 
     // First let's show what happens if emptyPermitted == false (the default)
@@ -1832,9 +1832,9 @@ test("emptyPermitted", function()
     // However, we *really* need to be sure we are checking for null as any data
     // in initial that is falsy in a boolean context needs to be treated
     // literally.
-    var PriceForm = Form({
-      amount: new FloatField(),
-      qty: new IntegerField()
+    var PriceForm = forms.Form({
+      amount: new forms.FloatField(),
+      qty: new forms.IntegerField()
     });
 
     data = {amount: "0.0", qty: ""};
@@ -1845,10 +1845,10 @@ test("emptyPermitted", function()
 test("Extracting hidden and visible", function()
 {
     expect(2);
-    var SongForm = Form({
-      token: new CharField({widget: HiddenInput}),
-      artist: new CharField(),
-      name: new CharField()
+    var SongForm = forms.Form({
+      token: new forms.CharField({widget: forms.HiddenInput}),
+      artist: new forms.CharField(),
+      name: new forms.CharField()
     });
     var form = new SongForm();
     var hidden = form.hiddenFields();
@@ -1860,8 +1860,8 @@ test("Extracting hidden and visible", function()
 test("Hidden initial gets id", function()
 {
     expect(1);
-    var MyForm = Form({
-      field1: new CharField({maxLength: 50, showHiddenInitial: true})
+    var MyForm = forms.Form({
+      field1: new forms.CharField({maxLength: 50, showHiddenInitial: true})
     });
     equal(""+new MyForm().asTable(),
 "<tr><th><label for=\"id_field1\">Field1:</label></th><td><input maxlength=\"50\" type=\"text\" name=\"field1\" id=\"id_field1\"><input type=\"hidden\" name=\"initial-field1\" id=\"initial-id_field1\"></td></tr>");
@@ -1870,11 +1870,11 @@ test("Hidden initial gets id", function()
 test("Error/required HTML classes", function()
 {
     expect(3);
-    var Person = Form({
-      name: new CharField(),
-      is_cool: new NullBooleanField(),
-      email: new EmailField({required: false}),
-      age: new IntegerField()
+    var Person = forms.Form({
+      name: new forms.CharField(),
+      is_cool: new forms.NullBooleanField(),
+      email: new forms.EmailField({required: false}),
+      age: new forms.IntegerField()
     });
 
     var p = new Person({data: {}});
@@ -1914,8 +1914,8 @@ test("Error/required HTML classes", function()
 test("Label split datetime not displayed", function()
 {
     expect(1);
-    var EventForm = Form({
-      happened_at: new SplitDateTimeField({widget: SplitHiddenDateTimeWidget})
+    var EventForm = forms.Form({
+      happened_at: new forms.SplitDateTimeField({widget: forms.SplitHiddenDateTimeWidget})
     });
     var form = new EventForm();
     equal(""+form.asUL(),
@@ -1925,9 +1925,9 @@ test("Label split datetime not displayed", function()
 test("Multipart-encoded forms", function()
 {
     expect(3);
-    var FormWithoutFile = Form({username: new CharField()});
-    var FormWithFile = Form({file: new FileField()});
-    var FormWithImage = Form({file: new ImageField()});
+    var FormWithoutFile = forms.Form({username: new forms.CharField()});
+    var FormWithFile = forms.Form({file: new forms.FileField()});
+    var FormWithImage = forms.Form({file: new forms.ImageField()});
 
     strictEqual(new FormWithoutFile().isMultipart(), false);
     strictEqual(new FormWithFile().isMultipart(), true);

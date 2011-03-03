@@ -3,18 +3,18 @@ module("formsets");
 (function()
 {
 
-var ChoiceForm = Form({
-  choice: new CharField(),
-  votes: new IntegerField()
+var ChoiceForm = forms.Form({
+  choice: new forms.CharField(),
+  votes: new forms.IntegerField()
 });
 
 // FormSet allows us to use multiple instance of the same form on 1 page.
 // For now, the best way to create a FormSet is by using the FormSet
 // function.
-var ChoiceFormSet = FormSet(ChoiceForm);
+var ChoiceFormSet = forms.FormSet(ChoiceForm);
 
-var FavouriteDrinkForm = Form({
-  name: new CharField()
+var FavouriteDrinkForm = forms.Form({
+  name: new forms.CharField()
 });
 
 // Utility methods for displaying results
@@ -168,7 +168,7 @@ test("Delete prefilled data", function()
 
 // We can also display more than 1 empty form at a time. To do so, pass an
 // "extra" argument to FormSet.
-var MoreChoiceFormSet = FormSet(ChoiceForm, {extra: 3});
+var MoreChoiceFormSet = forms.FormSet(ChoiceForm, {extra: 3});
 
 test("Displaying more than one blank form", function()
 {
@@ -277,7 +277,7 @@ test("FormSet with deletion", function()
     // We can easily add deletion ability to a FormSet with an argument to
     // FormSet. This will add a BooleanField to each form instance. When
     // true, the form will be in formset.deletedForms.
-    var DeleteChoiceFormSet = FormSet(ChoiceForm, {canDelete: true});
+    var DeleteChoiceFormSet = forms.FormSet(ChoiceForm, {canDelete: true});
 
     var initial = [{choice: "Calexico", votes: 100}, {choice: "Fergie", votes: 900}];
     var formset = new DeleteChoiceFormSet({initial: initial, autoId: false, prefix: "choices"});
@@ -319,8 +319,8 @@ test("FormSet with deletion", function()
     // If we fill a form with something and then we check the canDelete checkbox
     // for that form, that form's errors should not make the entire formset
     // invalid since it's going to be deleted.
-    var CheckForm = Form({
-        field: new IntegerField({minValue: 100})
+    var CheckForm = forms.Form({
+        field: new forms.IntegerField({minValue: 100})
     });
 
     data = {
@@ -334,7 +334,7 @@ test("FormSet with deletion", function()
         "check-2-field": "",
         "check-2-DELETE": ""
     };
-    var CheckFormSet = FormSet(CheckForm, {canDelete: true});
+    var CheckFormSet = forms.FormSet(CheckForm, {canDelete: true});
     formset = new CheckFormSet({data: data, prefix: "check"});
     strictEqual(formset.isValid(), true);
 
@@ -352,7 +352,7 @@ test("FormSet with deletion", function()
 // marked as 1, then the form index is used as a secondary ordering
 // criteria. In order to put something at the front of the list, you'd need
 // to set its order to 0.
-var OrderChoiceFormSet = FormSet(ChoiceForm, {canOrder: true});
+var OrderChoiceFormSet = forms.FormSet(ChoiceForm, {canOrder: true});
 
 test("FormSets with ordering", function()
 {
@@ -443,7 +443,7 @@ test("Formset with ordering and deletion", function()
     expect(4);
 
     // Let's try throwing ordering and deletion into the same form
-    var ChoiceFormSet = FormSet(ChoiceForm, {canOrder: true, canDelete: true});
+    var ChoiceFormSet = forms.FormSet(ChoiceForm, {canOrder: true, canDelete: true});
 
     var initial = [
         {choice: "Calexico", votes: 100},
@@ -505,10 +505,10 @@ test("Invalid deleted form with ordering", function()
     expect(2);
     // Should be able to get ordered forms from a valid formset even if a
     // deleted form would have been invalid.
-    var PersonForm = Form({
-      name: new CharField()
+    var PersonForm = forms.Form({
+      name: new forms.CharField()
     });
-    var PeopleFormSet = FormSet(PersonForm, {canDelete: true, canOrder: true});
+    var PeopleFormSet = forms.FormSet(PersonForm, {canDelete: true, canOrder: true});
     var p = new PeopleFormSet({data: {
         "form-0-name": "",
         "form-0-DELETE": "on", // no name!
@@ -529,16 +529,16 @@ test("Invalid deleted form with ordering", function()
 // FormSet.
 function BaseFavouriteDrinksFormSet(kwargs)
 {
-    BaseFormSet.call(this, kwargs);
+    forms.BaseFormSet.call(this, kwargs);
 }
-inheritFrom(BaseFavouriteDrinksFormSet, BaseFormSet);
+forms.inheritFrom(BaseFavouriteDrinksFormSet, forms.BaseFormSet);
 BaseFavouriteDrinksFormSet.prototype.clean = function()
 {
     var seenDrinks = {};
     for (var i = 0, l = this.cleanedData().length; i < l; i++)
     {
         if (typeof seenDrinks[this.cleanedData()[i].name] != "undefined")
-            throw new ValidationError("You may only specify a drink once.");
+            throw new forms.ValidationError("You may only specify a drink once.");
         seenDrinks[this.cleanedData()[i].name] = true;
     }
 };
@@ -546,7 +546,7 @@ BaseFavouriteDrinksFormSet.prototype.clean = function()
 // Let's define a FormSet that takes a list of favourite drinks, but throws an
 // exception if there are any duplicates. Used to test clean hooks, ands Django
 // regressions 6926 and 12878.
-var FavouriteDrinksFormSet = FormSet(FavouriteDrinkForm, {
+var FavouriteDrinksFormSet = forms.FormSet(FavouriteDrinkForm, {
     formset: BaseFavouriteDrinksFormSet,
     extra: 3
 });
@@ -592,7 +592,7 @@ test("Clean hook", function()
     // Alternatively, for one-off formsets, a more convenient method is to
     // specify custom methods for the formset in the configuration object
     // passed to FormSet.
-    FavouriteDrinksFormSet = FormSet(FavouriteDrinkForm, {
+    FavouriteDrinksFormSet = forms.FormSet(FavouriteDrinkForm, {
         extra: 3,
         clean: function()
         {
@@ -601,7 +601,7 @@ test("Clean hook", function()
             {
                 if (typeof seenDrinks[this.cleanedData()[i].name] != "undefined")
                 {
-                    throw new ValidationError("You may only specify a drink once.");
+                    throw new forms.ValidationError("You may only specify a drink once.");
                 }
                 seenDrinks[this.cleanedData()[i].name] = true;
             }
@@ -628,7 +628,7 @@ test("Limiting max forms", function()
     expect(4);
     // When not passed, maxNum will take its default value of null, i.e. unlimited
     // number of forms, only controlled by the value of the extra parameter.
-    var LimitedFavouriteDrinkFormSet = FormSet(FavouriteDrinkForm, {extra: 3});
+    var LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 3});
     var formset = new LimitedFavouriteDrinkFormSet()
     equal(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\"></td></tr>\n" +
@@ -636,18 +636,18 @@ test("Limiting max forms", function()
 "<tr><th><label for=\"id_form-2-name\">Name:</label></th><td><input type=\"text\" name=\"form-2-name\" id=\"id_form-2-name\"></td></tr>");
 
     // If maxNum is 0 then no form is rendered at all
-    LimitedFavouriteDrinkFormSet = FormSet(FavouriteDrinkForm, {extra: 3, maxNum: 0});
+    LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 3, maxNum: 0});
     formset = new LimitedFavouriteDrinkFormSet()
     equal(formset.forms.join(""), "");
 
-    LimitedFavouriteDrinkFormSet = FormSet(FavouriteDrinkForm, {extra: 5, maxNum: 2});
+    LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 5, maxNum: 2});
     formset = new LimitedFavouriteDrinkFormSet();
     equal(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\"></td></tr>\n" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>");
 
     // Ensure that maxNum has no affect when extra is less than maxNum
-    LimitedFavouriteDrinkFormSet = FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2});
+    LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2});
     formset = new LimitedFavouriteDrinkFormSet();
     equal(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\"></td></tr>");
@@ -663,7 +663,7 @@ test("Max num with initial data", function()
         {name: "Bloody Mary"},
         {name: "Jack and Coke"}
     ];
-    var LimitedFavouriteDrinkFormSet = FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2});
+    var LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2});
     var formset = new LimitedFavouriteDrinkFormSet({initial: initial});
     equal(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin and Tonic\"></td></tr>\n" +
@@ -674,7 +674,7 @@ test("Max num with initial data", function()
     initial = [
         {name: "Gin and Tonic"}
     ];
-    LimitedFavouriteDrinkFormSet = FormSet(FavouriteDrinkForm, {extra:3, maxNum: 2});
+    LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra:3, maxNum: 2});
     formset = new LimitedFavouriteDrinkFormSet({initial: initial});
     equal(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin and Tonic\"></td></tr>\n" +
@@ -691,7 +691,7 @@ test("maxNum zero", function()
         {"name": "Fernet and Coke"},
         {"name": "Bloody Mary"}
     ];
-    var LimitedFavouriteDrinkFormSet = FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 0});
+    var LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 0});
     var formset = new LimitedFavouriteDrinkFormSet({initial: initial})
     form_output = []
 
@@ -708,7 +708,7 @@ test("Nore initial than maxNum", function()
         {"name": "Bloody Mary"},
         {"name": "Jack and Coke"}
     ];
-    var LimitedFavouriteDrinkFormSet = FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2});
+    var LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2});
     var formset = new LimitedFavouriteDrinkFormSet({initial: initial});
     strictEqual(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Fernet and Coke\"></td></tr>\n" +
@@ -719,7 +719,7 @@ test("Nore initial than maxNum", function()
     initial = [
         {"name": "Gin Tonic"}
     ];
-    var LimitedFavouriteDrinkFormSet = FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2});
+    var LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2});
     var formset = new LimitedFavouriteDrinkFormSet({initial: initial});
     strictEqual(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin Tonic\"></td></tr>\n" +
@@ -798,12 +798,12 @@ test("FormSet asUL", function()
 });
 
 // 3 Regression tests for Django issue #11418
-var ArticleForm = Form({
-  title: new CharField(),
-  pub_date: new DateField()
+var ArticleForm = forms.Form({
+  title: new forms.CharField(),
+  pub_date: new forms.DateField()
 });
 
-var ArticleFormSet = FormSet(ArticleForm);
+var ArticleFormSet = forms.FormSet(ArticleForm);
 
 test("No data raises ValidationError", function()
 {
@@ -851,15 +851,15 @@ test("Empty formset is valid", function()
     expect(2);
     function EmptyFsetWontValidate(kwargs)
     {
-        BaseFormSet.call(this, kwargs);
+        forms.BaseFormSet.call(this, kwargs);
     }
-    inheritFrom(EmptyFsetWontValidate, BaseFormSet);
+    forms.inheritFrom(EmptyFsetWontValidate, forms.BaseFormSet);
     EmptyFsetWontValidate.prototype.clean = function()
     {
-        throw new ValidationError("Clean method called");
+        throw new forms.ValidationError("Clean method called");
     };
 
-    var EmptyFsetWontValidateFormset = FormSet(FavouriteDrinkForm, {
+    var EmptyFsetWontValidateFormset = forms.FormSet(FavouriteDrinkForm, {
         formset: EmptyFsetWontValidate, extra: 0});
     var formset1 = new EmptyFsetWontValidateFormset({
         data: {

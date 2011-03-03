@@ -7,13 +7,13 @@ test("MultiWidget and MultiValueField", function()
     function ComplexWidget(kwargs)
     {
         var widgets = [
-            new TextInput(),
-            new SelectMultiple({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]}),
-            new SplitDateTimeWidget()
+            new forms.TextInput(),
+            new forms.SelectMultiple({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]}),
+            new forms.SplitDateTimeWidget()
         ];
-        MultiWidget.call(this, widgets, kwargs);
+        forms.MultiWidget.call(this, widgets, kwargs);
     }
-    inheritFrom(ComplexWidget, MultiWidget);
+    forms.inheritFrom(ComplexWidget, forms.MultiWidget);
 
     ComplexWidget.prototype.decompress = function(value)
     {
@@ -41,16 +41,16 @@ test("MultiWidget and MultiValueField", function()
     function ComplexField(kwargs)
     {
         kwargs.fields = [
-            new CharField(),
-            new MultipleChoiceField({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]}),
-            new SplitDateTimeField()
+            new forms.CharField(),
+            new forms.MultipleChoiceField({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]}),
+            new forms.SplitDateTimeField()
         ];
-        MultiValueField.call(this, kwargs);
+        forms.MultiValueField.call(this, kwargs);
     }
-    inheritFrom(ComplexField, MultiValueField);
+    forms.inheritFrom(ComplexField, forms.MultiValueField);
     ComplexField.prototype.compress = function(dataList)
     {
-        if (isArray(dataList) && dataList.length > 0)
+        if (forms.util.isArray(dataList) && dataList.length > 0)
         {
             return [dataList[0],
                     dataList[1].join(""),
@@ -68,7 +68,7 @@ test("MultiWidget and MultiValueField", function()
     // If insufficient data is provided, null is substituted
     cleanErrorEqual(f, "This field is required.", ["some text", ["JP"]])
 
-    var ComplexFieldForm = Form({
+    var ComplexFieldForm = forms.Form({
       field1: new ComplexField({widget: w})
     });
     f = new ComplexFieldForm();
@@ -96,9 +96,9 @@ test("Extra attrs", function()
 {
     expect(1);
     var extraAttrs = {"class": "special"};
-    var TestForm = Form({
-      f1: new CharField({maxLength: 10, widget: new TextInput({attrs: extraAttrs})}),
-      f2: new CharField({widget: new TextInput({attrs: extraAttrs})})
+    var TestForm = forms.Form({
+      f1: new forms.CharField({maxLength: 10, widget: new forms.TextInput({attrs: extraAttrs})}),
+      f2: new forms.CharField({widget: new forms.TextInput({attrs: extraAttrs})})
     });
 
     equal(""+new TestForm({autoId: false}).asP(),
@@ -110,8 +110,8 @@ test("Extra attrs", function()
 test("Data field", function()
 {
     expect(4);
-    var DataForm = Form({
-      data: new CharField({maxLength: 10})
+    var DataForm = forms.Form({
+      data: new forms.CharField({maxLength: 10})
     })
 
     var f = new DataForm({data: {data: "xyzzy"}});
@@ -120,8 +120,8 @@ test("Data field", function()
 
     //  A form with *only* hidden fields that has errors is going to be very
     // unusual.
-    var HiddenForm = Form({
-      data: new IntegerField({widget: HiddenInput})
+    var HiddenForm = forms.Form({
+      data: new forms.IntegerField({widget: forms.HiddenInput})
     })
     f = new HiddenForm({data: {}});
     equal(""+f.asP(),
