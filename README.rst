@@ -143,10 +143,20 @@ Here's a quick guide to getting started with newforms.
     methods make use of ``defaultRendering()``.
 
 The unit tests exercise the library thoroughly, so dip in for examples of
-further usage in the meantime.
+further usage in the meantime. Here are some pointers:
+
+**Forms:**
+
+* `Custom validation per field and across fields <https://github.com/insin/newforms/blob/master/tests/forms.js#L726>`_
+* `Subclassing forms and faux-multiple inheritance/mixins <https://github.com/insin/newforms/blob/master/tests/forms.js#L1442>`_
+* `Basic form processing in a view function <https://github.com/insin/newforms/blob/master/tests/forms.js#L1728>`_
+
+**FormSets:**
+
+* `Basic FormSet usage <https://github.com/insin/newforms/blob/master/tests/formsets.js#L37>`_
 
 Why "newforms"?
----------------
+===============
 
 **Homage**
    "newforms" was the old name for what is now django.forms when it was in development.
