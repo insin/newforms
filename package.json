@@ -1,6 +1,16 @@
 {
   "name": "js-forms",
+  "version": "0.0.1",
   "description": "Form validation and display library",
-  "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com>",
-  "main": "./js-forms.js"
+  "keywords": ["form", "validation", "display", "HTML"],
+  "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
+  "main": "./js-forms.js",
+  "files": ["./js-forms.js"],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/insin/js-forms.git"
+  },
+  "dependencies": {
+      "DOMBuilder": ">=1.4.1"
+  }
 }
