@@ -1,4 +1,4 @@
-js-forms
+newforms
 --------
 
 Copyright (c) 2008, Jonathan Buchanan

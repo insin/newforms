@@ -22,8 +22,7 @@ Changesets
 
 http://code.djangoproject.com/changeset/7967 (partial)
 
-   Media classes - changes to forms.js and widgets.js, but won't be ported until
-   js-forms can be run on the backend.
+   Media classes - changes to forms.js and widgets.js
 
 Python-to-JavaScript: Missing Pieces
 ====================================

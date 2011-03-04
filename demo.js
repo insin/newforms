@@ -1,10 +1,10 @@
 var express = require('express'),
     jade = require('jade'),
-    forms = require('js-forms');
+    forms = require('newforms');
 
 var app = express.createServer(
   express.logger(),
-  express.bodyDecoder()
+  express.bodyParser()
 );
 
 function renderToResponse(res, template, context) {
@@ -49,4 +49,4 @@ app.post('/', function(req, res) {
 });
 
 app.listen(3000);
-console.log('js-forms demo running on http://127.0.0.1:3000');
+console.log('newforms demo running on http://127.0.0.1:3000');

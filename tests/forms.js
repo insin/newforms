@@ -217,7 +217,7 @@ test("autoId", function()
 {
     expect(3);
     // "autoId" tells the Form to add an "id" attribute to each form element.
-    // If it's a string that contains "%(name)s", js-forms will use that as a
+    // If it's a string that contains "%(name)s", newforms will use that as a
     // format string into which the field's name will be inserted. It will also
     // put a <label> around the human-readable labels for a field.
     var p = new Person({autoId: "%(name)s_id"});
@@ -1098,7 +1098,7 @@ test("Specifying labels", function()
 {
     expect(6);
     // You can specify the label for a field by using the "label" argument to a
-    // Field class. If you don't specify 'label', js-forms will use the field
+    // Field class. If you don't specify 'label', newforms will use the field
     // name with underscores converted to spaces, and the initial letter
     // capitalised.
     var UserRegistration = forms.Form({
@@ -1144,7 +1144,7 @@ test("Specifying labels", function()
 "<li> <input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>\n" +
 "<li><label for=\"id_password1\">Password1:</label> <input type=\"password\" name=\"password1\" id=\"id_password1\"></li>");
 
-    // If label is null, js-forms will auto-create the label from the field
+    // If label is null, newforms will auto-create the label from the field
     // name. This is the default behavior.
     UserRegistration = forms.Form({
       username: new forms.CharField({maxLength: 10, label: null}),

@@ -1,5 +1,5 @@
 ========
-js-forms
+newforms
 ========
 
 A JavaScript port of `Django`_'s `form-handling library`_, which runs in
@@ -11,8 +11,8 @@ IE 6-8) and CommonJS environments (only tested with `Node.js`_).
 
 .. _`Django`: http://www.djangoproject.com
 .. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/
-.. _`Demo page`: http://jonathan.buchanan153.users.btopenworld.com/js-forms/demo.html
-.. _`Unit tests`: http://jonathan.buchanan153.users.btopenworld.com/js-forms/tests/tests.html
+.. _`Demo page`: http://jonathan.buchanan153.users.btopenworld.com/newforms/demo.html
+.. _`Unit tests`: http://jonathan.buchanan153.users.btopenworld.com/newforms/tests/tests.html
 .. _`Node.js`: http://nodejs.org
 
 Dependencies
@@ -21,10 +21,6 @@ Dependencies
 * `DOMBuilder`_ is required for interchangeable DOM Element / HTML
   generation.
 
-  For Node.js, clone the DOMBuilder repository and add its path to your
-  NODE_PATH environment variable, as the js-forms distribution module will
-  attempt to ``require('DOMBuilder')``.
-
 .. _`DOMBuilder`: https://github.com/insin/DOMBuilder
 
 Basic Usage
@@ -32,7 +28,7 @@ Basic Usage
 
 As direct porting from Django is nearing completion, the resulting API is
 very much focused on the server side. As such, Node.js is probably the
-best place to use js-forms in anger at the moment, as you'll be working
+best place to use newforms in anger at the moment, as you'll be working
 with a request/response cycle, which is Django forms' usual mode of
 operation.
 
@@ -40,18 +36,18 @@ Client side features, such as hooking into the DOM for instant validation
 and feedback, will be the focus of future work.
 
 In lieu of documentation and an official distribution build - which will
-be forthcoming - here's a quick guide to getting started with js-forms.
+be forthcoming - here's a quick guide to getting started with newforms.
 
-* Run ``build/build.py`` to generate a single ``js-forms.js``
+* Run ``build/build.py`` to generate a single ``newforms.js``
   distribution file, which assembles the component source files and
   defines a ``forms`` namespace object.
 
   The API exposed by this object is defined in ``build/formsnamespace.js``.
 
-  For Node.js, add the path to your checkout of js-forms to your NODE_PATH
-  to be able to import it with ``require('js-forms')``. If you install
+  For Node.js, add the path to your checkout of newforms to your NODE_PATH
+  to be able to import it with ``require('newforms')``. If you install
   `express`_ and `jade`_ via `npm`_ (Node Package Manager), you can run
-  ``node demo.js`` to see a basic example of js-forms in action.
+  ``node demo.js`` to see a basic example of newforms in action.
 
   .. _`express`: http://expressjs.com/
   .. _`jade`: http://jade-lang.com/
@@ -127,7 +123,7 @@ be forthcoming - here's a quick guide to getting started with js-forms.
     such as Forms, FormSets and ErrorLists, have a ``defaultRendering()``
     method.
 
-    This is required because js-forms can output DOM Elements or HTML
+    This is required because newforms can output DOM Elements or HTML
     from the same objects and there's no standard ``toDOM()``-type method
     in JavaScript. If you're operating in HTML mode, you can coerce these
     objects to string to get HTML out of them, as their ``toString()``

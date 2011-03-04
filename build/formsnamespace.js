@@ -1,5 +1,5 @@
 var forms = {
-    version: "0.1 (alpha)",
+    version: "0.0.1",
     // util.js utilities end users may want to make use of
     callValidator: callValidator,
     ErrorObject: ErrorObject,
@@ -7,7 +7,7 @@ var forms = {
     formData: formData,
     inheritFrom: inheritFrom,
     ValidationError: ValidationError,
-    // util.js utilities used when implementing js-forms
+    // util.js utilities used when implementing newforms
     util: {
         contains: contains,
         createLookup: createLookup,

@@ -7,14 +7,14 @@ function abspath(p) {
   return path.join(__dirname, p);
 }
 
-// time.js tests aren't dependent on js-forms in any way
+// time.js tests aren't dependent on newforms in any way
 qunit.run({
   code: abspath('../src/time.js'),
   tests: abspath('time.js')
 });
 
-// js-forms tests
-var lib = abspath('../js-forms.js')
+// newforms tests
+var lib = abspath('../newforms.js')
 path.exists(lib, function(exists) {
   if (!exists) {
     console.log(lib + " doesn't exist - run build.py");

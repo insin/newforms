@@ -1,5 +1,5 @@
 var EMPTY_VALUES = [null, undefined, ""],
-    URL_VALIDATOR_USER_AGENT = "js-forms (https://github.com/insin/js-forms/)";
+    URL_VALIDATOR_USER_AGENT = "newforms (https://github.com/insin/newforms/)";
 
 /**
  * Validates that input matches a regular expression.
@@ -70,7 +70,7 @@ URLValidator.prototype.__call__ = function(value)
         throw e;
     }
 
-    // TODO Plug in URL verification when js-forms can run on the backend
+    // TODO Plug in URL verification when newforms can run on the backend
     //if (this.verifyExists === true) {}
 };
 

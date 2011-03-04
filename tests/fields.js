@@ -515,7 +515,7 @@ test("URLField", function()
     // domains that don't fail the domain label length check in the regex.
     cleanErrorEqual(f, "Enter a valid URL.", createCatastrophicTestUrl(60));
 
-    // TODO Test verifying URLs when js-forms can be run on the backend
+    // TODO Test verifying URLs when newforms can be run on the backend
     // URLField takes an optional verifyExists parameter, which is false by
     // default. This verifies that the URL is live on the Internet.
     f = new forms.URLField({verifyExists: true});
@@ -801,7 +801,7 @@ test("ComboField", function()
     strictEqual(f.clean(null), "");
 });
 
-// TODO Test FilePathField when js-forms can be run on the backend
+// TODO Test FilePathField when newforms can be run on the backend
 
 test("SplitDateTimeField", function()
 {
