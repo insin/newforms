@@ -15,16 +15,29 @@ IE 6-8) and CommonJS environments (only tested with `Node.js`_).
 .. _`Unit tests`: http://jonathan.buchanan153.users.btopenworld.com/newforms/tests/tests.html
 .. _`Node.js`: http://nodejs.org
 
+Install
+=======
+
+Node.js::
+
+   npm install newforms
+
+Browser:
+
+* `newforms.min.js`_ - 56KB (15KB gzipped)
+
+.. _`newforms.min.js`: https://github.com/insin/newforms/raw/master/newforms.min.js
+
 Dependencies
-------------
+============
 
 * `DOMBuilder`_ is required for interchangeable DOM Element / HTML
   generation.
 
 .. _`DOMBuilder`: https://github.com/insin/DOMBuilder
 
-Basic Usage
------------
+Usage
+=====
 
 As direct porting from Django is nearing completion, the resulting API is
 very much focused on the server side. As such, Node.js is probably the
@@ -35,25 +48,25 @@ operation.
 Client side features, such as hooking into the DOM for instant validation
 and feedback, will be the focus of future work.
 
-In lieu of documentation and an official distribution build - which will
-be forthcoming - here's a quick guide to getting started with newforms.
+In lieu of documentation, head over to the `Django forms documentation`_ for a
+quick overview of the cencepts behind this form library.
 
-* Run ``build/build.py`` to generate a single ``newforms.js``
-  distribution file, which assembles the component source files and
-  defines a ``forms`` namespace object.
+Here's a quick guide to getting started with newforms.
 
-  The API exposed by this object is defined in ``build/formsnamespace.js``.
+.. _`Django forms documentation`: http://docs.djangoproject.com/en/dev/topics/forms/
 
-  For Node.js, add the path to your checkout of newforms to your NODE_PATH
-  to be able to import it with ``require('newforms')``. If you install
-  `express`_ and `jade`_ via `npm`_ (Node Package Manager), you can run
+* For Node.js, if you install `express`_ and `jade`_ via ``npm`` you can run
   ``node demo.js`` to see a basic example of newforms in action.
+
+  All example code will assume you've imported like so::
+
+     var forms = require('newforms');
 
   .. _`express`: http://expressjs.com/
   .. _`jade`: http://jade-lang.com/
   .. _`npm`: http://npmjs.org/
 
-* Form constructors are created using the ``form.Forms`` factory function,
+* Form constructors are created using the ``forms.Form`` factory function,
   which takes a single ``Object`` argument defining form fields and any
   other properties for the prorotype (validation methods etc.), returning
   a Form constructor which inherits from ``BaseForm``::
@@ -67,7 +80,7 @@ be forthcoming - here's a quick guide to getting started with newforms.
 
      var form = new ContactForm();
 
-* FormSet constructors are created using the ``form.FormSet`` factory
+* FormSet constructors are created using the ``forms.FormSet`` factory
   function, which takes a Form constructor and any additional properties
   for the FormSet defined as an ``Object``, returning a FormSet constructor
   which inherits from ``BaseFormSet``::
@@ -100,7 +113,7 @@ be forthcoming - here's a quick guide to getting started with newforms.
 
        var f = new MyForm({data: req.body});
 
-  * Method and variable names which used ``underscores_in_python`` become
+  * Method and variable names which use ``underscores_in_python`` become
     ``camelCasedInJavaScript``.
 
   * Don't forget the ``new`` operator!
@@ -131,3 +144,12 @@ be forthcoming - here's a quick guide to getting started with newforms.
 
 The unit tests exercise the library thoroughly, so dip in for examples of
 further usage in the meantime.
+
+Why "newforms"?
+---------------
+
+**Homage**
+   "newforms" was the old name for what is now django.forms when it was in development.
+
+**Honesty**
+   You'll be typing "new forms" *quite often* if you use it.
