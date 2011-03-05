@@ -10,6 +10,7 @@ var forms = {
     // util.js utilities used when implementing newforms
     util: {
         contains: contains,
+        copy: copy,
         createLookup: createLookup,
         extend: extend,
         format: format,
@@ -24,8 +25,8 @@ var forms = {
         objectItems: objectItems,
         prettyName: prettyName,
         strip: strip,
-        urlparse: urlparse,
-        copy: copy
+        time: time,
+        urlparse: urlparse
     },
     // validators.js
     EMPTY_VALUES: EMPTY_VALUES,

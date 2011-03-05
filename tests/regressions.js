@@ -1,3 +1,5 @@
+module = QUnit.module;
+
 module("regressions");
 
 test("deepCopy", function()

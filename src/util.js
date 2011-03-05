@@ -126,6 +126,43 @@ function createLookup(a)
 }
 
 /**
+ * Converts "firstName" and "first_name" to "First name", and
+ * "SHOUTING_LIKE_THIS" to "SHOUTING LIKE THIS".
+ */
+var prettyName = (function()
+{
+    var capsRE = /([A-Z]+)/g,
+        splitRE = /[ _]+/,
+        trimRE = /(^ +| +$)/g,
+        allCapsRE = /^[A-Z][A-Z0-9]+$/;
+
+    return function(name)
+    {
+        // Prefix sequences of caps with spaces and split on all space
+        // characters.
+        var parts = name.replace(capsRE, " $1").split(splitRE);
+
+        // If we had an initial cap...
+        if (parts[0] === "")
+            parts.splice(0, 1);
+
+        // Give the first word an initial cap and all subsequent words an
+        // initial lowercase if not all caps.
+        for (var i = 0, l = parts.length; i < l; i++)
+        {
+            if (i == 0)
+                parts[0] = parts[0].charAt(0).toUpperCase() +
+                           parts[0].substr(1);
+            else if (!allCapsRE.test(parts[i]))
+                parts[i] = parts[i].charAt(0).toLowerCase() +
+                           parts[i].substr(1);
+        }
+
+        return parts.join(" ");
+    };
+})();
+
+/**
  * Performs replacement of named placeholders in a String, specified in
  * <code>%(placeholder)s</code> format.
  *

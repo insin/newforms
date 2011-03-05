@@ -1,3 +1,5 @@
+module = QUnit.module;
+
 module("widgets");
 
 test("TextInput", function()

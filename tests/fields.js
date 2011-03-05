@@ -1,3 +1,5 @@
+module = QUnit.module;
+
 module("fields");
 
 (function()

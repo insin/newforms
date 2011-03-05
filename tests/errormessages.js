@@ -1,3 +1,5 @@
+module = QUnit.module;
+
 module("error messages");
 
 test("CharField", function()

@@ -493,8 +493,8 @@ DecimalField.prototype.clean = function(value)
  *
  * @param {Object} [kwargs] configuration options additional to those specified
  *                          in {@link Field}.
- * @config {Array} [inputFormats] a list of {@link time.strptime} input formats
- *                                which are considered valid. If not provided,
+ * @config {Array} [inputFormats] a list of strptime input formats which are
+ *                                considered valid. If not provided,
  *                                DEFAULT_DATE_INPUT_FORMATS will be used
  *                                instead.
  * @constructor

@@ -1,3 +1,5 @@
+module = QUnit.module;
+
 module("time");
 
 test("getLocale", function()

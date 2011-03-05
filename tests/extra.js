@@ -1,3 +1,5 @@
+module = QUnit.module;
+
 module("extra stuff");
 
 test("MultiWidget and MultiValueField", function()
@@ -20,7 +22,7 @@ test("MultiWidget and MultiValueField", function()
         if (value)
         {
             var data = value.split(",");
-            return [data[0], data[1], time.strpdate(data[2], "%Y-%m-%d %H:%M:%S")];
+            return [data[0], data[1], forms.util.time.strpdate(data[2], "%Y-%m-%d %H:%M:%S")];
         }
         return [null, null, null];
     }
@@ -54,7 +56,7 @@ test("MultiWidget and MultiValueField", function()
         {
             return [dataList[0],
                     dataList[1].join(""),
-                    time.strftime(dataList[2], "%Y-%m-%d %H:%M:%S")].join(",");
+                    forms.util.time.strftime(dataList[2], "%Y-%m-%d %H:%M:%S")].join(",");
         }
         return null;
     };
