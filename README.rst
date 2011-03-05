@@ -49,7 +49,7 @@ Client side features, such as hooking into the DOM for instant validation
 and feedback, will be the focus of future work.
 
 In lieu of documentation, head over to the `Django forms documentation`_ for a
-quick overview of the cencepts behind this form library.
+quick overview of the concepts behind this form library.
 
 Here's a quick guide to getting started with newforms.
 
@@ -147,13 +147,13 @@ further usage in the meantime. Here are some pointers:
 
 **Forms:**
 
-* `Custom validation per field and across fields <https://github.com/insin/newforms/blob/master/tests/forms.js#L726>`_
-* `Subclassing forms and faux-multiple inheritance/mixins <https://github.com/insin/newforms/blob/master/tests/forms.js#L1442>`_
-* `Basic form processing in a view function <https://github.com/insin/newforms/blob/master/tests/forms.js#L1728>`_
+* `Custom validation per field and across fields <https://github.com/insin/newforms/blob/master/tests/forms.js#L710>`_
+* `Subclassing forms and faux-multiple inheritance/mixins <https://github.com/insin/newforms/blob/master/tests/forms.js#L1426>`_
+* `Basic form processing in a view function <https://github.com/insin/newforms/blob/master/tests/forms.js#L1712>`_
 
 **FormSets:**
 
-* `Basic FormSet usage <https://github.com/insin/newforms/blob/master/tests/formsets.js#L37>`_
+* `Basic FormSet usage <https://github.com/insin/newforms/blob/master/tests/formsets.js#L39>`_
 
 Why "newforms"?
 ===============

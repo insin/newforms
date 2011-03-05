@@ -3,8 +3,8 @@ var qunit = require('qunit'),
 
 qunit.options.coverage = false;
 qunit.options.deps = [
- {file: 'customAsserts.js'},
- {module: 'DOMBuilder', as: 'DOMBuilder'}
+  {file: 'customAsserts.js'},
+  {module: 'DOMBuilder', as: 'DOMBuilder'}
 ];
 
 var lib = '../newforms.js';

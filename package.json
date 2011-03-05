@@ -2,7 +2,7 @@
   "name": "newforms",
   "version": "0.0.1",
   "description": "Form validation and display library",
-  "keywords": ["form", "validation", "display", "HTML"],
+  "tags": ["form", "validation", "display", "HTML"],
   "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
   "main": "./newforms.js",
   "files": ["./newforms.js"],
