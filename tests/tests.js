@@ -1,6 +1,7 @@
 var qunit = require('qunit'),
     path = require('path');
 
+qunit.options.coverage = false;
 qunit.options.deps = [
  {file: 'customAsserts.js'},
  {module: 'DOMBuilder', as: 'DOMBuilder'}
