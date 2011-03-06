@@ -1,6 +1,20 @@
 var express = require('express'),
     jade = require('jade'),
+    forms;
+
+try {
+  forms = require('./newforms');
+}
+catch (e) {
+  try {
+    // Fall back to installed package
     forms = require('newforms');
+  }
+  catch (e) {
+    console.error('newforms not found - run `python build/build.py` or `npm install newforms`');
+    process.exit(1);
+  }
+}
 
 var app = express.createServer(
   express.logger(),

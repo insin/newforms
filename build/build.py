@@ -1,6 +1,6 @@
 import os
 
-DIRNAME = os.path.dirname(__file__)
+DIRNAME = os.path.abspath(os.path.dirname(__file__))
 TIME_SOURCE_FILES = ('../src/time.js',)
 FORMS_SOURCE_FILES = ('../src/util.js', '../src/validators.js',
                       '../src/widgets.js', '../src/fields.js',
@@ -18,17 +18,20 @@ var DOMBuilder = modules ? require('DOMBuilder') : __global__.DOMBuilder;
 %(formsnamepace)s
 })(this);"""
 
+def jspath(p):
+    return os.path.normpath(os.path.join(DIRNAME, p))
+
 def main():
     js = CODE_TEMPLATE % {
-        'timecode': '\n'.join([open(os.path.normpath(f), 'r').read()
+        'timecode': '\n'.join([open(jspath(f), 'r').read()
                                for f in TIME_SOURCE_FILES]),
-        'formscode': '\n'.join([open(os.path.normpath(f), 'r').read()
+        'formscode': '\n'.join([open(jspath(f), 'r').read()
                                 for f in FORMS_SOURCE_FILES]),
-        'formsnamepace': open(os.path.normpath(FORMS_NAMESPACE), 'r').read(),
+        'formsnamepace': open(jspath(FORMS_NAMESPACE), 'r').read(),
     }
 
-    open('../newforms.js', 'w').write(js)
-    open('../newforms.min.js', 'w').write(google_closure_compress(js))
+    open(jspath('../newforms.js'), 'w').write(js)
+    open(jspath('../newforms.min.js'), 'w').write(google_closure_compress(js))
 
 def google_closure_compress(js):
     """Optimises and compresses with the Google Closure compiler."""
