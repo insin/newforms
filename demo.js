@@ -21,15 +21,13 @@ var app = express.createServer(
   express.bodyParser()
 );
 
-function renderToResponse(res, template, context) {
-  jade.renderFile(template, {locals: context},
-    function(err, html) {
-      if (err != null) {
-        console.error(err);
-      }
-      res.send(html);
+function renderToResponse(response, template, context) {
+  jade.renderFile(template, {locals: context}, function(error, html) {
+    if (error != null) {
+      console.error(error);
     }
-  )
+    response.send(html);
+  });
 }
 
 var TestForm = forms.Form({
@@ -46,17 +44,17 @@ var TestForm = forms.Form({
   }
 });
 
-app.get('/', function(req, res) {
-  renderToResponse(res, 'demo.jade', {
-    form: new TestForm(),
-    msg: 'Log In'
-  });
-});
-
-app.post('/', function(req, res) {
-  var form = new TestForm({data: req.body});
-  var msg = form.isValid() ? 'Welcome back!' : 'Log In';
-  renderToResponse(res, 'demo.jade', {
+app.all('/', function(request, response) {
+  var form, msg = 'Log In';
+  if (request.method == 'POST') {
+    form = new TestForm({data: request.body});
+    if (form.isValid()) {
+      msg = 'Welcome back'
+    }
+  } else {
+    form = new TestForm();
+  }
+  renderToResponse(response, 'demo.jade', {
     form: form,
     msg: msg
   });
