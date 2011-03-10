@@ -3,8 +3,8 @@ var qunit = require('qunit'),
 
 qunit.options.coverage = false;
 qunit.options.deps = [
-  {file: 'customAsserts.js'},
-  {module: 'DOMBuilder', as: 'DOMBuilder'}
+  {path: './customAsserts.js'},
+  {path: 'DOMBuilder', namespace: 'DOMBuilder'}
 ];
 
 var lib = '../newforms.js';
@@ -17,14 +17,14 @@ path.exists(lib, function(exists) {
 
   qunit.run([
     {
-      code: {file: '../src/time.js', as: 'time'},
+      code: {path: '../src/time.js', namespace: 'time'},
       tests: './time.js'
     },
     {
-      code: {file: lib, as: 'forms'},
-      tests: ['util.js', 'validators.js', 'forms.js', 'formsets.js',
-              'fields.js','errormessages.js', 'widgets.js', 'extra.js',
-              'regressions.js']
+      code: {path: lib, namespace: 'forms'},
+      tests: ['./util.js', './validators.js', './forms.js', './formsets.js',
+              './fields.js','./errormessages.js', './widgets.js', './extra.js',
+              './regressions.js']
     }
   ]);
 });
