@@ -41,7 +41,7 @@ function URLValidator(kwargs)
 inheritFrom(URLValidator, RegexValidator);
 URLValidator.prototype.regex = new RegExp(
     // http:// or https://
-    '^https?://' +
+    '^(?:http|ftp)s?://' +
     // Domain...
     '(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\\.)+' +
         '(?:[A-Z]{2,6}\\.?|[A-Z0-9-]{2,}\\.?)|' +

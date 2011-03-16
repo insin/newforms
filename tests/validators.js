@@ -4,7 +4,7 @@ module("validators");
 
 test("validators", function()
 {
-    expect(75);
+    expect(76);
 
     var now = new Date(90000);
     var later = new Date(100000);
@@ -76,6 +76,7 @@ test("validators", function()
     [new forms.MinLengthValidator(10), "", forms.ValidationError],
 
     [new forms.URLValidator(), "http://www.djangoproject.com/", null],
+    [new forms.URLValidator(), "ftp://www.djangoproject.com/", null],
     [new forms.URLValidator(), "http://localhost/", null],
     [new forms.URLValidator(), "http://example.com/", null],
     [new forms.URLValidator(), "http://www.example.com/", null],
