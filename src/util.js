@@ -679,7 +679,7 @@ var copy = (function() {
     // copiedObjects keeps track of objects already copied by this
     // deepCopy operation, so we can correctly handle cyclic references.
     this.copiedObjects = [];
-    thisPass = this;
+    var thisPass = this;
     this.recursiveDeepCopy = function(source) {
       return thisPass.deepCopy(source);
     }

@@ -695,8 +695,6 @@ test("maxNum zero", function()
     ];
     var LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 0});
     var formset = new LimitedFavouriteDrinkFormSet({initial: initial})
-    form_output = []
-
     strictEqual(formset.forms.join("\n"), "");
 });
 
