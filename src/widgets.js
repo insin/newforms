@@ -1,8 +1,4 @@
 /**
- * @fileOverview Form Widgets, which render an HTML representation of a Field.
- */
-
-/**
  * An HTML form widget.
  *
  * A widget handles the rendering of HTML, and the extraction of data from an

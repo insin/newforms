@@ -1,7 +1,3 @@
-/**
- * @fileOverview Form Fields, which normalise and validate (or "clean") data.
- */
-
 var DEFAULT_DATE_INPUT_FORMATS = [
         "%Y-%m-%d",              // "2006-10-25"
         "%m/%d/%Y", "%m/%d/%y",  // "10/25/2006", "10/25/06"

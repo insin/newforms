@@ -1,9 +1,3 @@
-/**
- * @fileOverview Formsets are a layer of abstraction to working with multiple
- *               forms on the same page. They can be best compared to data
- *               grids.
- */
-
 // Special field names
 var TOTAL_FORM_COUNT = "TOTAL_FORMS",
     INITIAL_FORM_COUNT = "INITIAL_FORMS",
