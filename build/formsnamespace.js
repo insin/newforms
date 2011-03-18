@@ -1,3 +1,14 @@
+(function(__global__, undefined)
+{
+
+// Pull in dependencies appropriately depending on the execution environment
+var modules = !!(typeof module !== 'undefined' && module.exports);
+var DOMBuilder = modules ? require('DOMBuilder') : __global__.DOMBuilder;
+
+%(timecode)s
+%(formscode)s
+
+// Forms API
 var forms = {
     version: "0.0.1",
     // util.js utilities end users may want to make use of
@@ -7,7 +18,7 @@ var forms = {
     formData: formData,
     inheritFrom: inheritFrom,
     ValidationError: ValidationError,
-    // util.js utilities used when implementing newforms
+    // util.js ancd other utilities used when implementing newforms
     util: {
         contains: contains,
         copy: copy,
@@ -30,6 +41,7 @@ var forms = {
     },
     // validators.js
     EMPTY_VALUES: EMPTY_VALUES,
+    URL_VALIDATOR_USER_AGENT: URL_VALIDATOR_USER_AGENT,
     RegexValidator: RegexValidator,
     URLValidator: URLValidator,
     EmailValidator: EmailValidator,
@@ -67,6 +79,9 @@ var forms = {
     SplitDateTimeWidget: SplitDateTimeWidget,
     SplitHiddenDateTimeWidget: SplitHiddenDateTimeWidget,
     // fields.js
+    DEFAULT_DATE_INPUT_FORMATS: DEFAULT_DATE_INPUT_FORMATS,
+    DEFAULT_TIME_INPUT_FORMATS: DEFAULT_TIME_INPUT_FORMATS,
+    DEFAULT_DATETIME_INPUT_FORMATS: DEFAULT_DATETIME_INPUT_FORMATS,
     Field: Field,
     CharField: CharField,
     IntegerField: IntegerField,
@@ -93,10 +108,16 @@ var forms = {
     IPAddressField: IPAddressField,
     SlugField: SlugField,
     // forms.js
+    NON_FIELD_ERRORS: NON_FIELD_ERRORS,
     BoundField: BoundField,
     BaseForm: BaseForm,
     Form: Form,
     // formsets.js
+    TOTAL_FORM_COUNT: TOTAL_FORM_COUNT,
+    INITIAL_FORM_COUNT: INITIAL_FORM_COUNT,
+    MAX_NUM_FORM_COUNT: MAX_NUM_FORM_COUNT,
+    ORDERING_FIELD_NAME: ORDERING_FIELD_NAME,
+    DELETION_FIELD_NAME: DELETION_FIELD_NAME,
     ManagementForm: ManagementForm,
     BaseFormSet: BaseFormSet,
     FormSet: FormSet,
@@ -112,3 +133,4 @@ else
 {
     window.forms = forms;
 }
+})(this);
