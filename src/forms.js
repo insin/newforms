@@ -1,3 +1,6 @@
+/** Property under which non-field-specific errors are stored. */
+var NON_FIELD_ERRORS = '__all__';
+
 /**
  * A field and its associated data.
  *
@@ -308,9 +311,6 @@ function BaseForm(kwargs)
     }
     */
 }
-
-/** Property under which non-field-specific errors are stored. */
-BaseForm.NON_FIELD_ERRORS = '__all__';
 
 BaseForm.prototype =
 {
@@ -762,7 +762,7 @@ BaseForm.prototype.asP = (function()
  */
 BaseForm.prototype.nonFieldErrors = function()
 {
-    return (this.errors(BaseForm.NON_FIELD_ERRORS) || new this.errorConstructor());
+    return (this.errors(NON_FIELD_ERRORS) || new this.errorConstructor());
 };
 
 /**
@@ -867,7 +867,7 @@ BaseForm.prototype._cleanForm = function()
     {
         if (!(e instanceof ValidationError))
             throw e;
-        this._errors.set(BaseForm.NON_FIELD_ERRORS,
+        this._errors.set(NON_FIELD_ERRORS,
                          new this.errorConstructor(e.messages));
     }
 };
