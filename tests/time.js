@@ -2,6 +2,11 @@ module = QUnit.module;
 
 module("time");
 
+(function()
+{
+
+var time = forms.util.time;
+
 test("getLocale", function()
 {
     expect(6);
@@ -155,3 +160,5 @@ test("strftime", function()
     equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%A %d %B"), "Wednesday 25 October");
     equals(time.strftime(new Date(2006, 9, 25, 14, 30, 59), "%w"), "3");
 });
+
+})();

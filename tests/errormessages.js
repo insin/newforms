@@ -10,7 +10,7 @@ test("CharField", function()
         minLength: "LENGTH %(showValue)s, MIN LENGTH %(limitValue)s",
         maxLength: "LENGTH %(showValue)s, MAX LENGTH %(limitValue)s"
     };
-    var f = new forms.CharField({minLength: 5, maxLength: 10, errorMessages: e});
+    var f = forms.CharField({minLength: 5, maxLength: 10, errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "LENGTH 4, MIN LENGTH 5", "1234");
     cleanErrorEqual(f, "LENGTH 11, MAX LENGTH 10", "12345678901");
@@ -25,7 +25,7 @@ test("IntegerField", function()
         minValue: "MIN VALUE IS %(limitValue)s",
         maxValue: "MAX VALUE IS %(limitValue)s"
     };
-    var f = new forms.IntegerField({minValue: 5, maxValue: 10, errorMessages: e});
+    var f = forms.IntegerField({minValue: 5, maxValue: 10, errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID", "abc");
     cleanErrorEqual(f, "MIN VALUE IS 5", "4");
@@ -41,7 +41,7 @@ test("FloatField", function()
         minValue: "MIN VALUE IS %(limitValue)s",
         maxValue: "MAX VALUE IS %(limitValue)s"
     };
-    var f = new forms.FloatField({minValue: 5, maxValue: 10, errorMessages: e});
+    var f = forms.FloatField({minValue: 5, maxValue: 10, errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID", "abc");
     cleanErrorEqual(f, "MIN VALUE IS 5", "4");
@@ -60,8 +60,8 @@ test("DecimalField", function()
         maxDecimalPlaces: "MAX DP IS %(maxDecimalPlaces)s",
         maxWholeDigits: "MAX DIGITS BEFORE DP IS %(maxWholeDigits)s"
     };
-    var f = new forms.DecimalField({minValue: 5, maxValue: 10, errorMessages: e});
-    var f2 = new forms.DecimalField({maxDigits: 4, decimalPlaces: 2, errorMessages: e});
+    var f = forms.DecimalField({minValue: 5, maxValue: 10, errorMessages: e});
+    var f2 = forms.DecimalField({maxDigits: 4, decimalPlaces: 2, errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID", "abc");
     cleanErrorEqual(f, "MIN VALUE IS 5", "4");
@@ -78,7 +78,7 @@ test("DateField", function()
         required: "REQUIRED",
         invalid: "INVALID"
     };
-    var f = new forms.DateField({errorMessages: e});
+    var f = forms.DateField({errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID", "abc");
 });
@@ -90,7 +90,7 @@ test("TimeField", function()
         required: "REQUIRED",
         invalid: "INVALID"
     };
-    var f = new forms.TimeField({errorMessages: e});
+    var f = forms.TimeField({errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID", "abc");
 });
@@ -102,7 +102,7 @@ test("DateTimeField", function()
         required: "REQUIRED",
         invalid: "INVALID"
     };
-    var f = new forms.DateTimeField({errorMessages: e});
+    var f = forms.DateTimeField({errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID", "abc");
 });
@@ -116,7 +116,7 @@ test("RegexField", function()
         minLength: "LENGTH %(showValue)s, MIN LENGTH %(limitValue)s",
         maxLength: "LENGTH %(showValue)s, MAX LENGTH %(limitValue)s"
     };
-    var f = new forms.RegexField("^\\d+$", {minLength: 5, maxLength: 10, errorMessages: e});
+    var f = forms.RegexField("^\\d+$", {minLength: 5, maxLength: 10, errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID", "abcde");
     cleanErrorEqual(f, "LENGTH 4, MIN LENGTH 5", "1234");
@@ -132,7 +132,7 @@ test("EmailField", function()
         minLength: "LENGTH %(showValue)s, MIN LENGTH %(limitValue)s",
         maxLength: "LENGTH %(showValue)s, MAX LENGTH %(limitValue)s"
     };
-    var f = new forms.EmailField({minLength: 8, maxLength: 10, errorMessages: e});
+    var f = forms.EmailField({minLength: 8, maxLength: 10, errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID", "abcdefgh");
     cleanErrorEqual(f, "LENGTH 7, MIN LENGTH 8", "a@b.com");
@@ -156,7 +156,7 @@ test("FileField", function()
         missing: "MISSING",
         empty: "EMPTY FILE"
     };
-    var f = new forms.FileField({maxLength: 10, errorMessages: e});
+    var f = forms.FileField({maxLength: 10, errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID", "abc");
     cleanErrorEqual(f, "EMPTY FILE", new SimpleUploadedFile("name", null));
@@ -171,7 +171,7 @@ test("URLField", function()
         invalid: "INVALID",
         invalidLink: "INVALID LINK"
     };
-    var f = new forms.URLField({verifyExists: true, errorMessages: e});
+    var f = forms.URLField({verifyExists: true, errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID", "abc.c");
     //cleanErrorEqual(f, "INVALID LINK", "http://www.broken.djangoproject.com");
@@ -183,7 +183,7 @@ test("BooleanField", function()
     var e = {
         required: "REQUIRED"
     };
-    var f = new forms.BooleanField({errorMessages: e});
+    var f = forms.BooleanField({errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
 });
 
@@ -194,7 +194,7 @@ test("ChoiceField", function()
         required: "REQUIRED",
         invalidChoice: "%(value)s IS INVALID CHOICE"
     };
-    var f = new forms.ChoiceField({choices: [["a", "aye"]], errorMessages: e});
+    var f = forms.ChoiceField({choices: [["a", "aye"]], errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "b IS INVALID CHOICE", "b");
 });
@@ -207,7 +207,7 @@ test("MultipleChoiceField", function()
         invalidChoice: "%(value)s IS INVALID CHOICE",
         invalidList: "NOT A LIST"
     };
-    var f = new forms.MultipleChoiceField({choices: [["a", "aye"]], errorMessages: e});
+    var f = forms.MultipleChoiceField({choices: [["a", "aye"]], errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "NOT A LIST", "b");
     cleanErrorEqual(f, "b IS INVALID CHOICE", ["b"]);
@@ -221,7 +221,7 @@ test("SplitDateTimeField", function()
         invalidDate: "INVALID DATE",
         invalidTime: "INVALID TIME"
     };
-    var f = new forms.SplitDateTimeField({errorMessages: e});
+    var f = forms.SplitDateTimeField({errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, ["INVALID DATE", "INVALID TIME"], ["a", "b"]);
 });
@@ -233,7 +233,7 @@ test("IPAddressField", function()
         required: "REQUIRED",
         invalid: "INVALID IP ADDRESS"
     };
-    var f = new forms.IPAddressField({errorMessages: e});
+    var f = forms.IPAddressField({errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID IP ADDRESS", "127.0.0");
 });
@@ -245,7 +245,7 @@ test("SlugField", function()
         required: "REQUIRED",
         invalid: "INVALID SLUG"
     };
-    var f = new forms.SlugField({errorMessages: e});
+    var f = forms.SlugField({errorMessages: e});
     cleanErrorEqual(f, "REQUIRED", "");
     cleanErrorEqual(f, "INVALID SLUG", "a b");
 });
@@ -255,12 +255,12 @@ test("Overriding forms.ErrorList", function()
     expect(4);
 
     var TestForm = forms.Form({
-      first_name: new forms.CharField(),
-      last_name: new forms.CharField(),
-      birthday: new forms.DateField(),
+      first_name: forms.CharField(),
+      last_name: forms.CharField(),
+      birthday: forms.DateField(),
 
       clean: function() {
-        throw new forms.ValidationError("I like to be awkward.");
+        throw forms.ValidationError("I like to be awkward.");
       }
     });
 
@@ -277,13 +277,13 @@ test("Overriding forms.ErrorList", function()
     };
 
     // This form should render errors the default way.
-    var f = new TestForm({data: {first_name: "John"}});
+    var f = TestForm({data: {first_name: "John"}});
     equal(""+f.boundField("last_name").errors(),
           "<ul class=\"errorlist\"><li>This field is required.</li></ul>");
     equal(""+f.errors("__all__"),
           "<ul class=\"errorlist\"><li>I like to be awkward.</li></ul>");
 
-    f = new TestForm({data: {first_name: "John"}, errorConstructor: CustomErrorList});
+    f = TestForm({data: {first_name: "John"}, errorConstructor: CustomErrorList});
     equal(""+f.boundField("last_name").errors(),
           "<div class=\"error\"><p>This field is required.</p></div>");
     equal(""+f.errors("__all__"),

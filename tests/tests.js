@@ -17,14 +17,10 @@ path.exists(lib, function(exists) {
 
   qunit.run([
     {
-      code: {path: '../src/time.js', namespace: 'time'},
-      tests: './time.js'
-    },
-    {
       code: {path: lib, namespace: 'forms'},
-      tests: ['./util.js', './validators.js', './forms.js', './formsets.js',
-              './fields.js','./errormessages.js', './widgets.js', './extra.js',
-              './regressions.js']
+      tests: ['./time.js', './util.js', './validators.js', './forms.js',
+              './formsets.js', './fields.js','./errormessages.js',
+              './widgets.js', './extra.js', './regressions.js']
     }
   ]);
 });

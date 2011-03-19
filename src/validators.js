@@ -6,6 +6,8 @@ var EMPTY_VALUES = [null, undefined, ""],
  */
 function RegexValidator(regex, message, code)
 {
+    if (!(this instanceof RegexValidator))
+        return new RegexValidator(regex, message, code);
     if (regex)
         this.regex = regex;
     if (message)
@@ -23,7 +25,7 @@ RegexValidator.prototype.code = "invalid";
 RegexValidator.prototype.__call__ = function(value)
 {
     if (!this.regex.test(value))
-        throw new ValidationError(this.message, {code: this.code});
+        throw ValidationError(this.message, {code: this.code});
 };
 
 /**
@@ -31,6 +33,7 @@ RegexValidator.prototype.__call__ = function(value)
  */
 function URLValidator(kwargs)
 {
+    if (!(this instanceof URLValidator)) return new URLValidator(kwargs);
     RegexValidator.call(this);
     kwargs = extend({
         verifyExists: false, validatorUserAgent: URL_VALIDATOR_USER_AGENT
@@ -76,6 +79,8 @@ URLValidator.prototype.__call__ = function(value)
 
 function EmailValidator(regex, message, code)
 {
+    if (!(this instanceof EmailValidator))
+        return new EmailValidator(regex, message, code);
     RegexValidator.call(this, regex, message, code);
 }
 inheritFrom(EmailValidator, RegexValidator);
@@ -109,15 +114,15 @@ var EMAIL_RE = new RegExp(
     /**
      * Validates that input looks like a valid e-mail address.
     */
-    validateEmail = new EmailValidator(EMAIL_RE,
-                                       "Enter a valid e-mail address.",
-                                       "invalid");
+    validateEmail = EmailValidator(EMAIL_RE,
+                                   "Enter a valid e-mail address.",
+                                   "invalid");
 
 var SLUG_RE = /^[-\w]+$/,
     /**
      * Validates that input is a valid slug.
      */
-    validateSlug = new RegexValidator(SLUG_RE,
+    validateSlug = RegexValidator(SLUG_RE,
         "Enter a valid 'slug' consisting of letters, numbers, underscores or " +
         "hyphens.",
         "invalid");
@@ -127,24 +132,25 @@ var IPV4_RE =
     /**
      * Validates that input is a valid IPv4 address.
      */
-    validateIPV4Address = new RegexValidator(IPV4_RE,
-                                            "Enter a valid IPv4 address.",
-                                            "invalid");
+    validateIPV4Address = RegexValidator(IPV4_RE,
+                                        "Enter a valid IPv4 address.",
+                                        "invalid");
 
 var COMMA_SEPARATED_INT_LIST_RE = /^[\d,]+$/,
     /**
      * Validates that input is a comma-separated list of integers.
      */
     validateCommaSeparatedIntegerList =
-        new RegexValidator(COMMA_SEPARATED_INT_LIST_RE,
-                           "Enter only digits separated by commas.",
-                           "invalid");
+        RegexValidator(COMMA_SEPARATED_INT_LIST_RE,
+                       "Enter only digits separated by commas.",
+                       "invalid");
 
 /**
  * Base for validators which compare input against a given value.
  */
 function BaseValidator(limitValue)
 {
+    if (!(this instanceof BaseValidator)) return new BaseValidator(limitValue);
     this.limitValue = limitValue;
 }
 BaseValidator.prototype.compare = function(a, b) { return a !== b; };
@@ -158,8 +164,8 @@ BaseValidator.prototype.__call__ = function(value)
     var cleaned = this.clean(value),
         params = {"limitValue": this.limitValue, "showValue": cleaned};
     if (this.compare(cleaned, this.limitValue))
-        throw new ValidationError(format(this.message, params),
-                                  {code: this.code, params: params});
+        throw ValidationError(format(this.message, params),
+                              {code: this.code, params: params});
 };
 
 /**
@@ -167,6 +173,8 @@ BaseValidator.prototype.__call__ = function(value)
  */
 function MaxValueValidator(limitValue)
 {
+    if (!(this instanceof MaxValueValidator))
+        return new MaxValueValidator(limitValue);
     BaseValidator.call(this, limitValue);
 }
 inheritFrom(MaxValueValidator, BaseValidator);
@@ -181,7 +189,9 @@ extend(MaxValueValidator.prototype, {
  */
 function MinValueValidator(limitValue)
 {
-BaseValidator.call(this, limitValue);
+    if (!(this instanceof MinValueValidator))
+        return new MinValueValidator(limitValue);
+    BaseValidator.call(this, limitValue);
 }
 inheritFrom(MinValueValidator, BaseValidator);
 extend(MinValueValidator.prototype, {
@@ -195,6 +205,8 @@ extend(MinValueValidator.prototype, {
  */
 function MinLengthValidator(limitValue)
 {
+    if (!(this instanceof MinLengthValidator))
+        return new MinLengthValidator(limitValue);
     BaseValidator.call(this, limitValue);
 }
 inheritFrom(MinLengthValidator, BaseValidator);
@@ -212,6 +224,8 @@ extend(MinLengthValidator.prototype, {
  */
 function MaxLengthValidator(limitValue)
 {
+    if (!(this instanceof MaxLengthValidator))
+        return new MaxLengthValidator(limitValue);
     BaseValidator.call(this, limitValue);
 }
 inheritFrom(MaxLengthValidator, BaseValidator);

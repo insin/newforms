@@ -1,6 +1,6 @@
 {
   "name": "newforms",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Form validation and display library",
   "tags": ["form", "validation", "display", "HTML"],
   "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",

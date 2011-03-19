@@ -332,6 +332,7 @@ function strip(s)
  */
 function ErrorObject(errors)
 {
+    if (!(this instanceof ErrorObject)) return new ErrorObject(errors);
     this.errors = errors || {};
 }
 
@@ -412,6 +413,7 @@ ErrorObject.prototype.asText = function()
  */
 function ErrorList(errors)
 {
+    if (!(this instanceof ErrorList)) return new ErrorList(errors);
     this.errors = errors || [];
 }
 
@@ -473,6 +475,8 @@ ErrorList.prototype.isPopulated = function()
  */
 function ValidationError(message, kwargs)
 {
+    if (!(this instanceof ValidationError))
+        return new ValidationError(message, kwargs);
     kwargs = extend({code: null, params: null}, kwargs || {});
     if (isArray(message))
     {

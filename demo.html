@@ -68,82 +68,98 @@
 
   ContactForm = Form({
     name:
-        new CharField({minLength: 1, maxLength: 100, label: "Your name"}),
+        CharField({minLength: 1, maxLength: 100, label: "Your name"}),
     age:
-        new IntegerField({minValue: 1, maxValue: 120, label: "Your age"}),
+        IntegerField({minValue: 1, maxValue: 120, label: "Your age"}),
     faveFloat:
-        new FloatField(
-            {minValue: 1.5, maxValue: 24.5,
-             label: "Your favourite number between 1.5 and 24.5"}),
+        FloatField({
+          minValue: 1.5, maxValue: 24.5,
+          label: "Your favourite number between 1.5 and 24.5"
+        }),
     faveDecimal:
-        new DecimalField({maxDigits: 4, decimalPlaces: 2,
-                          label: "Your favourite decimal"}),
+        DecimalField({
+          maxDigits: 4, decimalPlaces: 2,
+          label: "Your favourite decimal"
+        }),
     phoneNumber:
-        new RegexField(/\d{3}-\d{5}/,
-            {label: "Your phone number (e.g. 555-12345)",
-             errorMessages: {invalid: "Not a valid phone number"}}),
+        RegexField(/\d{3}-\d{5}/, {
+          label: "Your phone number (e.g. 555-12345)",
+          errorMessages: {
+            invalid: "Not a valid phone number"
+          }
+        }),
     email:
-        new EmailField({widget: new TextInput({attrs: {maxlength: "200"}}),
-                        label: "Your email address"}),
+        EmailField({widget: TextInput({attrs: {maxlength: "200"}}),
+                    label: "Your email address"}),
     zeeMikrofilm:
-        new FileField({required: false, label: "Please upload zee mikrofilm"}),
+        FileField({required: false, label: "Please upload zee mikrofilm"}),
     photo:
-        new ImageField({required: false, label: "Photo or it didn't happen"}),
+        ImageField({required: false, label: "Photo or it didn't happen"}),
     website:
-        new URLField({widget: new TextInput({attrs: {size: "50"}}),
-                      label: "Your website URL"}),
+        URLField({
+          widget: TextInput({attrs: {size: "50"}}),
+          label: "Your website URL"
+        }),
     faveIPAddress:
-        new IPAddressField(
-            {label: "Your favourite IP address... you freak"}),
+        IPAddressField({label: "Your favourite IP address... you freak"}),
     body:
-        new CharField({widget: new Textarea(),
-                       label: "Your message"}),
+        CharField({widget: Textarea(), label: "Your message"}),
     source:
-        new ChoiceField({choices: SOURCE_CHOICES,
-                         label: "Where did you hear about us?"}),
+        ChoiceField({
+          choices: SOURCE_CHOICES,
+          label: "Where did you hear about us?"
+        }),
     catSource:
-        new ChoiceField(
-            {choices: CAT_SOURCE_CHOICES,
-             label: "Where did you hear about us again, with feeling?"}),
+        ChoiceField({
+          choices: CAT_SOURCE_CHOICES,
+          label: "Where did you hear about us again, with feeling?"
+        }),
     moreSource:
-        new ChoiceField({choices: SOURCE_CHOICES,
-                         label: "Where did you hear about us again?",
-                         widget: new RadioSelect()}),
+        ChoiceField({
+          choices: SOURCE_CHOICES,
+          label: "Where did you hear about us again?",
+          widget: RadioSelect()
+        }),
     stuff:
-        new MultipleChoiceField({choices: STUFF_CHOICES, attrs: {size: 5},
-                                 label: "Pick stuff you like"}),
+        MultipleChoiceField({
+          choices: STUFF_CHOICES, attrs: {size: 5},
+          label: "Pick stuff you like"
+        }),
     catStuff:
-        new MultipleChoiceField({choices: CAT_STUFF_CHOICES,
-                                 label: "Pick more stuff you like"}),
+        MultipleChoiceField({
+          choices: CAT_STUFF_CHOICES,
+          label: "Pick more stuff you like"
+        }),
     awesome:
-        new BooleanField({initial: true,
-                          label: "Check here if you are awesome!"}),
+        BooleanField({initial: true, label: "Check here if you are awesome!"}),
     likeMonkeys:
-        new NullBooleanField({initial: "2",
-                              label: "Do you like monkeys?"}),
+        NullBooleanField({initial: "2", label: "Do you like monkeys?"}),
     intBeginningWith5:
-        new ComboField(
-          {fields: [new RegexField(/^[-+]?5/), new IntegerField()],
-           label: "Type an integer begining with 5"}),
+        ComboField({
+          fields: [RegexField(/^[-+]?5/), IntegerField()],
+          label: "Type an integer begining with 5"
+        }),
     birthday:
-        new DateField({label: "Your birthday"}),
+        DateField({label: "Your birthday"}),
     wokeUpAt:
-        new TimeField({label: "What time did you wake up at today?"}),
+        TimeField({label: "What time did you wake up at today?"}),
     howSoonIsNow:
-        new DateTimeField(
-            {initial: new Date(),
-             label: "What time was it when this page was rendered?"}),
+        DateTimeField({
+          initial: new Date(),
+          label: "What time was it when this page was rendered?"
+        }),
     againWithFeeling:
-        new SplitDateTimeField({initial: new Date(),
-                                label: "Once again"}),
+        SplitDateTimeField({initial: new Date(), label: "Once again"}),
     checkTheBoxes:
-        new MultipleChoiceField({choices: STUFF_CHOICES, attrs: {size: 5},
-            label: "Check stuff you like",
-            widget: new CheckboxSelectMultiple()}),
+        MultipleChoiceField({
+          choices: STUFF_CHOICES, attrs: {size: 5},
+          label: "Check stuff you like",
+          widget: CheckboxSelectMultiple()
+        }),
 
     cleanName: function() {
       if (this.cleanedData.name != "Cheese") {
-        throw new ValidationError('Your name must be "Cheese".');
+        throw ValidationError('Your name must be "Cheese".');
       }
       return this.cleanedData.name;
     }
@@ -161,7 +177,7 @@
       zeeMikrofilm: new FakeFile()
     }];
 
-  var formset = new ContactFormFormSet({
+  var formset = ContactFormFormSet({
     initial: initial
   });
 

@@ -17,7 +17,6 @@ catch (e) {
 }
 
 var app = express.createServer(
-  express.logger(),
   express.bodyParser()
 );
 
@@ -31,14 +30,14 @@ function renderToResponse(response, template, context) {
 }
 
 var TestForm = forms.Form({
-  username: new forms.CharField(),
-  password: new forms.CharField({widget: forms.PasswordInput}),
+  username: forms.CharField(),
+  password: forms.CharField({widget: forms.PasswordInput}),
 
   clean: function() {
     if (this.cleanedData.username && this.cleanedData.password &&
         (this.cleanedData.username != 'admin' ||
          this.cleanedData.password != 'secret')) {
-      throw new forms.ValidationError('Invalid credentials!');
+      throw forms.ValidationError('Invalid credentials!');
     }
     return this.cleanedData;
   }
@@ -47,12 +46,12 @@ var TestForm = forms.Form({
 app.all('/', function(request, response) {
   var form, msg = 'Log In';
   if (request.method == 'POST') {
-    form = new TestForm({data: request.body});
+    form = TestForm({data: request.body});
     if (form.isValid()) {
       msg = 'Welcome back'
     }
   } else {
-    form = new TestForm();
+    form = TestForm();
   }
   renderToResponse(response, 'demo.jade', {
     form: form,

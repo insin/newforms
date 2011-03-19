@@ -11,6 +11,7 @@ var NON_FIELD_ERRORS = '__all__';
  */
 function BoundField(form, field, name)
 {
+    if (!(this instanceof BoundField)) return new BoundField(form, field, name);
     this.form = form;
     this.field = field;
     this.name = name;
@@ -129,7 +130,7 @@ BoundField.prototype.asWidget = function(kwargs)
  */
 BoundField.prototype.asText = function(kwargs)
 {
-    kwargs = extend({}, kwargs || {}, {widget: new TextInput()});
+    kwargs = extend({}, kwargs || {}, {widget: TextInput()});
     return this.asWidget(kwargs);
 };
 
@@ -140,7 +141,7 @@ BoundField.prototype.asText = function(kwargs)
  */
 BoundField.prototype.asTextarea = function(kwargs)
 {
-    kwargs = extend({}, kwargs || {}, {widget: new Textarea()});
+    kwargs = extend({}, kwargs || {}, {widget: Textarea()});
     return this.asWidget(kwargs);
 };
 
@@ -287,29 +288,6 @@ function BaseForm(kwargs)
     // create this.fields here by deep copying baseFields. Instances should
     // always modify this.fields; they should not modify baseFields.
     this.fields = copy.deepCopy(this.baseFields)
-
-    /* Is there any hope of ever replacing __getitem__ properly?
-    if (typeof this.fields != "undefined")
-    {
-        for (var name in this.fields)
-        {
-            if (!this.fields.hasOwnProperty(name))
-            {
-                continue;
-            }
-
-            this.__defineGetter__(name, (function(fieldName)
-            {
-                return function()
-                {
-                    return new BoundField(this,
-                                          this.fields[fieldName],
-                                          fieldName);
-                };
-            })(name));
-        }
-    }
-    */
 }
 
 BaseForm.prototype =
@@ -384,36 +362,6 @@ BaseForm.prototype.defaultRendering = function()
     return this.asTable();
 };
 
-/* Is there a decent cross-browser replacement for __iter__?
-//def __iter__(self):
-//    for name, field in self.fields.items():
-//        yield BoundField(self, field, name)
-
-// The yield keyword is only available in Firefox - adding the necessary
-// ";version=1.7" to the script tag breaks other browsers, so leave be for now.
-BaseForm.prototype.__iterator__ = function()
-{
-    var fields = [];
-    for (var name in this.fields)
-    {
-        if (this.fields.hasOwnProperty(name))
-        {
-            fields[fields.length] =
-                new BoundField(this, this.fields[name], name);
-        }
-    }
-    fields.sort(function(a, b)
-    {
-        return a.field.creationCounter - b.field.creationCounter;
-    });
-
-    for (var i = 0, l = fields.length; i < l; i++)
-    {
-        yield fields[i];
-    }
-};
-*/
-
 /**
  * In lieu of __iter__, creates a {@link BoundField} for each field in the form,
  * in the order in which the fields were created.
@@ -434,7 +382,7 @@ BaseForm.prototype.boundFields = function(test)
     for (var name in this.fields)
         if (this.fields.hasOwnProperty(name) &&
             test(this.fields[name], name) === true)
-            fields.push(new BoundField(this, this.fields[name], name));
+            fields.push(BoundField(this, this.fields[name], name));
     return fields;
 };
 
@@ -451,7 +399,7 @@ BaseForm.prototype.boundField = function(name)
 {
     if (!this.fields.hasOwnProperty(name))
         throw new Error("Form does not have a '" + name + "' field.");
-    return new BoundField(this, this.fields[name], name);
+    return BoundField(this, this.fields[name], name);
 };
 
 /**
@@ -782,7 +730,7 @@ BaseForm.prototype._rawValue = function(fieldname)
  */
 BaseForm.prototype.fullClean = function()
 {
-    this._errors = new ErrorObject();
+    this._errors = ErrorObject();
     if (!this.isBound)
         return; // Stop further processing
 
@@ -951,7 +899,7 @@ BaseForm.prototype.visibleFields = function()
  *     constructor's <code>prototype</code>, so this object can also be used to
  *     define new methods on the resulting form, such as custom
  *     <code>clean</code> and <code>cleanFieldName</code> methods.
- * @config {Function} [form] the Form constructor which will provide the
+ * @config {Function|Array} [form] the Form constructor which will provide the
  *     prototype for the new Form constructor - defaults to
  *     <code>BaseForm</code>.
  * @config {Function} [preInit] if provided, this function will be invoked with
@@ -984,6 +932,9 @@ function Form(kwargs)
     // accessible.
     var formConstructor = function(kwargs)
     {
+        // Allow the form to be instantiated without the "new" operator
+        if (!(this instanceof bases[0])) return new formConstructor(kwargs);
+
         if (preInit !== null)
             // If the preInit function returns anything, use the returned value
             // as the kwargs object for further processing.

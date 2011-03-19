@@ -8,11 +8,11 @@ test("deepCopy", function()
 
     // Copied RegExps were throwing a "called on incompatible Object" exception
     var TestForm = forms.Form({
-      regex: new forms.RegexField(/test/),
-      email: new forms.EmailField(),
-      url: new forms.URLField()
+      regex: forms.RegexField(/test/),
+      email: forms.EmailField(),
+      url: forms.URLField()
     });
-    var f = new TestForm({data: {
+    var f = TestForm({data: {
       regex: "test",
       email: "test@test.com",
       url: "https://github.com"

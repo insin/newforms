@@ -14,10 +14,10 @@ var TOTAL_FORM_COUNT = "TOTAL_FORMS",
 var ManagementForm = (function()
 {
     var fields = {};
-    fields[TOTAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
-    fields[INITIAL_FORM_COUNT] = new IntegerField({widget: HiddenInput});
+    fields[TOTAL_FORM_COUNT] = IntegerField({widget: HiddenInput});
+    fields[INITIAL_FORM_COUNT] = IntegerField({widget: HiddenInput});
     fields[MAX_NUM_FORM_COUNT] =
-      new IntegerField({required: false, widget: HiddenInput});
+      IntegerField({required: false, widget: HiddenInput});
     return Form(fields);
 })();
 
@@ -76,10 +76,10 @@ BaseFormSet.prototype =
     {
         if (this.isBound)
         {
-            var form = new ManagementForm({data: this.data, autoId: this.autoId,
-                                           prefix: this.prefix});
+            var form = ManagementForm({data: this.data, autoId: this.autoId,
+                                       prefix: this.prefix});
             if (!form.isValid())
-                throw new ValidationError(
+                throw ValidationError(
                     "ManagementForm data is missing or has been tampered with");
         }
         else
@@ -88,9 +88,9 @@ BaseFormSet.prototype =
             initial[TOTAL_FORM_COUNT] = this.totalFormCount();
             initial[INITIAL_FORM_COUNT] = this.initialFormCount();
             initial[MAX_NUM_FORM_COUNT] = this.maxNum;
-            var form = new ManagementForm({autoId: this.autoId,
-                                           prefix: this.prefix,
-                                           initial: initial});
+            var form = ManagementForm({autoId: this.autoId,
+                                       prefix: this.prefix,
+                                       initial: initial});
         }
         return form;
     },
@@ -437,16 +437,16 @@ BaseFormSet.prototype.addFields = function(form, index)
         // Only pre-fill the ordering field for initial forms.
         if (index !== null && index < this.initialFormCount())
             form.fields[ORDERING_FIELD_NAME] =
-                new IntegerField({label: "Order", initial: index + 1,
-                                  required: false});
+                IntegerField({label: "Order", initial: index + 1,
+                              required: false});
         else
             form.fields[ORDERING_FIELD_NAME] =
-                new IntegerField({label: "Order", required: false});
+                IntegerField({label: "Order", required: false});
     }
 
     if (this.canDelete)
         form.fields[DELETION_FIELD_NAME] =
-            new BooleanField({label: "Delete", required: false});
+            BooleanField({label: "Delete", required: false});
 };
 
 /**
@@ -548,6 +548,7 @@ function FormSet(form, kwargs)
 
     var formsetConstructor = function(kwargs)
     {
+        if (!(this instanceof formset)) return new formsetConstructor(kwargs);
         this.form = form;
         this.extra = extra;
         this.canOrder = canOrder;

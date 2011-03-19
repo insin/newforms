@@ -118,7 +118,7 @@ Field.prototype.toJavaScript = function(value)
 Field.prototype.validate = function(value)
 {
     if (this.required && contains(EMPTY_VALUES, value))
-        throw new ValidationError(this.errorMessages.required);
+        throw ValidationError(this.errorMessages.required);
 };
 
 Field.prototype.runValidators = function(value)
@@ -151,7 +151,7 @@ Field.prototype.runValidators = function(value)
         }
     }
     if (errors.length > 0)
-        throw new ValidationError(errors);
+        throw ValidationError(errors);
 };
 
 /**
@@ -216,6 +216,7 @@ Field.prototype._hasChanged = function(initial, data)
  */
 function CharField(kwargs)
 {
+    if (!(this instanceof Field)) return new CharField(kwargs);
     kwargs = extend({
         maxLength: null, minLength: null
     }, kwargs || {});
@@ -223,9 +224,9 @@ function CharField(kwargs)
     this.minLength = kwargs.minLength;
     Field.call(this, kwargs);
     if (this.minLength !== null)
-        this.validators.push(new MinLengthValidator(this.minLength));
+        this.validators.push(MinLengthValidator(this.minLength));
     if (this.maxLength !== null)
-        this.validators.push(new MaxLengthValidator(this.maxLength));
+        this.validators.push(MaxLengthValidator(this.maxLength));
 }
 inheritFrom(CharField, Field);
 
@@ -265,6 +266,7 @@ CharField.prototype.widgetAttrs = function(widget)
  */
 function IntegerField(kwargs)
 {
+    if (!(this instanceof Field)) return new IntegerField(kwargs);
     kwargs = extend({
         maxValue: null, minValue: null
     }, kwargs || {});
@@ -273,9 +275,9 @@ function IntegerField(kwargs)
     Field.call(this, kwargs);
 
     if (this.minValue !== null)
-        this.validators.push(new MinValueValidator(this.minValue));
+        this.validators.push(MinValueValidator(this.minValue));
     if (this.maxValue !== null)
-        this.validators.push(new MaxValueValidator(this.maxValue));
+        this.validators.push(MaxValueValidator(this.maxValue));
 }
 inheritFrom(IntegerField, Field);
 IntegerField.prototype.defaultErrorMessages =
@@ -300,7 +302,7 @@ IntegerField.prototype.toJavaScript = function(value)
         return null;
     value = Number(value);
     if (isNaN(value) || value.toString().indexOf(".") != -1)
-        throw new ValidationError(this.errorMessages.invalid);
+        throw ValidationError(this.errorMessages.invalid);
     return value;
 };
 
@@ -315,6 +317,7 @@ IntegerField.prototype.toJavaScript = function(value)
  */
 function FloatField(kwargs)
 {
+    if (!(this instanceof Field)) return new FloatField(kwargs);
     IntegerField.call(this, kwargs);
 }
 inheritFrom(FloatField, IntegerField);
@@ -341,10 +344,10 @@ FloatField.prototype.toJavaScript = function(value)
         return null;
     value = strip(value);
     if (!FloatField.FLOAT_REGEXP.test(value))
-        throw new ValidationError(this.errorMessages.invalid);
+        throw ValidationError(this.errorMessages.invalid);
     value = parseFloat(value);
     if (isNaN(value))
-        throw new ValidationError(this.errorMessages.invalid);
+        throw ValidationError(this.errorMessages.invalid);
     return value;
 };
 
@@ -381,6 +384,7 @@ FloatField.prototype._hasChanged = function(initial, data)
  */
 function DecimalField(kwargs)
 {
+    if (!(this instanceof Field)) return new DecimalField(kwargs);
     kwargs = extend({
       maxValue: null, minValue: null, maxDigits: null, decimalPlaces: null
     }, kwargs || {});
@@ -391,9 +395,9 @@ function DecimalField(kwargs)
     Field.call(this, kwargs);
 
     if (this.minValue !== null)
-        this.validators.push(new MinValueValidator(this.minValue));
+        this.validators.push(MinValueValidator(this.minValue));
     if (this.maxValue !== null)
-        this.validators.push(new MaxValueValidator(this.maxValue));
+        this.validators.push(MaxValueValidator(this.maxValue));
 }
 inheritFrom(DecimalField, Field);
 /** Decimal validation regular expression, in lieu of a Decimal type. */
@@ -435,7 +439,7 @@ DecimalField.prototype.clean = function(value)
     // Coerce to string and validate that it looks Decimal-like
     value = strip(""+value);
     if (!DecimalField.DECIMAL_REGEXP.test(value)) {
-        throw new ValidationError(this.errorMessages.invalid);
+        throw ValidationError(this.errorMessages.invalid);
     }
 
     // In lieu of a Decimal type, DecimalField validates against a string
@@ -456,16 +460,16 @@ DecimalField.prototype.clean = function(value)
         decimals = (pieces.length == 2 ? pieces[1].length : 0),
         digits = wholeDigits + decimals;
     if (this.maxDigits !== null && digits > this.maxDigits)
-        throw new ValidationError(format(this.errorMessages.maxDigits,
-                                  {maxDigits: this.maxDigits}));
+        throw ValidationError(format(this.errorMessages.maxDigits,
+                                     {maxDigits: this.maxDigits}));
     if (this.decimalPlaces !== null && decimals > this.decimalPlaces)
-        throw new ValidationError(format(this.errorMessages.maxDecimalPlaces,
-                                  {maxDecimalPlaces: this.decimalPlaces}));
+        throw ValidationError(format(this.errorMessages.maxDecimalPlaces,
+                                     {maxDecimalPlaces: this.decimalPlaces}));
     if (this.maxDigits !== null &&
         this.decimalPlaces !== null &&
         wholeDigits > (this.maxDigits - this.decimalPlaces))
-        throw new ValidationError(format(this.errorMessages.maxWholeDigits,
-                                  {maxWholeDigits: (
+        throw ValidationError(format(this.errorMessages.maxWholeDigits,
+                                     {maxWholeDigits: (
                                       this.maxDigits - this.decimalPlaces)}));
 
     // * Values which did not have a leading zero gain a single leading zero
@@ -497,6 +501,7 @@ DecimalField.prototype.clean = function(value)
  */
 function DateField(kwargs)
 {
+    if (!(this instanceof Field)) return new DateField(kwargs);
     kwargs = extend({inputFormats: null}, kwargs || {});
     Field.call(this, kwargs);
     this.inputFormats = kwargs.inputFormats || DEFAULT_DATE_INPUT_FORMATS;
@@ -533,7 +538,7 @@ DateField.prototype.toJavaScript = function(value)
             continue;
         }
     }
-    throw new ValidationError(this.errorMessages.invalid);
+    throw ValidationError(this.errorMessages.invalid);
 };
 
 /**
@@ -548,6 +553,7 @@ DateField.prototype.toJavaScript = function(value)
  */
 function TimeField(kwargs)
 {
+    if (!(this instanceof Field)) return new TimeField(kwargs);
     kwargs = extend({ inputFormats: null}, kwargs || {});
     Field.call(this, kwargs);
     this.inputFormats =
@@ -579,7 +585,7 @@ TimeField.prototype.toJavaScript = function(value)
             continue;
         }
     }
-    throw new ValidationError(this.errorMessages.invalid);
+    throw ValidationError(this.errorMessages.invalid);
 };
 
 /**
@@ -594,6 +600,7 @@ TimeField.prototype.toJavaScript = function(value)
  */
 function DateTimeField(kwargs)
 {
+    if (!(this instanceof Field)) return new DateTimeField(kwargs);
     kwargs = extend({ inputFormats: null }, kwargs || {});
     Field.call(this, kwargs);
     this.inputFormats =
@@ -617,7 +624,7 @@ DateTimeField.prototype.toJavaScript = function(value)
         // Input comes from a SplitDateTimeWidget, for example, so it's two
         // components: date and time.
         if (value.length != 2)
-            throw new ValidationError(this.errorMessages.invalid);
+            throw ValidationError(this.errorMessages.invalid);
         if (contains(EMPTY_VALUES, value[0]) &&
             contains(EMPTY_VALUES, value[1]))
             return null;
@@ -634,7 +641,7 @@ DateTimeField.prototype.toJavaScript = function(value)
             continue;
         }
     }
-    throw new ValidationError(this.errorMessages.invalid);
+    throw ValidationError(this.errorMessages.invalid);
 };
 
 /**
@@ -649,11 +656,12 @@ DateTimeField.prototype.toJavaScript = function(value)
  */
 function RegexField(regex, kwargs)
 {
+    if (!(this instanceof Field)) return new RegexField(regex, kwargs);
     CharField.call(this, kwargs);
     if (isString(regex))
         regex = new RegExp(regex);
     this.regex = regex;
-    this.validators.push(new RegexValidator(this.regex));
+    this.validators.push(RegexValidator(this.regex));
 }
 inheritFrom(RegexField, CharField);
 
@@ -664,6 +672,7 @@ inheritFrom(RegexField, CharField);
  */
 function EmailField(kwargs)
 {
+    if (!(this instanceof Field)) return new EmailField(kwargs);
     CharField.call(this, kwargs);
 }
 inheritFrom(EmailField, CharField);
@@ -691,6 +700,7 @@ EmailField.prototype.clean = function(value)
  */
 function FileField(kwargs)
 {
+    if (!(this instanceof Field)) return new FileField(kwargs);
     kwargs = extend({maxLength: null}, kwargs);
     this.maxLength = kwargs.maxLength;
     delete kwargs.maxLength;
@@ -716,20 +726,20 @@ FileField.prototype.toJavaScript = function(data, initial)
         return null;
     // UploadedFile objects should have name and size attributes
     if (typeof data.name == "undefined" || typeof data.size == "undefined")
-        throw new ValidationError(this.errorMessages.invalid);
+        throw ValidationError(this.errorMessages.invalid);
 
     var fileName = data.name,
         fileSize = data.size;
 
     if (this.maxLength !== null && fileName.length > this.maxLength)
-        throw new ValidationError(format(this.errorMessages.maxLength, {
+        throw ValidationError(format(this.errorMessages.maxLength, {
                                              max: this.maxLength,
                                              length: fileName.length
                                          }));
     if (!fileName)
-        throw new ValidationError(this.errorMessages.invalid);
+        throw ValidationError(this.errorMessages.invalid);
     if (!fileSize)
-        throw new ValidationError(this.errorMessages.empty);
+        throw ValidationError(this.errorMessages.empty);
 
     return data;
 };
@@ -738,7 +748,7 @@ FileField.prototype.clean = function(data, initial)
 {
     // If the widget got contradictory inputs, we raise a validation error
     if (data === FILE_INPUT_CONTRADICTION)
-        throw new ValidationError(this.errorMessages.contradiction);
+        throw ValidationError(this.errorMessages.contradiction);
     // false means the field value should be cleared; further validation is
     // not needed.
     if (data === false)
@@ -776,6 +786,7 @@ FileField.prototype.boundData = function(data, initial)
  */
 function ImageField(kwargs)
 {
+    if (!(this instanceof Field)) return new ImageField(kwargs);
     FileField.call(this, kwargs);
 }
 inheritFrom(ImageField, FileField);
@@ -814,11 +825,12 @@ ImageField.prototype.toJavaScript = function(data, initial)
  */
 function URLField(kwargs)
 {
+    if (!(this instanceof Field)) return new URLField(kwargs);
     kwargs = extend({
         verifyExists: false, validatorUserAgent: URL_VALIDATOR_USER_AGENT
     }, kwargs || {});
     CharField.call(this, kwargs);
-    this.validators.push(new URLValidator({
+    this.validators.push(URLValidator({
                              verifyExists: kwargs.verifyExists,
                              validatorUserAgent: kwargs.validatorUserAgent
                          }));
@@ -866,6 +878,7 @@ URLField.prototype.toJavaScript = function(value)
  */
 function BooleanField(kwargs)
 {
+    if (!(this instanceof Field)) return new BooleanField(kwargs);
     Field.call(this, kwargs);
 }
 inheritFrom(BooleanField, Field);
@@ -883,7 +896,7 @@ BooleanField.prototype.toJavaScript = function(value)
         value = Boolean(value);
     value = Field.prototype.toJavaScript.call(this, value);
     if (!value && this.required)
-        throw new ValidationError(this.errorMessages.required);
+        throw ValidationError(this.errorMessages.required);
     return value;
 };
 
@@ -897,6 +910,7 @@ BooleanField.prototype.toJavaScript = function(value)
  */
 function NullBooleanField(kwargs)
 {
+    if (!(this instanceof Field)) return new NullBooleanField(kwargs);
     BooleanField.call(this, kwargs);
 }
 inheritFrom(NullBooleanField, BooleanField);
@@ -934,6 +948,7 @@ NullBooleanField.prototype.validate = function(value) {};
  */
 function ChoiceField(kwargs)
 {
+    if (!(this instanceof Field)) return new ChoiceField(kwargs);
     /*
     this.__defineGetter__("choices", function()
     {
@@ -981,7 +996,7 @@ ChoiceField.prototype.validate = function(value)
 {
     Field.prototype.validate.call(this, value);
     if (value && !this.validValue(value))
-        throw new ValidationError(
+        throw ValidationError(
             format(this.errorMessages.invalidChoice, {value: value}));
 };
 
@@ -1028,6 +1043,7 @@ ChoiceField.prototype.validValue = function(value)
  */
 function TypedChoiceField(kwargs)
 {
+    if (!(this instanceof Field)) return new TypedChoiceField(kwargs);
     kwargs = extend({
         coerce: function(val) { return val; }, emptyValue: ""
     }, kwargs || {});
@@ -1051,7 +1067,7 @@ TypedChoiceField.prototype.toJavaScript = function(value)
     }
     catch (e)
     {
-        throw new ValidationError(format(
+        throw ValidationError(format(
             this.errorMessages.invalidChoice, {value: value}));
     }
     return value;
@@ -1068,6 +1084,7 @@ TypedChoiceField.prototype.validate = function(value) {};
  */
 function MultipleChoiceField(kwargs)
 {
+    if (!(this instanceof Field)) return new MultipleChoiceField(kwargs);
     ChoiceField.call(this, kwargs);
 }
 inheritFrom(MultipleChoiceField, ChoiceField);
@@ -1086,7 +1103,7 @@ MultipleChoiceField.prototype.toJavaScript = function(value)
     if (!value)
         return [];
     else if (!(isArray(value)))
-        throw new ValidationError(this.errorMessages.invalidList);
+        throw ValidationError(this.errorMessages.invalidList);
     var stringValues = [];
     for (var i = 0, l = value.length; i < l; i++)
         stringValues.push(""+value[i]);
@@ -1100,10 +1117,10 @@ MultipleChoiceField.prototype.toJavaScript = function(value)
 MultipleChoiceField.prototype.validate = function(value)
 {
     if (this.required && value.length === 0)
-        throw new ValidationError(this.errorMessages.required);
+        throw ValidationError(this.errorMessages.required);
     for (var i = 0, l = value.length; i < l; i++)
         if (!this.validValue(value[i]))
-            throw new ValidationError(format(
+            throw ValidationError(format(
                 this.errorMessages.invalidChoice, {value: value[i]}));
 };
 
@@ -1124,6 +1141,7 @@ MultipleChoiceField.prototype.validate = function(value)
  */
 function TypedMultipleChoiceField(kwargs)
 {
+    if (!(this instanceof Field)) return new TypedMultipleChoiceField(kwargs);
     kwargs = extend({
         coerce: function(val) { return val; }, emptyValue: []
     }, kwargs || {});
@@ -1151,7 +1169,7 @@ TypedMultipleChoiceField.prototype.toJavaScript = function(value)
         }
         catch (e)
         {
-            throw new ValidationError(format(
+            throw ValidationError(format(
                 this.errorMessages.invalidChoice, {value: value[i]}));
         }
     }
@@ -1172,6 +1190,7 @@ TypedMultipleChoiceField.prototype.validate = function(value) {};
  */
 function ComboField(kwargs)
 {
+    if (!(this instanceof Field)) return new ComboField(kwargs);
     kwargs = extend({fields: []}, kwargs || {});
     Field.call(this, kwargs);
     // Set "required" to False on the individual fields, because the required
@@ -1214,6 +1233,7 @@ ComboField.prototype.clean = function(value)
  */
 function MultiValueField(kwargs)
 {
+    if (!(this instanceof Field)) return new MultiValueField(kwargs);
     kwargs = extend({fields: []}, kwargs || {});
     Field.call(this, kwargs);
     // Set required to false on the individual fields, because the required
@@ -1236,7 +1256,7 @@ MultiValueField.prototype.validate = function() {};
  * corresponding Field in <code>this.fields</code>.
  *
  * For example, if this MultiValueField was instantiated with
- * <code>{fields: [new DateField(), new TimeField()]}, <code>clean()</code>
+ * <code>{fields: [forms.DateField(), forms.TimeField()]}, <code>clean()</code>
  * would call <code>DateField.clean(value[0])</code> and
  * <code>TimeField.clean(value[1])<code>.
  *
@@ -1267,14 +1287,14 @@ MultiValueField.prototype.clean = function(value)
         if (!value || allValuesEmpty)
         {
             if (this.required)
-                throw new ValidationError(this.errorMessages.required);
+                throw ValidationError(this.errorMessages.required);
             else
                 return this.compress([]);
         }
     }
     else
     {
-        throw new ValidationError(this.errorMessages.invalid);
+        throw ValidationError(this.errorMessages.invalid);
     }
 
     for (var i = 0, l = this.fields.length; i < l; i++)
@@ -1284,7 +1304,7 @@ MultiValueField.prototype.clean = function(value)
         if (fieldValue === undefined)
             fieldValue = null;
         if (this.required && contains(EMPTY_VALUES, fieldValue))
-            throw new ValidationError(this.errorMessages.required);
+            throw ValidationError(this.errorMessages.required);
         try
         {
             cleanData.push(field.clean(fieldValue));
@@ -1298,7 +1318,7 @@ MultiValueField.prototype.clean = function(value)
     }
 
     if (errors.length !== 0)
-        throw new ValidationError(errors);
+        throw ValidationError(errors);
 
     var out = this.compress(cleanData);
     this.validate(out);
@@ -1310,8 +1330,8 @@ MultiValueField.prototype.clean = function(value)
  * assumed to be valid.
  *
  * For example, if this MultiValueField was instantiated with
- * <code>{fields: [new DateField(), new TimeField()]}</code>, this might return
- * a <code>Date</code> object created by combining the date and time in
+ * <code>{fields: [forms.DateField(), forms.TimeField()]}</code>, this might
+ * return a <code>Date</code> object created by combining the date and time in
  * <code>dataList</code>.
  *
  * @param {Array} dataList
@@ -1339,6 +1359,7 @@ MultiValueField.prototype.compress = function(dataList)
  */
 function FilePathField(path, kwargs)
 {
+    if (!(this instanceof Field)) return new FilePathField(path, kwargs);
     kwargs = extend({
         match: null, recursive: false, required: true, widget: null,
         label: null, initial: null, helpText: null
@@ -1377,6 +1398,7 @@ inheritFrom(FilePathField, ChoiceField);
  */
 function SplitDateTimeField(kwargs)
 {
+    if (!(this instanceof Field)) return new SplitDateTimeField(kwargs);
     kwargs = extend({
         inputDateFormats: null, inputTimeFormats: null
     }, kwargs || {});
@@ -1384,10 +1406,10 @@ function SplitDateTimeField(kwargs)
     if (typeof kwargs.errorMessages != "undefined")
         extend(errors, kwargs.errorMessages);
     kwargs.fields = [
-         new DateField({inputFormats: kwargs.inputDateFormats,
-                        errorMessages: {invalid: errors.invalidDate}}),
-         new TimeField({inputFormats: kwargs.inputDateFormats,
-                        errorMessages: {invalid: errors.invalidTime}})];
+         DateField({inputFormats: kwargs.inputDateFormats,
+                    errorMessages: {invalid: errors.invalidDate}}),
+         TimeField({inputFormats: kwargs.inputDateFormats,
+                    errorMessages: {invalid: errors.invalidTime}})];
     MultiValueField.call(this, kwargs);
 }
 inheritFrom(SplitDateTimeField, MultiValueField);
@@ -1417,9 +1439,9 @@ SplitDateTimeField.prototype.compress = function(dataList)
         // Raise a validation error if date or time is empty (possible if
         // SplitDateTimeField has required == false).
         if (contains(EMPTY_VALUES, d))
-           throw new ValidationError(this.errorMessages.invalidDate);
+           throw ValidationError(this.errorMessages.invalidDate);
         if (contains(EMPTY_VALUES, t))
-           throw new ValidationError(this.errorMessages.invalidTime);
+           throw ValidationError(this.errorMessages.invalidTime);
         return new Date(d.getFullYear(), d.getMonth(), d.getDate(),
                         t.getHours(), t.getMinutes(), t.getSeconds());
     }
@@ -1435,6 +1457,7 @@ SplitDateTimeField.prototype.compress = function(dataList)
  */
 function IPAddressField(kwargs)
 {
+    if (!(this instanceof Field)) return new IPAddressField(kwargs);
     CharField.call(this, kwargs);
 }
 inheritFrom(IPAddressField, CharField);
@@ -1453,6 +1476,7 @@ IPAddressField.prototype.defaultErrorMessages =
  */
 function SlugField(kwargs)
 {
+    if (!(this instanceof Field)) return new SlugField(kwargs);
     CharField.call(this, kwargs);
 }
 inheritFrom(SlugField, CharField);

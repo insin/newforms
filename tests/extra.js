@@ -8,10 +8,11 @@ test("MultiWidget and MultiValueField", function()
 
     function ComplexWidget(kwargs)
     {
+        if (!(this instanceof ComplexWidget)) return new ComplexWidget(kwargs);
         var widgets = [
-            new forms.TextInput(),
-            new forms.SelectMultiple({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]}),
-            new forms.SplitDateTimeWidget()
+            forms.TextInput(),
+            forms.SelectMultiple({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]}),
+            forms.SplitDateTimeWidget()
         ];
         forms.MultiWidget.call(this, widgets, kwargs);
     }
@@ -31,7 +32,7 @@ test("MultiWidget and MultiValueField", function()
         return DOMBuilder.createElement("div", {"class": "complex"}, renderedWidgets);
     };
 
-    var w = new ComplexWidget();
+    var w = ComplexWidget();
     equals(""+w.render("name", "some text,JP,2007-04-25 06:24:00"),
 "<div class=\"complex\"><input type=\"text\" name=\"name_0\" value=\"some text\"><select name=\"name_1\" multiple=\"multiple\">\n" +
 "<option value=\"J\" selected=\"selected\">John</option>\n" +
@@ -42,10 +43,11 @@ test("MultiWidget and MultiValueField", function()
 
     function ComplexField(kwargs)
     {
+        if (!(this instanceof ComplexField)) return new ComplexField(kwargs);
         kwargs.fields = [
-            new forms.CharField(),
-            new forms.MultipleChoiceField({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]}),
-            new forms.SplitDateTimeField()
+            forms.CharField(),
+            forms.MultipleChoiceField({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]}),
+            forms.SplitDateTimeField()
         ];
         forms.MultiValueField.call(this, kwargs);
     }
@@ -61,7 +63,7 @@ test("MultiWidget and MultiValueField", function()
         return null;
     };
 
-    var f = new ComplexField({widget: w});
+    var f = ComplexField({widget: w});
     equals(f.clean(["some text", ["J", "P"], ["2007-04-25", "6:24:00"]]),
            "some text,JP,2007-04-25 06:24:00");
     cleanErrorEqual(f, "Select a valid choice. X is not one of the available choices.",
@@ -71,9 +73,9 @@ test("MultiWidget and MultiValueField", function()
     cleanErrorEqual(f, "This field is required.", ["some text", ["JP"]])
 
     var ComplexFieldForm = forms.Form({
-      field1: new ComplexField({widget: w})
+      field1: ComplexField({widget: w})
     });
-    f = new ComplexFieldForm();
+    f = ComplexFieldForm();
     equals(""+f,
 "<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" id=\"id_field1_0\"><select name=\"field1_1\" multiple=\"multiple\" id=\"id_field1_1\">\n" +
 "<option value=\"J\">John</option>\n" +
@@ -82,7 +84,7 @@ test("MultiWidget and MultiValueField", function()
 "<option value=\"R\">Ringo</option>\n" +
 "</select><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\"></div></td></tr>");
 
-    f = new ComplexFieldForm({data: {field1_0: "some text", field1_1 :["J", "P"], field1_2_0: "2007-04-25", field1_2_1: "06:24:00"}});
+    f = ComplexFieldForm({data: {field1_0: "some text", field1_1 :["J", "P"], field1_2_0: "2007-04-25", field1_2_1: "06:24:00"}});
     equals(""+f,
 "<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" id=\"id_field1_0\" value=\"some text\"><select name=\"field1_1\" multiple=\"multiple\" id=\"id_field1_1\">\n" +
 "<option value=\"J\" selected=\"selected\">John</option>\n" +
@@ -99,11 +101,11 @@ test("Extra attrs", function()
     expect(1);
     var extraAttrs = {"class": "special"};
     var TestForm = forms.Form({
-      f1: new forms.CharField({maxLength: 10, widget: new forms.TextInput({attrs: extraAttrs})}),
-      f2: new forms.CharField({widget: new forms.TextInput({attrs: extraAttrs})})
+      f1: forms.CharField({maxLength: 10, widget: new forms.TextInput({attrs: extraAttrs})}),
+      f2: forms.CharField({widget: forms.TextInput({attrs: extraAttrs})})
     });
 
-    equal(""+new TestForm({autoId: false}).asP(),
+    equal(""+TestForm({autoId: false}).asP(),
 "<p>F1: <input class=\"special\" maxlength=\"10\" type=\"text\" name=\"f1\"></p>\n" +
 "<p>F2: <input class=\"special\" type=\"text\" name=\"f2\"></p>");
 });
@@ -113,19 +115,19 @@ test("Data field", function()
 {
     expect(4);
     var DataForm = forms.Form({
-      data: new forms.CharField({maxLength: 10})
+      data: forms.CharField({maxLength: 10})
     })
 
-    var f = new DataForm({data: {data: "xyzzy"}});
+    var f = DataForm({data: {data: "xyzzy"}});
     strictEqual(f.isValid(), true);
     deepEqual(f.cleanedData, {data: "xyzzy"});
 
     //  A form with *only* hidden fields that has errors is going to be very
     // unusual.
     var HiddenForm = forms.Form({
-      data: new forms.IntegerField({widget: forms.HiddenInput})
+      data: forms.IntegerField({widget: forms.HiddenInput})
     })
-    f = new HiddenForm({data: {}});
+    f = HiddenForm({data: {}});
     equal(""+f.asP(),
 "<div><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>");
     equal(""+f.asTable(),

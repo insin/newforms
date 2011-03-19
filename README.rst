@@ -4,7 +4,7 @@ newforms
 
 A JavaScript port of `Django`_'s `form-handling library`_, which runs in
 browsers (tested in the latest Firefox, Chrome and Opera browsers... and
-IE 6-8) and CommonJS environments (only tested with `Node.js`_).
+IE 6-8) and in `Node.js`_.
 
 - `Demo page`_
 - `Unit tests`_
@@ -24,7 +24,7 @@ Node.js::
 
 Browser:
 
-* `newforms.min.js`_ - 56KB (15KB gzipped)
+* `newforms.min.js`_ - ~59KB (~15.5KB gzipped)
 
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/master/newforms.min.js
 
@@ -66,19 +66,24 @@ Here's a quick guide to getting started with newforms.
   .. _`jade`: http://jade-lang.com/
   .. _`npm`: http://npmjs.org/
 
+* The ``new`` operator is **optional** for all objects provided by
+  newforms, including forms and formset constructors created by factory
+  functions.
+
 * Form constructors are created using the ``forms.Form`` factory function,
   which takes a single ``Object`` argument defining form fields and any
-  other properties for the prorotype (validation methods etc.), returning
-  a Form constructor which inherits from ``BaseForm``::
+  other properties for the form's prototype (validation methods etc.),
+  returning a Form constructor which inherits from ``BaseForm`` by
+  default::
 
      var ContactForm = forms.Form({
-       subject: new forms.CharField({maxLength: 100}),
-       message: new forms.CharField(),
-       sender: new forms.EmailField(),
-       ccMyself: new forms.BooleanField({required: false})
+       subject: forms.CharField({maxLength: 100}),
+       message: forms.CharField(),
+       sender: forms.EmailField(),
+       ccMyself: forms.BooleanField({required: false})
      });
 
-     var form = new ContactForm();
+     var form = ContactForm();
 
 * FormSet constructors are created using the ``forms.FormSet`` factory
   function, which takes a Form constructor and any additional properties
@@ -86,13 +91,13 @@ Here's a quick guide to getting started with newforms.
   which inherits from ``BaseFormSet``::
 
      var ArticleForm = forms.Form({
-       title: new forms.CharField(),
-       pubDate: new forms.DateField()
+       title: forms.CharField(),
+       pubDate: forms.DateField()
      });
 
      var ArticleFormSet = forms.FormSet(ArticleForm, {extra: 1});
 
-     var formSet = new ArticleFormSet();
+     var formSet = ArticleFormSet();
 
 * The API is largely consistent with Django's API, with the following
   rules of thumb for converting between the two:
@@ -111,20 +116,22 @@ Here's a quick guide to getting started with newforms.
 
     *Javascript*::
 
-       var f = new MyForm({data: req.body});
+       var f = MyForm({data: req.body});
 
   * Method and variable names which use ``underscores_in_python`` become
     ``camelCasedInJavaScript``.
 
-  * Don't forget the ``new`` operator!
+  * As mentioned above, the ``new`` operator is optional for newforms
+    objects.
 
     *Django*::
 
        forms.CharField(max_length=100)
 
-    *JavaScript*::
+    *JavaScript* (the following lines are equivalent)::
 
        new forms.CharField({maxLength: 100})
+       forms.CharField({maxLength: 100})
 
   * Due to limited cross-browser support for properties in JavaScript,
     Form and FormSet properties such as ``cleaned_data`` and ``errors``
@@ -154,12 +161,3 @@ further usage in the meantime. Here are some pointers:
 **FormSets:**
 
 * `Basic FormSet usage <https://github.com/insin/newforms/blob/master/tests/formsets.js#L39>`_
-
-Why "newforms"?
-===============
-
-**Homage**
-   "newforms" was the old name for what is now django.forms when it was in development.
-
-**Honesty**
-   You'll be typing "new forms" *quite often* if you use it.

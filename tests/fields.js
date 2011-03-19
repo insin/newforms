@@ -15,7 +15,7 @@ test("Field sets widget isRequired", function()
 test("CharField", function()
 {
     expect(30);
-    var f = new forms.CharField();
+    var f = forms.CharField();
     strictEqual(f.clean(1), "1");
     equal(f.clean("hello"), "hello");
     cleanErrorEqual(f, "This field is required.", null);
@@ -24,7 +24,7 @@ test("CharField", function()
     strictEqual(f.maxLength, null);
     strictEqual(f.minLength, null);
 
-    f = new forms.CharField({required: false});
+    f = forms.CharField({required: false});
     strictEqual(f.clean(1), "1");
     equal(f.clean("hello"), "hello");
     strictEqual(f.clean(null), "");
@@ -34,7 +34,7 @@ test("CharField", function()
     strictEqual(f.minLength, null);
 
     // CharField accepts an optional maxLength parameter
-    f = new forms.CharField({maxLength: 10, required: false});
+    f = forms.CharField({maxLength: 10, required: false});
     equal(f.clean("12345"), "12345");
     equal(f.clean("1234567890"), "1234567890");
     cleanErrorEqual(f, "Ensure this value has at most 10 characters (it has 11).", "1234567890a");
@@ -42,14 +42,14 @@ test("CharField", function()
     strictEqual(f.minLength, null);
 
     // CharField accepts an optional minLength parameter
-    f = new forms.CharField({minLength: 10, required: false});
+    f = forms.CharField({minLength: 10, required: false});
     cleanErrorEqual(f, "Ensure this value has at least 10 characters (it has 5).", "12345");
     equal(f.clean("1234567890"), "1234567890");
     equal(f.clean("1234567890a"), "1234567890a");
     strictEqual(f.maxLength, null);
     strictEqual(f.minLength, 10);
 
-    f = new forms.CharField({minLength: 10, required: true});
+    f = forms.CharField({minLength: 10, required: true});
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "Ensure this value has at least 10 characters (it has 5).", "12345");
     equal(f.clean("1234567890"), "1234567890");
@@ -61,7 +61,7 @@ test("CharField", function()
 test("IntegerField", function()
 {
     expect(51);
-    var f = new forms.IntegerField();
+    var f = forms.IntegerField();
     cleanErrorEqual(f, "This field is required.", null);
     cleanErrorEqual(f, "This field is required.", "");
     strictEqual(f.clean("1"), 1);
@@ -77,7 +77,7 @@ test("IntegerField", function()
     strictEqual(f.maxValue, null);
     strictEqual(f.minValue, null);
 
-    f = new forms.IntegerField({required: false});
+    f = forms.IntegerField({required: false});
     strictEqual(f.clean(""), null);
     strictEqual(f.clean(null), null);
     strictEqual(f.clean("1"), 1);
@@ -91,7 +91,7 @@ test("IntegerField", function()
     strictEqual(f.minValue, null);
 
     // IntegerField accepts an optional maxValue parameter
-    f = new forms.IntegerField({maxValue: 10})
+    f = forms.IntegerField({maxValue: 10})
     cleanErrorEqual(f, "This field is required.", null);
     strictEqual(f.clean(1), 1);
     strictEqual(f.clean(10), 10);
@@ -102,7 +102,7 @@ test("IntegerField", function()
     strictEqual(f.minValue, null);
 
     // IntegerField accepts an optional minValue parameter
-    f = new forms.IntegerField({minValue: 10});
+    f = forms.IntegerField({minValue: 10});
     cleanErrorEqual(f, "This field is required.", null);
     cleanErrorEqual(f, "Ensure this value is greater than or equal to 10.", 1);
     strictEqual(f.clean(10), 10);
@@ -113,7 +113,7 @@ test("IntegerField", function()
     strictEqual(f.minValue, 10);
 
     // minValue and maxValue can be used together
-    f = new forms.IntegerField({minValue: 10, maxValue: 20});
+    f = forms.IntegerField({minValue: 10, maxValue: 20});
     cleanErrorEqual(f, "This field is required.", null);
     cleanErrorEqual(f, "Ensure this value is greater than or equal to 10.", 1);
     strictEqual(f.clean(10), 10);
@@ -129,7 +129,7 @@ test("IntegerField", function()
 test("FloatField", function()
 {
     expect(27);
-    var f = new forms.FloatField();
+    var f = forms.FloatField();
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", null);
     strictEqual(f.clean(1), 1.0);
@@ -145,7 +145,7 @@ test("FloatField", function()
     strictEqual(f.maxValue, null);
     strictEqual(f.minValue, null);
 
-    f = new forms.FloatField({required: false});
+    f = forms.FloatField({required: false});
     strictEqual(f.clean(""), null);
     strictEqual(f.clean(null), null);
     strictEqual(f.clean("1"), 1.0);
@@ -153,7 +153,7 @@ test("FloatField", function()
     strictEqual(f.minValue, null);
 
     // FloatField accepts minValue and maxValue just like forms.IntegerField
-    f = new forms.FloatField({maxValue: 1.5, minValue: 0.5});
+    f = forms.FloatField({maxValue: 1.5, minValue: 0.5});
     cleanErrorEqual(f, "Ensure this value is less than or equal to 1.5.", "1.6");
     cleanErrorEqual(f, "Ensure this value is greater than or equal to 0.5.", "0.4");
     strictEqual(f.clean("1.5"), 1.5);
@@ -170,7 +170,7 @@ test("FloatField", function()
 test("DecimalField", function()
 {
     expect(57);
-    var f = new forms.DecimalField({maxDigits: 4, decimalPlaces: 2});
+    var f = forms.DecimalField({maxDigits: 4, decimalPlaces: 2});
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", null);
     strictEqual(f.clean("1"), "1");
@@ -204,7 +204,7 @@ test("DecimalField", function()
     strictEqual(f.maxValue, null);
     strictEqual(f.minValue, null);
 
-    f = new forms.DecimalField({maxDigits: 4, decimalPlaces: 2, required: false});
+    f = forms.DecimalField({maxDigits: 4, decimalPlaces: 2, required: false});
     strictEqual(f.clean(""), null);
     strictEqual(f.clean(null), null);
     strictEqual(f.clean(1), "1");
@@ -214,7 +214,7 @@ test("DecimalField", function()
     strictEqual(f.minValue, null);
 
     // DecimalField accepts min_value and max_value just like IntegerField
-    f = new forms.DecimalField({maxDigits: 4, decimalPlaces: 2, maxValue: 1.5, minValue: 0.5});
+    f = forms.DecimalField({maxDigits: 4, decimalPlaces: 2, maxValue: 1.5, minValue: 0.5});
     cleanErrorEqual(f, "Ensure this value is less than or equal to 1.5.", "1.6");
     cleanErrorEqual(f, "Ensure this value is greater than or equal to 0.5.", "0.4");
     strictEqual(f.clean("1.5"), "1.5");
@@ -226,10 +226,10 @@ test("DecimalField", function()
     strictEqual(f.maxValue, 1.5);
     strictEqual(f.minValue, 0.5);
 
-    f = new forms.DecimalField({decimalPlaces: 2});
+    f = forms.DecimalField({decimalPlaces: 2});
     cleanErrorEqual(f, "Ensure that there are no more than 2 decimal places.", "0.00000001");
 
-    f = new forms.DecimalField({maxDigits: 3});
+    f = forms.DecimalField({maxDigits: 3});
     // Leading whole zeros "collapse" to one digit.
     equal(f.clean("0000000.10"), "0.10");
     // But a leading 0 before the . doesn"t count towards max_digits
@@ -239,7 +239,7 @@ test("DecimalField", function()
     cleanErrorEqual(f, "Ensure that there are no more than 3 digits in total.", "000000.0002");
     equal(f.clean(".002"), "0.002");
 
-    f = new forms.DecimalField({maxDigits: 2, decimalPlaces: 2});
+    f = forms.DecimalField({maxDigits: 2, decimalPlaces: 2});
     equal(f.clean(".01"), "0.01");
     cleanErrorEqual(f, "Ensure that there are no more than 0 digits before the decimal point.", "1.1");
 });
@@ -247,7 +247,7 @@ test("DecimalField", function()
 test("DateField", function()
 {
     expect(24);
-    var f = new forms.DateField();
+    var f = forms.DateField();
     var expected = new Date(2006, 9, 25).valueOf();
     strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), expected);
     strictEqual(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), expected);
@@ -266,12 +266,12 @@ test("DateField", function()
     cleanErrorEqual(f, "Enter a valid date.", "25/10/06");
     cleanErrorEqual(f, "This field is required.", null);
 
-    var f = new forms.DateField({required: false});
+    var f = forms.DateField({required: false});
     strictEqual(f.clean(null), null);
     strictEqual(f.clean(""), null);
 
     // DateField accepts an optional inputFormats parameter
-    var f = new forms.DateField({inputFormats: ["%Y %m %d"]});
+    var f = forms.DateField({inputFormats: ["%Y %m %d"]});
     strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), expected);
     strictEqual(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), expected);
     strictEqual(f.clean("2006 10 25").valueOf(), expected);
@@ -286,7 +286,7 @@ test("DateField", function()
 test("TimeField", function()
 {
     expect(11);
-    var f = new forms.TimeField();
+    var f = forms.TimeField();
     strictEqual(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
     strictEqual(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
     strictEqual(f.clean("14:25").valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
@@ -295,7 +295,7 @@ test("TimeField", function()
     cleanErrorEqual(f, "Enter a valid time.", "1:24 p.m.");
 
     // TimeField accepts an optional inputFormats parameter
-    var f = new forms.TimeField({inputFormats: ["%I:%M %p"]});
+    var f = forms.TimeField({inputFormats: ["%I:%M %p"]});
     strictEqual(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
     strictEqual(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
     strictEqual(f.clean("4:25 AM").valueOf(), new Date(1900, 0, 1, 4, 25).valueOf());
@@ -309,7 +309,7 @@ test("TimeField", function()
 test("DateTimeField", function()
 {
     expect(26);
-    var f = new forms.DateTimeField();
+    var f = forms.DateTimeField();
     strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), new Date(2006, 9, 25).valueOf());
     strictEqual(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
     strictEqual(f.clean(new Date(2006, 9, 25, 14, 30, 59)).valueOf(), new Date(2006, 9, 25, 14, 30, 59).valueOf());
@@ -341,7 +341,7 @@ test("DateTimeField", function()
     // default formats won't work unless you specify them
     cleanErrorEqual(f, "Enter a valid date/time.", "2006-10-25 14:30:45");
 
-    f = new forms.DateTimeField({required: false});
+    f = forms.DateTimeField({required: false});
     strictEqual(f.clean(null), null);
     strictEqual(f.clean(""), null);
 });
@@ -349,7 +349,7 @@ test("DateTimeField", function()
 test("RegexField", function()
 {
     expect(24);
-    var f = new forms.RegexField("^\\d[A-F]\\d$");
+    var f = forms.RegexField("^\\d[A-F]\\d$");
     equal(f.clean("2A2"), "2A2");
     equal(f.clean("3F3"), "3F3");
     cleanErrorEqual(f, "Enter a valid value.", "3G3");
@@ -357,27 +357,27 @@ test("RegexField", function()
     cleanErrorEqual(f, "Enter a valid value.", "2A2 ");
     cleanErrorEqual(f, "This field is required.", "");
 
-    f = new forms.RegexField("^\\d[A-F]\\d$", {required: false});
+    f = forms.RegexField("^\\d[A-F]\\d$", {required: false});
     equal(f.clean("2A2"), "2A2");
     equal(f.clean("3F3"), "3F3");
     cleanErrorEqual(f, "Enter a valid value.", "3G3");
     equal(f.clean(""), "");
 
     // Alternatively, RegexField can take a compiled regular expression
-    f = new forms.RegexField(/^\d[A-F]\d$/);
+    f = forms.RegexField(/^\d[A-F]\d$/);
     equal(f.clean("2A2"), "2A2");
     equal(f.clean("3F3"), "3F3");
     cleanErrorEqual(f, "Enter a valid value.", "3G3");
     cleanErrorEqual(f, "Enter a valid value.", " 2A2");
     cleanErrorEqual(f, "Enter a valid value.", "2A2 ");
 
-    f = new forms.RegexField("^\\d\\d\\d\\d$", {errorMessages: {invalid: 'Enter a four-digit number.'}});
+    f = forms.RegexField("^\\d\\d\\d\\d$", {errorMessages: {invalid: 'Enter a four-digit number.'}});
     equal(f.clean("1234"), "1234");
     cleanErrorEqual(f, "Enter a four-digit number.", "123");
     cleanErrorEqual(f, "Enter a four-digit number.", "abcd");
 
     // RegexField also has minLength and maxLength parameters, for convenience
-    f = new forms.RegexField("^\\d+$", {minLength: 5, maxLength: 10});
+    f = forms.RegexField("^\\d+$", {minLength: 5, maxLength: 10});
     cleanErrorEqual(f, "Ensure this value has at least 5 characters (it has 3).", "123");
     cleanErrorEqual(f, ["Ensure this value has at least 5 characters (it has 3).", "Enter a valid value."], "abc");
     equal(f.clean("12345"), "12345");
@@ -389,7 +389,7 @@ test("RegexField", function()
 test("EmailField", function()
 {
     expect(24);
-    var f = new forms.EmailField();
+    var f = forms.EmailField();
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", null);
     equal(f.clean("person@example.com"), "person@example.com");
@@ -408,7 +408,7 @@ test("EmailField", function()
     // Hangs "forever" if catastrophic backtracking not fixed
     cleanErrorEqual(f, "Enter a valid e-mail address.", "viewx3dtextx26qx3d@yahoo.comx26latlngx3d15854521645943074058");
 
-    f = new forms.EmailField({required: false});
+    f = forms.EmailField({required: false});
     strictEqual(f.clean(""), "");
     strictEqual(f.clean(null), "");
     equal(f.clean("person@example.com"), "person@example.com");
@@ -418,7 +418,7 @@ test("EmailField", function()
     cleanErrorEqual(f, "Enter a valid e-mail address.", "foo@bar");
 
     // EmailField also has minLength and maxLength parameters, for convenience.
-    f = new forms.EmailField({minLength: 10, maxLength: 15});
+    f = forms.EmailField({minLength: 10, maxLength: 15});
     cleanErrorEqual(f, "Ensure this value has at least 10 characters (it has 9).", "a@foo.com");
     equal(f.clean("alf@foo.com"), "alf@foo.com");
     cleanErrorEqual(f, "Ensure this value has at most 15 characters (it has 20).", "alf123456788@foo.com");
@@ -433,8 +433,8 @@ test("FileField", function()
         this.size = (content !== null ? content.length : 0);
     }
 
-    expect(19);
-    var f = new forms.FileField();
+    expect(18);
+    var f = forms.FileField();
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", "", "");
     equal(f.clean("", "files/test1.pdf"), "files/test1.pdf");
@@ -448,10 +448,9 @@ test("FileField", function()
     cleanErrorEqual(f, "The submitted file is empty.", new SimpleUploadedFile("name", null));
     cleanErrorEqual(f, "The submitted file is empty.", new SimpleUploadedFile("name", ""));
     ok(f.clean(new SimpleUploadedFile("name", "Some File Content")) instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
-    ok(f.clean(new SimpleUploadedFile("?????????.txt", "???? ??????? ???? ??? ????????? ?? ??? ?")) instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
     ok(f.clean(new SimpleUploadedFile("name", "Some File Content"), "files/test4.pdf") instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
 
-    f = new forms.FileField({maxLength: 5});
+    f = forms.FileField({maxLength: 5});
     cleanErrorEqual(f, "Ensure this filename has at most 5 characters (it has 18).", new SimpleUploadedFile("test_maxlength.txt", "hello world"));
     equal(f.clean("", "files/test1.pdf"), "files/test1.pdf");
     equal(f.clean(null, "files/test2.pdf"), "files/test2.pdf");
@@ -466,7 +465,7 @@ test("URLField", function()
          "http://inv-.alid-.com", "http://inv-.-alid.com"];
 
     expect(53);
-    var f = new forms.URLField();
+    var f = forms.URLField();
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", null);
     equal(f.clean("http://localhost"), "http://localhost/");
@@ -487,7 +486,7 @@ test("URLField", function()
     equal(f.clean("www.example.com/s/http://code.djangoproject.com/ticket/13804"),
           "http://www.example.com/s/http://code.djangoproject.com/ticket/13804");
 
-    f = new forms.URLField({required: false});
+    f = forms.URLField({required: false});
     strictEqual(f.clean(""), "");
     strictEqual(f.clean(null), "");
     equal(f.clean("http://localhost"), "http://localhost/");
@@ -520,7 +519,7 @@ test("URLField", function()
     // TODO Test verifying URLs when newforms can be run on the backend
     // URLField takes an optional verifyExists parameter, which is false by
     // default. This verifies that the URL is live on the Internet.
-    f = new forms.URLField({verifyExists: true});
+    f = forms.URLField({verifyExists: true});
     //equal(f.clean("http://www.google.com"), "http://www.google.com/");
     cleanErrorEqual(f, "Enter a valid URL.", "http://example");
     // Bad domain
@@ -530,18 +529,18 @@ test("URLField", function()
     // Good domain, bad page
     //cleanErrorEqual(f, "This URL appears to be a broken link.", "http://google.com/we-love-microsoft.html");
 
-    f = new forms.URLField({verifyExists: true, required: false});
+    f = forms.URLField({verifyExists: true, required: false});
     strictEqual(f.clean(""), "");
     //equal(f.clean("http://www.google.com"), "http://www.google.com/");
 
     // URLField also has minLength and maxLength parameters, for convenience
-    f = new forms.URLField({minLength: 15, maxLength: 20});
+    f = forms.URLField({minLength: 15, maxLength: 20});
     cleanErrorEqual(f, "Ensure this value has at least 15 characters (it has 13).", "http://f.com");
     equal(f.clean("http://example.com"), "http://example.com/");
     cleanErrorEqual(f, "Ensure this value has at most 20 characters (it has 38).", "http://abcdefghijklmnopqrstuvwxyz.com");
 
     // URLField should prepend "http://" if no scheme was given
-    f = new forms.URLField({required: false});
+    f = forms.URLField({required: false});
     equal(f.clean("example.com"), "http://example.com/");
     equal(f.clean(""), "");
     equal(f.clean("https://example.com"), "https://example.com/");
@@ -555,7 +554,7 @@ test("URLField", function()
 test("BooleanField", function()
 {
     expect(19);
-    var f = new forms.BooleanField();
+    var f = forms.BooleanField();
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", null);
     strictEqual(f.clean(true), true);
@@ -568,7 +567,7 @@ test("BooleanField", function()
     // "false", so that should clean to the boolean value false.
     cleanErrorEqual(f, "This field is required.", "false");
 
-    f = new forms.BooleanField({required: false});
+    f = forms.BooleanField({required: false});
     strictEqual(f.clean(""), false);
     strictEqual(f.clean(null), false);
     strictEqual(f.clean(true), true);
@@ -587,25 +586,25 @@ test("BooleanField", function()
 test("ChoiceField", function()
 {
     expect(19);
-    var f = new forms.ChoiceField({choices: [["1", "One"], ["2", "Two"]]});
+    var f = forms.ChoiceField({choices: [["1", "One"], ["2", "Two"]]});
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", null);
     strictEqual(f.clean(1), "1");
     strictEqual(f.clean("1"), "1");
     cleanErrorEqual(f, "Select a valid choice. 3 is not one of the available choices.", "3");
 
-    var f = new forms.ChoiceField({choices: [["1", "One"], ["2", "One"]], required: false});
+    var f = forms.ChoiceField({choices: [["1", "One"], ["2", "One"]], required: false});
     strictEqual(f.clean(""), "");
     strictEqual(f.clean(null), "");
     strictEqual(f.clean(1), "1");
     strictEqual(f.clean("1"), "1");
     cleanErrorEqual(f, "Select a valid choice. 3 is not one of the available choices.", "3");
 
-    f = new forms.ChoiceField({choices: [["J", "John"], ["P", "Paul"]]});
+    f = forms.ChoiceField({choices: [["J", "John"], ["P", "Paul"]]});
     equal(f.clean("J"), "J");
     cleanErrorEqual(f, "Select a valid choice. John is not one of the available choices.", "John");
 
-    f = new forms.ChoiceField({choices: [["Numbers", [["1", "One"], ["2", "Two"]]], ["Letters", [["3", "A"],["4", "B"]]], ["5", "Other"]]});
+    f = forms.ChoiceField({choices: [["Numbers", [["1", "One"], ["2", "Two"]]], ["Letters", [["3", "A"],["4", "B"]]], ["5", "Other"]]});
     strictEqual(f.clean(1), "1");
     strictEqual(f.clean("1"), "1");
     strictEqual(f.clean(3), "3");
@@ -620,7 +619,7 @@ test("TypedChoiceField", function()
     expect(9)
     // TypedChoiceField is just like ChoiceField, except that coerced types wil
     // be returned.
-    var f = new forms.TypedChoiceField({
+    var f = forms.TypedChoiceField({
         choices: [[1, "+1"], [-1, "-1"]],
         coerce: function(val) { return parseInt(val, 10); }
     });
@@ -645,7 +644,7 @@ test("TypedChoiceField", function()
     cleanErrorEqual(f, "This field is required.", "");
 
     // Non-required fields aren't required
-    f = new forms.TypedChoiceField({
+    f = forms.TypedChoiceField({
         choices: [[1, "+1"], [-1, "-1"]],
         coerce: function(val) { return parseInt(val, 10); },
         required: false
@@ -654,7 +653,7 @@ test("TypedChoiceField", function()
 
     // If you want cleaning an empty value to return a different type, tell the
     // field.
-    f = new forms.TypedChoiceField({
+    f = forms.TypedChoiceField({
         choices: [[1, "+1"], [-1, "-1"]],
         coerce: function(val) { return parseInt(val, 10); },
         required: false,
@@ -666,7 +665,7 @@ test("TypedChoiceField", function()
 test("NullBooleanField", function()
 {
     expect(14);
-    var f = new forms.NullBooleanField();
+    var f = forms.NullBooleanField();
     strictEqual(f.clean(""), null);
     strictEqual(f.clean(true), true);
     strictEqual(f.clean(false), false);
@@ -679,10 +678,10 @@ test("NullBooleanField", function()
 
     // Make sure that the internal value is preserved if using HiddenInput (Django #7753)
     var HiddenNullBooleanForm = forms.Form({
-      hidden_nullbool1: new forms.NullBooleanField({widget: forms.HiddenInput, initial: true}),
-      hidden_nullbool2: new forms.NullBooleanField({widget: forms.HiddenInput, initial: false})
+      hidden_nullbool1: forms.NullBooleanField({widget: forms.HiddenInput, initial: true}),
+      hidden_nullbool2: forms.NullBooleanField({widget: forms.HiddenInput, initial: false})
     });
-    f = new HiddenNullBooleanForm({data: {hidden_nullbool1: "true", hidden_nullbool2: "false"}});
+    f = HiddenNullBooleanForm({data: {hidden_nullbool1: "true", hidden_nullbool2: "false"}});
     f.fullClean();
     strictEqual(f.cleanedData.hidden_nullbool1, true);
     strictEqual(f.cleanedData.hidden_nullbool2, false);
@@ -691,11 +690,11 @@ test("NullBooleanField", function()
     // values. (Django #9609)
     var NULLBOOL_CHOICES = [["1", "Yes"], ["0", "No"], ["", "Unknown"]];
     var MySQLNullBooleanForm = forms.Form({
-      nullbool0: new forms.NullBooleanField({widget: new forms.RadioSelect({choices: NULLBOOL_CHOICES})}),
-      nullbool1: new forms.NullBooleanField({widget: new forms.RadioSelect({choices: NULLBOOL_CHOICES})}),
-      nullbool2: new forms.NullBooleanField({widget: new forms.RadioSelect({choices: NULLBOOL_CHOICES})})
+      nullbool0: forms.NullBooleanField({widget: forms.RadioSelect({choices: NULLBOOL_CHOICES})}),
+      nullbool1: forms.NullBooleanField({widget: forms.RadioSelect({choices: NULLBOOL_CHOICES})}),
+      nullbool2: forms.NullBooleanField({widget: forms.RadioSelect({choices: NULLBOOL_CHOICES})})
     });
-    f = new MySQLNullBooleanForm({data: {nullbool0: "1", nullbool1: "0", nullbool2: ""}});
+    f = MySQLNullBooleanForm({data: {nullbool0: "1", nullbool1: "0", nullbool2: ""}});
     f.fullClean();
     strictEqual(f.cleanedData.nullbool0, true);
     strictEqual(f.cleanedData.nullbool1, false);
@@ -705,7 +704,7 @@ test("NullBooleanField", function()
 test("MultipleChoiceField", function()
 {
     expect(25);
-    var f = new forms.MultipleChoiceField({choices: [["1", "1"], ["2", "2"]]});
+    var f = forms.MultipleChoiceField({choices: [["1", "1"], ["2", "2"]]});
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", null);
     deepEqual(f.clean([1]), ["1"]);
@@ -716,7 +715,7 @@ test("MultipleChoiceField", function()
     cleanErrorEqual(f, "This field is required.", []);
     cleanErrorEqual(f, "Select a valid choice. 3 is not one of the available choices.", ["3"]);
 
-    var f = new forms.MultipleChoiceField({choices: [["1", "1"], ["2", "2"]], required: false});
+    var f = forms.MultipleChoiceField({choices: [["1", "1"], ["2", "2"]], required: false});
     deepEqual(f.clean(""), []);
     deepEqual(f.clean(null), []);
     deepEqual(f.clean([1]), ["1"]);
@@ -727,7 +726,7 @@ test("MultipleChoiceField", function()
     deepEqual(f.clean([]), []);
     cleanErrorEqual(f, "Select a valid choice. 3 is not one of the available choices.", ["3"]);
 
-    f = new forms.MultipleChoiceField({choices: [["Numbers", [["1", "One"], ["2", "Two"]]], ["Letters", [["3", "A"],["4", "B"]]], ["5", "Other"]]});
+    f = forms.MultipleChoiceField({choices: [["Numbers", [["1", "One"], ["2", "Two"]]], ["Letters", [["3", "A"],["4", "B"]]], ["5", "Other"]]});
     deepEqual(f.clean([1]), ["1"]);
     deepEqual(f.clean([1, 5]), ["1", "5"]);
     deepEqual(f.clean([1, "5"]), ["1", "5"]);
@@ -739,7 +738,7 @@ test("MultipleChoiceField", function()
 
 test("TypedMultipleChoiceFIeld", function()
 {
-    var f = new forms.TypedMultipleChoiceField({
+    var f = forms.TypedMultipleChoiceField({
         choices: [[1, "+1"], [-1, "-1"]],
         coerce: function(val) { return parseInt(val, 10); }
     });
@@ -765,7 +764,7 @@ test("TypedMultipleChoiceFIeld", function()
     cleanErrorEqual(f, "This field is required.", []);
 
     // Non-required fields aren't required
-    f = new forms.TypedMultipleChoiceField({
+    f = forms.TypedMultipleChoiceField({
         choices: [[1, "+1"], [-1, "-1"]],
         coerce: function(val) { return parseInt(val, 10); },
         required: false
@@ -774,7 +773,7 @@ test("TypedMultipleChoiceFIeld", function()
 
     // If you want cleaning an empty value to return a different type, tell the
     // field.
-    f = new forms.TypedMultipleChoiceField({
+    f = forms.TypedMultipleChoiceField({
         choices: [[1, "+1"], [-1, "-1"]],
         coerce: function(val) { return parseInt(val, 10); },
         required: false,
@@ -788,14 +787,14 @@ test("ComboField", function()
     expect(10);
     // ComboField takes a list of fields that should be used to validate a
     // value, in that order.
-    var f = new forms.ComboField({fields: [new forms.CharField({maxLength: 20}), new forms.EmailField()]});
+    var f = forms.ComboField({fields: [forms.CharField({maxLength: 20}), forms.EmailField()]});
     equal(f.clean("test@example.com"), "test@example.com");
     cleanErrorEqual(f, "Ensure this value has at most 20 characters (it has 28).", "longemailaddress@example.com");
     cleanErrorEqual(f, "Enter a valid e-mail address.", "not an e-mail");
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", null);
 
-    var f = new forms.ComboField({fields: [new forms.CharField({maxLength: 20}), new forms.EmailField()], required: false});
+    var f = forms.ComboField({fields: [forms.CharField({maxLength: 20}), forms.EmailField()], required: false});
     equal(f.clean("test@example.com"), "test@example.com");
     cleanErrorEqual(f, "Ensure this value has at most 20 characters (it has 28).", "longemailaddress@example.com");
     cleanErrorEqual(f, "Enter a valid e-mail address.", "not an e-mail");
@@ -808,7 +807,7 @@ test("ComboField", function()
 test("SplitDateTimeField", function()
 {
     expect(20);
-    var f = new forms.SplitDateTimeField();
+    var f = forms.SplitDateTimeField();
     strictEqual(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
          new Date(2006, 0, 10, 7, 30).valueOf());
     cleanErrorEqual(f, "This field is required.", "");
@@ -818,7 +817,7 @@ test("SplitDateTimeField", function()
     cleanErrorEqual(f, ["Enter a valid time."], ["2006-01-10", "there"]);
     cleanErrorEqual(f, ["Enter a valid date."], ["hello", "07:30"]);
 
-    var f = new forms.SplitDateTimeField({required: false});
+    var f = forms.SplitDateTimeField({required: false});
     strictEqual(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
          new Date(2006, 0, 10, 7, 30).valueOf());
     strictEqual(f.clean(["2006-01-10", "07:30"]).valueOf(),
@@ -839,7 +838,7 @@ test("SplitDateTimeField", function()
 test("IPAddressField", function()
 {
     expect(14);
-    var f = new forms.IPAddressField();
+    var f = forms.IPAddressField();
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", null);
     equal(f.clean("127.0.0.1"), "127.0.0.1");
@@ -848,7 +847,7 @@ test("IPAddressField", function()
     cleanErrorEqual(f, "Enter a valid IPv4 address.", "1.2.3.4.5");
     cleanErrorEqual(f, "Enter a valid IPv4 address.", "256.125.1.5");
 
-    f = new forms.IPAddressField({required: false});
+    f = forms.IPAddressField({required: false});
     strictEqual(f.clean(""), "");
     strictEqual(f.clean(null), "");
     equal(f.clean("127.0.0.1"), "127.0.0.1");

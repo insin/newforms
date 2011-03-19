@@ -5,7 +5,7 @@ module("widgets");
 test("TextInput", function()
 {
     expect(9);
-    var w = new forms.TextInput();
+    var w = forms.TextInput();
     equal(""+w.render("email", ""),
            "<input type=\"text\" name=\"email\">");
     equal(""+w.render("email", null),
@@ -18,19 +18,19 @@ test("TextInput", function()
            "<input type=\"text\" name=\"email\" class=\"fun\" value=\"test@example.com\">");
 
     // You can also pass "attrs" to the constructor
-    w = new forms.TextInput({attrs: {"class": "fun"}});
+    w = forms.TextInput({attrs: {"class": "fun"}});
     equal(""+w.render("email", ""),
            "<input class=\"fun\" type=\"text\" name=\"email\">");
     equal(""+w.render("email", "foo@example.com"),
            "<input class=\"fun\" type=\"text\" name=\"email\" value=\"foo@example.com\">");
 
     // Attributes passed to render() get precedence over those passed to the constructor
-    w = new forms.TextInput({attrs: {"class": "pretty"}});
+    w = forms.TextInput({attrs: {"class": "pretty"}});
     equal(""+w.render("email", "", {attrs: {"class": "special"}}),
            "<input class=\"special\" type=\"text\" name=\"email\">");
 
     // Attributes can be safe strings if needed
-    w = new forms.TextInput({attrs: {"onblur": DOMBuilder.markSafe("function('foo')")}});
+    w = forms.TextInput({attrs: {"onblur": DOMBuilder.markSafe("function('foo')")}});
     equal(""+w.render("email", ""),
            "<input onblur=\"function('foo')\" type=\"text\" name=\"email\">");
 });
@@ -38,7 +38,7 @@ test("TextInput", function()
 test("PasswordInput", function()
 {
     expect(11);
-    var w = new forms.PasswordInput();
+    var w = forms.PasswordInput();
     equal(""+w.render("email", ""),
            "<input type=\"password\" name=\"email\">");
     equal(""+w.render("email", null),
@@ -48,7 +48,7 @@ test("PasswordInput", function()
 
     // The renderValue argument lets you specify whether the widget should
     // render its value. You may want to do this for security reasons.
-    w = new forms.PasswordInput({renderValue: true});
+    w = forms.PasswordInput({renderValue: true});
     equal(""+w.render("email", ""),
            "<input type=\"password\" name=\"email\">");
     equal(""+w.render("email", null),
@@ -61,14 +61,14 @@ test("PasswordInput", function()
            "<input type=\"password\" name=\"email\" class=\"fun\" value=\"test@example.com\">");
 
     // You can also pass "attrs" to the constructor
-    w = new forms.PasswordInput({attrs: {"class": "fun"}, renderValue: true});
+    w = forms.PasswordInput({attrs: {"class": "fun"}, renderValue: true});
     equal(""+w.render("email", ""),
            "<input class=\"fun\" type=\"password\" name=\"email\">");
     equal(""+w.render("email", "foo@example.com"),
            "<input class=\"fun\" type=\"password\" name=\"email\" value=\"foo@example.com\">");
 
     // Attributes passed to render() get precedence over those passed to the constructor
-    w = new forms.PasswordInput({attrs: {"class": "pretty"}, renderValue: true});
+    w = forms.PasswordInput({attrs: {"class": "pretty"}, renderValue: true});
     equal(""+w.render("email", "", {attrs: {"class": "special"}}),
            "<input class=\"special\" type=\"password\" name=\"email\">");
 });
@@ -76,7 +76,7 @@ test("PasswordInput", function()
 test("HiddenInput", function()
 {
     expect(10);
-    var w = new forms.HiddenInput();
+    var w = forms.HiddenInput();
     equal(""+w.render("email", ""),
            "<input type=\"hidden\" name=\"email\">");
     equal(""+w.render("email", null),
@@ -89,19 +89,19 @@ test("HiddenInput", function()
            "<input type=\"hidden\" name=\"email\" class=\"fun\" value=\"test@example.com\">");
 
     // You can also pass "attrs" to the constructor
-    w = new forms.HiddenInput({attrs: {"class": "fun"}});
+    w = forms.HiddenInput({attrs: {"class": "fun"}});
     equal(""+w.render("email", ""),
            "<input class=\"fun\" type=\"hidden\" name=\"email\">");
     equal(""+w.render("email", "foo@example.com"),
            "<input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\">");
 
     // Attributes passed to render() get precedence over those passed to the constructor
-    w = new forms.HiddenInput({attrs: {"class": "pretty"}});
+    w = forms.HiddenInput({attrs: {"class": "pretty"}});
     equal(""+w.render("email", "", {attrs: {"class": "special"}}),
            "<input class=\"special\" type=\"hidden\" name=\"email\">");
 
     // Boolean values are rendered to their string forms ("true" and "false")
-    w = new forms.HiddenInput();
+    w = forms.HiddenInput();
     equal(""+w.render('get_spam', false),
            "<input type=\"hidden\" name=\"get_spam\" value=\"false\">");
     equal(""+w.render('get_spam', true),
@@ -111,7 +111,7 @@ test("HiddenInput", function()
 test("MultipleHiddenInput", function()
 {
     expect(12);
-    var w = new forms.MultipleHiddenInput();
+    var w = forms.MultipleHiddenInput();
     strictEqual(""+w.render("email", []), "");
     strictEqual(""+w.render("email", null), "");
     equal(""+w.render("email", ["test@example.com"]),
@@ -126,7 +126,7 @@ test("MultipleHiddenInput", function()
            "<input type=\"hidden\" name=\"email\" class=\"fun\" value=\"test@example.com\"><input type=\"hidden\" name=\"email\" class=\"fun\" value=\"foo@example.com\">");
 
     // You can also pass "attrs" to the constructor
-    w = new forms.MultipleHiddenInput({attrs: {"class": "fun"}});
+    w = forms.MultipleHiddenInput({attrs: {"class": "fun"}});
     strictEqual(""+w.render("email", []), "");
     equal(""+w.render("email", ["foo@example.com"]),
            "<input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\">");
@@ -134,12 +134,12 @@ test("MultipleHiddenInput", function()
            "<input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\"><input class=\"fun\" type=\"hidden\" name=\"email\" value=\"test@example.com\">");
 
     // Attributes passed to render() get precedence over those passed to the constructor
-    w = new forms.MultipleHiddenInput({attrs: {"class": "pretty"}});
+    w = forms.MultipleHiddenInput({attrs: {"class": "pretty"}});
     equal(""+w.render("email", ["foo@example.com"], {attrs: {"class": "special"}}),
            "<input class=\"special\" type=\"hidden\" name=\"email\" value=\"foo@example.com\">");
 
     // Each input gets a unique id
-    w = new forms.MultipleHiddenInput();
+    w = forms.MultipleHiddenInput();
     equal(""+w.render("letters", ["a", "b", "c"], {attrs: {'id': 'hideme'}}),
            "<input type=\"hidden\" name=\"letters\" id=\"hideme_0\" value=\"a\"><input type=\"hidden\" name=\"letters\" id=\"hideme_1\" value=\"b\"><input type=\"hidden\" name=\"letters\" id=\"hideme_2\" value=\"c\">");
 });
@@ -150,7 +150,7 @@ test("FileInput", function()
     // FileInput widgets don't ever show the value, because the old value is of
     // no use if you are updating the form or if the provided file generated an
     // error.
-    var w = new forms.FileInput();
+    var w = forms.FileInput();
     equal(""+w.render("email", ""),
            "<input type=\"file\" name=\"email\">");
     equal(""+w.render("email", null),
@@ -163,7 +163,7 @@ test("FileInput", function()
            "<input type=\"file\" name=\"email\" class=\"fun\">");
 
     // You can also pass "attrs" to the constructor
-    w = new forms.FileInput({attrs: {"class": "fun"}});
+    w = forms.FileInput({attrs: {"class": "fun"}});
     equal(""+w.render("email", ""),
            "<input class=\"fun\" type=\"file\" name=\"email\">");
     equal(""+w.render("email", "foo@example.com"),
@@ -173,7 +173,7 @@ test("FileInput", function()
     // will more than likely come from request.FILES. The value of initial data
     // will likely be a filename stored in the database. Since its value is of
     // no use to a FileInput it is ignored.
-    w = new forms.FileInput();
+    w = forms.FileInput();
 
     // No file was uploaded and no initial data
     strictEqual(w._hasChanged("", null), false);
@@ -192,7 +192,7 @@ test("FileInput", function()
 test("Textarea", function()
 {
     expect(9);
-    var w = new forms.Textarea();
+    var w = forms.Textarea();
     equal(""+w.render("msg", ""),
            "<textarea rows=\"10\" cols=\"40\" name=\"msg\"></textarea>");
     equal(""+w.render("msg", null),
@@ -207,14 +207,14 @@ test("Textarea", function()
            "<textarea rows=\"20\" cols=\"40\" name=\"msg\" class=\"pretty\">value</textarea>");
 
     // You can also pass "attrs" to the constructor
-    w = new forms.Textarea({attrs: {"class": "pretty"}});
+    w = forms.Textarea({attrs: {"class": "pretty"}});
     equal(""+w.render("msg", ""),
            "<textarea rows=\"10\" cols=\"40\" class=\"pretty\" name=\"msg\"></textarea>");
     equal(""+w.render("msg", "example"),
            "<textarea rows=\"10\" cols=\"40\" class=\"pretty\" name=\"msg\">example</textarea>");
 
     // Attributes passed to render() get precedence over those passed to the constructor
-    w = new forms.Textarea({attrs: {"class": "pretty"}});
+    w = forms.Textarea({attrs: {"class": "pretty"}});
     equal(""+w.render("msg", "", {attrs: {"class": "special"}}),
            "<textarea rows=\"10\" cols=\"40\" class=\"special\" name=\"msg\"></textarea>");
 });
@@ -222,7 +222,7 @@ test("Textarea", function()
 test("CheckboxInput", function()
 {
     expect(22);
-    var w = new forms.CheckboxInput();
+    var w = forms.CheckboxInput();
     equal(""+w.render("is_cool", ""),
            "<input type=\"checkbox\" name=\"is_cool\">");
     equal(""+w.render("is_cool", null),
@@ -241,18 +241,18 @@ test("CheckboxInput", function()
            "<input type=\"checkbox\" name=\"is_cool\" class=\"pretty\">");
 
     // You can also pass "attrs" to the constructor
-    w = new forms.CheckboxInput({attrs: {"class": "pretty"}});
+    w = forms.CheckboxInput({attrs: {"class": "pretty"}});
     equal(""+w.render("is_cool", ""),
            "<input class=\"pretty\" type=\"checkbox\" name=\"is_cool\">");
 
     // Attributes passed to render() get precedence over those passed to the constructor
-    w = new forms.CheckboxInput({attrs: {"class": "pretty"}});
+    w = forms.CheckboxInput({attrs: {"class": "pretty"}});
     equal(""+w.render("is_cool", false, {attrs: {"class": "special"}}),
            "<input class=\"special\" type=\"checkbox\" name=\"is_cool\">");
 
     // You can pass "checkTest" to the constructor. This is a function that
     // takes the value and returns true if the box should be checked.
-    w = new forms.CheckboxInput({checkTest: function(value) { return value.indexOf("hello") == 0; }});
+    w = forms.CheckboxInput({checkTest: function(value) { return value.indexOf("hello") == 0; }});
     equal(""+w.render("greeting", ""),
            "<input type=\"checkbox\" name=\"greeting\">");
     equal(""+w.render("greeting", "hello"),
@@ -289,7 +289,7 @@ test("CheckboxInput", function()
 test("Select", function()
 {
     expect(12);
-    var w = new forms.Select();
+    var w = forms.Select();
     equal(""+w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatle\">\n" +
 "<option value=\"J\" selected=\"selected\">John</option>\n" +
@@ -337,7 +337,7 @@ test("Select", function()
 "</select>");
 
     // You can also pass "choices" to the constructor:
-    w = new forms.Select({choices: [[1, 1], [2, 2], [3, 3]]});
+    w = forms.Select({choices: [[1, 1], [2, 2], [3, 3]]});
     equal(""+w.render("num", 2),
 "<select name=\"num\">\n" +
 "<option value=\"1\">1</option>\n" +
@@ -396,7 +396,7 @@ test("Select", function()
 test("NullBooleanSelect", function()
 {
     expect(12);
-    var w = new forms.NullBooleanSelect();
+    var w = forms.NullBooleanSelect();
     equal(""+w.render("is_cool", true),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
@@ -439,7 +439,7 @@ test("NullBooleanSelect", function()
 test("SelectMultiple", function()
 {
     expect(23);
-    var w = new forms.SelectMultiple();
+    var w = forms.SelectMultiple();
     equal(""+w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatles\" multiple=\"multiple\">\n" +
 "<option value=\"J\" selected=\"selected\">John</option>\n" +
@@ -510,7 +510,7 @@ test("SelectMultiple", function()
 "</select>");
 
     // You can also pass "choices" to the constructor:
-    w = new forms.SelectMultiple({choices: [[1, 1], [2, 2], [3, 3]]});
+    w = forms.SelectMultiple({choices: [[1, 1], [2, 2], [3, 3]]});
     equal(""+w.render("nums", [2]),
 "<select name=\"nums\" multiple=\"multiple\">\n" +
 "<option value=\"1\">1</option>\n" +
@@ -586,7 +586,7 @@ test("SelectMultiple", function()
 test("RadioSelect", function()
 {
     expect(22);
-    var w = new forms.RadioSelect();
+    var w = forms.RadioSelect();
     equal(""+w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
@@ -634,7 +634,7 @@ test("RadioSelect", function()
 "</ul>");
 
     // You can also pass "choices" to the constructor:
-    w = new forms.RadioSelect({choices: [[1, 1], [2, 2], [3, 3]]});
+    w = forms.RadioSelect({choices: [[1, 1], [2, 2], [3, 3]]});
     equal(""+w.render("num", 2),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>\n" +
@@ -655,7 +655,7 @@ test("RadioSelect", function()
     // RadioSelect uses a RadioFieldRenderer to render the individual radio
     // inputs. You can manipulate that object directly to customise the way
     // the RadioSelect is rendered.
-    w = new forms.RadioSelect();
+    w = forms.RadioSelect();
     var r = w.getRenderer("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]});
     var inputs1 = [], inputs2 = [], inputs3 = [], inputs4 = [];
     var radioInputs = r.radioInputs();
@@ -705,7 +705,7 @@ test("RadioSelect", function()
       return DOMBuilder.fragment(items);
     };
 
-    w = new forms.RadioSelect({renderer: MyRenderer});
+    w = forms.RadioSelect({renderer: MyRenderer});
     equal(""+w.render("beatle", "G", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
            "<label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked=\"checked\"> George</label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label>");
 
@@ -722,7 +722,7 @@ test("RadioSelect", function()
 
     // A RadioFieldRenderer object also allows index access to individual
     // RadioInput objects.
-    w = new forms.RadioSelect();
+    w = forms.RadioSelect();
     r = w.getRenderer("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]});
     equal(""+r.radioInput(1), "<label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label>");
     equal(""+r.radioInput(0), "<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label>");
@@ -731,7 +731,7 @@ test("RadioSelect", function()
     raises(function() { r.radioInput(10); });
 
     // Choices are escaped correctly
-    w = new forms.RadioSelect();
+    w = forms.RadioSelect();
     equal(""+w.render("escape", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]}),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"escape\" value=\"bad\"> you &amp; me</label></li>\n" +
@@ -739,7 +739,7 @@ test("RadioSelect", function()
 "</ul>");
 
     // Attributes provided at instantiation are passed to the constituent inputs
-    w = new forms.RadioSelect({attrs: {id: "foo"}});
+    w = forms.RadioSelect({attrs: {id: "foo"}});
     equal(""+w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label for=\"foo_0\"><input id=\"foo_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
@@ -749,7 +749,7 @@ test("RadioSelect", function()
 "</ul>");
 
     // Attributes provided at render-time are passed to the constituent inputs
-    w = new forms.RadioSelect();
+    w = forms.RadioSelect();
     equal(""+w.render("beatle", "J", {attrs: {id: "bar"}, choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label for=\"bar_0\"><input id=\"bar_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
@@ -762,7 +762,7 @@ test("RadioSelect", function()
 test("CheckboxSelectMultiple", function()
 {
     expect(19);
-    var w = new forms.CheckboxSelectMultiple();
+    var w = forms.CheckboxSelectMultiple();
     equal(""+w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"> John</label></li>\n" +
@@ -833,7 +833,7 @@ test("CheckboxSelectMultiple", function()
 "</ul>");
 
     // You can also pass 'choices' to the constructor
-    w = new forms.CheckboxSelectMultiple({choices: [[1, 1], [2, 2], [3, 3]]});
+    w = forms.CheckboxSelectMultiple({choices: [[1, 1], [2, 2], [3, 3]]});
     equal(""+w.render("nums", [2]),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>\n" +
@@ -888,7 +888,7 @@ test("MultiWidget", function()
     };
 
     expect(8);
-    var w = new MyMultiWidget([new forms.TextInput({attrs: {"class": "big"}}), new forms.TextInput({attrs: {"class": "small"}})]);
+    var w = new MyMultiWidget([forms.TextInput({attrs: {"class": "big"}}), forms.TextInput({attrs: {"class": "small"}})]);
     equal(""+w.render("name", ["john", "lennon"]),
            "<input class=\"big\" type=\"text\" name=\"name_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" value=\"lennon\">");
     equal(""+w.render("name", "john__lennon"),
@@ -896,11 +896,11 @@ test("MultiWidget", function()
     equal(""+w.render("name", "john__lennon", {attrs: {id: "foo"}}),
            "<input class=\"big\" type=\"text\" name=\"name_0\" id=\"foo_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"foo_1\" value=\"lennon\">");
 
-    w = new MyMultiWidget([new forms.TextInput({attrs: {"class": "big"}}), new forms.TextInput({attrs: {"class": "small"}})], {attrs: {id: "bar"}});
+    w = new MyMultiWidget([forms.TextInput({attrs: {"class": "big"}}), forms.TextInput({attrs: {"class": "small"}})], {attrs: {id: "bar"}});
     equal(""+w.render("name", ["john", "lennon"]),
            "<input class=\"big\" type=\"text\" name=\"name_0\" id=\"bar_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"bar_1\" value=\"lennon\">");
 
-    w = new MyMultiWidget([new forms.TextInput(), new forms.TextInput()])
+    w = new MyMultiWidget([forms.TextInput(), forms.TextInput()])
     // Test with no initial data
     strictEqual(w._hasChanged(null, ["john", "lennon"]), true);
     // Test when data is the same as initial
@@ -915,7 +915,7 @@ test("MultiWidget", function()
 test("SplitDateTimeWidget", function()
 {
     expect(12);
-    var w = new forms.SplitDateTimeWidget();
+    var w = forms.SplitDateTimeWidget();
     equal(""+w.render("date", ""),
            "<input type=\"text\" name=\"date_0\"><input type=\"text\" name=\"date_1\">");
     equal(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
@@ -925,12 +925,12 @@ test("SplitDateTimeWidget", function()
 
     // You can also pass "attrs" to the constructor. In this case, the attrs
     // will be included on both widgets.
-    w = new forms.SplitDateTimeWidget({attrs: {"class": "pretty"}});
+    w = forms.SplitDateTimeWidget({attrs: {"class": "pretty"}});
     equal(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
            "<input class=\"pretty\" type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input class=\"pretty\" type=\"text\" name=\"date_1\" value=\"07:30:00\">");
 
     // Use "dateFormat" and "timeFormat" to change the way a value is displayed
-    w = new forms.SplitDateTimeWidget({dateFormat: "%d/%m/%Y", timeFormat: "%H:%M"});
+    w = forms.SplitDateTimeWidget({dateFormat: "%d/%m/%Y", timeFormat: "%H:%M"});
     equal(""+w.render("date", new Date(2006, 0, 10, 7, 30)),
            "<input type=\"text\" name=\"date_0\" value=\"10/01/2006\"><input type=\"text\" name=\"date_1\" value=\"07:30\">");
 
@@ -941,26 +941,26 @@ test("SplitDateTimeWidget", function()
     // Django #13390  - SplitDateTimeWidget should recognise when it's no
     // longer required.
     var SplitDateForm = forms.Form({
-      field: new forms.DateTimeField({required: false, widget: forms.SplitDateTimeWidget})
+      field: forms.DateTimeField({required: false, widget: forms.SplitDateTimeWidget})
     });
-    var f = new SplitDateForm({data: {field: ""}});
+    var f = SplitDateForm({data: {field: ""}});
     strictEqual(f.isValid(), true);
-    f = new SplitDateForm({data: {field: ["", ""]}});
+    f = SplitDateForm({data: {field: ["", ""]}});
     strictEqual(f.isValid(), true);
 
     var SplitDateRequiredForm = forms.Form({
-      field: new forms.DateTimeField({required: true, widget: forms.SplitDateTimeWidget})
+      field: forms.DateTimeField({required: true, widget: forms.SplitDateTimeWidget})
     });
-    f = new SplitDateRequiredForm({data: {field: ""}});
+    f = SplitDateRequiredForm({data: {field: ""}});
     strictEqual(f.isValid(), false);
-    f = new SplitDateRequiredForm({data: {field: ["", ""]}});
+    f = SplitDateRequiredForm({data: {field: ["", ""]}});
     strictEqual(f.isValid(), false);
 });
 
 test("DateTimeInput", function()
 {
     expect(5);
-    var w = new forms.DateTimeInput();
+    var w = forms.DateTimeInput();
     equal(""+w.render("date", null),
            "<input type=\"text\" name=\"date\">");
     var d = new Date(2007, 8, 17, 12, 51, 34);
@@ -971,7 +971,7 @@ test("DateTimeInput", function()
            "<input type=\"text\" name=\"date\" value=\"2007-09-17 12:51:00\">");
 
     // Use "format" to change the way a value is displayed
-    w = new forms.DateTimeInput({format: "%d/%m/%Y %H:%M"});
+    w = forms.DateTimeInput({format: "%d/%m/%Y %H:%M"});
     equal(""+w.render("date", d),
            "<input type=\"text\" name=\"date\" value=\"17/09/2007 12:51\">");
     strictEqual(w._hasChanged(d, "17/09/2007 12:51"), false);
@@ -980,7 +980,7 @@ test("DateTimeInput", function()
 test("DateInput", function()
 {
     expect(5);
-    var w = new forms.DateInput();
+    var w = forms.DateInput();
     equal(""+w.render("date", null),
            "<input type=\"text\" name=\"date\">");
     var d = new Date(2007, 8, 17);
@@ -993,7 +993,7 @@ test("DateInput", function()
            "<input type=\"text\" name=\"date\" value=\"2007-09-17\">");
 
     // Use "format" to change the way a value is displayed
-    w = new forms.DateInput({format: "%d/%m/%Y"});
+    w = forms.DateInput({format: "%d/%m/%Y"});
     equal(""+w.render("date", d),
            "<input type=\"text\" name=\"date\" value=\"17/09/2007\">");
     strictEqual(w._hasChanged(d, "17/09/2007"), false);
@@ -1002,7 +1002,7 @@ test("DateInput", function()
 test("TimeInput", function()
 {
     expect(6);
-    var w = new forms.TimeInput();
+    var w = forms.TimeInput();
     equal(""+w.render("time", null),
            "<input type=\"text\" name=\"time\">");
     var t = new Date(1900, 0, 1, 12, 51, 34);
@@ -1017,7 +1017,7 @@ test("TimeInput", function()
            "<input type=\"text\" name=\"time\" value=\"13:12:11\">");
 
     // Use "format" to change the way a value is displayed
-    w = new forms.TimeInput({format: "%H:%M"});
+    w = forms.TimeInput({format: "%H:%M"});
     equal(""+w.render("time", t),
            "<input type=\"text\" name=\"time\" value=\"12:51\">");
     strictEqual(w._hasChanged(t, "12:51"), false);
@@ -1026,7 +1026,7 @@ test("TimeInput", function()
 test("SplitHiddenDateTimeWidget", function()
 {
     expect(3);
-    var w = new forms.SplitHiddenDateTimeWidget();
+    var w = forms.SplitHiddenDateTimeWidget();
     equal(""+w.render("date", ""),
            "<input type=\"hidden\" name=\"date_0\"><input type=\"hidden\" name=\"date_1\">");
     var d = new Date(2007, 8, 17, 12, 51, 34);
@@ -1046,7 +1046,7 @@ test("ClearableFileInput", function()
     FakeFieldFile.prototype.toString = function() { return this.url;};
 
     // Clear input renders
-    var w = new forms.ClearableFileInput();
+    var w = forms.ClearableFileInput();
     w.isRequired = false;
     equal(""+w.render("myfile", new FakeFieldFile()),
 "Currently: <a href=\"something\">something</a> <input type=\"checkbox\" name=\"myfile-clear\" id=\"myfile-clear_id\"> <label for=\"myfile-clear_id\">Clear</label><br>Change: <input type=\"file\" name=\"myfile\">");

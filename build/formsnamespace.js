@@ -8,9 +8,9 @@ var DOMBuilder = modules ? require('DOMBuilder') : __global__.DOMBuilder;
 %(timecode)s
 %(formscode)s
 
-// Forms API
+// Newforms API
 var forms = {
-    version: "0.0.1",
+    version: "%(version)s",
     // util.js utilities end users may want to make use of
     callValidator: callValidator,
     ErrorObject: ErrorObject,
@@ -18,7 +18,7 @@ var forms = {
     formData: formData,
     inheritFrom: inheritFrom,
     ValidationError: ValidationError,
-    // util.js ancd other utilities used when implementing newforms
+    // util.js and other utilities used when implementing newforms
     util: {
         contains: contains,
         copy: copy,
@@ -124,7 +124,7 @@ var forms = {
     allValid: allValid
 };
 
-// Expose forms to the outside world
+// Expose newforms to the outside world
 if (modules)
 {
     module.exports = forms;
