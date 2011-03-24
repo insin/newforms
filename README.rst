@@ -4,7 +4,7 @@ newforms
 
 A JavaScript port of `Django`_'s `form-handling library`_, which runs in
 browsers (tested in the latest Firefox, Chrome and Opera browsers... and
-IE 6-8) and in `Node.js`_.
+IE 6-8) and in `Node.js`_ and `Akshell`_.
 
 - `Demo page`_
 - `Unit tests`_
@@ -14,6 +14,7 @@ IE 6-8) and in `Node.js`_.
 .. _`Demo page`: http://jonathan.buchanan153.users.btopenworld.com/newforms/demo.html
 .. _`Unit tests`: http://jonathan.buchanan153.users.btopenworld.com/newforms/tests/tests.html
 .. _`Node.js`: http://nodejs.org
+.. _`Akshell`: http://akshell.com
 
 Install
 =======
@@ -21,6 +22,12 @@ Install
 Node.js::
 
    npm install newforms
+
+Akshell:
+
+* Add the following to your app's ``manifest.json``::
+
+     "insin/newforms:0.0.2"
 
 Browser:
 
@@ -31,8 +38,10 @@ Browser:
 Dependencies
 ============
 
-* `DOMBuilder`_ is required for interchangeable DOM Element / HTML
-  generation.
+`DOMBuilder`_ is required for interchangeable DOM Element / HTML generation.
+
+For Akshell, you don't need to pull in this dependency to use newforms, as the
+newforms app references the DOMBuilder app.
 
 .. _`DOMBuilder`: https://github.com/insin/DOMBuilder
 
@@ -65,6 +74,10 @@ Here's a quick guide to getting started with newforms.
   .. _`express`: http://expressjs.com/
   .. _`jade`: http://jade-lang.com/
   .. _`npm`: http://npmjs.org/
+
+* For Akshell, you can view a demo with source code at `insin.akshell.com`_.
+
+  .. _`insin.akshell.com`: http://insin.akshell.com
 
 * The ``new`` operator is **optional** for all objects provided by
   newforms, including forms and formset constructors created by factory
