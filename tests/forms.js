@@ -680,14 +680,14 @@ test("Escaping", function()
     // Validation errors are HTML-escaped when output as HTML
     var EscapingForm = forms.Form({
       specialName: forms.CharField({label: "<em>Special</em> Field"}),
-      specialSafeName: forms.CharField({label: DOMBuilder.markSafe("<em>Special</em> Field")}),
+      specialSafeName: forms.CharField({label: DOMBuilder.html.markSafe("<em>Special</em> Field")}),
 
       cleanSpecialName: function() {
           throw forms.ValidationError("Something's wrong with '" + this.cleanedData.specialName + "'");
       },
       cleanSpecialSafeName: function() {
           throw forms.ValidationError(
-              DOMBuilder.markSafe(
+              DOMBuilder.html.markSafe(
                   "'<b>" + this.cleanedData.specialSafeName + "</b>' is a safe string"));
       }
     });

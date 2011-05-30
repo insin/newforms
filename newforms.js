@@ -1052,7 +1052,7 @@ ErrorList.prototype.extend = function(errorList)
 ErrorList.prototype.asUL = function()
 {
     return DOMBuilder.createElement("ul", {"class": "errorlist"},
-        DOMBuilder.map("li", this.errors));
+        DOMBuilder.map("li", {}, this.errors));
 };
 
 /**
@@ -4915,14 +4915,14 @@ BaseForm.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateR
 
         if (bf.label)
         {
-            var isSafe = DOMBuilder.isSafe(bf.label);
+            var isSafe = DOMBuilder.html && DOMBuilder.html.isSafe(bf.label);
             label = ""+bf.label;
             // Only add the suffix if the label does not end in punctuation
             if (this.labelSuffix &&
                 ":?.!".indexOf(label.charAt(label.length - 1)) == -1)
                 label += this.labelSuffix;
             if (isSafe)
-                label = DOMBuilder.markSafe(label);
+                label = DOMBuilder.html.markSafe(label);
             label = bf.labelTag({contents: label}) || "";
         }
 
@@ -6108,7 +6108,7 @@ var forms = {
 // Expose newforms to the outside world
 if (modules)
 {
-    module.exports = forms;
+    extend(module.exports, forms);
 }
 else
 {

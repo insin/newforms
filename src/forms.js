@@ -508,14 +508,14 @@ BaseForm.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateR
 
         if (bf.label)
         {
-            var isSafe = DOMBuilder.isSafe(bf.label);
+            var isSafe = DOMBuilder.html && DOMBuilder.html.isSafe(bf.label);
             label = ""+bf.label;
             // Only add the suffix if the label does not end in punctuation
             if (this.labelSuffix &&
                 ":?.!".indexOf(label.charAt(label.length - 1)) == -1)
                 label += this.labelSuffix;
             if (isSafe)
-                label = DOMBuilder.markSafe(label);
+                label = DOMBuilder.html.markSafe(label);
             label = bf.labelTag({contents: label}) || "";
         }
 

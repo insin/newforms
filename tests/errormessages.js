@@ -273,7 +273,7 @@ test("Overriding forms.ErrorList", function()
     }
     CustomErrorList.prototype.asDIV = function() {
       return DOMBuilder.createElement("div", {"class": "error"},
-                                      DOMBuilder.map("p", this.errors));
+                                      DOMBuilder.map("p", {}, this.errors));
     };
 
     // This form should render errors the default way.

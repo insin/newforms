@@ -53,6 +53,6 @@ test("ValidationError", function()
     var example = "Example of link: <a href=\"http://www.example.com/\">example</a>";
     equals(""+forms.ErrorList(forms.ValidationError(example).messages).asUL(),
            "<ul class=\"errorlist\"><li>Example of link: &lt;a href=&quot;http://www.example.com/&quot;&gt;example&lt;/a&gt;</li></ul>");
-    equals(""+forms.ErrorList(forms.ValidationError(DOMBuilder.markSafe(example)).messages).asUL(),
+    equals(""+forms.ErrorList(forms.ValidationError(DOMBuilder.html.markSafe(example)).messages).asUL(),
            "<ul class=\"errorlist\"><li>Example of link: <a href=\"http://www.example.com/\">example</a></li></ul>");
 });

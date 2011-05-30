@@ -30,7 +30,7 @@ test("TextInput", function()
            "<input class=\"special\" type=\"text\" name=\"email\">");
 
     // Attributes can be safe strings if needed
-    w = forms.TextInput({attrs: {"onblur": DOMBuilder.markSafe("function('foo')")}});
+    w = forms.TextInput({attrs: {"onblur": DOMBuilder.html.markSafe("function('foo')")}});
     equal(""+w.render("email", ""),
            "<input onblur=\"function('foo')\" type=\"text\" name=\"email\">");
 });
@@ -201,7 +201,7 @@ test("Textarea", function()
            "<textarea rows=\"10\" cols=\"40\" name=\"msg\">value</textarea>");
     equal(""+w.render("msg", "some \"quoted\" & ampersanded value"),
            "<textarea rows=\"10\" cols=\"40\" name=\"msg\">some &quot;quoted&quot; &amp; ampersanded value</textarea>");
-    equal(""+w.render("msg", DOMBuilder.markSafe("pre &quot;quoted&quot; value")),
+    equal(""+w.render("msg", DOMBuilder.html.markSafe("pre &quot;quoted&quot; value")),
            "<textarea rows=\"10\" cols=\"40\" name=\"msg\">pre &quot;quoted&quot; value</textarea>");
     equal(""+w.render("msg", "value", {attrs: {"class": "pretty", rows: 20}}),
            "<textarea rows=\"20\" cols=\"40\" name=\"msg\" class=\"pretty\">value</textarea>");
@@ -356,7 +356,7 @@ test("Select", function()
 "</select>");
 
     // Choices are escaped correctly
-    equal(""+w.render("num", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]}),
+    equal(""+w.render("num", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.html.markSafe("you &gt; me")]]}),
 "<select name=\"num\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\">2</option>\n" +
@@ -529,7 +529,7 @@ test("SelectMultiple", function()
 "</select>");
 
     // Choices are escaped correctly
-    equal(""+w.render("nums", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]}),
+    equal(""+w.render("nums", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.html.markSafe("you &gt; me")]]}),
 "<select name=\"nums\" multiple=\"multiple\">\n" +
 "<option value=\"1\">1</option>\n" +
 "<option value=\"2\">2</option>\n" +
@@ -732,7 +732,7 @@ test("RadioSelect", function()
 
     // Choices are escaped correctly
     w = forms.RadioSelect();
-    equal(""+w.render("escape", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]}),
+    equal(""+w.render("escape", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.html.markSafe("you &gt; me")]]}),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"escape\" value=\"bad\"> you &amp; me</label></li>\n" +
 "<li><label><input type=\"radio\" name=\"escape\" value=\"good\"> you &gt; me</label></li>\n" +
@@ -852,7 +852,7 @@ test("CheckboxSelectMultiple", function()
 "</ul>");
 
     // Choices are escaped correctly
-    equal(""+w.render("escape", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.markSafe("you &gt; me")]]}),
+    equal(""+w.render("escape", null, {choices: [["bad", "you & me"], ["good", DOMBuilder.html.markSafe("you &gt; me")]]}),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"escape\" value=\"1\"> 1</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"escape\" value=\"2\"> 2</label></li>\n" +

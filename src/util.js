@@ -443,7 +443,7 @@ ErrorList.prototype.extend = function(errorList)
 ErrorList.prototype.asUL = function()
 {
     return DOMBuilder.createElement("ul", {"class": "errorlist"},
-        DOMBuilder.map("li", this.errors));
+        DOMBuilder.map("li", {}, this.errors));
 };
 
 /**
