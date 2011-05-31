@@ -3,8 +3,6 @@ Fields
 
 .. js:class:: Field([kwargs])
 
-.. js:class:: Field([kwargs])
-
 .. js:class:: CharField([kwargs])
 
 .. js:class:: IntegerField([kwargs])
