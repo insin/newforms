@@ -15,7 +15,8 @@
   ul.errorlist li:before { content: "\2622"; font-size: 18px; color: #ff0; margin-right: 3px; }
   </style>
   <!-- Dependencies -->
-  <script type="text/javascript" src="https://github.com/insin/DOMBuilder/raw/master/DOMBuilder.js"></script>
+  <script type="text/javascript" src="https://github.com/insin/DOMBuilder/raw/master/lib/DOMBuilder.js"></script>
+  <script type="text/javascript" src="https://github.com/insin/DOMBuilder/raw/master/lib/DOMBuilder.dom.js"></script>
   <!-- newforms -->
   <script type="text/javascript" src="src/util.js"></script>
   <script type="text/javascript" src="src/time.js"></script>
@@ -181,7 +182,7 @@
     initial: initial
   });
 
-  var dom = DOMBuilder.apply();
+  var dom = DOMBuilder.dom;
 
   function refreshFormDisplay()
   {

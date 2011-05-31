@@ -485,7 +485,7 @@ BaseFormSet.prototype.asTable = function(doNotCoerce)
     for (var i = 0, l = this.forms.length; i < l; i++)
         rows = rows.concat(this.forms[i].asTable(true));
 
-    if (doNotCoerce === true || DOMBuilder.mode == "DOM")
+    if (doNotCoerce === true || DOMBuilder.mode == "dom")
         return rows;
     return rows.join("\n");
 };
@@ -496,7 +496,7 @@ BaseFormSet.prototype.asP = function(doNotCoerce)
     for (var i = 0, l = this.forms.length; i < l; i++)
         rows = rows.concat(this.forms[i].asP(true));
 
-    if (doNotCoerce === true || DOMBuilder.mode == "DOM")
+    if (doNotCoerce === true || DOMBuilder.mode == "dom")
         return rows;
     return rows.join("\n");
 };
@@ -507,7 +507,7 @@ BaseFormSet.prototype.asUL = function(doNotCoerce)
     for (var i = 0, l = this.forms.length; i < l; i++)
         rows = rows.concat(this.forms[i].asUL(true));
 
-    if (doNotCoerce === true || DOMBuilder.mode == "DOM")
+    if (doNotCoerce === true || DOMBuilder.mode == "dom")
         return rows;
     return rows.join("\n");
 };

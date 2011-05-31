@@ -548,7 +548,7 @@ BaseForm.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateR
     if (hiddenFields.length > 0 && rows.length == 0)
         rows.push(errorRow("", hiddenFields));
 
-    if (doNotCoerce === true || DOMBuilder.mode == "DOM")
+    if (doNotCoerce === true || DOMBuilder.mode == "dom")
         return rows;
     else
         return rows.join("\n");
