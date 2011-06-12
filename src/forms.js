@@ -925,7 +925,7 @@ function Form(kwargs)
     // Create references to special kwargs which will be closed over by the
     // new form constructor.
     var bases = isArray(kwargs.form) ? kwargs.form : [kwargs.form],
-        preInit = kwargs.preInit
+        preInit = kwargs.preInit,
         postInit = kwargs.postInit;
 
     // Deliberately shadowing the outer function's kwargs so it won't be
