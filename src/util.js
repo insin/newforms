@@ -686,7 +686,7 @@ var copy = (function() {
     var thisPass = this;
     this.recursiveDeepCopy = function(source) {
       return thisPass.deepCopy(source);
-    }
+    };
     this.depth = 0;
   }
   DeepCopyAlgorithm.prototype = {
@@ -796,7 +796,7 @@ var copy = (function() {
       deepCopier = new DeepCopier(deepCopier);
     }
     deepCopiers.unshift(deepCopier);
-  }
+  };
 
   // Generic Object copier
   // the ultimate fallback DeepCopier, which tries to handle the generic case.  This

@@ -154,7 +154,7 @@ function BaseValidator(limitValue)
     this.limitValue = limitValue;
 }
 BaseValidator.prototype.compare = function(a, b) { return a !== b; };
-BaseValidator.prototype.clean = function(x) { return x };
+BaseValidator.prototype.clean = function(x) { return x; };
 BaseValidator.prototype.message =
     "Ensure this value is %(limitValue)s (it is %(showValue)s).";
 BaseValidator.prototype.code = "limitValue";

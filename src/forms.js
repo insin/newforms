@@ -287,7 +287,7 @@ function BaseForm(kwargs)
     // Because a particular *instance* might want to alter this.fields, we
     // create this.fields here by deep copying baseFields. Instances should
     // always modify this.fields; they should not modify baseFields.
-    this.fields = copy.deepCopy(this.baseFields)
+    this.fields = copy.deepCopy(this.baseFields);
 }
 
 BaseForm.prototype =
@@ -596,12 +596,12 @@ BaseForm.prototype.asTable = (function()
         return DOMBuilder.createElement("tr", {}, [
           DOMBuilder.createElement("td", {colSpan: 2}, contents)
         ]);
-    }
+    };
 
     return function(doNotCoerce)
     {
         return this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
-    }
+    };
 })();
 
 /**
@@ -644,12 +644,12 @@ BaseForm.prototype.asUL = (function()
         if (extraContent)
             contents = contents.concat(extraContent);
         return DOMBuilder.createElement("li", {}, contents);
-    }
+    };
 
     return function(doNotCoerce)
     {
         return this._htmlOutput(normalRow, errorRow, false, doNotCoerce);
-    }
+    };
 })();
 
 /**
@@ -694,7 +694,7 @@ BaseForm.prototype.asP = (function()
         }
         // Otherwise, just display errors as they are
         return errors;
-    }
+    };
 
     return function(doNotCoerce)
     {

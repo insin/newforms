@@ -858,7 +858,7 @@ RadioInput.prototype.tag = function()
 function RadioFieldRenderer(name, value, attrs, choices)
 {
     if (!(this instanceof RadioFieldRenderer))
-        return RadioFieldRenderer(name, value, attrs, choices)
+        return RadioFieldRenderer(name, value, attrs, choices);
     this.name = name;
     this.value = value;
     this.attrs = attrs;
