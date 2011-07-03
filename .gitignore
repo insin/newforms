@@ -1,2 +1,4 @@
 *.pyc
 docs/_*
+.project
+.settings
