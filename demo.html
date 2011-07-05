@@ -193,9 +193,9 @@
       // FormSet management form
       formset.managementForm().asP(),
       // Display each form in the FormSet
-      DOMBuilder.fragment.map(formset.forms, function(form, i) {
+      DOMBuilder.fragment.map(formset.forms, function(form, loop) {
         return [
-          dom.H2("Contact Form " + (i + 1)),
+          dom.H2("Contact Form " + (loop.index + 1)),
           dom.TABLE(dom.TBODY(
             form.asTable()
           ))
