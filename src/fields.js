@@ -857,11 +857,11 @@ inheritFrom(BooleanField, Field);
 BooleanField.prototype.widget = CheckboxInput;
 
 BooleanField.prototype.toJavaScript = function(value) {
-  // Explicitly check for the strings 'False' or 'false', which is what a
-  // hidden field will submit for false. Also check for '0', since this is
-  // what RadioSelect will provide. Because Boolean('anything') == true, we
-  // don't need to handle that explicitly.
-  if (value == 'False' || value == 'false' || value == '0') {
+  // Explicitly check for a 'false' string, which is what a hidden field will
+  // submit for false. Also check for '0', since this is what RadioSelect will
+  // provide. Because Boolean('anything') == true, we don't need to handle that
+  // explicitly.
+  if (isString(value) && (value.toLowerCase() == 'false' || value == '0')) {
     value = false;
   }
   else {

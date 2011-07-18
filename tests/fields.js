@@ -556,7 +556,7 @@ test("URLField", function()
 
 test("BooleanField", function()
 {
-    expect(19);
+    expect(21);
     var f = forms.BooleanField();
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", null);
@@ -584,6 +584,8 @@ test("BooleanField", function()
     // A form's BooleanField with a hidden widget will output the string
     // 'false', so that should clean to the boolean value false
     strictEqual(f.clean("false"), false);
+    strictEqual(f.clean("False"), false);
+    strictEqual(f.clean("FaLsE"), false);
 });
 
 test("ChoiceField", function()
