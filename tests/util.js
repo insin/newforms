@@ -31,7 +31,7 @@ test("prettyName", function()
 
 test("ValidationError", function()
 {
-    expect(5);
+    expect(7);
     // Can take a string
     equals(""+forms.ErrorList(forms.ValidationError("There was an error.").messages).asUL(),
            "<ul class=\"errorlist\"><li>There was an error.</li></ul>");
@@ -55,4 +55,8 @@ test("ValidationError", function()
            "<ul class=\"errorlist\"><li>Example of link: &lt;a href=&quot;http://www.example.com/&quot;&gt;example&lt;/a&gt;</li></ul>");
     equals(""+forms.ErrorList(forms.ValidationError(DOMBuilder.html.markSafe(example)).messages).asUL(),
            "<ul class=\"errorlist\"><li>Example of link: <a href=\"http://www.example.com/\">example</a></li></ul>");
+    equals(""+forms.ErrorObject({name: new forms.ErrorList(forms.ValidationError(example).messages)}).asUL(),
+           "<ul class=\"errorlist\"><li>name<ul class=\"errorlist\"><li>Example of link: &lt;a href=&quot;http://www.example.com/&quot;&gt;example&lt;/a&gt;</li></ul></li></ul>");
+    equals(""+forms.ErrorObject({name: new forms.ErrorList(forms.ValidationError(DOMBuilder.html.markSafe(example)).messages)}).asUL(),
+           "<ul class=\"errorlist\"><li>name<ul class=\"errorlist\"><li>Example of link: <a href=\"http://www.example.com/\">example</a></li></ul></li></ul>");
 });
