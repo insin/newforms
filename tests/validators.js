@@ -4,7 +4,7 @@ module("validators");
 
 test("validators", function()
 {
-    expect(76);
+    expect(78);
 
     var now = new Date(90000);
     var later = new Date(100000);
@@ -13,12 +13,14 @@ test("validators", function()
     var tests = [
         [forms.validateEmail, "email@here.com", null],
         [forms.validateEmail, "weirder-email@here.and.there.com", null],
+        [forms.validateEmail, "email@[127.0.0.1]", null],
 
         [forms.validateEmail, null, forms.ValidationError],
         [forms.validateEmail, "", forms.ValidationError],
         [forms.validateEmail, "abc", forms.ValidationError],
         [forms.validateEmail, "a @x.cz", forms.ValidationError],
         [forms.validateEmail, "something@@somewhere.com", forms.ValidationError],
+        [forms.validateEmail, "email@127.0.0.1", forms.ValidationError],
 
         [forms.validateSlug, "slug-ok", null],
         [forms.validateSlug, "longer-slug-still-ok", null],

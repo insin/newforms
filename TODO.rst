@@ -25,6 +25,10 @@ https://code.djangoproject.com/changeset/16137
 
    BaseTemporalField and stripping of temporal input
 
+https://code.djangoproject.com/changeset/16366
+
+   GenericIPAddressField for IPv4/IPv6 validation
+
 Python-to-JavaScript: Missing Pieces
 ====================================
 
