@@ -15,6 +15,7 @@ Change histories for the most relevant Django modules can be found here:
 * http://code.djangoproject.com/log/django/trunk/django/forms/fields.py?mode=follow_copy
 * http://code.djangoproject.com/log/django/trunk/django/forms/forms.py?mode=follow_copy
 * http://code.djangoproject.com/log/django/trunk/django/forms/formsets.py?mode=follow_copy
+* http://code.djangoproject.com/log/django/trunk/django/forms/util.py?mode=follow_copy
 * http://code.djangoproject.com/log/django/trunk/django/forms/widgets.py?mode=follow_copy
 
 Changesets

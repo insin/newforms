@@ -671,12 +671,15 @@ EmailField.prototype.clean = function(value) {
  *
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Field}.
+ * @config {Boolean} [allowEmptyFile] <code>true</code> if empty files are
+ *                                    allowed = defaults to <code>false</code>.
  * @constructor
  */
 function FileField(kwargs) {
   if (!(this instanceof Field)) return new FileField(kwargs);
-  kwargs = extend({maxLength: null}, kwargs);
+  kwargs = extend({maxLength: null, allowEmptyFile: false}, kwargs);
   this.maxLength = kwargs.maxLength;
+  this.allowEmptyFile = kwargs.allowEmptyFile;
   delete kwargs.maxLength;
   Field.call(this, kwargs);
 }
@@ -712,7 +715,7 @@ FileField.prototype.toJavaScript = function(data, initial) {
   if (!fileName) {
     throw ValidationError(this.errorMessages.invalid);
   }
-  if (!fileSize) {
+  if (!this.allowEmptyFile && !fileSize) {
     throw ValidationError(this.errorMessages.empty);
   }
   return data;

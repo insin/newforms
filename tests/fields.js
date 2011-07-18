@@ -433,7 +433,7 @@ test("FileField", function()
         this.size = (content !== null ? content.length : 0);
     }
 
-    expect(18);
+    expect(19);
     var f = forms.FileField();
     cleanErrorEqual(f, "This field is required.", "");
     cleanErrorEqual(f, "This field is required.", "", "");
@@ -455,6 +455,9 @@ test("FileField", function()
     equal(f.clean("", "files/test1.pdf"), "files/test1.pdf");
     equal(f.clean(null, "files/test2.pdf"), "files/test2.pdf");
     ok(f.clean(new SimpleUploadedFile("name", "Some File Content")) instanceof SimpleUploadedFile, "Valid uploaded file details return the file object");
+
+    f = forms.FileField({allowEmptyFile: true});
+    ok(f.clean(new SimpleUploadedFile("name", "")) instanceof SimpleUploadedFile, "Valid uploaded empty file details return the file object");
 });
 
 test("URLField", function()
