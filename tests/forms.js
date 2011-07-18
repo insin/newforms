@@ -792,7 +792,7 @@ test("Validating multiple fields", function()
 
 test("Dynamic construction", function()
 {
-    expect(14);
+    expect(17);
     // It's possible to construct a Form dynamically by adding to this.fields
     // during construction. Don't forget to initialise any parent constructors
     // first. Form provides a postInit() hook suitable for this purpose.
@@ -922,6 +922,32 @@ test("Dynamic construction", function()
     f = Person({nameMaxLength: null});
     deepEqual([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
          [30, 30]);
+
+    // Similarly, choices do not persist from one Form instance to the next
+    Person = forms.Form({
+      first_name: forms.CharField({maxLength: 30}),
+      last_name: forms.CharField({maxLength: 30}),
+      gender: forms.ChoiceField({choices: [['f', 'Female'], ['m', 'Male']]}),
+
+      preInit: function(kwargs) {
+          return forms.util.extend({allowUnspecGender: false}, kwargs || {});
+      },
+      postInit: function(kwargs) {
+          if (kwargs.allowUnspecGender) {
+              var f = this.fields["gender"]
+              f.setChoices(f.choices().concat([['u', 'Unspecified']]))
+          }
+      }
+    });
+    f = Person();
+    deepEqual(f.boundField("gender").field.choices(),
+              [['f', 'Female'], ['m', 'Male']]);
+    f = Person({allowUnspecGender: true});
+    deepEqual(f.boundField("gender").field.choices(),
+              [['f', 'Female'], ['m', 'Male'], ['u', 'Unspecified']]);
+    f = Person();
+    deepEqual(f.boundField("gender").field.choices(),
+              [['f', 'Female'], ['m', 'Male']]);
 });
 
 test("Hidden widget", function()
