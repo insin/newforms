@@ -846,6 +846,25 @@ test("Form errors are caught by FormSet", function()
     deepEqual(formset.errors()[1].get("pub_date").errors, ["This field is required."]);
 });
 
+test("Empty forms are unbound", function()
+{
+    expect(3);
+    var data = {
+        "form-TOTAL_FORMS": "1",
+        "form-INITIAL_FORMS": "0",
+        "form-0-title": "Test",
+        "form-0-pub_date": "1904-06-16"
+    };
+    var unboundFormset = ArticleFormSet();
+    var boundFormset = ArticleFormSet({data: data});
+    var emptyForms = [unboundFormset.emptyForm(), boundFormset.emptyForm()];
+    // Empty forms should be unbound
+    strictEqual(emptyForms[0].isBound, false);
+    strictEqual(emptyForms[1].isBound, false);
+    // The empty forms should be equal
+    equal(""+emptyForms[0].asP(), ""+emptyForms[1].asP());
+});
+
 test("Empty formset is valid", function()
 {
     expect(2);

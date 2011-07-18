@@ -102,12 +102,6 @@ BaseFormSet.prototype = {
       prefix: this.addPrefix('__prefix__'),
       emptyPermitted: true
     };
-
-    if (this.isBound) {
-      defaults['data'] = this.data;
-      defaults['files'] = this.files;
-    }
-
     var formKwargs = extend(defaults, kwargs || {});
     var form = new this.form(formKwargs);
     this.addFields(form, null);
