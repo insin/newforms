@@ -1,45 +1,36 @@
-/**
- * @fileOverview Miscellaneous utility functions and objects.
- */
-
 var toString = Object.prototype.toString;
 
-function isArray(o)
-{
-    return (toString.call(o) === "[object Array]");
+function isArray(o) {
+  return (toString.call(o) == '[object Array]');
 }
 
-function isFunction(o)
-{
-    return (toString.call(o) === "[object Function]");
+function isFunction(o) {
+  return (toString.call(o) == '[object Function]');
 }
 
-function isNumber(o)
-{
-    return (toString.call(o) === "[object Number]");
+function isNumber(o) {
+  return (toString.call(o) == '[object Number]');
 }
 
-function isObject(o)
-{
-    return (toString.call(o) === "[object Object]");
+function isObject(o) {
+  return (toString.call(o) == '[object Object]');
 }
 
-function isString(o)
-{
-    return (toString.call(o) === "[object String]");
+function isString(o) {
+  return (toString.call(o) == '[object String]');
 }
 
-function isCallable(o)
-{
-    return (isFunction(o) || isFunction(o.__call__));
+function isCallable(o) {
+  return (isFunction(o) || isFunction(o.__call__));
 }
 
-function callValidator(v, value)
-{
-    if (isFunction(v))
-        v(value);
-    else if (isFunction(v.__call__))
-        v.__call__(value);
+function callValidator(v, value) {
+  if (isFunction(v)) {
+    v(value);
+  }
+  else if (isFunction(v.__call__)) {
+    v.__call__(value);
+  }
 }
 
 /**
@@ -52,49 +43,40 @@ function callValidator(v, value)
  *
  * @return the <code>destination</code> object.
  */
-function extend(destination, var_args)
-{
-    for (var i = 1, l = arguments.length; i < l; i++)
-    {
-        var source = arguments[i];
-        for (var property in source)
-        {
-            if (source.hasOwnProperty(property))
-            {
-                destination[property] = source[property];
-            }
-        }
+function extend(destination, var_args) {
+  for (var i = 1, l = arguments.length; i < l; i++) {
+    var source = arguments[i];
+    for (var property in source) {
+      if (source.hasOwnProperty(property)) {
+        destination[property] = source[property];
+      }
     }
-    return destination;
+  }
+  return destination;
 }
 
 /**
  * Creates a list of [name, value] pairs from an object's properties.
  */
-function objectItems(obj)
-{
-    var result = [];
-    for (var name in obj)
-    {
-        if (obj.hasOwnProperty(name))
-        {
-            result.push([name, obj[name]]);
-        }
+function objectItems(obj) {
+  var result = [];
+  for (var name in obj) {
+    if (obj.hasOwnProperty(name)) {
+      result.push([name, obj[name]]);
     }
-    return result;
+  }
+  return result;
 }
 
 /**
  * Creates an object from a list of [name, value] pairs.
  */
-function itemsToObject(items)
-{
-    var obj = {};
-    for (var i = 0, l = items.length; i < l; i++)
-    {
-        obj[items[i][0]] = items[i][1];
-    }
-    return obj;
+function itemsToObject(items) {
+  var obj = {};
+  for (var i = 0, l = items.length; i < l; i++) {
+    obj[items[i][0]] = items[i][1];
+  }
+  return obj;
 }
 
 /**
@@ -104,62 +86,59 @@ function itemsToObject(items)
  * @param {Function} child the child constructor.
  * @param {Function} parent the parent constructor.
  */
-function inheritFrom(child, parent)
-{
-    function F() {};
-    F.prototype = parent.prototype;
-    child.prototype = new F();
-    child.prototype.constructor = child;
+function inheritFrom(child, parent) {
+  function F() {};
+  F.prototype = parent.prototype;
+  child.prototype = new F();
+  child.prototype.constructor = child;
 }
 
 /**
  * Creates a lookup object from an array, casting each item to a string.
  */
-function createLookup(a)
-{
-    var obj = {};
-    for (var i = 0, l = a.length; i < l; i++)
-    {
-        obj[""+a[i]] = true;
-    }
-    return obj;
+function createLookup(a) {
+  var obj = {};
+  for (var i = 0, l = a.length; i < l; i++) {
+    obj[''+a[i]] = true;
+  }
+  return obj;
 }
 
 /**
- * Converts "firstName" and "first_name" to "First name", and
- * "SHOUTING_LIKE_THIS" to "SHOUTING LIKE THIS".
+ * Converts 'firstName' and 'first_name' to 'First name', and
+ * 'SHOUTING_LIKE_THIS' to 'SHOUTING LIKE THIS'.
  */
-var prettyName = (function()
-{
-    var capsRE = /([A-Z]+)/g,
-        splitRE = /[ _]+/,
-        trimRE = /(^ +| +$)/g,
-        allCapsRE = /^[A-Z][A-Z0-9]+$/;
+var prettyName = (function() {
+  var capsRE = /([A-Z]+)/g
+    , splitRE = /[ _]+/
+    , trimRE = /(^ +| +$)/g
+    , allCapsRE = /^[A-Z][A-Z0-9]+$/;
 
-    return function(name)
-    {
-        // Prefix sequences of caps with spaces and split on all space
-        // characters.
-        var parts = name.replace(capsRE, " $1").split(splitRE);
+  return function(name) {
+    // Prefix sequences of caps with spaces and split on all space
+    // characters.
+    var parts = name.replace(capsRE, ' $1').split(splitRE);
 
-        // If we had an initial cap...
-        if (parts[0] === "")
-            parts.splice(0, 1);
+    // If we had an initial cap...
+    if (parts[0] === '') {
+      parts.splice(0, 1);
+    }
 
-        // Give the first word an initial cap and all subsequent words an
-        // initial lowercase if not all caps.
-        for (var i = 0, l = parts.length; i < l; i++)
-        {
-            if (i == 0)
-                parts[0] = parts[0].charAt(0).toUpperCase() +
-                           parts[0].substr(1);
-            else if (!allCapsRE.test(parts[i]))
-                parts[i] = parts[i].charAt(0).toLowerCase() +
-                           parts[i].substr(1);
-        }
+    // Give the first word an initial cap and all subsequent words an
+    // initial lowercase if not all caps.
+    for (var i = 0, l = parts.length; i < l; i++) {
+      if (i == 0) {
+        parts[0] = parts[0].charAt(0).toUpperCase() +
+                   parts[0].substr(1);
+      }
+      else if (!allCapsRE.test(parts[i])) {
+        parts[i] = parts[i].charAt(0).toLowerCase() +
+                   parts[i].substr(1);
+      }
+    }
 
-        return parts.join(" ");
-    };
+    return parts.join(' ');
+  };
 })();
 
 /**
@@ -171,21 +150,17 @@ var prettyName = (function()
  *
  * @return a formatted version of the given String.
  */
-var format = (function()
-{
-    // Closure for accessing a context object from the replacement function
-    var replacer = function(context)
-    {
-        return function(s, name)
-        {
-            return context[name];
-        };
+var format = (function() {
+  // Closure for accessing a context object from the replacement function
+  var replacer = function(context) {
+    return function(s, name) {
+      return context[name];
     };
+  };
 
-    return function(input, context)
-    {
-        return input.replace(/%\((\w+)\)([ds])/g, replacer(context));
-    };
+  return function(input, context) {
+    return input.replace(/%\((\w+)\)([ds])/g, replacer(context));
+  };
 })();
 
 /**
@@ -199,75 +174,58 @@ var format = (function()
  * @return an object representing the data present in the form. If the form
  *         could not be found, this object will be empty.
  */
-function formData(form)
-{
-    var data = {};
-
-    if (isString(form))
-    {
-        form = document.forms[form] || document.getElementById(form);
-    }
-
-    if (!form)
-    {
-        return data;
-    }
-
-    for (var i = 0, l = form.elements.length; i < l; i++)
-    {
-        var element = form.elements[i],
-            type = element.type,
-            value = null;
-
-        // Retrieve the element's value (or values)
-        if (type == "hidden" || type == "password" || type == "text" ||
-            type == "textarea" || ((type == "checkbox" ||
-                                    type == "radio") && element.checked))
-        {
-            value = element.value;
-        }
-        else if (type == "select-one")
-        {
-            value = element.options[element.selectedIndex].value;
-        }
-        else if (type == "select-multiple")
-        {
-            value = [];
-            for (var j = 0, m = element.options.length; j < m; j++)
-            {
-                if (element.options[j].selected)
-                {
-                    value[value.length] = element.options[j].value;
-                }
-            }
-            if (value.length == 0)
-            {
-                value = null;
-            }
-        }
-
-        // Add any value obtained to the data object
-        if (value !== null)
-        {
-            if (data.hasOwnProperty(element.name))
-            {
-                if (isArray(data[element.name]))
-                {
-                    data[element.name] = data[element.name].concat(value);
-                }
-                else
-                {
-                    data[element.name] = [data[element.name], value];
-                }
-            }
-            else
-            {
-                data[element.name] = value;
-            }
-        }
-    }
-
+function formData(form) {
+  var data = {};
+  if (isString(form)) {
+    form = document.forms[form] || document.getElementById(form);
+  }
+  if (!form) {
     return data;
+  }
+
+  for (var i = 0, l = form.elements.length; i < l; i++) {
+    var element = form.elements[i]
+      , type = element.type
+      , value = null;
+
+    // Retrieve the element's value (or values)
+    if (type == 'hidden' || type == 'password' || type == 'text' ||
+        type == 'textarea' || ((type == 'checkbox' ||
+                                type == 'radio') && element.checked)) {
+      value = element.value;
+    }
+    else if (type == 'select-one') {
+      value = element.options[element.selectedIndex].value;
+    }
+    else if (type == 'select-multiple') {
+      value = [];
+      for (var j = 0, m = element.options.length; j < m; j++) {
+        if (element.options[j].selected) {
+          value[value.length] = element.options[j].value;
+        }
+      }
+      if (value.length == 0) {
+        value = null;
+      }
+    }
+
+    // Add any value obtained to the data object
+    if (value !== null) {
+      if (data.hasOwnProperty(element.name)) {
+        if (isArray(data[element.name])) {
+          data[element.name] = data[element.name].concat(value);
+        }
+        else {
+          data[element.name] = [data[element.name], value];
+        }
+      }
+      else {
+        data[element.name] = value;
+      }
+    }
+  }
+
+  return data;
 }
 
 /**
@@ -307,19 +265,18 @@ function contains(container, item)
  * Returns the value of a property if it is defined in the given object,
  * otherwise returns the given default value.
  */
-function getDefault(o, prop, defaultValue)
-{
-    if (typeof o[prop] != "undefined")
-        return o[prop];
-    return defaultValue;
+function getDefault(o, prop, defaultValue) {
+  if (typeof o[prop] != 'undefined') {
+    return o[prop];
+  }
+  return defaultValue;
 }
 
 /**
  * Coerces to string and strips leading and trailing spaces.
  */
-function strip(s)
-{
-    return (""+s).replace(/(^\s+|\s+$)/g, "");
+function strip(s) {
+  return (''+s).replace(/(^\s+|\s+$)/g, '');
 }
 
 /**
@@ -330,30 +287,25 @@ function strip(s)
  *
  * @constructor
  */
-function ErrorObject(errors)
-{
-    if (!(this instanceof ErrorObject)) return new ErrorObject(errors);
-    this.errors = errors || {};
+function ErrorObject(errors) {
+  if (!(this instanceof ErrorObject)) return new ErrorObject(errors);
+  this.errors = errors || {};
 }
 
-ErrorObject.prototype.set = function(name, error)
-{
-    this.errors[name] = error;
+ErrorObject.prototype.set = function(name, error) {
+  this.errors[name] = error;
 };
 
-ErrorObject.prototype.get = function(name)
-{
-    return this.errors[name];
+ErrorObject.prototype.get = function(name) {
+  return this.errors[name];
 };
 
-ErrorObject.prototype.toString = function()
-{
-    return ""+this.defaultRendering();
+ErrorObject.prototype.toString = function() {
+  return ''+this.defaultRendering();
 };
 
-ErrorObject.prototype.defaultRendering = function()
-{
-    return this.asUL();
+ErrorObject.prototype.defaultRendering = function() {
+  return this.asUL();
 };
 
 /**
@@ -362,47 +314,47 @@ ErrorObject.prototype.defaultRendering = function()
  * @return {Boolean} <code>true</code> if this object has had any properties
  *                   set, <code>false</code> otherwise.
  */
-ErrorObject.prototype.isPopulated = function()
-{
-    for (var name in this.errors)
-        if (this.errors.hasOwnProperty(name))
-            return true;
-    return false;
+ErrorObject.prototype.isPopulated = function() {
+  for (var name in this.errors) {
+    if (this.errors.hasOwnProperty(name)) {
+      return true;
+    }
+  }
+  return false;
 };
 
 /**
  * Displays error details as a list.
  */
-ErrorObject.prototype.asUL = function()
-{
-    var items = [];
-    for (var name in this.errors)
-        if (this.errors.hasOwnProperty(name))
-            items.push(DOMBuilder.createElement("li", {},
-                           [name, this.errors[name].defaultRendering()]));
-
-    if (items.length === 0)
-        return DOMBuilder.fragment();
-    return DOMBuilder.createElement("ul", {"class": "errorlist"}, items);
+ErrorObject.prototype.asUL = function() {
+  var items = [];
+  for (var name in this.errors) {
+    if (this.errors.hasOwnProperty(name)) {
+      items.push(DOMBuilder.createElement('li', {},
+                     [name, this.errors[name].defaultRendering()]));
+    }
+  }
+  if (!items.length) {
+    return DOMBuilder.fragment();
+  }
+  return DOMBuilder.createElement('ul', {'class': 'errorlist'}, items);
 };
 
 /**
  * Displays error details as text.
  */
-ErrorObject.prototype.asText = function()
-{
-    var items = [];
-    for (var name in this.errors)
-    {
-        if (this.errors.hasOwnProperty(name))
-        {
-            items.push("* " + name);
-            var errorList = this.errors[name];
-            for (var i = 0, l = errorList.errors.length; i < l; i++)
-                items.push("  * " + errorList.errors[i]);
-        }
+ErrorObject.prototype.asText = function() {
+  var items = [];
+  for (var name in this.errors) {
+    if (this.errors.hasOwnProperty(name)) {
+      items.push('* ' + name);
+      var errorList = this.errors[name];
+      for (var i = 0, l = errorList.errors.length; i < l; i++) {
+        items.push('  * ' + errorList.errors[i]);
+      }
     }
-    return items.join("\n");
+  }
+  return items.join('\n');
 };
 
 /**
@@ -411,20 +363,17 @@ ErrorObject.prototype.asText = function()
  * @param {Array} [errors] a list of errors.
  * @constructor
  */
-function ErrorList(errors)
-{
-    if (!(this instanceof ErrorList)) return new ErrorList(errors);
-    this.errors = errors || [];
+function ErrorList(errors) {
+  if (!(this instanceof ErrorList)) return new ErrorList(errors);
+  this.errors = errors || [];
 }
 
-ErrorList.prototype.toString = function()
-{
-    return ""+this.defaultRendering();
+ErrorList.prototype.toString = function() {
+  return ''+this.defaultRendering();
 };
 
-ErrorList.prototype.defaultRendering = function()
-{
-    return this.asUL();
+ErrorList.prototype.defaultRendering = function() {
+  return this.asUL();
 };
 
 /**
@@ -432,29 +381,27 @@ ErrorList.prototype.defaultRendering = function()
  *
  * @param {ErrorList} errorList an ErrorList whose errors should be added.
  */
-ErrorList.prototype.extend = function(errorList)
-{
-    this.errors = this.errors.concat(errorList.errors);
+ErrorList.prototype.extend = function(errorList) {
+  this.errors = this.errors.concat(errorList.errors);
 };
 
 /**
  * Displays errors as a list.
  */
-ErrorList.prototype.asUL = function()
-{
-    return DOMBuilder.createElement("ul", {"class": "errorlist"},
-        DOMBuilder.map("li", {}, this.errors));
+ErrorList.prototype.asUL = function() {
+  return DOMBuilder.createElement('ul', {'class': 'errorlist'},
+      DOMBuilder.map('li', {}, this.errors));
 };
 
 /**
  * Displays errors as text.
  */
-ErrorList.prototype.asText = function()
-{
-    var items = [];
-    for (var i = 0, l = this.errors.length; i < l; i++)
-        items.push("* " + this.errors[i]);
-    return items.join("\n");
+ErrorList.prototype.asText = function() {
+  var items = [];
+  for (var i = 0, l = this.errors.length; i < l; i++) {
+    items.push('* ' + this.errors[i]);
+  }
+  return items.join('\n');
 };
 
 /**
@@ -463,9 +410,8 @@ ErrorList.prototype.asText = function()
  * @return {Boolean} <code>true</code> if this object contains any errors
  *                   <code>false</code> otherwise.
  */
-ErrorList.prototype.isPopulated = function()
-{
-    return this.errors.length > 0;
+ErrorList.prototype.isPopulated = function() {
+  return this.errors.length > 0;
 };
 
 /**
@@ -473,26 +419,21 @@ ErrorList.prototype.isPopulated = function()
  * (e.g. those produced by validators may have an associated error code
  * and parameters to allow customisation by fields.
  */
-function ValidationError(message, kwargs)
-{
-    if (!(this instanceof ValidationError))
-        return new ValidationError(message, kwargs);
-    kwargs = extend({code: null, params: null}, kwargs || {});
-    if (isArray(message))
-    {
-        this.messages = message;
-    }
-    else
-    {
-        this.code = kwargs.code;
-        this.params = kwargs.params;
-        this.messages = [message];
-    }
+function ValidationError(message, kwargs) {
+  if (!(this instanceof ValidationError)) return new ValidationError(message, kwargs);
+  kwargs = extend({code: null, params: null}, kwargs || {});
+  if (isArray(message)) {
+    this.messages = message;
+  }
+  else {
+    this.code = kwargs.code;
+    this.params = kwargs.params;
+    this.messages = [message];
+  }
 }
 
-ValidationError.prototype.toString = function()
-{
-    return ("ValidationError: " + this.messages.join("; "));
+ValidationError.prototype.toString = function() {
+  return ('ValidationError: ' + this.messages.join('; '));
 };
 
 /**
@@ -505,7 +446,7 @@ var urlparse = {};
 urlparse.urlsplit = function(url, default_scheme, allow_fragments)
 {
     var leftover;
-    if (typeof allow_fragments === 'undefined') {
+    if (typeof allow_fragments == 'undefined') {
         allow_fragments = true;
     }
 

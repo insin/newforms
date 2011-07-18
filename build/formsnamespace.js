@@ -10,7 +10,7 @@ var DOMBuilder = modules ? require('DOMBuilder') : __global__.DOMBuilder;
 
 // Newforms API
 var forms = {
-    version: "%(version)s",
+    version: '%(version)s',
     // util.js utilities end users may want to make use of
     callValidator: callValidator,
     ErrorObject: ErrorObject,
