@@ -11,6 +11,9 @@
     "url": "http://github.com/insin/newforms.git"
   },
   "dependencies": {
-      "DOMBuilder": ">=1.4.1"
+      "DOMBuilder": ">=2.0.0"
+  }
+  "devDependencies": {
+      "qunit": ">=.0.1.5"
   }
 }
