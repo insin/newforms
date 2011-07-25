@@ -1,5 +1,5 @@
-var qunit = require('qunit'),
-    path = require('path');
+var qunit = require('qunit')
+  , path = require('path');
 
 // Built newforms library
 var lib = '../newforms.js';
@@ -18,12 +18,10 @@ path.exists(lib, function(exists) {
     return;
   }
 
-  qunit.run([
-    {
-      code: {path: lib, namespace: 'forms'},
-      tests: ['./time.js', './util.js', './validators.js', './forms.js',
-              './formsets.js', './fields.js','./errormessages.js',
-              './widgets.js', './extra.js', './regressions.js']
-    }
-  ]);
+  qunit.run({
+    code: {path: lib, namespace: 'forms'},
+    tests: ['./time.js', './util.js', './validators.js', './forms.js',
+            './formsets.js', './fields.js','./errormessages.js',
+            './widgets.js', './extra.js', './regressions.js']
+  });
 });
