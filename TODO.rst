@@ -21,6 +21,16 @@ http://code.djangoproject.com/changeset/7967 (partial)
 
    Media classes - changes to forms.js and widgets.js
 
+https://code.djangoproject.com/changeset/11964
+https://code.djangoproject.com/changeset/12029
+https://code.djangoproject.com/changeset/12698
+https://code.djangoproject.com/changeset/12867
+https://code.djangoproject.com/changeset/13296
+https://code.djangoproject.com/changeset/13484
+
+   Date/time Widget formatting/locale stuff. We already have locale stuff in the
+   ``time`` object, so might as well start making use of it.
+
 https://code.djangoproject.com/changeset/16366
 
    GenericIPAddressField for IPv4/IPv6 validation
