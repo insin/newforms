@@ -359,10 +359,12 @@ function DateInput(kwargs) {
   if (kwargs.format !== null) {
     this.format = kwargs.format;
   }
+  else {
+    this.format = DEFAULT_DATE_INPUT_FORMATS[0];
+  }
 }
 inheritFrom(DateInput, Input);
 DateInput.prototype.inputType = 'text';
-DateInput.prototype.format = '%Y-%m-%d'; // '2006-10-25'
 
 DateInput.prototype._formatValue = function(value) {
   if (value instanceof Date) {
@@ -396,10 +398,12 @@ function DateTimeInput(kwargs) {
   if (kwargs.format !== null) {
     this.format = kwargs.format;
   }
+  else {
+    this.format = DEFAULT_DATETIME_INPUT_FORMATS[0];
+  }
 }
 inheritFrom(DateTimeInput, Input);
 DateTimeInput.prototype.inputType = 'text';
-DateTimeInput.prototype.format = '%Y-%m-%d %H:%M:%S'; // '2006-10-25 14:30:59'
 
 DateTimeInput.prototype._formatValue = function(value) {
   if (value instanceof Date) {
@@ -433,10 +437,12 @@ function TimeInput(kwargs) {
   if (kwargs.format !== null) {
     this.format = kwargs.format;
   }
+  else {
+    this.format = DEFAULT_TIME_INPUT_FORMATS[0];
+  }
 }
 inheritFrom(TimeInput, Input);
 TimeInput.prototype.inputType = 'text';
-TimeInput.prototype.format = '%H:%M:%S'; // '14:30:59'
 
 TimeInput.prototype._formatValue = function(value) {
   if (value instanceof Date) {
@@ -1099,22 +1105,14 @@ MultiWidget.prototype.decompress = function(value) {
  */
 function SplitDateTimeWidget(kwargs) {
   if (!(this instanceof Widget)) return new SplitDateTimeWidget(kwargs);
-  kwargs = extend({adateFormat: null, timeFormat: null}, kwargs || {});
-  if (kwargs.dateFormat) {
-    this.dateFormat = kwargs.dateFormat;
-  }
-  if (kwargs.timeFormat) {
-    this.timeFormat = kwargs.timeFormat;
-  }
+  kwargs = extend({dateFormat: null, timeFormat: null}, kwargs || {});
   var widgets = [
-    DateInput({attrs: kwargs.attrs, format: this.dateFormat})
-  , TimeInput({attrs: kwargs.attrs, format: this.timeFormat})
+    DateInput({attrs: kwargs.attrs, format: kwargs.dateFormat})
+  , TimeInput({attrs: kwargs.attrs, format: kwargs.timeFormat})
   ];
   MultiWidget.call(this, widgets, kwargs.attrs);
 }
 inheritFrom(SplitDateTimeWidget, MultiWidget);
-SplitDateTimeWidget.prototype.dateFormat = DateInput.prototype.format;
-SplitDateTimeWidget.prototype.timeFormat = TimeInput.prototype.format;
 
 SplitDateTimeWidget.prototype.decompress = function(value) {
   if (value) {
