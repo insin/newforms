@@ -246,7 +246,7 @@ test("DecimalField", function()
 
 test("DateField", function()
 {
-    expect(24);
+    expect(31);
     var f = forms.DateField();
     var expected = new Date(2006, 9, 25).valueOf();
     strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), expected);
@@ -281,11 +281,21 @@ test("DateField", function()
     cleanErrorEqual(f, "Enter a valid date.", "2006-10-25");
     cleanErrorEqual(f, "Enter a valid date.", "10/25/2006");
     cleanErrorEqual(f, "Enter a valid date.", "10/25/06");
+
+    // Test whitespace stripping behaviour
+    f = forms.DateField();
+    strictEqual(f.clean(" 10/25/2006 ").valueOf(), expected);
+    strictEqual(f.clean(" 10/25/06 ").valueOf(), expected);
+    strictEqual(f.clean(" Oct 25   2006 ").valueOf(), expected);
+    strictEqual(f.clean(" October  25 2006 ").valueOf(), expected);
+    strictEqual(f.clean(" October 25, 2006 ").valueOf(), expected);
+    strictEqual(f.clean(" 25 October 2006 ").valueOf(), expected);
+    cleanErrorEqual(f, "Enter a valid date.", "   ");
 });
 
 test("TimeField", function()
 {
-    expect(11);
+    expect(14);
     var f = forms.TimeField();
     strictEqual(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
     strictEqual(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
@@ -304,11 +314,17 @@ test("TimeField", function()
     // The inputFormats parameter overrides all default input formats, so the
     // default formats won't work unless you specify them.
     cleanErrorEqual(f, "Enter a valid time.", "14:30:45");
+
+    // Test whitespace stripping behaviour
+    f = forms.TimeField();
+    strictEqual(f.clean("  14:25  ").valueOf(), new Date(1900, 0, 1, 14, 25).valueOf());
+    strictEqual(f.clean("  14:25:59  ").valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf());
+    cleanErrorEqual(f, "Enter a valid time.", "   ");
 });
 
 test("DateTimeField", function()
 {
-    expect(26);
+    expect(34);
     var f = forms.DateTimeField();
     strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), new Date(2006, 9, 25).valueOf());
     strictEqual(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
@@ -344,6 +360,17 @@ test("DateTimeField", function()
     f = forms.DateTimeField({required: false});
     strictEqual(f.clean(null), null);
     strictEqual(f.clean(""), null);
+
+    // Test whitespace stripping behaviour
+    f = forms.DateTimeField();
+    strictEqual(f.clean(" 2006-10-25   14:30:45 ").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
+    strictEqual(f.clean(" 2006-10-25 ").valueOf(), new Date(2006, 9, 25).valueOf());
+    strictEqual(f.clean(" 10/25/2006 14:30:45 ").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
+    strictEqual(f.clean(" 10/25/2006 14:30 ").valueOf(), new Date(2006, 9, 25, 14, 30).valueOf());
+    strictEqual(f.clean(" 10/25/2006 ").valueOf(), new Date(2006, 9, 25).valueOf());
+    strictEqual(f.clean(" 10/25/06 14:30:45 ").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf());
+    strictEqual(f.clean(" 10/25/06 ").valueOf(), new Date(2006, 9, 25).valueOf());
+    cleanErrorEqual(f, "Enter a valid date/time.", "   ");
 });
 
 test("RegexField", function()

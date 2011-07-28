@@ -477,24 +477,67 @@ DecimalField.prototype.clean = function(value) {
 };
 
 /**
- * Validates that its input is a date.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Field}.
- * @config {Array} [inputFormats] a list of strptime input formats which are
- *                                considered valid. If not provided,
- *                                DEFAULT_DATE_INPUT_FORMATS will be used
- *                                instead.
+ * Base field for fields which validate that their input is a date or time.
  * @constructor
+ * @extends {Field}
+ * @param {Object=} kwargs configuration options additional to those specified
+ *     in {@link Field}.
+ * @config {Array=} inputFormats a list of time.strptime input formats which are
+ *     considered valid.
+ */
+function BaseTemporalField(kwargs) {
+  kwargs = extend({inputFormats: null}, kwargs || {});
+  Field.call(this, kwargs);
+  if (kwargs.inputFormats !== null) {
+    this.inputFormats = kwargs.inputFormats;
+  }
+}
+inheritFrom(BaseTemporalField, Field);
+
+/**
+ * Validates that its input is a valid date or time.
+ * @param {String|Date}
+ * @return {Date}
+ */
+BaseTemporalField.prototype.toJavaScript = function(value) {
+  if (!(value instanceof Date)) {
+    value = strip(value)
+  }
+  if (isString(value)) {
+    for (var i = 0, l = this.inputFormats.length; i < l; i++) {
+      try {
+        return this.strpdate(value, this.inputFormats[i]);
+      }
+      catch (e) {
+        continue;
+      }
+    }
+  }
+  throw ValidationError(this.errorMessages.invalid);
+};
+
+/**
+ * Creates a Date from the given input if it's valid based on a format.
+ * @param {String} value
+ * @param {String} format
+ * @return {Date}
+ */
+BaseTemporalField.prototype.strpdate = function(value, format) {
+  return time.strpdate(value, format);
+};
+
+/**
+ * Validates that its input is a date.
+ * @constructor
+ * @extends {BaseTemporalField}
  */
 function DateField(kwargs) {
   if (!(this instanceof Field)) return new DateField(kwargs);
-  kwargs = extend({inputFormats: null}, kwargs || {});
-  Field.call(this, kwargs);
-  this.inputFormats = kwargs.inputFormats || DEFAULT_DATE_INPUT_FORMATS;
+  BaseTemporalField.call(this, kwargs);
 }
-inheritFrom(DateField, Field);
+inheritFrom(DateField, BaseTemporalField);
 DateField.prototype.widget = DateInput;
+DateField.prototype.inputFormats = DEFAULT_DATE_INPUT_FORMATS;
 DateField.prototype.defaultErrorMessages =
     extend({}, DateField.prototype.defaultErrorMessages, {
       invalid: 'Enter a valid date.'
@@ -502,11 +545,9 @@ DateField.prototype.defaultErrorMessages =
 
 /**
  * Validates that the input can be converted to a date.
- *
- * @param value the value to be validated.
- *
- * @return a <code>Date</code> object with its year, month and day attributes
- *         set, or <code>null</code> for empty values.
+ * @param {String|Date} value the value to be validated.
+ * @return {?Date} a with its year, month and day attributes set, or null for
+ *     empty values when they are allowed.
  */
 DateField.prototype.toJavaScript = function(value) {
   if (contains(EMPTY_VALUES, value)) {
@@ -515,40 +556,32 @@ DateField.prototype.toJavaScript = function(value) {
   if (value instanceof Date) {
     return new Date(value.getFullYear(), value.getMonth(), value.getDate());
   }
-  for (var i = 0, l = this.inputFormats.length; i < l; i++) {
-    try {
-        return time.strpdate(value, this.inputFormats[i]);
-    }
-    catch (e) {
-        continue;
-    }
-  }
-  throw ValidationError(this.errorMessages.invalid);
+  return BaseTemporalField.prototype.toJavaScript.call(this, value);
 };
 
 /**
  * Validates that its input is a time.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Field}.
- * @config {Array} [inputFormats] a list of {@link time.strptime} input formats
- *                                which are considered valid - if not provided,
- *                                DEFAULT_TIME_INPUT_FORMATS will be used.
  * @constructor
+ * @extends {BaseTemporalField}
  */
 function TimeField(kwargs) {
   if (!(this instanceof Field)) return new TimeField(kwargs);
-  kwargs = extend({ inputFormats: null}, kwargs || {});
-  Field.call(this, kwargs);
-  this.inputFormats = kwargs.inputFormats || DEFAULT_TIME_INPUT_FORMATS;
+  BaseTemporalField.call(this, kwargs);
 }
-inheritFrom(TimeField, Field);
+inheritFrom(TimeField, BaseTemporalField);
 TimeField.prototype.widget = TimeInput;
+TimeField.prototype.inputFormats = DEFAULT_TIME_INPUT_FORMATS;
 TimeField.prototype.defaultErrorMessages =
     extend({}, TimeField.prototype.defaultErrorMessages, {
       invalid: 'Enter a valid time.'
     });
 
+/**
+ * Validates that the input can be converted to a time.
+ * @param {String|Date} value the value to be validated.
+ * @return {?Date} a Date with its hour, minute and second attributes set, or
+ *     null for empty values when they are allowed.
+ */
 TimeField.prototype.toJavaScript = function(value) {
   if (contains(EMPTY_VALUES, value)) {
     return null;
@@ -556,41 +589,42 @@ TimeField.prototype.toJavaScript = function(value) {
   if (value instanceof Date) {
     return new Date(1900, 0, 1, value.getHours(), value.getMinutes(), value.getSeconds());
   }
-  for (var i = 0, l = this.inputFormats.length; i < l; i++) {
-    try {
-      var t = time.strptime(value, this.inputFormats[i]);
-      return new Date(1900, 0, 1, t[3], t[4], t[5]);
-    }
-    catch (e) {
-      continue;
-    }
-  }
-  throw ValidationError(this.errorMessages.invalid);
+  return BaseTemporalField.prototype.toJavaScript.call(this, value);
+};
+
+/**
+ * Creates a Date representing a time from the given input if it's valid based
+ * on the format.
+ * @param {String} value
+ * @param {String} format
+ * @return {Date}
+ */
+TimeField.prototype.strpdate = function(value, format) {
+  var t = time.strptime(value, format);
+  return new Date(1900, 0, 1, t[3], t[4], t[5]);
 };
 
 /**
  * Validates that its input is a date/time.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Field}.
- * @config {Array} [inputFormats] a list of {@link time.strptime} input formats
- *                                which are considered valid - if not provided,
- *                                DEFAULT_TIME_INPUT_FORMATS will be used.
  * @constructor
+ * @extends {BaseTemporalField}
  */
 function DateTimeField(kwargs) {
   if (!(this instanceof Field)) return new DateTimeField(kwargs);
-  kwargs = extend({ inputFormats: null }, kwargs || {});
-  Field.call(this, kwargs);
-  this.inputFormats = kwargs.inputFormats || DEFAULT_DATETIME_INPUT_FORMATS;
+  BaseTemporalField.call(this, kwargs);
 }
-inheritFrom(DateTimeField, Field);
+inheritFrom(DateTimeField, BaseTemporalField);
 DateTimeField.prototype.widget = DateTimeInput;
+DateTimeField.prototype.inputFormats = DEFAULT_DATETIME_INPUT_FORMATS;
 DateTimeField.prototype.defaultErrorMessages =
     extend({}, DateTimeField.prototype.defaultErrorMessages, {
       invalid: 'Enter a valid date/time.'
     });
 
+/**
+ * @param {String|Date|Array.<Date>}
+ * @return {?Date}
+ */
 DateTimeField.prototype.toJavaScript = function(value) {
   if (contains(EMPTY_VALUES, value)) {
     return null;
@@ -610,15 +644,7 @@ DateTimeField.prototype.toJavaScript = function(value) {
     }
     value = value.join(' ');
   }
-  for (var i = 0, l = this.inputFormats.length; i < l; i++) {
-    try {
-      return time.strpdate(value, this.inputFormats[i]);
-    }
-    catch (e) {
-      continue;
-    }
-  }
-  throw ValidationError(this.errorMessages.invalid);
+  return BaseTemporalField.prototype.toJavaScript.call(this, value);
 };
 
 /**
