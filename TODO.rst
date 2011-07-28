@@ -21,10 +21,6 @@ http://code.djangoproject.com/changeset/7967 (partial)
 
    Media classes - changes to forms.js and widgets.js
 
-https://code.djangoproject.com/changeset/16137
-
-   BaseTemporalField and stripping of temporal input
-
 https://code.djangoproject.com/changeset/16366
 
    GenericIPAddressField for IPv4/IPv6 validation
