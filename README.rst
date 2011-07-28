@@ -25,13 +25,14 @@ Node.js::
 
 Akshell:
 
-* Add the following to your app's ``manifest.json``::
+* Add the following to your app's ``manifest.json`` (currently a version
+  behind)::
 
      "insin/newforms:0.0.2"
 
 Browser:
 
-* `newforms.min.js`_ - ~59KB (~15.5KB gzipped)
+* `newforms.min.js`_ - ~58KB (~15.5KB gzipped)
 
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/master/newforms.min.js
 
@@ -94,9 +95,9 @@ Here's a quick guide to getting started with newforms.
        message: forms.CharField(),
        sender: forms.EmailField(),
        ccMyself: forms.BooleanField({required: false})
-     });
+     })
 
-     var form = ContactForm();
+     var form = ContactForm()
 
 * FormSet constructors are created using the ``forms.FormSet`` factory
   function, which takes a Form constructor and any additional properties
@@ -106,11 +107,11 @@ Here's a quick guide to getting started with newforms.
      var ArticleForm = forms.Form({
        title: forms.CharField(),
        pubDate: forms.DateField()
-     });
+     })
 
-     var ArticleFormSet = forms.FormSet(ArticleForm, {extra: 1});
+     var ArticleFormSet = forms.FormSet(ArticleForm, {extra: 1})
 
-     var formSet = ArticleFormSet();
+     var formSet = ArticleFormSet()
 
 * The API is largely consistent with Django's API, with the following
   rules of thumb for converting between the two:
@@ -129,7 +130,7 @@ Here's a quick guide to getting started with newforms.
 
     *Javascript*::
 
-       var f = MyForm({data: req.body});
+       var f = MyForm({data: req.body})
 
   * Method and variable names which use ``underscores_in_python`` become
     ``camelCasedInJavaScript``.
@@ -167,10 +168,10 @@ further usage in the meantime. Here are some pointers:
 
 **Forms:**
 
-* `Custom validation per field and across fields <https://github.com/insin/newforms/blob/master/tests/forms.js#L710>`_
-* `Subclassing forms and faux-multiple inheritance/mixins <https://github.com/insin/newforms/blob/master/tests/forms.js#L1426>`_
-* `Basic form processing in a view function <https://github.com/insin/newforms/blob/master/tests/forms.js#L1712>`_
+* `Custom validation per field and across fields <https://github.com/insin/newforms/blob/master/tests/forms.js#L710-791>`_
+* `Subclassing forms and faux-multiple inheritance/mixins <https://github.com/insin/newforms/blob/master/tests/forms.js#L1452-1529>`_
+* `Basic form processing in a view function <https://github.com/insin/newforms/blob/master/tests/forms.js#L1738-1799>`_
 
 **FormSets:**
 
-* `Basic FormSet usage <https://github.com/insin/newforms/blob/master/tests/formsets.js#L39>`_
+* `Basic FormSet usage <https://github.com/insin/newforms/blob/master/tests/formsets.js#L39-78>`_

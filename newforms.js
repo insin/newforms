@@ -1,9 +1,8 @@
-(function(__global__, undefined)
-{
+(function(__global__, undefined) {
 
 // Pull in dependencies appropriately depending on the execution environment
-var modules = !!(typeof module !== 'undefined' && module.exports);
-var DOMBuilder = modules ? require('DOMBuilder') : __global__.DOMBuilder;
+var modules = !!(typeof module !== 'undefined' && module.exports)
+  , DOMBuilder = modules ? require('DOMBuilder') : __global__.DOMBuilder;
 
 var time = (function() {
   /**
@@ -177,7 +176,12 @@ TimeParser.prototype.compilePattern = function() {
   for (var i = 0, l = format.length; i < l; i++) {
     c = format.charAt(i);
     if (c != '%') {
-      pattern.push(c);
+      if (c === ' ') {
+        pattern.push(' +');
+      }
+      else {
+        pattern.push(c);
+      }
       continue;
     }
 
@@ -1468,10 +1472,12 @@ var EMAIL_RE = new RegExp(
     // Dot-atom
     "(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*" +
      // Quoted-string
-    '|^"([\\001-\\010\\013\\014\\016-\\037!#-\\[\\]-\\177]|' +
-        '\\\\[\\001-011\\013\\014\\016-\\177])*"' +
+    '|^"([\\001-\\010\\013\\014\\016-\\037!#-\\[\\]-\\177]|\\\\[\\001-011\\013\\014\\016-\\177])*"' +
     // Domain
-    ')@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\\.)+[A-Z]{2,6}\\.?$',
+    ')@((?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\\.)+[A-Z]{2,6}\\.?$)' +
+    // Literal form, ipv4 address (SMTP 4.1.3)
+    '|\\[(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}\\]$',
+    // Ignore case
     'i')
   /** Validates that input looks like a valid e-mail address. */
   , validateEmail = EmailValidator(EMAIL_RE,
@@ -1936,10 +1942,12 @@ function DateInput(kwargs) {
   if (kwargs.format !== null) {
     this.format = kwargs.format;
   }
+  else {
+    this.format = DEFAULT_DATE_INPUT_FORMATS[0];
+  }
 }
 inheritFrom(DateInput, Input);
 DateInput.prototype.inputType = 'text';
-DateInput.prototype.format = '%Y-%m-%d'; // '2006-10-25'
 
 DateInput.prototype._formatValue = function(value) {
   if (value instanceof Date) {
@@ -1973,10 +1981,12 @@ function DateTimeInput(kwargs) {
   if (kwargs.format !== null) {
     this.format = kwargs.format;
   }
+  else {
+    this.format = DEFAULT_DATETIME_INPUT_FORMATS[0];
+  }
 }
 inheritFrom(DateTimeInput, Input);
 DateTimeInput.prototype.inputType = 'text';
-DateTimeInput.prototype.format = '%Y-%m-%d %H:%M:%S'; // '2006-10-25 14:30:59'
 
 DateTimeInput.prototype._formatValue = function(value) {
   if (value instanceof Date) {
@@ -2010,10 +2020,12 @@ function TimeInput(kwargs) {
   if (kwargs.format !== null) {
     this.format = kwargs.format;
   }
+  else {
+    this.format = DEFAULT_TIME_INPUT_FORMATS[0];
+  }
 }
 inheritFrom(TimeInput, Input);
 TimeInput.prototype.inputType = 'text';
-TimeInput.prototype.format = '%H:%M:%S'; // '14:30:59'
 
 TimeInput.prototype._formatValue = function(value) {
   if (value instanceof Date) {
@@ -2676,22 +2688,14 @@ MultiWidget.prototype.decompress = function(value) {
  */
 function SplitDateTimeWidget(kwargs) {
   if (!(this instanceof Widget)) return new SplitDateTimeWidget(kwargs);
-  kwargs = extend({adateFormat: null, timeFormat: null}, kwargs || {});
-  if (kwargs.dateFormat) {
-    this.dateFormat = kwargs.dateFormat;
-  }
-  if (kwargs.timeFormat) {
-    this.timeFormat = kwargs.timeFormat;
-  }
+  kwargs = extend({dateFormat: null, timeFormat: null}, kwargs || {});
   var widgets = [
-    DateInput({attrs: kwargs.attrs, format: this.dateFormat})
-  , TimeInput({attrs: kwargs.attrs, format: this.timeFormat})
+    DateInput({attrs: kwargs.attrs, format: kwargs.dateFormat})
+  , TimeInput({attrs: kwargs.attrs, format: kwargs.timeFormat})
   ];
   MultiWidget.call(this, widgets, kwargs.attrs);
 }
 inheritFrom(SplitDateTimeWidget, MultiWidget);
-SplitDateTimeWidget.prototype.dateFormat = DateInput.prototype.format;
-SplitDateTimeWidget.prototype.timeFormat = TimeInput.prototype.format;
 
 SplitDateTimeWidget.prototype.decompress = function(value) {
   if (value) {
@@ -3201,24 +3205,67 @@ DecimalField.prototype.clean = function(value) {
 };
 
 /**
- * Validates that its input is a date.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Field}.
- * @config {Array} [inputFormats] a list of strptime input formats which are
- *                                considered valid. If not provided,
- *                                DEFAULT_DATE_INPUT_FORMATS will be used
- *                                instead.
+ * Base field for fields which validate that their input is a date or time.
  * @constructor
+ * @extends {Field}
+ * @param {Object=} kwargs configuration options additional to those specified
+ *     in {@link Field}.
+ * @config {Array=} inputFormats a list of time.strptime input formats which are
+ *     considered valid.
+ */
+function BaseTemporalField(kwargs) {
+  kwargs = extend({inputFormats: null}, kwargs || {});
+  Field.call(this, kwargs);
+  if (kwargs.inputFormats !== null) {
+    this.inputFormats = kwargs.inputFormats;
+  }
+}
+inheritFrom(BaseTemporalField, Field);
+
+/**
+ * Validates that its input is a valid date or time.
+ * @param {String|Date}
+ * @return {Date}
+ */
+BaseTemporalField.prototype.toJavaScript = function(value) {
+  if (!(value instanceof Date)) {
+    value = strip(value)
+  }
+  if (isString(value)) {
+    for (var i = 0, l = this.inputFormats.length; i < l; i++) {
+      try {
+        return this.strpdate(value, this.inputFormats[i]);
+      }
+      catch (e) {
+        continue;
+      }
+    }
+  }
+  throw ValidationError(this.errorMessages.invalid);
+};
+
+/**
+ * Creates a Date from the given input if it's valid based on a format.
+ * @param {String} value
+ * @param {String} format
+ * @return {Date}
+ */
+BaseTemporalField.prototype.strpdate = function(value, format) {
+  return time.strpdate(value, format);
+};
+
+/**
+ * Validates that its input is a date.
+ * @constructor
+ * @extends {BaseTemporalField}
  */
 function DateField(kwargs) {
   if (!(this instanceof Field)) return new DateField(kwargs);
-  kwargs = extend({inputFormats: null}, kwargs || {});
-  Field.call(this, kwargs);
-  this.inputFormats = kwargs.inputFormats || DEFAULT_DATE_INPUT_FORMATS;
+  BaseTemporalField.call(this, kwargs);
 }
-inheritFrom(DateField, Field);
+inheritFrom(DateField, BaseTemporalField);
 DateField.prototype.widget = DateInput;
+DateField.prototype.inputFormats = DEFAULT_DATE_INPUT_FORMATS;
 DateField.prototype.defaultErrorMessages =
     extend({}, DateField.prototype.defaultErrorMessages, {
       invalid: 'Enter a valid date.'
@@ -3226,11 +3273,9 @@ DateField.prototype.defaultErrorMessages =
 
 /**
  * Validates that the input can be converted to a date.
- *
- * @param value the value to be validated.
- *
- * @return a <code>Date</code> object with its year, month and day attributes
- *         set, or <code>null</code> for empty values.
+ * @param {String|Date} value the value to be validated.
+ * @return {?Date} a with its year, month and day attributes set, or null for
+ *     empty values when they are allowed.
  */
 DateField.prototype.toJavaScript = function(value) {
   if (contains(EMPTY_VALUES, value)) {
@@ -3239,40 +3284,32 @@ DateField.prototype.toJavaScript = function(value) {
   if (value instanceof Date) {
     return new Date(value.getFullYear(), value.getMonth(), value.getDate());
   }
-  for (var i = 0, l = this.inputFormats.length; i < l; i++) {
-    try {
-        return time.strpdate(value, this.inputFormats[i]);
-    }
-    catch (e) {
-        continue;
-    }
-  }
-  throw ValidationError(this.errorMessages.invalid);
+  return BaseTemporalField.prototype.toJavaScript.call(this, value);
 };
 
 /**
  * Validates that its input is a time.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Field}.
- * @config {Array} [inputFormats] a list of {@link time.strptime} input formats
- *                                which are considered valid - if not provided,
- *                                DEFAULT_TIME_INPUT_FORMATS will be used.
  * @constructor
+ * @extends {BaseTemporalField}
  */
 function TimeField(kwargs) {
   if (!(this instanceof Field)) return new TimeField(kwargs);
-  kwargs = extend({ inputFormats: null}, kwargs || {});
-  Field.call(this, kwargs);
-  this.inputFormats = kwargs.inputFormats || DEFAULT_TIME_INPUT_FORMATS;
+  BaseTemporalField.call(this, kwargs);
 }
-inheritFrom(TimeField, Field);
+inheritFrom(TimeField, BaseTemporalField);
 TimeField.prototype.widget = TimeInput;
+TimeField.prototype.inputFormats = DEFAULT_TIME_INPUT_FORMATS;
 TimeField.prototype.defaultErrorMessages =
     extend({}, TimeField.prototype.defaultErrorMessages, {
       invalid: 'Enter a valid time.'
     });
 
+/**
+ * Validates that the input can be converted to a time.
+ * @param {String|Date} value the value to be validated.
+ * @return {?Date} a Date with its hour, minute and second attributes set, or
+ *     null for empty values when they are allowed.
+ */
 TimeField.prototype.toJavaScript = function(value) {
   if (contains(EMPTY_VALUES, value)) {
     return null;
@@ -3280,41 +3317,42 @@ TimeField.prototype.toJavaScript = function(value) {
   if (value instanceof Date) {
     return new Date(1900, 0, 1, value.getHours(), value.getMinutes(), value.getSeconds());
   }
-  for (var i = 0, l = this.inputFormats.length; i < l; i++) {
-    try {
-      var t = time.strptime(value, this.inputFormats[i]);
-      return new Date(1900, 0, 1, t[3], t[4], t[5]);
-    }
-    catch (e) {
-      continue;
-    }
-  }
-  throw ValidationError(this.errorMessages.invalid);
+  return BaseTemporalField.prototype.toJavaScript.call(this, value);
+};
+
+/**
+ * Creates a Date representing a time from the given input if it's valid based
+ * on the format.
+ * @param {String} value
+ * @param {String} format
+ * @return {Date}
+ */
+TimeField.prototype.strpdate = function(value, format) {
+  var t = time.strptime(value, format);
+  return new Date(1900, 0, 1, t[3], t[4], t[5]);
 };
 
 /**
  * Validates that its input is a date/time.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Field}.
- * @config {Array} [inputFormats] a list of {@link time.strptime} input formats
- *                                which are considered valid - if not provided,
- *                                DEFAULT_TIME_INPUT_FORMATS will be used.
  * @constructor
+ * @extends {BaseTemporalField}
  */
 function DateTimeField(kwargs) {
   if (!(this instanceof Field)) return new DateTimeField(kwargs);
-  kwargs = extend({ inputFormats: null }, kwargs || {});
-  Field.call(this, kwargs);
-  this.inputFormats = kwargs.inputFormats || DEFAULT_DATETIME_INPUT_FORMATS;
+  BaseTemporalField.call(this, kwargs);
 }
-inheritFrom(DateTimeField, Field);
+inheritFrom(DateTimeField, BaseTemporalField);
 DateTimeField.prototype.widget = DateTimeInput;
+DateTimeField.prototype.inputFormats = DEFAULT_DATETIME_INPUT_FORMATS;
 DateTimeField.prototype.defaultErrorMessages =
     extend({}, DateTimeField.prototype.defaultErrorMessages, {
       invalid: 'Enter a valid date/time.'
     });
 
+/**
+ * @param {String|Date|Array.<Date>}
+ * @return {?Date}
+ */
 DateTimeField.prototype.toJavaScript = function(value) {
   if (contains(EMPTY_VALUES, value)) {
     return null;
@@ -3334,15 +3372,7 @@ DateTimeField.prototype.toJavaScript = function(value) {
     }
     value = value.join(' ');
   }
-  for (var i = 0, l = this.inputFormats.length; i < l; i++) {
-    try {
-      return time.strpdate(value, this.inputFormats[i]);
-    }
-    catch (e) {
-      continue;
-    }
-  }
-  throw ValidationError(this.errorMessages.invalid);
+  return BaseTemporalField.prototype.toJavaScript.call(this, value);
 };
 
 /**
@@ -3395,12 +3425,15 @@ EmailField.prototype.clean = function(value) {
  *
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Field}.
+ * @config {Boolean} [allowEmptyFile] <code>true</code> if empty files are
+ *                                    allowed = defaults to <code>false</code>.
  * @constructor
  */
 function FileField(kwargs) {
   if (!(this instanceof Field)) return new FileField(kwargs);
-  kwargs = extend({maxLength: null}, kwargs);
+  kwargs = extend({maxLength: null, allowEmptyFile: false}, kwargs);
   this.maxLength = kwargs.maxLength;
+  this.allowEmptyFile = kwargs.allowEmptyFile;
   delete kwargs.maxLength;
   Field.call(this, kwargs);
 }
@@ -3436,7 +3469,7 @@ FileField.prototype.toJavaScript = function(data, initial) {
   if (!fileName) {
     throw ValidationError(this.errorMessages.invalid);
   }
-  if (!fileSize) {
+  if (!this.allowEmptyFile && !fileSize) {
     throw ValidationError(this.errorMessages.empty);
   }
   return data;
@@ -3578,11 +3611,11 @@ inheritFrom(BooleanField, Field);
 BooleanField.prototype.widget = CheckboxInput;
 
 BooleanField.prototype.toJavaScript = function(value) {
-  // Explicitly check for the strings 'False' or 'false', which is what a
-  // hidden field will submit for false. Also check for '0', since this is
-  // what RadioSelect will provide. Because Boolean('anything') == true, we
-  // don't need to handle that explicitly.
-  if (value == 'False' || value == 'false' || value == '0') {
+  // Explicitly check for a 'false' string, which is what a hidden field will
+  // submit for false. Also check for '0', since this is what RadioSelect will
+  // provide. Because Boolean('anything') == true, we don't need to handle that
+  // explicitly.
+  if (isString(value) && (value.toLowerCase() == 'false' || value == '0')) {
     value = false;
   }
   else {
@@ -5215,12 +5248,6 @@ BaseFormSet.prototype = {
       prefix: this.addPrefix('__prefix__'),
       emptyPermitted: true
     };
-
-    if (this.isBound) {
-      defaults['data'] = this.data;
-      defaults['files'] = this.files;
-    }
-
     var formKwargs = extend(defaults, kwargs || {});
     var form = new this.form(formKwargs);
     this.addFields(form, null);
@@ -5683,127 +5710,125 @@ function allValid(formsets) {
 
 // Newforms API
 var forms = {
-    version: '0.0.2',
-    // util.js utilities end users may want to make use of
-    callValidator: callValidator,
-    ErrorObject: ErrorObject,
-    ErrorList: ErrorList,
-    formData: formData,
-    inheritFrom: inheritFrom,
-    ValidationError: ValidationError,
-    // util.js and other utilities used when implementing newforms
-    util: {
-        contains: contains,
-        copy: copy,
-        createLookup: createLookup,
-        extend: extend,
-        format: format,
-        getDefault: getDefault,
-        isArray: isArray,
-        isCallable: isCallable,
-        isFunction: isFunction,
-        isNumber: isNumber,
-        isObject: isObject,
-        isString: isString,
-        itemsToObject: itemsToObject,
-        objectItems: objectItems,
-        prettyName: prettyName,
-        strip: strip,
-        time: time,
-        urlparse: urlparse
-    },
-    // validators.js
-    EMPTY_VALUES: EMPTY_VALUES,
-    URL_VALIDATOR_USER_AGENT: URL_VALIDATOR_USER_AGENT,
-    RegexValidator: RegexValidator,
-    URLValidator: URLValidator,
-    EmailValidator: EmailValidator,
-    validateEmail: validateEmail,
-    validateSlug: validateSlug,
-    validateIPV4Address: validateIPV4Address,
-    validateCommaSeparatedIntegerList: validateCommaSeparatedIntegerList,
-    BaseValidator: BaseValidator,
-    MaxValueValidator: MaxValueValidator,
-    MinValueValidator: MinValueValidator,
-    MaxLengthValidator: MaxLengthValidator,
-    MinLengthValidator: MinLengthValidator,
-    // widgets.js
-    Widget: Widget,
-    Input: Input,
-    TextInput: TextInput,
-    PasswordInput: PasswordInput,
-    HiddenInput: HiddenInput,
-    MultipleHiddenInput: MultipleHiddenInput,
-    FileInput: FileInput,
-    ClearableFileInput: ClearableFileInput,
-    Textarea: Textarea,
-    DateInput: DateInput,
-    DateTimeInput: DateTimeInput,
-    TimeInput: TimeInput,
-    CheckboxInput: CheckboxInput,
-    Select: Select,
-    NullBooleanSelect: NullBooleanSelect,
-    SelectMultiple: SelectMultiple,
-    RadioInput: RadioInput,
-    RadioFieldRenderer: RadioFieldRenderer,
-    RadioSelect: RadioSelect,
-    CheckboxSelectMultiple: CheckboxSelectMultiple,
-    MultiWidget: MultiWidget,
-    SplitDateTimeWidget: SplitDateTimeWidget,
-    SplitHiddenDateTimeWidget: SplitHiddenDateTimeWidget,
-    // fields.js
-    DEFAULT_DATE_INPUT_FORMATS: DEFAULT_DATE_INPUT_FORMATS,
-    DEFAULT_TIME_INPUT_FORMATS: DEFAULT_TIME_INPUT_FORMATS,
-    DEFAULT_DATETIME_INPUT_FORMATS: DEFAULT_DATETIME_INPUT_FORMATS,
-    Field: Field,
-    CharField: CharField,
-    IntegerField: IntegerField,
-    FloatField: FloatField,
-    DecimalField: DecimalField,
-    DateField: DateField,
-    TimeField: TimeField,
-    DateTimeField: DateTimeField,
-    RegexField: RegexField,
-    EmailField: EmailField,
-    FileField: FileField,
-    ImageField: ImageField,
-    URLField: URLField,
-    BooleanField: BooleanField,
-    NullBooleanField: NullBooleanField,
-    ChoiceField: ChoiceField,
-    TypedChoiceField: TypedChoiceField,
-    MultipleChoiceField: MultipleChoiceField,
-    TypedMultipleChoiceField: TypedMultipleChoiceField,
-    ComboField: ComboField,
-    MultiValueField: MultiValueField,
-    FilePathField: FilePathField,
-    SplitDateTimeField: SplitDateTimeField,
-    IPAddressField: IPAddressField,
-    SlugField: SlugField,
-    // forms.js
-    NON_FIELD_ERRORS: NON_FIELD_ERRORS,
-    BoundField: BoundField,
-    BaseForm: BaseForm,
-    Form: Form,
-    // formsets.js
-    TOTAL_FORM_COUNT: TOTAL_FORM_COUNT,
-    INITIAL_FORM_COUNT: INITIAL_FORM_COUNT,
-    MAX_NUM_FORM_COUNT: MAX_NUM_FORM_COUNT,
-    ORDERING_FIELD_NAME: ORDERING_FIELD_NAME,
-    DELETION_FIELD_NAME: DELETION_FIELD_NAME,
-    ManagementForm: ManagementForm,
-    BaseFormSet: BaseFormSet,
-    FormSet: FormSet,
-    allValid: allValid
+  version: '0.0.3'
+  // util.js utilities end users may want to make use of
+, callValidator: callValidator
+, ErrorObject: ErrorObject
+, ErrorList: ErrorList
+, formData: formData
+, inheritFrom: inheritFrom
+, ValidationError: ValidationError
+  // util.js and other utilities used when implementing newforms
+, util: {
+    contains: contains
+  , copy: copy
+  , createLookup: createLookup
+  , extend: extend
+  , format: format
+  , getDefault: getDefault
+  , isArray: isArray
+  , isCallable: isCallable
+  , isFunction: isFunction
+  , isNumber: isNumber
+  , isObject: isObject
+  , isString: isString
+  , itemsToObject: itemsToObject
+  , objectItems: objectItems
+  , prettyName: prettyName
+  , strip: strip
+  , time: time
+  , urlparse: urlparse
+  }
+  // validators.js
+, EMPTY_VALUES: EMPTY_VALUES
+, URL_VALIDATOR_USER_AGENT: URL_VALIDATOR_USER_AGENT
+, RegexValidator: RegexValidator
+, URLValidator: URLValidator
+, EmailValidator: EmailValidator
+, validateEmail: validateEmail
+, validateSlug: validateSlug
+, validateIPV4Address: validateIPV4Address
+, validateCommaSeparatedIntegerList: validateCommaSeparatedIntegerList
+, BaseValidator: BaseValidator
+, MaxValueValidator: MaxValueValidator
+, MinValueValidator: MinValueValidator
+, MaxLengthValidator: MaxLengthValidator
+, MinLengthValidator: MinLengthValidator
+  // widgets.js
+, Widget: Widget
+, Input: Input
+, TextInput: TextInput
+, PasswordInput: PasswordInput
+, HiddenInput: HiddenInput
+, MultipleHiddenInput: MultipleHiddenInput
+, FileInput: FileInput
+, ClearableFileInput: ClearableFileInput
+, Textarea: Textarea
+, DateInput: DateInput
+, DateTimeInput: DateTimeInput
+, TimeInput: TimeInput
+, CheckboxInput: CheckboxInput
+, Select: Select
+, NullBooleanSelect: NullBooleanSelect
+, SelectMultiple: SelectMultiple
+, RadioInput: RadioInput
+, RadioFieldRenderer: RadioFieldRenderer
+, RadioSelect: RadioSelect
+, CheckboxSelectMultiple: CheckboxSelectMultiple
+, MultiWidget: MultiWidget
+, SplitDateTimeWidget: SplitDateTimeWidget
+, SplitHiddenDateTimeWidget: SplitHiddenDateTimeWidget
+  // fields.js
+, DEFAULT_DATE_INPUT_FORMATS: DEFAULT_DATE_INPUT_FORMATS
+, DEFAULT_TIME_INPUT_FORMATS: DEFAULT_TIME_INPUT_FORMATS
+, DEFAULT_DATETIME_INPUT_FORMATS: DEFAULT_DATETIME_INPUT_FORMATS
+, Field: Field
+, CharField: CharField
+, IntegerField: IntegerField
+, FloatField: FloatField
+, DecimalField: DecimalField
+, DateField: DateField
+, TimeField: TimeField
+, DateTimeField: DateTimeField
+, RegexField: RegexField
+, EmailField: EmailField
+, FileField: FileField
+, ImageField: ImageField
+, URLField: URLField
+, BooleanField: BooleanField
+, NullBooleanField: NullBooleanField
+, ChoiceField: ChoiceField
+, TypedChoiceField: TypedChoiceField
+, MultipleChoiceField: MultipleChoiceField
+, TypedMultipleChoiceField: TypedMultipleChoiceField
+, ComboField: ComboField
+, MultiValueField: MultiValueField
+, FilePathField: FilePathField
+, SplitDateTimeField: SplitDateTimeField
+, IPAddressField: IPAddressField
+, SlugField: SlugField
+  // forms.js
+, NON_FIELD_ERRORS: NON_FIELD_ERRORS
+, BoundField: BoundField
+, BaseForm: BaseForm
+, Form: Form
+  // formsets.js
+, TOTAL_FORM_COUNT: TOTAL_FORM_COUNT
+, INITIAL_FORM_COUNT: INITIAL_FORM_COUNT
+, MAX_NUM_FORM_COUNT: MAX_NUM_FORM_COUNT
+, ORDERING_FIELD_NAME: ORDERING_FIELD_NAME
+, DELETION_FIELD_NAME: DELETION_FIELD_NAME
+, ManagementForm: ManagementForm
+, BaseFormSet: BaseFormSet
+, FormSet: FormSet
+, allValid: allValid
 };
 
 // Expose newforms to the outside world
-if (modules)
-{
-    extend(module.exports, forms);
+if (modules) {
+  extend(module.exports, forms);
 }
-else
-{
-    window.forms = forms;
+else {
+  __global__.forms = forms;
 }
 })(this);

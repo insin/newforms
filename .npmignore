@@ -1,0 +1,12 @@
+.git*
+.project
+demo.*
+newforms.min.js
+TODO.rst
+.settings/
+build/
+dist/
+docs/
+node_modules/
+src/
+tests/
