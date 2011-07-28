@@ -22,7 +22,7 @@ test("getLocale", function()
 
 test("strptime", function()
 {
-    expect(58);
+    expect(60);
 
     // Default date formats from django.newforms.fields
     var expected = [2006, 10, 25, 0, 0, 0, 0, 1, -1].join(",");
@@ -37,6 +37,10 @@ test("strptime", function()
     equals(time.strptime("October 25, 2006", "%B %d, %Y").join(","), expected);
     equals(time.strptime("25 October 2006", "%d %B %Y").join(","), expected);
     equals(time.strptime("25 October, 2006", "%d %B, %Y").join(","), expected);
+
+    // Spaces in patterns match multiple spaces in input
+    equals(time.strptime("Oct    25    2006", "%b %d %Y").join(","), expected)
+    equals(time.strptime("25   October,    2006", "%d %B, %Y").join(","), expected);
 
     // Default time formats from django.newforms.fields
     equals(time.strptime("14:30:59", "%H:%M:%S").join(","),

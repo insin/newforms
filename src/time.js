@@ -170,7 +170,12 @@ TimeParser.prototype.compilePattern = function() {
   for (var i = 0, l = format.length; i < l; i++) {
     c = format.charAt(i);
     if (c != '%') {
-      pattern.push(c);
+      if (c === ' ') {
+        pattern.push(' +');
+      }
+      else {
+        pattern.push(c);
+      }
       continue;
     }
 
