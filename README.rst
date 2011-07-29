@@ -25,10 +25,9 @@ Node.js::
 
 Akshell:
 
-* Add the following to your app's ``manifest.json`` (currently a version
-  behind)::
+* Add the following to your app's ``manifest.json``::
 
-     "insin/newforms:0.0.2"
+     "insin/newforms:0.0.3"
 
 Browser:
 
