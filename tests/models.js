@@ -38,9 +38,9 @@ function NotFoundError() {}
 
 // Data store
 var db = [
-  new Thing({id: 1, name: 'Thing 1'})
-, new Thing({id: 2, name: 'Thing 2'})
-, new Thing({id: 3, name: 'Thing 3'})
+  new Thing({id: 1, name: 'Thing 1', what: 5})
+, new Thing({id: 2, name: 'Thing 2', what: 10})
+, new Thing({id: 3, name: 'Thing 3', what: 15})
 ];
 
 // Let newforms know what our mock model interface looks like
@@ -62,7 +62,7 @@ var ModelTestForm = forms.Form({
 });
 
 test('ModelChoiceField', function() {
-  expect(11);
+  expect(16);
   var form = ModelTestForm();
   equal(''+form.boundField('thing'),
 '<select name="thing" id="id_thing">\n' +
@@ -85,6 +85,31 @@ test('ModelChoiceField', function() {
   strictEqual(f.clean(1), db[0]);
   strictEqual(f.clean("1"), db[0]);
   cleanErrorEqual(f, "Select a valid choice. That choice is not one of the available choices.", "4");
+
+  // The model interface can be configured per ModelChoiceField
+  var notFound = {};
+  var testInterface = {
+    throwsIfNotFound: false
+  , notFoundValue: notFound
+  , prepareValue: function(obj) {
+      return obj.what;
+    }
+  , findById: function(modelQuery, what) {
+      for (var i = 0, l = db.length, o = db[i]; i < l; i++) {
+        if (o.id == what / 5) {
+          return o;
+        }
+      }
+      return notFound;
+    }
+  };
+
+  f = forms.ModelChoiceField(ThingQuery(), {modelInterface: testInterface});
+  cleanErrorEqual(f, "This field is required.", "");
+  cleanErrorEqual(f, "This field is required.", null);
+  strictEqual(f.clean(5), db[0]);
+  strictEqual(f.clean("5"), db[0]);
+  cleanErrorEqual(f, "Select a valid choice. That choice is not one of the available choices.", "20");
 });
 
 })();

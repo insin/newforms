@@ -1,18 +1,22 @@
 /**
- * A means of hooking newforms up with inforation about your model layer.
+ * A means of hooking newforms up with information about your model layer.
  */
 var ModelInterface = {
   /**
-   * Set to true if an exception is thrown when a record can't be found.
-   * Otherwise, newforms will assume a falsy value means not found.
+   * Set to true if an exception is thrown when a model can't be found.
    */
   throwsIfNotFound: true
 
   /**
-   * If not null, any errors thrown from a lookup which do not have this
-   * constructor will be rethrown.
+   * Constructor of error thrown when a model can't be found. Any exceptions
+   * which do not have this constructor will be rethrown.
    */
-, notFoundErrorConstructor: null
+, notFoundErrorConstructor: Error
+
+  /**
+   * Value returned to indicate not found, instead of throwing an exception.
+   */
+, notFoundValue: null
 
   /**
    * Given a model instance, should return the id which will be used to search
@@ -86,8 +90,9 @@ ModelQueryIterator.prototype.choice = function(obj) {
  */
 function ModelChoiceField(modelQuery, kwargs) {
   if (!(this instanceof Field)) return new ModelChoiceField(modelQuery, kwargs);
-  kwargs = forms.util.extend({
-    required: true, initial: null, cacheChoices: false, emptyLabel: '---------'
+  kwargs = extend({
+    required: true, initial: null, cacheChoices: false, emptyLabel: '---------',
+    modelInterface: ModelInterface
   }, kwargs || {});
   if (kwargs.required === true && kwargs.initial !== null) {
     this.emptyLabel = null;
@@ -97,6 +102,7 @@ function ModelChoiceField(modelQuery, kwargs) {
   }
   this.emptyLabel = kwargs.emptyLabel;
   this.cacheChoices = kwargs.cacheChoices;
+  this.modelInterface = kwargs.modelInterface;
 
   // We don't need the ChoiceField constructor, as we've already handled setting
   // of choices.
@@ -133,7 +139,7 @@ ModelChoiceField.prototype.getChoices = function() {
 };
 
 ModelChoiceField.prototype.prepareValue = function(obj) {
-  var value = ModelInterface.prepareValue(obj);
+  var value = this.modelInterface.prepareValue(obj);
   if (value == null) {
     value = Field.prototype.prepareValue.call(this, obj);
   }
@@ -151,21 +157,21 @@ ModelChoiceField.prototype.toJavaScript = function(value) {
   if (contains(EMPTY_VALUES, value)) {
     return null;
   }
-  if (ModelInterface.throwsIfNotFound) {
+  if (this.modelInterface.throwsIfNotFound) {
     try {
-      value = ModelInterface.findById(value)
+      value = this.modelInterface.findById(this.modelQuery, value);
     }
     catch (e) {
-      if (ModelInterface.notFoundErrorConstructor !== null &&
-          !(e instanceof ModelInterface.notFoundErrorConstructor)) {
+      if (this.modelInterface.notFoundErrorConstructor !== null &&
+          !(e instanceof this.modelInterface.notFoundErrorConstructor)) {
         throw e;
       }
       throw new ValidationError(this.errorMessages.invalidChoice);
     }
   }
   else {
-    value = ModelInterface.findById(value);
-    if (!value) {
+    value = this.modelInterface.findById(this.modelQuery, value);
+    if (value === this.modelInterface.notFoundValue) {
       throw new ValidationError(this.errorMessages.invalidChoice);
     }
   }
