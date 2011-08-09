@@ -24,6 +24,10 @@ function isCallable(o) {
   return (isFunction(o) || isFunction(o.__call__));
 }
 
+/**
+ * Calls a validator, which may be a function or an objects with a
+ * __call__ method, with the given value.
+ */
 function callValidator(v, value) {
   if (isFunction(v)) {
     v(value);
@@ -31,6 +35,23 @@ function callValidator(v, value) {
   else if (isFunction(v.__call__)) {
     v.__call__(value);
   }
+}
+
+/**
+ * Allows an Array. an object with an __iter__ method or a function which
+ * returns one be used when ultimately expecting an Array.
+ */
+function iterate(o) {
+  if (isArray(o)) {
+    return o;
+  }
+  if (isFunction(o)) {
+    o = o();
+  }
+  if (o != null && isFunction(o.__iter__)) {
+    o = o.__iter__();
+  }
+  return o || [];
 }
 
 /**

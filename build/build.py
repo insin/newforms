@@ -4,7 +4,8 @@ VERSION = '0.0.3'
 TIME_SOURCE_FILES = ('../src/time.js',)
 FORMS_SOURCE_FILES = ('../src/util.js', '../src/validators.js',
                       '../src/widgets.js', '../src/fields.js',
-                      '../src/forms.js', '../src/formsets.js')
+                      '../src/models.js', '../src/forms.js',
+                      '../src/formsets.js')
 
 DIRNAME = os.path.abspath(os.path.dirname(__file__))
 def jspath(p):

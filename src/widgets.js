@@ -579,7 +579,7 @@ Select.prototype.renderOptions = function(choices, selectedValues) {
   }
 
   var options = []
-    , finalChoices = this.choices.concat(choices || []);
+    , finalChoices = iterate(this.choices).concat(choices || []);
   for (var i = 0, l = finalChoices.length; i < l; i++) {
     if (isArray(finalChoices[i][1])) {
       var optgroupOptions = []
@@ -891,7 +891,7 @@ RadioSelect.prototype.getRenderer = function(name, value, kwargs) {
   kwargs = extend({attrs: null, choices: []}, kwargs || {});
   value = (value === null ? '' : ''+value);
   var finalAttrs = this.buildAttrs(kwargs.attrs)
-    , choices = this.choices.concat(kwargs.choices || []);
+    , choices = iterate(this.choices).concat(kwargs.choices || []);
   return new this.renderer(name, value, finalAttrs, choices);
 };
 
@@ -938,7 +938,7 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, kwargs)
         return (typeof selectedValuesLookup[''+value] != 'undefined');
       }
     , items = []
-    , finalChoices = this.choices.concat(kwargs.choices);
+    , finalChoices = iterate(this.choices).concat(kwargs.choices);
   for (var i = 0, l = finalChoices.length; i < l; i++) {
     var optValue = '' + finalChoices[i][0]
       , optLabel = finalChoices[i][1]

@@ -32,6 +32,7 @@ var forms = {
   , isObject: isObject
   , isString: isString
   , itemsToObject: itemsToObject
+  , iterate: iterate
   , objectItems: objectItems
   , prettyName: prettyName
   , strip: strip
@@ -106,6 +107,9 @@ var forms = {
 , SplitDateTimeField: SplitDateTimeField
 , IPAddressField: IPAddressField
 , SlugField: SlugField
+  // models.js
+, ModelInterface: ModelInterface
+, ModelChoiceField: ModelChoiceField
   // forms.js
 , NON_FIELD_ERRORS: NON_FIELD_ERRORS
 , BoundField: BoundField
