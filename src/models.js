@@ -139,7 +139,10 @@ ModelChoiceField.prototype.getChoices = function() {
 };
 
 ModelChoiceField.prototype.prepareValue = function(obj) {
-  var value = this.modelInterface.prepareValue(obj);
+  var value = null
+  if (obj != null) {
+    value = this.modelInterface.prepareValue(obj);
+  }
   if (value == null) {
     value = Field.prototype.prepareValue.call(this, obj);
   }
