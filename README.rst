@@ -6,9 +6,12 @@ A JavaScript port of `Django`_'s `form-handling library`_, which runs in
 browsers (tested in the latest Firefox, Chrome and Opera browsers... and
 IE 6-8) and in `Node.js`_ and `Akshell`_.
 
+- `Admin CRUD example`_ - use of newforms and ``ModelChoiceField`` in `Fragile`_, a fledgling single-page app
 - `Demo page`_
 - `Unit tests`_
 
+.. _`Admin CRUD example`: http://jonathan.buchanan153.users.btopenworld.com/fragile/fragile.html
+.. _`Fragile`: https://github.com/insin/fragile/
 .. _`Django`: http://www.djangoproject.com
 .. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/
 .. _`Demo page`: http://jonathan.buchanan153.users.btopenworld.com/newforms/demo.html
