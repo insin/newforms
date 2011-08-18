@@ -583,6 +583,10 @@ function isCallable(o) {
   return (isFunction(o) || isFunction(o.__call__));
 }
 
+/**
+ * Calls a validator, which may be a function or an objects with a
+ * __call__ method, with the given value.
+ */
 function callValidator(v, value) {
   if (isFunction(v)) {
     v(value);
@@ -590,6 +594,23 @@ function callValidator(v, value) {
   else if (isFunction(v.__call__)) {
     v.__call__(value);
   }
+}
+
+/**
+ * Allows an Array. an object with an __iter__ method or a function which
+ * returns one be used when ultimately expecting an Array.
+ */
+function iterate(o) {
+  if (isArray(o)) {
+    return o;
+  }
+  if (isFunction(o)) {
+    o = o();
+  }
+  if (o != null && isFunction(o.__iter__)) {
+    o = o.__iter__();
+  }
+  return o || [];
 }
 
 /**
@@ -2162,7 +2183,7 @@ Select.prototype.renderOptions = function(choices, selectedValues) {
   }
 
   var options = []
-    , finalChoices = this.choices.concat(choices || []);
+    , finalChoices = iterate(this.choices).concat(choices || []);
   for (var i = 0, l = finalChoices.length; i < l; i++) {
     if (isArray(finalChoices[i][1])) {
       var optgroupOptions = []
@@ -2474,7 +2495,7 @@ RadioSelect.prototype.getRenderer = function(name, value, kwargs) {
   kwargs = extend({attrs: null, choices: []}, kwargs || {});
   value = (value === null ? '' : ''+value);
   var finalAttrs = this.buildAttrs(kwargs.attrs)
-    , choices = this.choices.concat(kwargs.choices || []);
+    , choices = iterate(this.choices).concat(kwargs.choices || []);
   return new this.renderer(name, value, finalAttrs, choices);
 };
 
@@ -2521,7 +2542,7 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, kwargs)
         return (typeof selectedValuesLookup[''+value] != 'undefined');
       }
     , items = []
-    , finalChoices = this.choices.concat(kwargs.choices);
+    , finalChoices = iterate(this.choices).concat(kwargs.choices);
   for (var i = 0, l = finalChoices.length; i < l; i++) {
     var optValue = '' + finalChoices[i][0]
       , optLabel = finalChoices[i][1]
@@ -4182,6 +4203,193 @@ SlugField.prototype.defaultErrorMessages =
       invalid: "Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."
     });
 
+/**
+ * A means of hooking newforms up with information about your model layer.
+ */
+var ModelInterface = {
+  /**
+   * Set to true if an exception is thrown when a model can't be found.
+   */
+  throwsIfNotFound: true
+
+  /**
+   * Constructor of error thrown when a model can't be found. Any exceptions
+   * which do not have this constructor will be rethrown.
+   */
+, notFoundErrorConstructor: Error
+
+  /**
+   * Value returned to indicate not found, instead of throwing an exception.
+   */
+, notFoundValue: null
+
+  /**
+   * Given a model instance, should return the id which will be used to search
+   * for valid choices on submission.
+   */
+, prepareValue: function(obj) {
+    throw new Error('You must implement the forms.ModelInterface methods to use Model fields');
+  }
+
+  /**
+   * Finds a model instance by id, given the model query which was passed to
+   * newforms and the id of the selected model.
+   */
+, findById: function(modelQuery, id) {
+    throw new Error('You must implement the forms.ModelInterface methods to use Model fields');
+  }
+};
+
+function ModelQueryIterator(field) {
+  this.field = field;
+  this.modelQuery = field.modelQuery;
+}
+
+ModelQueryIterator.prototype.__iter__ = function() {
+  var choices = [];
+  if (this.field.emptyLabel !== null) {
+    choices.push(['', this.field.emptyLabel]);
+  }
+  if (this.field.cacheChoices) {
+    if (this.field.choiceCache === null) {
+      this.field.choiceCache = choices.concat(this.modelChoices());
+    }
+    return this.field.choiceCache;
+  }
+  else {
+    return choices.concat(this.modelChoices());
+  }
+};
+
+/**
+ * Calls the model query function and creates choices from its results.
+ */
+ModelQueryIterator.prototype.modelChoices = function() {
+  var instances = iterate(this.modelQuery)
+    , choices = [];
+  for (var i = 0, l = instances.length; i < l; i++) {
+    choices.push(this.choice(instances[i]));
+  }
+  return choices;
+};
+
+/**
+ * Creates a choice from a single model instance.
+ */
+ModelQueryIterator.prototype.choice = function(obj) {
+  return [this.field.prepareValue(obj), this.field.labelFromInstance(obj)];
+};
+
+/**
+ * A ChoiceField which retrieves its choices as objects returned by a given
+ * function.
+ * @param {Function} modelQuery an object which performs a query for model
+ *     instances - this is expected to have an __iter__ method which returns
+ *     a list of instances.
+ * @param {Object} kwargs
+ * @param {boolean} kwargs.cacheChoices if true, the model query function will
+ *     only be called the first time it is needed, otherwise it will be called
+ *     every time the field is rendered.
+ * @constructor
+ * @extends {ChoiceField}
+ */
+function ModelChoiceField(modelQuery, kwargs) {
+  if (!(this instanceof Field)) return new ModelChoiceField(modelQuery, kwargs);
+  kwargs = extend({
+    required: true, initial: null, cacheChoices: false, emptyLabel: '---------',
+    modelInterface: ModelInterface
+  }, kwargs || {});
+  if (kwargs.required === true && kwargs.initial !== null) {
+    this.emptyLabel = null;
+  }
+  else {
+    this.emptyLabel = kwargs.emptyLabel;
+  }
+  this.emptyLabel = kwargs.emptyLabel;
+  this.cacheChoices = kwargs.cacheChoices;
+  this.modelInterface = kwargs.modelInterface;
+
+  // We don't need the ChoiceField constructor, as we've already handled setting
+  // of choices.
+  Field.call(this, kwargs);
+
+  this.setModelQuery(modelQuery);
+  this.choiceCache = null;
+}
+inheritFrom(ModelChoiceField, ChoiceField);
+ModelChoiceField.prototype.defaultErrorMessages =
+    extend({}, ModelChoiceField.prototype.defaultErrorMessages, {
+      invalidChoice: 'Select a valid choice. That choice is not one of the available choices.'
+    });
+
+ModelChoiceField.prototype.getModelQuery = function() {
+  return this.modelQuery;
+};
+
+ModelChoiceField.prototype.setModelQuery = function(modelQuery) {
+  this.modelQuery = modelQuery;
+  this.widget.choices = this.getChoices();
+};
+
+ModelChoiceField.prototype.getChoices = function() {
+  // If this._choices is set, then somebody must have manually set them with
+  // the inherited setChoices method.
+  if (typeof this._choices != 'undefined') {
+    return this._choices;
+  }
+
+  // Otherwise, return an object which can be used with iterate() to get
+  // choices.
+  return new ModelQueryIterator(this);
+};
+
+ModelChoiceField.prototype.prepareValue = function(obj) {
+  var value = null
+  if (obj != null) {
+    value = this.modelInterface.prepareValue(obj);
+  }
+  if (value == null) {
+    value = Field.prototype.prepareValue.call(this, obj);
+  }
+  return value;
+};
+
+/**
+ * Creates a choice label from a model instance.
+ */
+ModelChoiceField.prototype.labelFromInstance = function(obj) {
+  return ''+obj;
+};
+
+ModelChoiceField.prototype.toJavaScript = function(value) {
+  if (contains(EMPTY_VALUES, value)) {
+    return null;
+  }
+  if (this.modelInterface.throwsIfNotFound) {
+    try {
+      value = this.modelInterface.findById(this.modelQuery, value);
+    }
+    catch (e) {
+      if (this.modelInterface.notFoundErrorConstructor !== null &&
+          !(e instanceof this.modelInterface.notFoundErrorConstructor)) {
+        throw e;
+      }
+      throw new ValidationError(this.errorMessages.invalidChoice);
+    }
+  }
+  else {
+    value = this.modelInterface.findById(this.modelQuery, value);
+    if (value === this.modelInterface.notFoundValue) {
+      throw new ValidationError(this.errorMessages.invalidChoice);
+    }
+  }
+  return value;
+};
+
+ModelChoiceField.prototype.validate = function(value) {
+  return Field.prototype.validate.call(this, value);
+};
+
 /** Property under which non-field-specific errors are stored. */
 var NON_FIELD_ERRORS = '__all__';
 
@@ -5147,8 +5355,8 @@ function Form(kwargs) {
 // Special field names
 var TOTAL_FORM_COUNT = 'TOTAL_FORMS'
   , INITIAL_FORM_COUNT = 'INITIAL_FORMS'
-    MAX_NUM_FORM_COUNT = 'MAX_NUM_FORMS'
-    ORDERING_FIELD_NAME = 'ORDER'
+  , MAX_NUM_FORM_COUNT = 'MAX_NUM_FORMS'
+  , ORDERING_FIELD_NAME = 'ORDER'
   , DELETION_FIELD_NAME = 'DELETE';
 
 /**
@@ -5710,7 +5918,7 @@ function allValid(formsets) {
 
 // Newforms API
 var forms = {
-  version: '0.0.3'
+  version: '0.0.4alpha1'
   // util.js utilities end users may want to make use of
 , callValidator: callValidator
 , ErrorObject: ErrorObject
@@ -5733,6 +5941,7 @@ var forms = {
   , isObject: isObject
   , isString: isString
   , itemsToObject: itemsToObject
+  , iterate: iterate
   , objectItems: objectItems
   , prettyName: prettyName
   , strip: strip
@@ -5807,6 +6016,9 @@ var forms = {
 , SplitDateTimeField: SplitDateTimeField
 , IPAddressField: IPAddressField
 , SlugField: SlugField
+  // models.js
+, ModelInterface: ModelInterface
+, ModelChoiceField: ModelChoiceField
   // forms.js
 , NON_FIELD_ERRORS: NON_FIELD_ERRORS
 , BoundField: BoundField

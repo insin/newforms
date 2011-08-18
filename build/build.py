@@ -1,6 +1,6 @@
 import os
 
-VERSION = '0.0.4-pre'
+VERSION = '0.0.4alpha1'
 TIME_SOURCE_FILES = ('../src/time.js',)
 FORMS_SOURCE_FILES = ('../src/util.js', '../src/validators.js',
                       '../src/widgets.js', '../src/fields.js',
