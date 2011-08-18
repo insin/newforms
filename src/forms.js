@@ -533,7 +533,7 @@ BaseForm.prototype._htmlOutput = function(normalRow, errorRow, errorsOnSeparateR
     return rows;
   }
   else {
-    return rows.join('\n');
+    return DOMBuilder.html.markSafe(rows.join('\n'));
   }
 };
 
