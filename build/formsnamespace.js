@@ -1,13 +1,12 @@
-(function(__global__, undefined) {
+!function(__global__, server) {
 
-// Pull in dependencies appropriately depending on the execution environment
-var modules = !!(typeof module !== 'undefined' && module.exports)
-  , DOMBuilder = modules ? require('DOMBuilder') : __global__.DOMBuilder;
+// Pull in external dependencies based on the execution environment
+var DOMBuilder = (server ? require('DOMBuilder') : __global__.DOMBuilder);
 
 %(timecode)s
 %(formscode)s
 
-// Newforms API
+// API
 var forms = {
   version: '%(version)s'
   // util.js utilities end users may want to make use of
@@ -128,10 +127,11 @@ var forms = {
 };
 
 // Expose newforms to the outside world
-if (modules) {
+if (server) {
   extend(module.exports, forms);
 }
 else {
   __global__.forms = forms;
 }
-})(this);
+
+}(this, !!(typeof module !== 'undefined' && module.exports));
