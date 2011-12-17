@@ -13,6 +13,9 @@
     "DOMBuilder": ">= 2.0.1"
   },
   "devDependencies": {
-    "qunit": ">= 0.2.8"
+    "qunit": ">= 0.2.9"
+  },
+  "scripts": {
+    "test": "node tests/tests.js"
   }
 }
