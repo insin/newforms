@@ -35,12 +35,40 @@ https://code.djangoproject.com/changeset/16366
 
    GenericIPAddressField for IPv4/IPv6 validation
 
+https://code.djangoproject.com/changeset/16760
+
+   URLField.verifyExists is now deprecated
+
+https://code.djangoproject.com/changeset/16773
+
+   Add FormSet.prototype.hasChanged()
+
+https://code.djangoproject.com/changeset/16848
+
+   Select widget should only allow for one selected option
+
+https://code.djangoproject.com/changeset/17046
+
+   Make field validators list independent per form instance
+
+https://code.djangoproject.com/changeset/17132
+
+   Update integer handling for checkboxes
+
+https://code.djangoproject.com/changeset/17173
+https://code.djangoproject.com/changeset/17175
+
+   Make BoundFields iterable / add subwidgets
+
 Python-to-JavaScript: Missing Pieces
 ====================================
 
 **IDNA Encoder**
-   Needed for validating Unicode URLs. The free implementation (from a
-   StackOverflow answer) which was previously being used didn't work.
+   Needed for validating Unicode URLs.
+
+   https://github.com/bestiejs/punycode.js
+
+**IPv6 Validator**
 
 **Decimal Implementation**
    Is there a good imlementation out there, or is validating strings,
