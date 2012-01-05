@@ -366,6 +366,22 @@ BaseForm.prototype.boundFields = function(test) {
 };
 
 /**
+ * {name -> BoundField} version of boundFields
+ */
+BaseForm.prototype.boundFieldsObj = function(test) {
+  test = test || function() { return true; };
+
+  var fields = {};
+  for (var name in this.fields) {
+    if (this.fields.hasOwnProperty(name) &&
+        test(this.fields[name], name) === true) {
+      fields[name] = BoundField(this, this.fields[name], name);
+    }
+  }
+  return fields;
+};
+
+/**
  * In lieu of __getitem__, creates a {@link BoundField} for the field with the
  * given name.
  *
