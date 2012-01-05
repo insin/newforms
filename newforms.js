@@ -1,8 +1,11 @@
-(function(__global__, undefined) {
+/**
+ * newforms 0.0.4alpha2 - https://github.com/insin/newforms
+ * MIT Licensed
+ */
+!function(__global__, server) {
 
-// Pull in dependencies appropriately depending on the execution environment
-var modules = !!(typeof module !== 'undefined' && module.exports)
-  , DOMBuilder = modules ? require('DOMBuilder') : __global__.DOMBuilder;
+// Pull in external dependencies based on the execution environment
+var DOMBuilder = (server ? require('DOMBuilder') : __global__.DOMBuilder);
 
 var time = (function() {
   /**
@@ -4758,6 +4761,22 @@ BaseForm.prototype.boundFields = function(test) {
 };
 
 /**
+ * {name -> BoundField} version of boundFields
+ */
+BaseForm.prototype.boundFieldsObj = function(test) {
+  test = test || function() { return true; };
+
+  var fields = {};
+  for (var name in this.fields) {
+    if (this.fields.hasOwnProperty(name) &&
+        test(this.fields[name], name) === true) {
+      fields[name] = BoundField(this, this.fields[name], name);
+    }
+  }
+  return fields;
+};
+
+/**
  * In lieu of __getitem__, creates a {@link BoundField} for the field with the
  * given name.
  *
@@ -5916,9 +5935,9 @@ function allValid(formsets) {
 }
 
 
-// Newforms API
+// API
 var forms = {
-  version: '0.0.4alpha1'
+  version: '0.0.4alpha2'
   // util.js utilities end users may want to make use of
 , callValidator: callValidator
 , ErrorObject: ErrorObject
@@ -6037,10 +6056,11 @@ var forms = {
 };
 
 // Expose newforms to the outside world
-if (modules) {
+if (server) {
   extend(module.exports, forms);
 }
 else {
   __global__.forms = forms;
 }
-})(this);
+
+}(this, !!(typeof module !== 'undefined' && module.exports));
