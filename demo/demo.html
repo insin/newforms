@@ -1,9 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <title>Newforms Demo Page</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="Author" content="Jonathan Buchanan">
   <style type="text/css">
   html { margin: 0; padding: 0; }
   body { padding: 1em 5%; font-family: sans-serif; }
@@ -14,29 +12,22 @@
   ul.errorlist li { margin-bottom: 5px; padding-left: 5px; border-radius: 1em; -moz-border-radius: 1em; background-color: #f33; color: #fff; }
   ul.errorlist li:before { content: "\2622"; font-size: 18px; color: #ff0; margin-right: 3px; }
   </style>
-  <!-- Dependencies -->
-  <script type="text/javascript" src="https://github.com/insin/DOMBuilder/raw/master/lib/DOMBuilder.js"></script>
-  <script type="text/javascript" src="https://github.com/insin/DOMBuilder/raw/master/lib/DOMBuilder.dom.js"></script>
   <!-- newforms -->
-  <script type="text/javascript" src="src/util.js"></script>
-  <script type="text/javascript" src="src/time.js"></script>
-  <script type="text/javascript" src="src/validators.js"></script>
-  <script type="text/javascript" src="src/widgets.js"></script>
-  <script type="text/javascript" src="src/fields.js"></script>
-  <script type="text/javascript" src="src/forms.js"></script>
-  <script type="text/javascript" src="src/formsets.js"></script>
-  <script type="text/javascript">
-  var FakeFile = function() { this.url = "#something"; };
-  FakeFile.prototype.toString = function() { return this.url;};
+  <script src="../newforms.js"></script>
+  <script>
+  var DOMBuilder = require('DOMBuilder')
 
-  SOURCE_CHOICES = [
+  var FakeFile = function() { this.url = "#something"; }
+  FakeFile.prototype.toString = function() { return this.url;}
+
+  var SOURCE_CHOICES = [
     ["", "----------"],
     [1, "In a specialist catalogue"],
     [2, "On the internet"],
     [3, "Other"]
-  ];
+  ]
 
-  CAT_SOURCE_CHOICES = [
+  var CAT_SOURCE_CHOICES = [
     ["Physical Locations", [
       [1, "In a specialist catalogue"]
     ]],
@@ -46,17 +37,17 @@
     ["Somewhere Else Entirely", [
       [3, "Other"]
     ]]
-  ];
+  ]
 
-  STUFF_CHOICES = [
+  var STUFF_CHOICES = [
     [1, "Specialist catalogues"],
     [2, "The internet"],
     [3, "The catalogues"],
     [4, "Special internets"],
     [5, "Other"]
-  ];
+  ]
 
-  CAT_STUFF_CHOICES = [
+  var CAT_STUFF_CHOICES = [
     ["Animals", [
       [1, "Cats"],
       [2, "Dogs"]
@@ -65,157 +56,155 @@
       [3, "Pizza"],
       [4, "Bananas"]
     ]]
-  ];
+  ]
 
-  ContactForm = Form({
+  var ContactForm = forms.Form({
     name:
-        CharField({minLength: 1, maxLength: 100, label: "Your name"}),
+        forms.CharField({minLength: 1, maxLength: 100, label: "Your name"}),
     age:
-        IntegerField({minValue: 1, maxValue: 120, label: "Your age"}),
+        forms.IntegerField({minValue: 1, maxValue: 120, label: "Your age"}),
     faveFloat:
-        FloatField({
+        forms.FloatField({
           minValue: 1.5, maxValue: 24.5,
           label: "Your favourite number between 1.5 and 24.5"
         }),
     faveDecimal:
-        DecimalField({
+        forms.DecimalField({
           maxDigits: 4, decimalPlaces: 2,
           label: "Your favourite decimal"
         }),
     phoneNumber:
-        RegexField(/\d{3}-\d{5}/, {
+        forms.RegexField(/\d{3}-\d{5}/, {
           label: "Your phone number (e.g. 555-12345)",
           errorMessages: {
             invalid: "Not a valid phone number"
           }
         }),
     email:
-        EmailField({widget: TextInput({attrs: {maxlength: "200"}}),
+        forms.EmailField({widget: forms.TextInput({attrs: {maxlength: "200"}}),
                     label: "Your email address"}),
     zeeMikrofilm:
-        FileField({required: false, label: "Please upload zee mikrofilm"}),
+        forms.FileField({required: false, label: "Please upload zee mikrofilm"}),
     photo:
-        ImageField({required: false, label: "Photo or it didn't happen"}),
+        forms.ImageField({required: false, label: "Photo or it didn't happen"}),
     website:
-        URLField({
-          widget: TextInput({attrs: {size: "50"}}),
+        forms.URLField({
+          widget: forms.TextInput({attrs: {size: "50"}}),
           label: "Your website URL"
         }),
     faveIPAddress:
-        IPAddressField({label: "Your favourite IP address... you freak"}),
+        forms.IPAddressField({label: "Your favourite IP address... you freak"}),
     body:
-        CharField({widget: Textarea(), label: "Your message"}),
+        forms.CharField({widget: forms.Textarea(), label: "Your message"}),
     source:
-        ChoiceField({
+        forms.ChoiceField({
           choices: SOURCE_CHOICES,
           label: "Where did you hear about us?"
         }),
     catSource:
-        ChoiceField({
+        forms.ChoiceField({
           choices: CAT_SOURCE_CHOICES,
           label: "Where did you hear about us again, with feeling?"
         }),
     moreSource:
-        ChoiceField({
+        forms.ChoiceField({
           choices: SOURCE_CHOICES,
           label: "Where did you hear about us again?",
-          widget: RadioSelect()
+          widget: forms.RadioSelect()
         }),
     stuff:
-        MultipleChoiceField({
+        forms.MultipleChoiceField({
           choices: STUFF_CHOICES, attrs: {size: 5},
           label: "Pick stuff you like"
         }),
     catStuff:
-        MultipleChoiceField({
+        forms.MultipleChoiceField({
           choices: CAT_STUFF_CHOICES,
           label: "Pick more stuff you like"
         }),
     awesome:
-        BooleanField({initial: true, label: "Check here if you are awesome!"}),
+        forms.BooleanField({initial: true, label: "Check here if you are awesome!"}),
     likeMonkeys:
-        NullBooleanField({initial: "2", label: "Do you like monkeys?"}),
+        forms.NullBooleanField({initial: "2", label: "Do you like monkeys?"}),
     intBeginningWith5:
-        ComboField({
-          fields: [RegexField(/^[-+]?5/), IntegerField()],
+        forms.ComboField({
+          fields: [forms.RegexField(/^[-+]?5/), forms.IntegerField()],
           label: "Type an integer begining with 5"
         }),
     birthday:
-        DateField({label: "Your birthday"}),
+        forms.DateField({label: "Your birthday"}),
     wokeUpAt:
-        TimeField({label: "What time did you wake up at today?"}),
+        forms.TimeField({label: "What time did you wake up at today?"}),
     howSoonIsNow:
-        DateTimeField({
+        forms.DateTimeField({
           initial: new Date(),
           label: "What time was it when this page was rendered?"
         }),
     againWithFeeling:
-        SplitDateTimeField({initial: new Date(), label: "Once again"}),
+        forms.SplitDateTimeField({initial: new Date(), label: "Once again"}),
     checkTheBoxes:
-        MultipleChoiceField({
+        forms.MultipleChoiceField({
           choices: STUFF_CHOICES, attrs: {size: 5},
           label: "Check stuff you like",
-          widget: CheckboxSelectMultiple()
+          widget: forms.CheckboxSelectMultiple()
         }),
 
     cleanName: function() {
       if (this.cleanedData.name != "Cheese") {
-        throw ValidationError('Your name must be "Cheese".');
+        throw forms.ValidationError('Your name must be "Cheese".')
       }
-      return this.cleanedData.name;
+      return this.cleanedData.name
     }
-  });
+  })
 
-  ContactFormFormSet = FormSet(ContactForm, {extra: 1, canDelete: true});
+  var ContactFormFormSet = forms.FormSet(ContactForm, {extra: 1, canDelete: true})
 
   var initial = [{
-      name: "Test",
-      email: "test@test.com",
-      body: "Testing\n\nTesting",
-      source: 2,
-      stuff: [1,3],
-      checkTheBoxes: [1,5],
-      zeeMikrofilm: new FakeFile()
-    }];
+    name: "Test"
+  , email: "test@test.com"
+  , body: "Testing\n\nTesting"
+  , source: 2
+  , stuff: [1,3]
+  , checkTheBoxes: [1,5]
+  , zeeMikrofilm: new FakeFile()
+  }]
 
-  var formset = ContactFormFormSet({
+  var formset = new ContactFormFormSet({
     initial: initial
-  });
+  })
 
-  var dom = DOMBuilder.dom;
+  var dom = DOMBuilder.dom
 
-  function refreshFormDisplay()
-  {
-    var form = document.getElementById("demoForm");
-    form.innerHTML = "";
+  function refreshFormDisplay() {
+    var form = document.getElementById("demoForm")
+    form.innerHTML = ""
     form.appendChild(DOMBuilder.fragment(
       // FormSet management form
       formset.managementForm().asP(),
       // Display each form in the FormSet
       DOMBuilder.fragment.map(formset.forms, function(form, loop) {
         return [
-          dom.H2("Contact Form " + (loop.index + 1)),
-          dom.TABLE(dom.TBODY(
+          dom.H2("Contact Form " + (loop.index + 1))
+        , dom.TABLE(dom.TBODY(
             form.asTable()
           ))
-        ];
+        ]
       })
-    ));
+    ))
   }
 
-  function validateFormSet()
-  {
+  function validateFormSet() {
     // For server-side validation, a new formset instance is created for
     // each request - client side validation is yet to be implemented.
-    var data = formData("demoForm");
-    formset = new ContactFormFormSet({data: data, initial: initial});
-    refreshFormDisplay();
+    var data = forms.formData('demoForm')
+    formset = new ContactFormFormSet({data: data, initial: initial})
+    refreshFormDisplay()
   }
 
   window.onload = function() {
-    document.getElementById("validate").onclick = validateFormSet;
-    refreshFormDisplay();
-  };
+    document.getElementById('validate').onclick = validateFormSet
+    refreshFormDisplay()
+  }
   </script>
 </head>
 <body>

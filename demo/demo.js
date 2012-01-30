@@ -1,63 +1,49 @@
-var express = require('express'),
-    jade = require('jade'),
-    forms;
+var express = require('express')
+  , jade = require('jade')
 
-try {
-  forms = require('./newforms');
-}
-catch (e) {
-  try {
-    // Fall back to installed package
-    forms = require('newforms');
-  }
-  catch (e) {
-    console.error('newforms not found - run `python build/build.py` or `npm install newforms`');
-    process.exit(1);
-  }
-}
+var forms = require('../src/newforms')
 
-var app = express.createServer(
-  express.bodyParser()
-);
+var app = express.createServer()
 
-function renderToResponse(response, template, context) {
-  jade.renderFile(template, {locals: context}, function(error, html) {
-    if (error != null) {
-      console.error(error);
-    }
-    response.send(html);
-  });
-}
+app.configure(function() {
+  app.set('view engine', 'jade');
+  app.set('views', __dirname)
+  app.set('view options', {
+    layout: false
+  })
+  app.use(express.bodyParser())
+})
 
 var TestForm = forms.Form({
-  username: forms.CharField(),
-  password: forms.CharField({widget: forms.PasswordInput}),
+  username: forms.CharField()
+, password: forms.CharField({widget: forms.PasswordInput})
 
-  clean: function() {
+, clean: function() {
     if (this.cleanedData.username && this.cleanedData.password &&
         (this.cleanedData.username != 'admin' ||
          this.cleanedData.password != 'secret')) {
-      throw forms.ValidationError('Invalid credentials!');
+      throw forms.ValidationError('Invalid credentials!')
     }
-    return this.cleanedData;
+    return this.cleanedData
   }
-});
+})
 
-app.all('/', function(request, response) {
-  var form, msg = 'Log In';
-  if (request.method == 'POST') {
-    form = TestForm({data: request.body});
+app.all('/', function(req, res) {
+  var form, msg = 'Log In'
+  if (req.method == 'POST') {
+    form = TestForm({data: req.body})
     if (form.isValid()) {
       msg = 'Welcome back'
     }
-  } else {
-    form = TestForm();
   }
-  renderToResponse(response, 'demo.jade', {
-    form: form,
-    msg: msg
-  });
-});
+  else {
+    form = TestForm()
+  }
+  res.render('demo.jade', {
+    form: form
+  , msg: msg
+  })
+})
 
-app.listen(3000);
-console.log('newforms demo running on http://127.0.0.1:3000');
+app.listen(3000)
+console.log('Newforms Demo running on http://127.0.0.1:3000')

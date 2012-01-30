@@ -112,7 +112,7 @@ var prettyName = (function() {
 function formData(form) {
   var data = {}
   if (is.String(form)) {
-    form = document.forms[form] || document.getElementById(form);$
+    form = document.forms[form] || document.getElementById(form)
   }
   if (!form) {
     return data
