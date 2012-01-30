@@ -16,6 +16,7 @@ qunit.run({
          , path.join(__dirname, 'errormessages.js')
          , path.join(__dirname, 'widgets.js')
          , path.join(__dirname, 'extra.js')
+         , path.join(__dirname, 'models.js')
          , path.join(__dirname, 'regressions.js')
          ]
 })
