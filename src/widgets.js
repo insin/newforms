@@ -1,22 +1,28 @@
+var Concur = require('Concur')
+  , DOMBuilder = require('DOMBuilder')
+  , is = require('isomorph/lib/is')
+  , format = require('isomorph/lib/format').formatObj
+  , object = require('isomorph/lib/object')
+  , time = require('isomorph/lib/time')
+
+var util = require('./util')
+
 /**
  * An HTML form widget.
- *
- * A widget handles the rendering of HTML, and the extraction of data from an
- * object that corresponds to the widget.
- *
- * @param {Object} [kwargs] Configuration options.
- * @config {Object} [attrs] HTML attributes for the rendered widget.
  * @constructor
+ * @param {Object=} kwargs
  */
-function Widget(kwargs) {
-  kwargs = extend({attrs: null}, kwargs || {});
-  this.attrs = extend({}, kwargs.attrs || {});
-}
-/** Determines whether this corresponds to an &lt;input type="hidden"&gt;. */
-Widget.prototype.isHidden = false;
-/** Determines whether this widget needs a multipart-encrypted form. */
-Widget.prototype.needsMultipartForm = false;
-Widget.prototype.isRequired = false;
+var Widget = Concur.extend({
+  constructor: function(kwargs) {
+    kwargs = object.extend({attrs: null}, kwargs)
+    this.attrs = object.extend({}, kwargs.attrs)
+  }
+  /** Determines whether this corresponds to an <input type="hidden">. */
+, isHidden: false
+  /** Determines whether this widget needs a multipart-encoded form. */
+, needsMultipartForm: false
+, isRequired: false
+})
 
 /**
  * Returns this Widget rendered as HTML.
@@ -25,16 +31,16 @@ Widget.prototype.isRequired = false;
  * implementations should program defensively.
  */
 Widget.prototype.render = function(value, kwargs) {
-  throw new Error('Widget subclasses must implement a render() method.');
-};
+  throw new Error('Constructors extending must implement a render() method.')
+}
 
 /**
  * Helper function for building an attribute dictionary.
  */
 Widget.prototype.buildAttrs = function(extraAttrs, kwargs) {
-  var attrs = extend({}, this.attrs, kwargs || {}, extraAttrs || {});
-  return attrs;
-};
+  var attrs = object.extend({}, this.attrs, kwargs, extraAttrs)
+  return attrs
+}
 
 /**
  * Retrieves a value for this widget from the given data.
@@ -47,8 +53,8 @@ Widget.prototype.buildAttrs = function(extraAttrs, kwargs) {
  *         provided.
  */
 Widget.prototype.valueFromData = function(data, files, name) {
-  return getDefault(data, name, null);
-};
+  return object.get(data, name, null)
+}
 
 /**
  * Determines if data has changed from initial.
@@ -57,10 +63,10 @@ Widget.prototype._hasChanged = function(initial, data) {
   // For purposes of seeing whether something has changed, null is the same
   // as an empty string, if the data or inital value we get is null, replace
   // it with ''.
-  var dataValue = (data === null ? '' : data);
-  var initialValue = (initial === null ? '' : initial);
-  return (''+initialValue != ''+dataValue);
-};
+  var dataValue = (data === null ? '' : data)
+  var initialValue = (initial === null ? '' : initial)
+  return (''+initialValue != ''+dataValue)
+}
 
 /**
  * Determines the HTML <code>id</code> attribute of this Widget for use by a
@@ -76,229 +82,229 @@ Widget.prototype._hasChanged = function(initial, data) {
  *         Widget.
  */
 Widget.prototype.idForLabel = function(id) {
-  return id;
-};
+  return id
+}
 
 /**
- * An HTML <code>&lt;input&gt;</code> widget.
- *
- * @param {Object} [kwargs] configuration options, as specified in
- *                          {@link Widget}.
+ * An HTML <input> widget.
  * @constructor
+ * @extends {Widget}
+ * @param {Object=} kwargs
  */
-function Input(kwargs) {
-  if (!(this instanceof Widget)) return new Input(kwargs);
-  Widget.call(this, kwargs);
-}
-inheritFrom(Input, Widget);
-/** The type of this input. */
-Input.prototype.inputType = null;
+var Input = Widget.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new Input(kwargs)
+    Widget.call(this, kwargs)
+  }
+  /** The type attribute of this input. */
+, inputType: null
+})
 
 Input.prototype.render = function(name, value, kwargs) {
-  kwargs = extend({attrs: null}, kwargs || {});
+  kwargs = object.extend({attrs: null}, kwargs)
   if (value === null) {
-    value = '';
-  }
-  var finalAttrs = this.buildAttrs(kwargs.attrs, {type: this.inputType,
-                                                  name: name});
-  if (value !== '') {
-    // Only add the value attribute if value is non-empty
-    finalAttrs.value = value;
-  }
-  return DOMBuilder.createElement('input', finalAttrs);
-};
-
-/**
- * An HTML <code>&lt;input type="text"&gt;</code> widget.
- *
- * @param {Object} [kwargs] configuration options, as specified in
- *                          {@link Input}.
- * @constructor
- */
-function TextInput(kwargs) {
-  if (!(this instanceof Widget)) return new TextInput(kwargs);
-  Input.call(this, kwargs);
-}
-inheritFrom(TextInput, Input);
-TextInput.prototype.inputType = 'text';
-
-/**
- * An HTML <code>&lt;input type="password"&gt;</code> widget.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Input}.
- * @config {Boolean} [renderValue] if <code>false</code> a value will not be
- *                                 rendered for this field - defaults to
- *                                 <code>false</code>.
- * @constructor
- */
-function PasswordInput(kwargs) {
-  if (!(this instanceof Widget)) return new PasswordInput(kwargs);
-  kwargs = extend({renderValue: false}, kwargs || {});
-  Input.call(this, kwargs);
-  this.renderValue = kwargs.renderValue;
-}
-inheritFrom(PasswordInput, Input);
-PasswordInput.prototype.inputType = 'password';
-
-PasswordInput.prototype.render = function(name, value, kwargs) {
-  if (!this.renderValue) {
-    value = '';
-  }
-  return Input.prototype.render.call(this, name, value, kwargs);
-};
-
-/**
- * An HTML <code>&lt;input type="hidden"&gt;</code> widget.
- *
- * @param {Object} [kwargs] configuration options, as specified in
- *                          {@link Input}.
- * @constructor
- */
-function HiddenInput(kwargs) {
-  if (!(this instanceof Widget)) return new HiddenInput(kwargs);
-  Input.call(this, kwargs);
-}
-inheritFrom(HiddenInput, Input);
-HiddenInput.prototype.inputType = 'hidden';
-HiddenInput.prototype.isHidden = true;
-
-/**
- * A widget that handles <code>&lt;input type="hidden"&gt;</code> for fields
- * that have a list of values.
- *
- * @param {Object} [kwargs] configuration options, as specified in
- *                          {@link HiddenInput}.
- * @constructor
- */
-function MultipleHiddenInput(kwargs) {
-  if (!(this instanceof Widget)) return new MultipleHiddenInput(kwargs);
-  HiddenInput.call(this, kwargs);
-}
-inheritFrom(MultipleHiddenInput, HiddenInput);
-
-MultipleHiddenInput.prototype.render = function(name, value, kwargs) {
-  kwargs = extend({attrs: null}, kwargs || {});
-  if (value === null) {
-    value = [];
+    value = ''
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {type: this.inputType,
                                                   name: name})
-    , id = getDefault(finalAttrs, 'id', null)
-    , inputs = [];
+  if (value !== '') {
+    // Only add the value attribute if value is non-empty
+    finalAttrs.value = value
+  }
+  return DOMBuilder.createElement('input', finalAttrs)
+}
+
+/**
+ * An HTML <input type="text"> widget.
+ * @constructor
+ * @extends {Input}
+ * @param {Object=} kwargs
+ */
+var TextInput = Input.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new TextInput(kwargs)
+    Input.call(this, kwargs)
+  }
+, inputType: 'text'
+})
+
+/**
+ * An HTML <input type="password"> widget.
+ * @constructor
+ * @extends {Input}
+ * @param {Object=} kwargs
+ */
+var PasswordInput = Input.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new PasswordInput(kwargs)
+    kwargs = object.extend({renderValue: false}, kwargs)
+    Input.call(this, kwargs)
+    this.renderValue = kwargs.renderValue
+  }
+, inputType: 'password'
+})
+
+PasswordInput.prototype.render = function(name, value, kwargs) {
+  if (!this.renderValue) {
+    value = ''
+  }
+  return Input.prototype.render.call(this, name, value, kwargs)
+}
+
+/**
+ * An HTML <input type="hidden"> widget.
+ * @constructor
+ * @extends {Input}
+ * @param {Object=} kwargs
+ */
+var HiddenInput = Input.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new HiddenInput(kwargs)
+    Input.call(this, kwargs)
+  }
+, inputType: 'hidden'
+, isHidden: true
+})
+
+/**
+ * A widget that handles <input type="hidden"> for fields that have a list of
+ * values.
+ * @constructor
+ * @extends {HiddenInput}
+ * @param {Object=} kwargs
+ */
+var MultipleHiddenInput = HiddenInput.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new MultipleHiddenInput(kwargs)
+    HiddenInput.call(this, kwargs)
+  }
+})
+
+MultipleHiddenInput.prototype.render = function(name, value, kwargs) {
+  kwargs = object.extend({attrs: null}, kwargs)
+  if (value === null) {
+    value = []
+  }
+  var finalAttrs = this.buildAttrs(kwargs.attrs, {type: this.inputType,
+                                                  name: name})
+    , id = object.get(finalAttrs, 'id', null)
+    , inputs = []
   for (var i = 0, l = value.length; i < l; i++) {
-    var inputAttrs = extend({}, finalAttrs, {value: value[i]});
+    var inputAttrs = object.extend({}, finalAttrs, {value: value[i]})
     if (id) {
       // An ID attribute was given. Add a numeric index as a suffix
       // so that the inputs don't all have the same ID attribute.
-      inputAttrs.id = format('%(id)s_%(i)s', {id: id, i: i});
+      inputAttrs.id = format('{id}_{i}', {id: id, i: i})
     }
-    inputs.push(DOMBuilder.createElement('input', inputAttrs));
+    inputs.push(DOMBuilder.createElement('input', inputAttrs))
   }
-  return DOMBuilder.fragment(inputs);
-};
+  return DOMBuilder.fragment(inputs)
+}
 
 MultipleHiddenInput.prototype.valueFromData = function(data, files, name) {
   if (typeof data[name] != 'undefined') {
-    return [].concat(data[name]);
+    return [].concat(data[name])
   }
-  return null;
-};
+  return null
+}
 
 /**
- * An HTML <code>&lt;input type="file"&gt;</code> widget.
- *
- * @param {Object} [kwargs] configuration options, as specified in
- *                          {@link Input}.
+ * An HTML <input type="file"> widget.
  * @constructor
+ * @extends {Input}
+ * @param {Object=} kwargs
  */
-function FileInput(kwargs) {
-  if (!(this instanceof Widget)) return new FileInput(kwargs);
-  Input.call(this, kwargs);
-}
-inheritFrom(FileInput, Input);
-FileInput.prototype.inputType = 'file';
-FileInput.prototype.needsMultipartForm = true;
+var FileInput = Input.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new FileInput(kwargs)
+    Input.call(this, kwargs)
+  }
+, inputType: 'file'
+, needsMultipartForm: true
+})
 
 FileInput.prototype.render = function(name, value, kwargs) {
-  return Input.prototype.render.call(this, name, null, kwargs);
-};
+  return Input.prototype.render.call(this, name, null, kwargs)
+}
 
 /**
  * File widgets take data from <code>files</code>, not <code>data</code>.
  */
 FileInput.prototype.valueFromData = function(data, files, name) {
-  return getDefault(files, name, null);
-};
+  return object.get(files, name, null)
+}
 
 FileInput.prototype._hasChanged = function(initial, data) {
   if (data === null) {
-    return false;
+    return false
   }
-  return true;
-};
+  return true
+}
 
-var FILE_INPUT_CONTRADICTION = {};
+var FILE_INPUT_CONTRADICTION = {}
 
 /**
- * @constructor.
+ * @constructor
+ * @extends {FileInput}
+ * @param {Object=} kwargs
  */
-function ClearableFileInput(kwargs) {
-  if (!(this instanceof Widget)) return new ClearableFileInput(kwargs);
-  FileInput.call(this, kwargs);
-}
-inheritFrom(ClearableFileInput, FileInput);
-ClearableFileInput.prototype.initialText = 'Currently';
-ClearableFileInput.prototype.inputText = 'Change';
-ClearableFileInput.prototype.clearCheckboxLabel = 'Clear';
+var ClearableFileInput = FileInput.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new ClearableFileInput(kwargs)
+    FileInput.call(this, kwargs)
+  }
+, initialText: 'Currently'
+, inputText: 'Change'
+, clearCheckboxLabel: 'Clear'
+})
 
 /**
  * Given the name of the file input, return the name of the clear checkbox
  * input.
  */
 ClearableFileInput.prototype.clearCheckboxName = function(name) {
-  return name + '-clear';
-};
+  return name + '-clear'
+}
 
 /**
  * Given the name of the clear checkbox input, return the HTML id for it.
  */
 ClearableFileInput.prototype.clearCheckboxId = function(name) {
-  return name + '_id';
-};
+  return name + '_id'
+}
 
 ClearableFileInput.prototype.render = function(name, value, kwargs) {
-  var input = FileInput.prototype.render.call(this, name, value, kwargs);
+  var input = FileInput.prototype.render.call(this, name, value, kwargs)
   if (value && typeof value.url != 'undefined') {
     var contents = [
       this.initialText, ': '
     , DOMBuilder.createElement('a', {href: value.url}, [''+value]), ' '
-    ];
+    ]
     if (!this.isRequired) {
-      var clearCheckboxName = this.clearCheckboxName(name);
-      var clearCheckboxId = this.clearCheckboxId(clearCheckboxName);
+      var clearCheckboxName = this.clearCheckboxName(name)
+      var clearCheckboxId = this.clearCheckboxId(clearCheckboxName)
       contents = contents.concat([
         CheckboxInput().render(
             clearCheckboxName, false, {attrs: {'id': clearCheckboxId}})
       , ' '
       , DOMBuilder.createElement('label', {'for': clearCheckboxId},
                                  [this.clearCheckboxLabel])
-      ]);
+      ])
     }
     contents = contents.concat([
       DOMBuilder.createElement('br')
     , this.inputText, ': '
     , input
-    ]);
-    return DOMBuilder.fragment(contents);
+    ])
+    return DOMBuilder.fragment(contents)
   }
   else {
-      return input;
+      return input
   }
-};
+}
 
 ClearableFileInput.prototype.valueFromData = function(data, files, name) {
-  var upload = FileInput.prototype.valueFromData(data, files, name);
+  var upload = FileInput.prototype.valueFromData(data, files, name)
   if (!this.isRequired &&
       CheckboxInput().valueFromData(data, files,
                                     this.clearCheckboxName(name))) {
@@ -306,16 +312,130 @@ ClearableFileInput.prototype.valueFromData = function(data, files, name) {
       // If the user contradicts themselves (uploads a new file AND
       // checks the "clear" checkbox), we return a unique marker
       // object that FileField will turn into a ValidationError.
-      return FILE_INPUT_CONTRADICTION;
+      return FILE_INPUT_CONTRADICTION
     }
     // false signals to clear any existing value, as opposed to just null
-    return false;
+    return false
   }
-  return upload;
-};
+  return upload
+}
 
 /**
- * An HTML <code>&lt;textarea&gt;</code> widget.
+ * A <input type="text"> which, if given a Date object to display, formats it as
+ * an appropriate date String.
+ * @constructor
+ * @extends {Input}
+ * @param {Object=} kwargs
+ */
+var DateInput = Input.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new DateInput(kwargs)
+    kwargs = object.extend({format: null}, kwargs)
+    Input.call(this, kwargs)
+    if (kwargs.format !== null) {
+      this.format = kwargs.format
+    }
+    else {
+      this.format = util.DEFAULT_DATE_INPUT_FORMATS[0]
+    }
+  }
+, inputType: 'text'
+})
+
+DateInput.prototype._formatValue = function(value) {
+  if (is.Date(value)) {
+    return time.strftime(value, this.format)
+  }
+  return value
+}
+
+DateInput.prototype.render = function(name, value, kwargs) {
+  value = this._formatValue(value)
+  return Input.prototype.render.call(this, name, value, kwargs)
+}
+
+DateInput.prototype._hasChanged = function(initial, data) {
+  return Input.prototype._hasChanged.call(this, this._formatValue(initial), data)
+}
+
+/**
+ * A <input type="text"> which, if given a Date object to display, formats it as
+ * an appropriate datetime String.
+ * @constructor
+ * @extends {Input}
+ * @param {Object=} kwargs
+ */
+var DateTimeInput = Input.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new DateTimeInput(kwargs)
+    kwargs = object.extend({format: null}, kwargs)
+    Input.call(this, kwargs)
+    if (kwargs.format !== null) {
+      this.format = kwargs.format
+    }
+    else {
+      this.format = util.DEFAULT_DATETIME_INPUT_FORMATS[0]
+    }
+  }
+, inputType: 'text'
+})
+
+DateTimeInput.prototype._formatValue = function(value) {
+  if (is.Date(value)) {
+    return time.strftime(value, this.format)
+  }
+  return value
+}
+
+DateTimeInput.prototype.render = function(name, value, kwargs) {
+  value = this._formatValue(value)
+  return Input.prototype.render.call(this, name, value, kwargs)
+}
+
+DateTimeInput.prototype._hasChanged = function(initial, data) {
+  return Input.prototype._hasChanged.call(this, this._formatValue(initial), data)
+}
+
+/**
+ * A <input type="text"> which, if given a Date object to display, formats it as
+ * an appropriate time String.
+ * @constructor
+ * @extends {Input}
+ * @param {Object=} kwargs
+ */
+var TimeInput = Input.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new TimeInput(kwargs)
+    kwargs = object.extend({format: null}, kwargs)
+    Input.call(this, kwargs)
+    if (kwargs.format !== null) {
+      this.format = kwargs.format
+    }
+    else {
+      this.format = util.DEFAULT_TIME_INPUT_FORMATS[0]
+    }
+  }
+, inputType: 'text'
+})
+
+TimeInput.prototype._formatValue = function(value) {
+  if (is.Date(value)) {
+    return time.strftime(value, this.format)
+  }
+  return value
+}
+
+TimeInput.prototype.render = function(name, value, kwargs) {
+  value = this._formatValue(value)
+  return Input.prototype.render.call(this, name, value, kwargs)
+}
+
+TimeInput.prototype._hasChanged = function(initial, data) {
+  return Input.prototype._hasChanged.call(this, this._formatValue(initial), data)
+}
+
+/**
+ * An HTML <textarea> widget.
  *
  * @param {Object} [kwargs] configuration options, as specified in
  *                          {@link Widget}.
@@ -323,223 +443,103 @@ ClearableFileInput.prototype.valueFromData = function(data, files, name) {
  *                          rows and cols attributes will be used if not
  *                          provided.
  * @constructor
+ * @extends {Widget}
+ * @param {Object=} kwargs
  */
-function Textarea(kwargs) {
-  if (!(this instanceof Widget)) return new Textarea(kwargs);
-  // Ensure we have something in attrs
-  kwargs = extend({attrs: null}, kwargs || {});
-  // Provide default 'cols' and 'rows' attributes
-  kwargs.attrs = extend({rows: '10', cols: '40'}, kwargs.attrs || {});
-  Widget.call(this, kwargs);
-}
-inheritFrom(Textarea, Widget);
+var Textarea = Widget.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new Textarea(kwargs)
+    // Ensure we have something in attrs
+    kwargs = object.extend({attrs: null}, kwargs)
+    // Provide default 'cols' and 'rows' attributes
+    kwargs.attrs = object.extend({rows: '10', cols: '40'}, kwargs.attrs)
+    Widget.call(this, kwargs)
+  }
+})
 
 Textarea.prototype.render = function(name, value, kwargs) {
-  kwargs = extend({attrs: null}, kwargs || {});
+  kwargs = object.extend({attrs: null}, kwargs)
   if (value === null) {
-    value = '';
+    value = ''
   }
-  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name});
-  return DOMBuilder.createElement('textarea', finalAttrs, [value]);
-};
+  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name})
+  return DOMBuilder.createElement('textarea', finalAttrs, [value])
+}
 
 /**
- * A <code>&lt;input type="text"&gt;</code> which, if given a <code>Date</code>
- * object to display, formats it as an appropriate date <code>String</code>.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Input}.
- * @config {String} [format] a {@link time.strftime} format string.
+ * An HTML <input type="checkbox"> widget.
  * @constructor
+ * @extends {Widget}
+ * @param {Object=} kwargs
  */
-function DateInput(kwargs) {
-  if (!(this instanceof Widget)) return new DateInput(kwargs);
-  kwargs = extend({format: null}, kwargs || {});
-  Input.call(this, kwargs);
-  if (kwargs.format !== null) {
-    this.format = kwargs.format;
+var CheckboxInput = Widget.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new CheckboxInput(kwargs)
+    kwargs = object.extend({checkTest: Boolean}, kwargs)
+    Widget.call(this, kwargs)
+    this.checkTest = kwargs.checkTest
   }
-  else {
-    this.format = DEFAULT_DATE_INPUT_FORMATS[0];
-  }
-}
-inheritFrom(DateInput, Input);
-DateInput.prototype.inputType = 'text';
-
-DateInput.prototype._formatValue = function(value) {
-  if (value instanceof Date) {
-    return time.strftime(value, this.format);
-  }
-  return value;
-};
-
-DateInput.prototype.render = function(name, value, kwargs) {
-  value = this._formatValue(value);
-  return Input.prototype.render.call(this, name, value, kwargs);
-};
-
-DateInput.prototype._hasChanged = function(initial, data) {
-  return Input.prototype._hasChanged.call(this, this._formatValue(initial), data);
-};
-
-/**
- * A <code>&lt;input type="text"&gt;</code> which, if given a <code>Date</code>
- * object to display, formats it as an appropriate datetime <code>String</code>.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Input}.
- * @config {String} [format] a {@link time.strftime} format string.
- * @constructor
- */
-function DateTimeInput(kwargs) {
-  if (!(this instanceof Widget)) return new DateTimeInput(kwargs);
-  kwargs = extend({format: null}, kwargs || {});
-  Input.call(this, kwargs);
-  if (kwargs.format !== null) {
-    this.format = kwargs.format;
-  }
-  else {
-    this.format = DEFAULT_DATETIME_INPUT_FORMATS[0];
-  }
-}
-inheritFrom(DateTimeInput, Input);
-DateTimeInput.prototype.inputType = 'text';
-
-DateTimeInput.prototype._formatValue = function(value) {
-  if (value instanceof Date) {
-    return time.strftime(value, this.format);
-  }
-  return value;
-};
-
-DateTimeInput.prototype.render = function(name, value, kwargs) {
-  value = this._formatValue(value);
-  return Input.prototype.render.call(this, name, value, kwargs);
-};
-
-DateTimeInput.prototype._hasChanged = function(initial, data) {
-  return Input.prototype._hasChanged.call(this, this._formatValue(initial), data);
-};
-
-/**
- * A <code>&lt;input type="text"&gt;</code> which, if given a <code>Date</code>
- * object to display, formats it as an appropriate time <code>String</code>.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Input}.
- * @config {String} [format] a {@link time.strftime} format string.
- * @constructor
- */
-function TimeInput(kwargs) {
-  if (!(this instanceof Widget)) return new TimeInput(kwargs);
-  kwargs = extend({format: null}, kwargs || {});
-  Input.call(this, kwargs);
-  if (kwargs.format !== null) {
-    this.format = kwargs.format;
-  }
-  else {
-    this.format = DEFAULT_TIME_INPUT_FORMATS[0];
-  }
-}
-inheritFrom(TimeInput, Input);
-TimeInput.prototype.inputType = 'text';
-
-TimeInput.prototype._formatValue = function(value) {
-  if (value instanceof Date) {
-    return time.strftime(value, this.format);
-  }
-  return value;
-};
-
-TimeInput.prototype.render = function(name, value, kwargs) {
-  value = this._formatValue(value);
-  return Input.prototype.render.call(this, name, value, kwargs);
-};
-
-TimeInput.prototype._hasChanged = function(initial, data) {
-  return Input.prototype._hasChanged.call(this, this._formatValue(initial), data);
-};
-
-/**
- * An HTML <code>&lt;input type="checkbox"&gt;</code> widget.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Widget}.
- * @config {Function} [checkTest] a function which takes a value and returns
- *                                <code>true</code> if the checkbox should be
- *                                checked for that value.
- * @constructor
- */
-function CheckboxInput(kwargs) {
-  if (!(this instanceof Widget)) return new CheckboxInput(kwargs);
-  kwargs = extend({checkTest: Boolean}, kwargs || {});
-  Widget.call(this, kwargs);
-  this.checkTest = kwargs.checkTest;
-}
-inheritFrom(CheckboxInput, Widget);
+})
 
 CheckboxInput.prototype.render = function(name, value, kwargs) {
-  kwargs = extend({attrs: null}, kwargs || {});
-  var checked;
+  kwargs = object.extend({attrs: null}, kwargs)
+  var checked
   try {
-    checked = this.checkTest(value);
+    checked = this.checkTest(value)
   }
   catch (e) {
     // Silently catch exceptions
-    checked = false;
+    checked = false
   }
 
   var finalAttrs = this.buildAttrs(kwargs.attrs, {type: 'checkbox',
-                                                  name: name});
+                                                  name: name})
   if (value !== '' && value !== true && value !== false && value !== null &&
       value !== undefined) {
     // Only add the value attribute if value is non-empty
-    finalAttrs.value = value;
+    finalAttrs.value = value
   }
   if (checked) {
-    finalAttrs.checked = 'checked';
+    finalAttrs.checked = 'checked'
   }
-  return DOMBuilder.createElement('input', finalAttrs);
-};
+  return DOMBuilder.createElement('input', finalAttrs)
+}
 
 CheckboxInput.prototype.valueFromData = function(data, files, name) {
   if (typeof data[name] == 'undefined') {
     //  A missing value means False because HTML form submission does not
     // send results for unselected checkboxes.
-    return false;
+    return false
   }
   var value = data[name]
-    , values = {'true': true, 'false': false};
+    , values = {'true': true, 'false': false}
   // Translate true and false strings to boolean values
-  if (isString(value)) {
-    value = getDefault(values, value.toLowerCase(), value);
+  if (is.String(value)) {
+    value = object.get(values, value.toLowerCase(), value)
   }
-  return value;
-};
+  return value
+}
 
 CheckboxInput.prototype._hasChanged = function(initial, data) {
   // Sometimes data or initial could be null or '' which should be the same
   // thing as false.
-  return (Boolean(initial) != Boolean(data));
-};
+  return (Boolean(initial) != Boolean(data))
+}
 
 /**
- * An HTML <code>&lt;select&gt;</code> widget.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Widget}.
- * @config {Array} [choices] choices to be used when rendering the widget,
- *                           with each choice specified as an <code>Array</code>
- *                           in <code>[value, text]</code> format.
+ * An HTML <select> widget.
  * @constructor
+ * @extends {Widget}
+ * @param {Object=} kwargs
  */
-function Select(kwargs) {
-  if (!(this instanceof Widget)) return new Select(kwargs);
-  kwargs = extend({choices: []}, kwargs || {});
-  Widget.call(this, kwargs);
-  this.choices = kwargs.choices || [];
-}
-inheritFrom(Select, Widget);
+var Select = Widget.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new Select(kwargs)
+    kwargs = object.extend({choices: []}, kwargs)
+    Widget.call(this, kwargs)
+    this.choices = kwargs.choices || []
+  }
+})
 
 /**
  * Renders the widget.
@@ -556,137 +556,134 @@ inheritFrom(Select, Widget);
  * @return a <code>&lt;select&gt;</code> element.
  */
 Select.prototype.render = function(name, selectedValue, kwargs) {
-  kwargs = extend({attrs: null, choices: []}, kwargs || {});
+  kwargs = object.extend({attrs: null, choices: []}, kwargs)
   if (selectedValue === null) {
-    selectedValue = '';
+    selectedValue = ''
   }
-  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name});
-  var options = this.renderOptions(kwargs.choices, [selectedValue]);
-  options.push('\n');
-  return DOMBuilder.createElement('select', finalAttrs, options);
-};
+  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name})
+  var options = this.renderOptions(kwargs.choices, [selectedValue])
+  options.push('\n')
+  return DOMBuilder.createElement('select', finalAttrs, options)
+}
 
 Select.prototype.renderOptions = function(choices, selectedValues) {
   // Normalise to strings
-  var selectedValuesLookup = {};
+  var selectedValuesLookup = {}
   // We don't duck type passing of a String instead, as index access to
   // characters isn't part of the spec.
-  var selectedValueString = (isString(selectedValues));
+  var selectedValueString = (is.String(selectedValues))
   for (var i = 0, l = selectedValues.length; i < l; i++) {
     selectedValuesLookup[''+(selectedValueString ?
                              selectedValues.charAt(i) :
-                             selectedValues[i])] = true;
+                             selectedValues[i])] = true
   }
 
   var options = []
-    , finalChoices = iterate(this.choices).concat(choices || []);
+    , finalChoices = util.iterate(this.choices).concat(choices || [])
   for (var i = 0, l = finalChoices.length; i < l; i++) {
-    if (isArray(finalChoices[i][1])) {
+    if (is.Array(finalChoices[i][1])) {
       var optgroupOptions = []
-        , optgroupChoices = finalChoices[i][1];
+        , optgroupChoices = finalChoices[i][1]
       for (var j = 0, k = optgroupChoices.length; j < k; j++) {
-        optgroupOptions.push('\n');
+        optgroupOptions.push('\n')
         optgroupOptions.push(this.renderOption(selectedValuesLookup,
                                                optgroupChoices[j][0],
-                                               optgroupChoices[j][1]));
+                                               optgroupChoices[j][1]))
       }
-      options.push('\n');
-      optgroupOptions.push('\n');
+      options.push('\n')
+      optgroupOptions.push('\n')
       options.push(DOMBuilder.createElement(
-          'optgroup', {label: finalChoices[i][0]}, optgroupOptions));
+          'optgroup', {label: finalChoices[i][0]}, optgroupOptions))
     }
     else {
-      options.push('\n');
+      options.push('\n')
       options.push(this.renderOption(selectedValuesLookup,
                                      finalChoices[i][0],
-                                     finalChoices[i][1]));
+                                     finalChoices[i][1]))
     }
   }
-  return options;
-};
+  return options
+}
 
 Select.prototype.renderOption = function(selectedValuesLookup, optValue,
                                          optLabel) {
-  optValue = ''+optValue;
-  var attrs = {value: optValue};
+  optValue = ''+optValue
+  var attrs = {value: optValue}
   if (typeof selectedValuesLookup[optValue] != 'undefined') {
-    attrs['selected'] = 'selected';
+    attrs['selected'] = 'selected'
   }
-  return DOMBuilder.createElement('option', attrs, [optLabel]);
-};
+  return DOMBuilder.createElement('option', attrs, [optLabel])
+}
 
 /**
- * A <code>&lt;select&gt;</code> widget intended to be used with
- * {@link NullBooleanField}.
- *
- * @param {Object} [kwargs] configuration options, as specified in
- *                          {@link Select}. Any choices configuration provided
- *                          will be overrridden with the specific choices this
- *                          widget requires.
+ * A <select> widget intended to be used with NullBooleanField.
  * @constructor
+ * @extends {Select}
+ * @param {Object=} kwargs
  */
-function NullBooleanSelect(kwargs) {
-  if (!(this instanceof Widget)) return new NullBooleanSelect(kwargs);
-  kwargs = kwargs || {};
-  // Set or overrride choices
-  kwargs.choices = [['1', 'Unknown'], ['2', 'Yes'], ['3', 'No']];
-  Select.call(this, kwargs);
-}
-inheritFrom(NullBooleanSelect, Select);
+var NullBooleanSelect = Select.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new NullBooleanSelect(kwargs)
+    kwargs = kwargs || {}
+    // Set or overrride choices
+    kwargs.choices = [['1', 'Unknown'], ['2', 'Yes'], ['3', 'No']]
+    Select.call(this, kwargs)
+  }
+})
 
 NullBooleanSelect.prototype.render = function(name, value, kwargs) {
   if (value === true || value == '2') {
-      value = '2';
+      value = '2'
   }
   else if (value === false || value == '3') {
-      value = '3';
+      value = '3'
   }
   else {
-      value = '1';
+      value = '1'
   }
-  return Select.prototype.render.call(this, name, value, kwargs);
-};
+  return Select.prototype.render.call(this, name, value, kwargs)
+}
 
 NullBooleanSelect.prototype.valueFromData = function(data, files, name) {
-  var value = null;
+  var value = null
   if (typeof data[name] != 'undefined') {
-    var dataValue = data[name];
+    var dataValue = data[name]
     if (dataValue === true || dataValue == 'True' || dataValue == 'true' ||
         dataValue == '2') {
-      value = true;
+      value = true
     }
     else if (dataValue === false || dataValue == 'False' ||
              dataValue == 'false' || dataValue == '3') {
-      value = false;
+      value = false
     }
   }
-  return value;
-};
+  return value
+}
 
 NullBooleanSelect.prototype._hasChanged = function(initial, data) {
   // For a NullBooleanSelect, null (unknown) and false (No)
   //are not the same
   if (initial !== null) {
-      initial = Boolean(initial);
+      initial = Boolean(initial)
   }
   if (data !== null) {
-      data = Boolean(data);
+      data = Boolean(data)
   }
-  return initial != data;
-};
+  return initial != data
+}
 
 /**
- * An HTML <code>&lt;select&gt;</code> widget which allows multiple selections.
- *
- * @param {Object} [kwargs] configuration parameters, as specified in
- *                          {@link Select}.
+ * An HTML <select> widget which allows multiple selections.
  * @constructor
+ * @extends {Select}
+ * @param {Object=} kwargs
  */
-function SelectMultiple(kwargs) {
-  if (!(this instanceof Widget)) return new SelectMultiple(kwargs);
-  Select.call(this, kwargs);
-}
-inheritFrom(SelectMultiple, Select);
+var SelectMultiple = Select.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new SelectMultiple(kwargs)
+    Select.call(this, kwargs)
+  }
+})
 
 /**
  * Renders the widget.
@@ -705,16 +702,16 @@ inheritFrom(SelectMultiple, Select);
  *         selections.
  */
 SelectMultiple.prototype.render = function(name, selectedValues, kwargs) {
-  kwargs = extend({attrs: null, choices: []}, kwargs || {});
+  kwargs = object.extend({attrs: null, choices: []}, kwargs)
   if (selectedValues === null) {
-    selectedValues = [];
+    selectedValues = []
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name,
                                                   multiple: 'multiple'})
-    , options = this.renderOptions(kwargs.choices, selectedValues);
-  options.push('\n');
-  return DOMBuilder.createElement('select', finalAttrs, options);
-};
+    , options = this.renderOptions(kwargs.choices, selectedValues)
+  options.push('\n')
+  return DOMBuilder.createElement('select', finalAttrs, options)
+}
 
 /**
  * Retrieves values for this widget from the given data.
@@ -728,176 +725,173 @@ SelectMultiple.prototype.render = function(name, selectedValues, kwargs) {
  */
 SelectMultiple.prototype.valueFromData = function(data, files, name) {
   if (typeof data[name] != 'undefined') {
-    return [].concat(data[name]);
+    return [].concat(data[name])
   }
-  return null;
-};
+  return null
+}
 
 SelectMultiple.prototype._hasChanged = function(initial, data) {
   if (initial === null) {
-    initial = [];
+    initial = []
   }
   if (data === null) {
-    data = [];
+    data = []
   }
   if (initial.length != data.length) {
-    return true;
+    return true
   }
-  var dataLookup = createLookup(data);
+  var dataLookup = object.lookup(data)
   for (var i = 0, l = initial.length; i < l; i++) {
     if (typeof dataLookup[''+initial[i]] == 'undefined') {
-      return true;
+      return true
     }
   }
-  return false;
-};
+  return false
+}
 
 /**
- * An object used by {@link RadioFieldRenderer} that represents a single
- * <code>&lt;input type="radio"&gt;</code>.
- *
- * @param {String} name the field name.
- * @param {String} value the selected value.
- * @param {Object} attrs HTML attributes for the widget.
- * @param {Array} choice choice details to be used when rendering the widget,
- *                specified as an <code>Array</code> in
- *                <code>[value, text]</code> format.
- * @param {Number} index the index of the radio button this widget represents.
+ * An object used by RadioFieldRenderer that represents a single
+ * <input type="radio">.
  * @constructor
+ * @param {string} name
+ * @param {string} value
+ * @param {Object} attrs
+ * @param {Array} choice
+ * @param {number} index
  */
-function RadioInput(name, value, attrs, choice, index) {
-  if (!(this instanceof RadioInput)) return new RadioInput(name, value, attrs, choice, index);
-  this.name = name;
-  this.value = value;
-  this.attrs = attrs;
-  this.choiceValue = ''+choice[0];
-  this.choiceLabel = choice[1];
-  this.index = index;
-}
+var RadioInput = Concur.extend({
+  constructor: function(name, value, attrs, choice, index) {
+    if (!(this instanceof RadioInput)) return new RadioInput(name, value, attrs, choice, index)
+    this.name = name
+    this.value = value
+    this.attrs = attrs
+    this.choiceValue = ''+choice[0]
+    this.choiceLabel = choice[1]
+    this.index = index
+  }
+})
 
 /**
  * Renders a <code>&lt;label&gt;</code> enclosing the radio widget and its label
  * text.
  */
 RadioInput.prototype.labelTag = function() {
-  var labelAttrs = {};
+  var labelAttrs = {}
   if (typeof this.attrs.id != 'undefined') {
-    labelAttrs['for'] = this.attrs.id + '_' + this.index;
+    labelAttrs['for'] = this.attrs.id + '_' + this.index
   }
   return DOMBuilder.createElement('label', labelAttrs,
-                                  [this.tag(), ' ', this.choiceLabel]);
-};
+                                  [this.tag(), ' ', this.choiceLabel])
+}
 
 RadioInput.prototype.toString = function() {
-  return ''+this.labelTag();
-};
+  return ''+this.labelTag()
+}
 
 RadioInput.prototype.isChecked = function() {
-  return this.value === this.choiceValue;
-};
+  return this.value === this.choiceValue
+}
 
 /**
  * Renders the <code>&lt;input type="radio"&gt;</code> portion of the widget.
  */
 RadioInput.prototype.tag = function() {
-  var finalAttrs = extend({}, this.attrs, {
+  var finalAttrs = object.extend({}, this.attrs, {
                      type: 'radio', name: this.name, value: this.choiceValue
-                   });
+                   })
   if (typeof finalAttrs.id != 'undefined') {
-    finalAttrs.id = finalAttrs.id + '_' + this.index;
+    finalAttrs.id = finalAttrs.id + '_' + this.index
   }
   if (this.isChecked()) {
-    finalAttrs.checked = 'checked';
+    finalAttrs.checked = 'checked'
   }
-  return DOMBuilder.createElement('input', finalAttrs);
-};
+  return DOMBuilder.createElement('input', finalAttrs)
+}
 
 /**
  * An object used by {@link RadioSelect} to enable customisation of radio
  * widgets.
- *
- * @param {String} name the field name.
- * @param {String} value the selected value.
- * @param {Object} attrs HTML attributes for the widget.
- * @param {Array} choices choices to be used when rendering the widget, with
- *                        each choice specified as an <code>Array</code> in
- *                        <code>[value, text]</code> format.
  * @constructor
+ * @param {string} name
+ * @param {string} value
+ * @param {Object} attrs
+ * @param {Array} choices
  */
-function RadioFieldRenderer(name, value, attrs, choices) {
-  if (!(this instanceof RadioFieldRenderer)) return RadioFieldRenderer(name, value, attrs, choices);
-  this.name = name;
-  this.value = value;
-  this.attrs = attrs;
-  this.choices = choices;
-}
+var RadioFieldRenderer = Concur.extend({
+  constructor: function(name, value, attrs, choices) {
+    if (!(this instanceof RadioFieldRenderer)) return RadioFieldRenderer(name, value, attrs, choices)
+    this.name = name
+    this.value = value
+    this.attrs = attrs
+    this.choices = choices
+  }
+})
 
 RadioFieldRenderer.prototype.radioInputs = function() {
-  var inputs = [];
+  var inputs = []
   for (var i = 0, l = this.choices.length; i < l; i++) {
     inputs.push(RadioInput(this.name, this.value,
-                           extend({}, this.attrs),
-                           this.choices[i], i));
+                           object.extend({}, this.attrs),
+                           this.choices[i], i))
   }
-  return inputs;
-};
+  return inputs
+}
 
 RadioFieldRenderer.prototype.radioInput = function(i) {
   if (i >= this.choices.length) {
-    throw new Error('Index out of bounds');
+    throw new Error('Index out of bounds')
   }
-  return RadioInput(this.name, this.value, extend({}, this.attrs),
-                    this.choices[i], i);
-};
+  return RadioInput(this.name, this.value, object.extend({}, this.attrs),
+                    this.choices[i], i)
+}
 
 /**
  * Outputs a &lt;ul&gt; for this set of radio fields.
  */
 RadioFieldRenderer.prototype.render = function() {
-  var inputs = this.radioInputs();
-  var items = [];
+  var inputs = this.radioInputs()
+  var items = []
   for (var i = 0, l = inputs.length; i < l; i++) {
-      items.push('\n');
-      items.push(DOMBuilder.createElement('li', {}, [inputs[i].labelTag()]));
+      items.push('\n')
+      items.push(DOMBuilder.createElement('li', {}, [inputs[i].labelTag()]))
   }
-  items.push('\n');
-  return DOMBuilder.createElement('ul', {}, items);
-};
+  items.push('\n')
+  return DOMBuilder.createElement('ul', {}, items)
+}
 
 /**
- * Renders a single select as a list of <code>&lt;input type="radio"&gt;</code>
- * elements.
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link Select}.
- * @config {Function} [renderer] a custom RadioFieldRenderer constructor.
+ * Renders a single select as a list of <input type="radio"> elements.
  * @constructor
+ * @extends {Select}
+ * @param {Object=} kwargs
  */
-function RadioSelect(kwargs) {
-  if (!(this instanceof Widget)) return new RadioSelect(kwargs);
-  kwargs = extend({renderer: null}, kwargs || {});
-  // Override the default renderer if we were passed one
-  if (kwargs.renderer !== null) {
-    this.renderer = kwargs.renderer;
+var RadioSelect = Select.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new RadioSelect(kwargs)
+    kwargs = object.extend({renderer: null}, kwargs)
+    // Override the default renderer if we were passed one
+    if (kwargs.renderer !== null) {
+      this.renderer = kwargs.renderer
+    }
+    Select.call(this, kwargs)
   }
-  Select.call(this, kwargs);
-}
-inheritFrom(RadioSelect, Select);
-RadioSelect.prototype.renderer = RadioFieldRenderer;
+, renderer: RadioFieldRenderer
+})
 
 /**
  * @return an instance of the renderer to be used to render this widget.
  */
 RadioSelect.prototype.getRenderer = function(name, value, kwargs) {
-  kwargs = extend({attrs: null, choices: []}, kwargs || {});
-  value = (value === null ? '' : ''+value);
+  kwargs = object.extend({attrs: null, choices: []}, kwargs)
+  value = (value === null ? '' : ''+value)
   var finalAttrs = this.buildAttrs(kwargs.attrs)
-    , choices = iterate(this.choices).concat(kwargs.choices || []);
-  return new this.renderer(name, value, finalAttrs, choices);
-};
+    , choices = util.iterate(this.choices).concat(kwargs.choices || [])
+  return new this.renderer(name, value, finalAttrs, choices)
+}
 
 RadioSelect.prototype.render = function(name, value, kwargs) {
-  return this.getRenderer(name, value, kwargs).render();
-};
+  return this.getRenderer(name, value, kwargs).render()
+}
 
 /**
  * RadioSelect is represented by multiple <input type="radio"> fields,
@@ -907,90 +901,86 @@ RadioSelect.prototype.render = function(name, value, kwargs) {
  */
 RadioSelect.prototype.idForLabel = function(id) {
   if (id) {
-      id += '_0';
+      id += '_0'
   }
-  return id;
-};
+  return id
+}
 
 /**
- * Multiple selections represented as a list of
- * <code>&lt;input type="checkbox"&gt;</code> widgets.
- *
- * @param {Object} [kwargs] configuration parameters, as specified in
- *                          {@link SelectMultiple}.
+ * Multiple selections represented as a list of <input type="checkbox"> widgets.
  * @constructor
+ * @extends {SelectMultiple}
+ * @param {Object=} kwargs
  */
-function CheckboxSelectMultiple(kwargs) {
-  if (!(this instanceof Widget)) return new CheckboxSelectMultiple(kwargs);
-  SelectMultiple.call(this, kwargs);
-}
-inheritFrom(CheckboxSelectMultiple, SelectMultiple);
+var CheckboxSelectMultiple = SelectMultiple.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new CheckboxSelectMultiple(kwargs)
+    SelectMultiple.call(this, kwargs)
+  }
+})
 
 CheckboxSelectMultiple.prototype.render = function(name, selectedValues, kwargs) {
-  kwargs = extend({attrs: null, choices: []}, kwargs || {});
+  kwargs = object.extend({attrs: null, choices: []}, kwargs)
   if (selectedValues === null) {
-    selectedValues = [];
+    selectedValues = []
   }
   var hasId = (kwargs.attrs !== null && typeof kwargs.attrs.id != 'undefined')
     , finalAttrs = this.buildAttrs(kwargs.attrs)
-    , selectedValuesLookup = createLookup(selectedValues)
+    , selectedValuesLookup = object.lookup(selectedValues)
     , checkTest = function(value) {
-        return (typeof selectedValuesLookup[''+value] != 'undefined');
+        return (typeof selectedValuesLookup[''+value] != 'undefined')
       }
     , items = []
-    , finalChoices = iterate(this.choices).concat(kwargs.choices);
+    , finalChoices = util.iterate(this.choices).concat(kwargs.choices)
   for (var i = 0, l = finalChoices.length; i < l; i++) {
     var optValue = '' + finalChoices[i][0]
       , optLabel = finalChoices[i][1]
-      , checkboxAttrs = extend({}, finalAttrs)
-      , labelAttrs = {};
+      , checkboxAttrs = object.extend({}, finalAttrs)
+      , labelAttrs = {}
     // If an ID attribute was given, add a numeric index as a suffix, so
     // that the checkboxes don't all have the same ID attribute.
     if (hasId) {
-      extend(checkboxAttrs, {id: kwargs.attrs.id + '_' + i});
-      labelAttrs['for'] = checkboxAttrs.id;
+      object.extend(checkboxAttrs, {id: kwargs.attrs.id + '_' + i})
+      labelAttrs['for'] = checkboxAttrs.id
     }
 
-    var cb = CheckboxInput({attrs: checkboxAttrs, checkTest: checkTest});
-    items.push('\n');
+    var cb = CheckboxInput({attrs: checkboxAttrs, checkTest: checkTest})
+    items.push('\n')
     items.push(
         DOMBuilder.createElement('li', {},
             [DOMBuilder.createElement('label', labelAttrs,
                                       [cb.render(name, optValue), ' ',
-                                       optLabel])]));
+                                       optLabel])]))
   }
-  items.push('\n');
-  return DOMBuilder.createElement('ul', {}, items);
-};
+  items.push('\n')
+  return DOMBuilder.createElement('ul', {}, items)
+}
 
 CheckboxSelectMultiple.prototype.idForLabel = function(id) {
   if (id) {
-    id += '_0';
+    id += '_0'
   }
-  return id;
-};
+  return id
+}
 
 /**
  * A widget that is composed of multiple widgets.
- *
- * You'll probably want to use this class with {@link MultiValueField}.
- *
- * @param {Array} widgets the list of widgets composing this widget.
- * @param {Object} [kwargs] configuration options, as specified in
- *                          {@link Widget}.
  * @constructor
+ * @extends {Widget}
+ * @param {Object=} kwargs
  */
-function MultiWidget(widgets, kwargs) {
-  if (!(this instanceof Widget)) return new MultiWidget(widgets, kwargs);
-  this.widgets = [];
-  for (var i = 0, l = widgets.length; i < l; i++) {
-    this.widgets.push(widgets[i] instanceof Widget
-                      ? widgets[i]
-                      : new widgets[i]);
+var MultiWidget = Widget.extend({
+  constructor: function(widgets, kwargs) {
+    if (!(this instanceof Widget)) return new MultiWidget(widgets, kwargs)
+    this.widgets = []
+    for (var i = 0, l = widgets.length; i < l; i++) {
+      this.widgets.push(widgets[i] instanceof Widget
+                        ? widgets[i]
+                        : new widgets[i])
+    }
+    Widget.call(this, kwargs)
   }
-  Widget.call(this, kwargs);
-}
-inheritFrom(MultiWidget, Widget);
+})
 
 /**
  * This method is different than other widgets', because it has to figure out
@@ -1011,61 +1001,61 @@ inheritFrom(MultiWidget, Widget);
  * @return a rendered collection of widgets.
  */
 MultiWidget.prototype.render = function(name, value, kwargs) {
-  kwargs = extend({attrs: null}, kwargs || {});
-  if (!(isArray(value))) {
-    value = this.decompress(value);
+  kwargs = object.extend({attrs: null}, kwargs)
+  if (!(is.Array(value))) {
+    value = this.decompress(value)
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs)
     , id = (typeof finalAttrs.id != 'undefined' ? finalAttrs.id : null)
-    , renderedWidgets = [];
+    , renderedWidgets = []
   for (var i = 0, l = this.widgets.length; i < l; i++) {
     var widget = this.widgets[i]
-      , widgetValue = null;
+      , widgetValue = null
     if (typeof value[i] != 'undefined') {
-      widgetValue = value[i];
+      widgetValue = value[i]
     }
     if (id) {
-      finalAttrs.id = id + '_' + i;
+      finalAttrs.id = id + '_' + i
     }
     renderedWidgets.push(
-        widget.render(name + '_' + i, widgetValue, {attrs: finalAttrs}));
+        widget.render(name + '_' + i, widgetValue, {attrs: finalAttrs}))
   }
-  return this.formatOutput(renderedWidgets);
-};
+  return this.formatOutput(renderedWidgets)
+}
 
 MultiWidget.prototype.idForLabel = function(id) {
   if (id) {
-    id += '_0';
+    id += '_0'
   }
-  return id;
-};
+  return id
+}
 
 MultiWidget.prototype.valueFromData = function(data, files, name) {
-  var values = [];
+  var values = []
   for (var i = 0, l = this.widgets.length; i < l; i++) {
-    values[i] = this.widgets[i].valueFromData(data, files, name + '_' + i);
+    values[i] = this.widgets[i].valueFromData(data, files, name + '_' + i)
   }
-  return values;
-};
+  return values
+}
 
 MultiWidget.prototype._hasChanged = function(initial, data) {
   if (initial === null) {
-    initial = [];
+    initial = []
     for (var i = 0, l = data.length; i < l; i++) {
-      initial.push('');
+      initial.push('')
     }
   }
-  else if (!(isArray(initial))) {
-    initial = this.decompress(initial);
+  else if (!(is.Array(initial))) {
+    initial = this.decompress(initial)
   }
 
   for (var i = 0, l = this.widgets.length; i < l; i++) {
     if (this.widgets[i]._hasChanged(initial[i], data[i])) {
-      return true;
+      return true
     }
   }
-  return false;
-};
+  return false
+}
 
 /**
  * Creates an element containing a given list of rendered widgets.
@@ -1076,8 +1066,8 @@ MultiWidget.prototype._hasChanged = function(initial, data) {
  * @return a fragment containing the rendered widgets.
  */
 MultiWidget.prototype.formatOutput = function(renderedWidgets) {
-  return DOMBuilder.fragment(renderedWidgets);
-};
+  return DOMBuilder.fragment(renderedWidgets)
+}
 
 /**
  * Creates a list of decompressed values for the given compressed value.
@@ -1088,57 +1078,78 @@ MultiWidget.prototype.formatOutput = function(renderedWidgets) {
  * @return a list of decompressed values for the given compressed value.
  */
 MultiWidget.prototype.decompress = function(value) {
-  throw new Error('MultiWidget subclasses must implement a decompress() method.');
-};
+  throw new Error('MultiWidget subclasses must implement a decompress() method.')
+}
 
 /**
- * Splits <code>Date</code> input into two
- * <code>&lt;input type="text"&gt;</code> elements.
- *
- * @param {Object} [kwargs] configuration options additional to those specified
- *                          in {@link MultiWidget}.
- * @param {String} [dateFormat] a {@link time.strftime} format string for
- *                              formatting the date.
- * @param {String} [timeFormat] a {@link time.strftime} format string for
- *                              formatting the time.
+ * Splits Date input into two <input type="text"> elements.
  * @constructor
+ * @extends {MultiWidget}
+ * @param {Object=} kwargs
  */
-function SplitDateTimeWidget(kwargs) {
-  if (!(this instanceof Widget)) return new SplitDateTimeWidget(kwargs);
-  kwargs = extend({dateFormat: null, timeFormat: null}, kwargs || {});
-  var widgets = [
-    DateInput({attrs: kwargs.attrs, format: kwargs.dateFormat})
-  , TimeInput({attrs: kwargs.attrs, format: kwargs.timeFormat})
-  ];
-  MultiWidget.call(this, widgets, kwargs.attrs);
-}
-inheritFrom(SplitDateTimeWidget, MultiWidget);
+var SplitDateTimeWidget = MultiWidget.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new SplitDateTimeWidget(kwargs)
+    kwargs = object.extend({dateFormat: null, timeFormat: null}, kwargs)
+    var widgets = [
+      DateInput({attrs: kwargs.attrs, format: kwargs.dateFormat})
+    , TimeInput({attrs: kwargs.attrs, format: kwargs.timeFormat})
+    ]
+    MultiWidget.call(this, widgets, kwargs.attrs)
+  }
+})
 
 SplitDateTimeWidget.prototype.decompress = function(value) {
   if (value) {
     return [
       new Date(value.getFullYear(), value.getMonth(), value.getDate())
     , new Date(1900, 0, 1, value.getHours(), value.getMinutes(), value.getSeconds())
-    ];
+    ]
   }
-  return [null, null];
-};
+  return [null, null]
+}
 
 /**
- * Splits <code>Date</code> input into two
- * <code>&lt;input type="hidden"&gt;</code> elements.
- *
- * @param {Object} [kwargs] configuration options, as specified in
- *                          {@link SplitHiddenDateTimeWidget}.
+ * Splits Date input into two <input type="hidden"> elements.
  * @constructor
+ * @extends {SplitDateTimeWidget}
+ * @param {Object=} kwargs
  */
-function SplitHiddenDateTimeWidget(kwargs) {
-  if (!(this instanceof Widget)) return new SplitHiddenDateTimeWidget(kwargs);
-  SplitDateTimeWidget.call(this, kwargs);
-  for (var i = 0, l = this.widgets.length; i < l; i++) {
-    this.widgets[i].inputType = 'hidden';
-    this.widgets[i].isHidden = true;
+var SplitHiddenDateTimeWidget = SplitDateTimeWidget.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) return new SplitHiddenDateTimeWidget(kwargs)
+    SplitDateTimeWidget.call(this, kwargs)
+    for (var i = 0, l = this.widgets.length; i < l; i++) {
+      this.widgets[i].inputType = 'hidden'
+      this.widgets[i].isHidden = true
+    }
   }
+, isHidden: true
+})
+
+module.exports = {
+  Widget: Widget
+, Input: Input
+, TextInput: TextInput
+, PasswordInput: PasswordInput
+, HiddenInput: HiddenInput
+, MultipleHiddenInput: MultipleHiddenInput
+, FileInput: FileInput
+, FILE_INPUT_CONTRADICTION: FILE_INPUT_CONTRADICTION
+, ClearableFileInput: ClearableFileInput
+, Textarea: Textarea
+, DateInput: DateInput
+, DateTimeInput: DateTimeInput
+, TimeInput: TimeInput
+, CheckboxInput: CheckboxInput
+, Select: Select
+, NullBooleanSelect: NullBooleanSelect
+, SelectMultiple: SelectMultiple
+, RadioInput: RadioInput
+, RadioFieldRenderer: RadioFieldRenderer
+, RadioSelect: RadioSelect
+, CheckboxSelectMultiple: CheckboxSelectMultiple
+, MultiWidget: MultiWidget
+, SplitDateTimeWidget: SplitDateTimeWidget
+, SplitHiddenDateTimeWidget: SplitHiddenDateTimeWidget
 }
-inheritFrom(SplitHiddenDateTimeWidget, SplitDateTimeWidget);
-SplitHiddenDateTimeWidget.prototype.isHidden = true;

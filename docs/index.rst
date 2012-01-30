@@ -17,4 +17,5 @@ Contents:
    validators
    widgets
    formsets
+   models
    util

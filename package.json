@@ -1,21 +1,24 @@
 {
-  "name": "newforms",
-  "description": "Form validation and display library",
-  "version": "0.0.4alpha2",
-  "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
-  "tags": ["form", "validation", "display", "HTML"],
-  "main": "newforms",
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/insin/newforms.git"
-  },
-  "dependencies": {
-    "DOMBuilder": ">= 2.0.1"
-  },
-  "devDependencies": {
-    "qunit": ">= 0.2.9"
-  },
-  "scripts": {
+  "name": "newforms"
+, "description": "Form validation, display and type coercion for browsers and Node.js"
+, "version": "0.1.0"
+, "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)"
+, "tags": ["dualsided", "forms", "validation", "coercion"]
+, "main": "./src/newforms"
+, "repository": {
+    "type": "git"
+,   "url": "http://github.com/insin/newforms.git"
+  }
+, "dependencies": {
+    "Concur": "0.1.x"
+  , "DOMBuilder": ">=2.0.x"
+  , "isomorph": "0.1.x"
+  }
+, "devDependencies": {
+    "qunit": "0.2.x"
+  , "buildumb": "0.1.x"
+  }
+, "scripts": {
     "test": "node tests/tests.js"
   }
 }

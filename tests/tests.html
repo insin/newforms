@@ -1,31 +1,30 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <title>newforms QUnit Tests</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="Author" content="Jonathan Buchanan">
   <!-- Test framework -->
   <link rel="stylesheet" href="lib/qunit.css" type="text/css" media="screen">
   <script type="text/javascript" src="lib/qunit.js"></script>
-  <!-- Supporting libraries -->
-  <script type="text/javascript" src="lib/DOMBuilder.js"></script>
-  <script type="text/javascript" src="lib/DOMBuilder.html.js"></script>
   <!-- Code under test -->
-  <script type="text/javascript" src="../newforms.js"></script>
-  <!-- Custom test assertions -->
-  <script type="text/javascript" src="customAsserts.js"></script>
+  <script src="../newforms.js"></script>
+  <script>
+    var DOMBuilder =require('DOMBuilder')
+    DOMBuilder.mode = 'html'
+  </script>
+  <!-- Custom assertions -->
+  <script src="customAsserts.js"></script>
   <!-- Test cases -->
-  <script type="text/javascript" src="time.js"></script>
-  <script type="text/javascript" src="util.js"></script>
-  <script type="text/javascript" src="validators.js"></script>
-  <script type="text/javascript" src="forms.js"></script>
-  <script type="text/javascript" src="formsets.js"></script>
-  <script type="text/javascript" src="fields.js"></script>
-  <script type="text/javascript" src="models.js"></script>
-  <script type="text/javascript" src="errormessages.js"></script>
-  <script type="text/javascript" src="widgets.js"></script>
-  <script type="text/javascript" src="extra.js"></script>
-  <script type="text/javascript" src="regressions.js"></script>
+  <script src="util.js"></script>
+  <script src="validators.js"></script>
+  <script src="forms.js"></script>
+  <script src="formsets.js"></script>
+  <script src="fields.js"></script>
+  <script src="models.js"></script>
+  <script src="errormessages.js"></script>
+  <script src="widgets.js"></script>
+  <script src="extra.js"></script>
+  <script src="regressions.js"></script>
 </head>
 <body>
   <h1 id="qunit-header">newforms QUnit Tests</h1>

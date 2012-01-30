@@ -3,8 +3,7 @@ newforms
 ========
 
 A JavaScript port of `Django`_'s `form-handling library`_, which runs in
-browsers (tested in the latest Firefox, Chrome and Opera browsers... and
-IE 6-8) and in `Node.js`_ and `Akshell`_.
+browsers in `Node.js`_
 
 - `Fragile`_ - use of newforms and ``ModelChoiceField`` in `Sacrum`_
 - `Demo page`_
@@ -17,7 +16,6 @@ IE 6-8) and in `Node.js`_ and `Akshell`_.
 .. _`Demo page`: http://jonathan.buchanan153.users.btopenworld.com/newforms/demo.html
 .. _`Unit tests`: http://jonathan.buchanan153.users.btopenworld.com/newforms/tests/tests.html
 .. _`Node.js`: http://nodejs.org
-.. _`Akshell`: http://akshell.com
 
 Install
 =======
@@ -25,12 +23,6 @@ Install
 Node.js::
 
    npm install newforms
-
-Akshell:
-
-* Add the following to your app's ``manifest.json``::
-
-     "insin/newforms:0.0.3"
 
 Browser:
 
@@ -43,10 +35,12 @@ Dependencies
 
 `DOMBuilder`_ is required for interchangeable DOM Element / HTML generation.
 
-For Akshell, you don't need to pull in this dependency to use newforms, as the
-newforms app references the DOMBuilder app.
-
 .. _`DOMBuilder`: https://github.com/insin/DOMBuilder
+
+Documentation
+==============
+
+TBD
 
 Usage
 =====
@@ -60,8 +54,8 @@ operation.
 Client side features, such as hooking into the DOM for instant validation
 and feedback, will be the focus of future work.
 
-In lieu of documentation, head over to the `Django forms documentation`_ for a
-quick overview of the concepts behind this form library.
+In lieu of guide documentation, head over to the `Django forms documentation`_
+for a quick overview of the concepts behind this form library.
 
 Here's a quick guide to getting started with newforms.
 
@@ -77,10 +71,6 @@ Here's a quick guide to getting started with newforms.
   .. _`express`: http://expressjs.com/
   .. _`jade`: http://jade-lang.com/
   .. _`npm`: http://npmjs.org/
-
-* For Akshell, you can view a demo with source code at `insin.akshell.com`_.
-
-  .. _`insin.akshell.com`: http://insin.akshell.com
 
 * The ``new`` operator is **optional** for all objects provided by
   newforms, including forms and formset constructors created by factory
@@ -166,17 +156,7 @@ Here's a quick guide to getting started with newforms.
     methods make use of ``defaultRendering()``.
 
 The unit tests exercise the library thoroughly, so dip in for examples of
-further usage in the meantime. Here are some pointers:
-
-**Forms:**
-
-* `Custom validation per field and across fields <https://github.com/insin/newforms/blob/master/tests/forms.js#L710-791>`_
-* `Subclassing forms and faux-multiple inheritance/mixins <https://github.com/insin/newforms/blob/master/tests/forms.js#L1452-1529>`_
-* `Basic form processing in a view function <https://github.com/insin/newforms/blob/master/tests/forms.js#L1738-1799>`_
-
-**FormSets:**
-
-* `Basic FormSet usage <https://github.com/insin/newforms/blob/master/tests/formsets.js#L39-78>`_
+further usage in the meantime.
 
 MIT License
 ===========
