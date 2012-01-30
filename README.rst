@@ -1,6 +1,9 @@
-========
-newforms
-========
+========================
+newforms |travis_status|
+========================
+
+.. |travis_status| image:: https://secure.travis-ci.org/insin/newforms.png
+   :target: http://travis-ci.org/insin/newforms
 
 A JavaScript port of `Django`_'s `form-handling library`_, which runs in
 browsers in `Node.js`_

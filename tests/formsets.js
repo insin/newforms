@@ -488,10 +488,7 @@ QUnit.test("Invalid deleted form with ordering", 2, function() {
 
 // This is an example of creating a custom BaseFormSet for use with
 // FormSet.
-function BaseFavouriteDrinksFormSet(kwargs) {
-  forms.BaseFormSet.call(this, kwargs)
-}
-BaseFavouriteDrinksFormSet.prototype = new forms.BaseFormSet()
+var BaseFavouriteDrinksFormSet = forms.BaseFormSet.extend()
 BaseFavouriteDrinksFormSet.prototype.clean = function() {
   var seenDrinks = {}
   for (var i = 0, l = this.cleanedData().length; i < l; i++) {
@@ -790,10 +787,7 @@ QUnit.test("Empty forms are unbound", 3, function() {
 })
 
 QUnit.test("Empty formset is valid", 2, function() {
-  function EmptyFsetWontValidate(kwargs) {
-      forms.BaseFormSet.call(this, kwargs)
-  }
-  EmptyFsetWontValidate.prototype = new forms.BaseFormSet()
+  var EmptyFsetWontValidate = forms.BaseFormSet.extend()
   EmptyFsetWontValidate.prototype.clean = function() {
       throw forms.ValidationError("Clean method called")
   }

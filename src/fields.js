@@ -639,7 +639,7 @@ var EmailField = CharField.extend({
     if (!(this instanceof Field)) return new EmailField(kwargs)
     CharField.call(this, kwargs)
   }
-, defaultValidator: [validators.validateEmail]
+, defaultValidators: [validators.validateEmail]
 })
 EmailField.prototype.defaultErrorMessages =
     object.extend({}, EmailField.prototype.defaultErrorMessages, {

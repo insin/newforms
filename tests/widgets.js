@@ -664,10 +664,7 @@ QUnit.test("RadioSelect", 22, function() {
 "beatle J R Ringo false")
 
   // You can create your own custom renderers for RadioSelect to use.
-  function MyRenderer() {
-    forms.RadioFieldRenderer.apply(this, arguments)
-  }
-  MyRenderer.prototype = new forms.RadioFieldRenderer()
+  var MyRenderer = forms.RadioFieldRenderer.extend()
   MyRenderer.prototype.render = function() {
     var inputs = this.radioInputs()
     var items = []
@@ -685,10 +682,11 @@ QUnit.test("RadioSelect", 22, function() {
         "<label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked=\"checked\"> George</label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label>")
 
   // Or you can use custom RadioSelect fields that use your custom renderer
-  function CustomRadioSelect() {
-    forms.RadioSelect.call(this, {renderer: MyRenderer})
-  }
-  CustomRadioSelect.prototype = new forms.RadioSelect()
+  var CustomRadioSelect = forms.RadioSelect.extend({
+    constructor: function() {
+      forms.RadioSelect.call(this, {renderer: MyRenderer})
+    }
+  })
 
   w = new CustomRadioSelect()
   equal(""+w.render("beatle", "G", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
@@ -844,10 +842,7 @@ QUnit.test("CheckboxSelectMultiple", 19, function() {
 })
 
 QUnit.test("MultiWidget", 8, function() {
-  function MyMultiWidget(widgets, kwargs) {
-    forms.MultiWidget.call(this, widgets, kwargs)
-  }
-  MyMultiWidget.prototype = new forms.MultiWidget()
+  var MyMultiWidget = forms.MultiWidget.extend()
   MyMultiWidget.prototype.decompress = function(value) {
     if (value) {
       return value.split("__")

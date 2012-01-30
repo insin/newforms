@@ -1,25 +1,27 @@
 QUnit.module("extra stuff")
 
 QUnit.test("MultiWidget and MultiValueField", 7, function() {
-  function ComplexWidget(kwargs) {
-    if (!(this instanceof ComplexWidget)) return new ComplexWidget(kwargs)
-    var widgets = [
-      forms.TextInput()
-    , forms.SelectMultiple({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]})
-    , forms.SplitDateTimeWidget()
-    ]
-    forms.MultiWidget.call(this, widgets, kwargs)
-  }
-  ComplexWidget.prototype = new forms.MultiWidget()
+  var time = require('isomorph/lib/time')
+  var ComplexWidget = forms.MultiWidget.extend({
+    constructor: function(kwargs) {
+      if (!(this instanceof ComplexWidget)) return new ComplexWidget(kwargs)
+      var widgets = [
+        forms.TextInput()
+      , forms.SelectMultiple({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]})
+      , forms.SplitDateTimeWidget()
+      ]
+      forms.MultiWidget.call(this, widgets, kwargs)
+    }
+  })
   ComplexWidget.prototype.decompress = function(value) {
     if (value) {
       var data = value.split(",")
-      return [data[0], data[1], forms.util.time.strpdate(data[2], "%Y-%m-%d %H:%M:%S")]
+      return [data[0], data[1], time.strpdate(data[2], "%Y-%m-%d %H:%M:%S")]
     }
     return [null, null, null]
   }
   ComplexWidget.prototype.formatOutput = function(renderedWidgets) {
-      return DOMBuilder.createElement("div", {"class": "complex"}, renderedWidgets)
+    return DOMBuilder.createElement("div", {"class": "complex"}, renderedWidgets)
   }
 
   var w = ComplexWidget()
@@ -31,21 +33,22 @@ QUnit.test("MultiWidget and MultiValueField", 7, function() {
 "<option value=\"R\">Ringo</option>\n" +
 "</select><input type=\"text\" name=\"name_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"name_2_1\" value=\"06:24:00\"></div>")
 
-  function ComplexField(kwargs) {
-    if (!(this instanceof ComplexField)) return new ComplexField(kwargs)
-    kwargs.fields = [
-      forms.CharField()
-    , forms.MultipleChoiceField({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]})
-    , forms.SplitDateTimeField()
-    ]
-    forms.MultiValueField.call(this, kwargs)
-  }
-  ComplexField.prototype = new forms.MultiValueField()
+  var ComplexField = forms.MultiValueField.extend({
+    constructor: function(kwargs) {
+      if (!(this instanceof ComplexField)) return new ComplexField(kwargs)
+      kwargs.fields = [
+        forms.CharField()
+      , forms.MultipleChoiceField({choices: [["J", "John"], ["P", "Paul"], ["G", "George"], ["R", "Ringo"]]})
+      , forms.SplitDateTimeField()
+      ]
+      forms.MultiValueField.call(this, kwargs)
+    }
+  })
   ComplexField.prototype.compress = function(dataList) {
     if (dataList instanceof Array && dataList.length > 0) {
       return [dataList[0],
               dataList[1].join(""),
-              forms.util.time.strftime(dataList[2], "%Y-%m-%d %H:%M:%S")].join(",")
+              time.strftime(dataList[2], "%Y-%m-%d %H:%M:%S")].join(",")
     }
     return null
   }
@@ -94,7 +97,6 @@ QUnit.test("Extra attrs", 1, function() {
 "<p>F1: <input class=\"special\" maxlength=\"10\" type=\"text\" name=\"f1\"></p>\n" +
 "<p>F2: <input class=\"special\" type=\"text\" name=\"f2\"></p>")
 })
-
 
 QUnit.test("Data field", 4, function() {
   var DataForm = forms.Form({
