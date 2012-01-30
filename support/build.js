@@ -34,7 +34,7 @@ buildumb.build({
   }
 , exposeRequire: true
 , output: 'newforms.js'
-//, compress: 'newforms.min.js'
+, compress: 'newforms.min.js'
 , header: buildumb.formatTemplate(path.join(__dirname, 'header.js'),
                                   require('../package.json').version)
 })
