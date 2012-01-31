@@ -8,17 +8,18 @@ newforms |travis_status|
 A JavaScript port of `Django`_'s `form-handling library`_, which runs in
 browsers in `Node.js`_
 
+.. _`Django`: http://www.djangoproject.com
+.. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/
+.. _`Node.js`: http://nodejs.org
+
 - `Fragile`_ - use of newforms and ``ModelChoiceField`` in `Sacrum`_
 - `Demo page`_
-- `Unit tests`_
+- `QUnit tests`_
 
 .. _`Fragile`: http://jonathan.buchanan153.users.btopenworld.com/sacrum/fragile/fragile.html
 .. _`Sacrum`: https://github.com/insin/sacrum
-.. _`Django`: http://www.djangoproject.com
-.. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/
 .. _`Demo page`: http://jonathan.buchanan153.users.btopenworld.com/newforms/demo.html
-.. _`Unit tests`: http://jonathan.buchanan153.users.btopenworld.com/newforms/tests/tests.html
-.. _`Node.js`: http://nodejs.org
+.. _`QUnit tests`: http://jonathan.buchanan153.users.btopenworld.com/newforms/tests/tests.html
 
 Install
 =======
@@ -27,23 +28,29 @@ Node.js::
 
    npm install newforms
 
-Browser:
+Browser bundles (all dependencies included):
 
-* `newforms.min.js`_ - ~58KB (~15.5KB gzipped)
+* `newforms.js`_ - 207KB (47KB gzipped)
+* `newforms.min.js`_ - 76.5KB (20.7KB gzipped)
 
+   * Exposes newforms as a ``forms`` variable.
+   * Exposes a ``require()`` function which can be used to access bundled
+     dependencies:
+
+     * `Concur`_ - sugar for inheritance
+     * `DOMBuilder`_ - interchangeable DOM Element / HTML generation
+     * `isomorph`_ - miscellaneous utilities
+
+.. _`newforms.js`: https://github.com/insin/newforms/raw/master/newforms.js
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/master/newforms.min.js
-
-Dependencies
-============
-
-`DOMBuilder`_ is required for interchangeable DOM Element / HTML generation.
-
+.. _`Concur`: https://github.com/insin/concur
 .. _`DOMBuilder`: https://github.com/insin/DOMBuilder
+.. _`isomorph`: https://github.com/insin/isomorph
 
-Documentation
-==============
+Documentation (WIP)
+===================
 
-TBD
+http://newforms.readthedocs.org
 
 Usage
 =====
@@ -64,12 +71,13 @@ Here's a quick guide to getting started with newforms.
 
 .. _`Django forms documentation`: http://docs.djangoproject.com/en/dev/topics/forms/
 
-* For Node.js, if you install `express`_ and `jade`_ via ``npm`` you can run
-  ``node demo.js`` to see a basic example of newforms in action.
+* For Node.js, if you clone this repo and install `express`_ and `jade`_ via
+  ``npm``, you can run ``node demo/demo.js`` to see a basic example of newforms
+  in action.
 
   All example code will assume you've imported like so::
 
-     var forms = require('newforms');
+     var forms = require('newforms')
 
   .. _`express`: http://expressjs.com/
   .. _`jade`: http://jade-lang.com/
@@ -86,10 +94,10 @@ Here's a quick guide to getting started with newforms.
   default::
 
      var ContactForm = forms.Form({
-       subject: forms.CharField({maxLength: 100}),
-       message: forms.CharField(),
-       sender: forms.EmailField(),
-       ccMyself: forms.BooleanField({required: false})
+       subject: forms.CharField({maxLength: 100})
+     , message: forms.CharField()
+     , sender: forms.EmailField()
+     , ccMyself: forms.BooleanField({required: false})
      })
 
      var form = ContactForm()
@@ -100,8 +108,8 @@ Here's a quick guide to getting started with newforms.
   which inherits from ``BaseFormSet``::
 
      var ArticleForm = forms.Form({
-       title: forms.CharField(),
-       pubDate: forms.DateField()
+       title: forms.CharField()
+     , pubDate: forms.DateField()
      })
 
      var ArticleFormSet = forms.FormSet(ArticleForm, {extra: 1})

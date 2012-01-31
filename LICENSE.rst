@@ -1,5 +1,5 @@
 newforms
---------
+========
 
 Copyright (c) 2008, Jonathan Buchanan
 
@@ -21,7 +21,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Based on Django's django.forms
-------------------------------
+==============================
 
 Copyright (c) 2005, the Lawrence Journal-World
 All rights reserved.
@@ -52,7 +52,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Implementations of urlsplit and urljoin
----------------------------------------
+=======================================
 
 Copyright (c) 2010 Nick Galbreath
 http://code.google.com/p/stringencoders/source/browse/#svn/trunk/javascript
