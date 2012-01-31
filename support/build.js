@@ -20,14 +20,14 @@ buildumb.build({
   , 'node_modules/DOMBuilder/lib/dombuilder/html.js' : './dombuilder/html'
   , 'node_modules/DOMBuilder/support/DOMBuilder.js'  : 'DOMBuilder'
   // newforms
-  , 'src/util.js'       : './util'
-  , 'src/validators.js' : './validators'
-  , 'src/widgets.js'    : './widgets'
-  , 'src/fields.js'     : './fields'
-  , 'src/forms.js'      : './forms'
-  , 'src/formsets.js'   : './formsets'
-  , 'src/models.js'     : './models'
-  , 'src/newforms.js'   : 'newforms'
+  , 'lib/util.js'       : './util'
+  , 'lib/validators.js' : './validators'
+  , 'lib/widgets.js'    : './widgets'
+  , 'lib/fields.js'     : './fields'
+  , 'lib/forms.js'      : './forms'
+  , 'lib/formsets.js'   : './formsets'
+  , 'lib/models.js'     : './models'
+  , 'lib/newforms.js'   : 'newforms'
   }
 , exports: {
     'forms': 'newforms'

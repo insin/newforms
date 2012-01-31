@@ -4,7 +4,7 @@
 , "version": "0.1.0"
 , "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)"
 , "tags": ["dualsided", "forms", "validation", "coercion"]
-, "main": "./src/newforms"
+, "main": "./lib/newforms"
 , "repository": {
     "type": "git"
 ,   "url": "http://github.com/insin/newforms.git"

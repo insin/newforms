@@ -7,7 +7,7 @@ qunit.options.deps = [
 ]
 
 qunit.run({
-  code: {path: path.join(__dirname, '../src/newforms.js'), namespace: 'forms'}
+  code: {path: path.join(__dirname, '../lib/newforms.js'), namespace: 'forms'}
 , tests: [ path.join(__dirname, 'util.js')
          , path.join(__dirname, 'validators.js')
          , path.join(__dirname, 'forms.js')

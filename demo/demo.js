@@ -1,7 +1,7 @@
 var express = require('express')
   , jade = require('jade')
 
-var forms = require('../src/newforms')
+var forms = require('../lib/newforms')
 
 var app = express.createServer()
 
