@@ -18,7 +18,7 @@ browsers in `Node.js`_
 
 .. _`Fragile`: http://jonathan.buchanan153.users.btopenworld.com/sacrum/fragile/fragile.html
 .. _`Sacrum`: https://github.com/insin/sacrum
-.. _`Demo page`: http://jonathan.buchanan153.users.btopenworld.com/newforms/demo.html
+.. _`Demo page`: http://jonathan.buchanan153.users.btopenworld.com/newforms/demo/demo.html
 .. _`QUnit tests`: http://jonathan.buchanan153.users.btopenworld.com/newforms/tests/tests.html
 
 Install
