@@ -15,7 +15,7 @@
   , "isomorph": "0.1.x"
   }
 , "devDependencies": {
-    "qunit": "0.2.x"
+    "qqunit": "0.1.x"
   , "buildumb": "0.1.x"
   }
 , "scripts": {

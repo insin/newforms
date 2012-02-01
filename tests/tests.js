@@ -1,22 +1,24 @@
-var qunit = require('qunit')
-  , path = require('path')
+var path = require('path')
 
-qunit.options.deps = [
-  {path: path.join(__dirname, 'customAsserts.js')},
-  {path: 'DOMBuilder', namespace: 'DOMBuilder'}
-]
+var qqunit = require('qqunit')
+  , object = require('isomorph/lib/object')
 
-qunit.run({
-  code: {path: path.join(__dirname, '../lib/newforms.js'), namespace: 'forms'}
-, tests: [ path.join(__dirname, 'util.js')
-         , path.join(__dirname, 'validators.js')
-         , path.join(__dirname, 'forms.js')
-         , path.join(__dirname, 'formsets.js')
-         , path.join(__dirname, 'fields.js')
-         , path.join(__dirname, 'errormessages.js')
-         , path.join(__dirname, 'widgets.js')
-         , path.join(__dirname, 'extra.js')
-         , path.join(__dirname, 'models.js')
-         , path.join(__dirname, 'regressions.js')
-         ]
+object.extend(global, require('./customAsserts'))
+global.DOMBuilder = require('DOMBuilder')
+global.forms = require('../lib/newforms')
+
+var tests = [ 'util.js'
+            , 'validators.js'
+            , 'forms.js'
+            , 'formsets.js'
+            , 'fields.js'
+            , 'errormessages.js'
+            , 'widgets.js'
+            , 'extra.js'
+            , 'models.js'
+            , 'regressions.js'
+            ].map(function(t) { return path.join(__dirname, t) })
+
+qqunit.Runner.run(tests, function(stats) {
+  process.exit(stats.failed)
 })
