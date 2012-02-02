@@ -1,5 +1,5 @@
 /**
- * newforms 0.1.0 - https://github.com/insin/newforms
+ * newforms 0.1.1 - https://github.com/insin/newforms
  * MIT Licensed
  */
 ;(function() {
@@ -127,7 +127,10 @@ require.define("isomorph/lib/object", function(module, exports, require) {
  * Callbound version of Object.prototype.hasOwnProperty(), ready to be called
  * with an object and property name.
  */
-var hasOwn = Function.prototype.call.bind(Object.prototype.hasOwnProperty)
+var hasOwn = (function() {
+  var hasOwnProperty = Object.prototype.hasOwnProperty
+  return function(obj, prop) { return hasOwnProperty.call(obj, prop) }
+})()
 
 /**
  * Copies own properties from any given objects to a destination object.
@@ -1262,7 +1265,7 @@ function loopStatus(i, l) {
 // === DOMBuilder API ==========================================================
 
 var DOMBuilder = {
-  version: '2.1.0'
+  version: '2.1.1'
 
 // ------------------------------------------------------------------- Modes ---
 

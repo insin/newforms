@@ -1,7 +1,7 @@
 {
   "name": "newforms"
 , "description": "Form validation, display and type coercion for browsers and Node.js"
-, "version": "0.1.0"
+, "version": "0.1.1"
 , "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)"
 , "tags": ["dualsided", "forms", "validation", "coercion"]
 , "main": "./lib/newforms"
