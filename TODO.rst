@@ -35,10 +35,6 @@ https://code.djangoproject.com/changeset/16366
 
    GenericIPAddressField for IPv4/IPv6 validation
 
-https://code.djangoproject.com/changeset/16760
-
-   URLField.verifyExists is now deprecated
-
 https://code.djangoproject.com/changeset/17173
 https://code.djangoproject.com/changeset/17175
 
