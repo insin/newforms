@@ -13,6 +13,7 @@
     "Concur": "0.2.x"
   , "DOMBuilder": ">=2.0.x"
   , "isomorph": "0.1.x"
+  , "punycode": "1.0.x"
   }
 , "devDependencies": {
     "qqunit": "0.1.x"

@@ -5,15 +5,17 @@ var buildumb = require('buildumb')
 buildumb.build({
   root: path.normalize(path.join(__dirname, '..'))
 , modules: {
+  // punycode
+    'node_modules/punycode/punycode.js': 'punycode'
   // isomorph
-    'node_modules/isomorph/lib/is.js'     : ['isomorph/lib/is', './is']
+  , 'node_modules/isomorph/lib/is.js'     : ['isomorph/lib/is', './is']
   , 'node_modules/isomorph/lib/format.js' : 'isomorph/lib/format'
   , 'node_modules/isomorph/lib/object.js' : 'isomorph/lib/object'
   , 'node_modules/isomorph/lib/array.js'  : 'isomorph/lib/array'
   , 'node_modules/isomorph/lib/copy.js'   : 'isomorph/lib/copy'
   , 'node_modules/isomorph/lib/time.js'   : 'isomorph/lib/time'
   // Concur
-  , 'node_modules/Concur/lib/concur.js'   : 'Concur'
+  , 'node_modules/Concur/lib/concur.js': 'Concur'
   // DOMBuilder
   , 'node_modules/DOMBuilder/lib/dombuilder/core.js' : ['./dombuilder/core', './core']
   , 'node_modules/DOMBuilder/lib/dombuilder/dom.js'  : './dombuilder/dom'
