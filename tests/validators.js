@@ -1,6 +1,6 @@
 QUnit.module("validators")
 
-QUnit.test("validators", 78, function() {
+QUnit.test("validators", 80, function() {
   var now = new Date(90000)
   var later = new Date(100000)
   var earlier = new Date(80000)
@@ -15,6 +15,11 @@ QUnit.test("validators", 78, function() {
   , [forms.validateEmail, "a @x.cz", forms.ValidationError]
   , [forms.validateEmail, "something@@somewhere.com", forms.ValidationError]
   , [forms.validateEmail, "email@127.0.0.1", forms.ValidationError]
+
+  // Quoted-string format (CR not allowed)
+  , [forms.validateEmail, '"\\\011"@here.com', null]
+  , [forms.validateEmail, '"\\\012"@here.com', forms.ValidationError]
+
   , [forms.validateSlug, "slug-ok", null]
   , [forms.validateSlug, "longer-slug-still-ok", null]
   , [forms.validateSlug, "--------", null]
