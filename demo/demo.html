@@ -58,7 +58,7 @@
     ]]
   ]
 
-  var ContactForm = forms.Form({
+  var ContactForm = forms.Form.extend({
     name:
         forms.CharField({minLength: 1, maxLength: 100, label: "Your name"}),
     age:
@@ -157,7 +157,7 @@
     }
   })
 
-  var ContactFormFormSet = forms.FormSet(ContactForm, {extra: 1, canDelete: true})
+  var ContactFormFormSet = forms.formsetFactory(ContactForm, {extra: 1, canDelete: true})
 
   var initial = [{
     name: "Test"

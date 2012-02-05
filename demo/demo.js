@@ -14,7 +14,7 @@ app.configure(function() {
   app.use(express.bodyParser())
 })
 
-var TestForm = forms.Form({
+var TestForm = forms.Form.extend({
   username: forms.CharField()
 , password: forms.CharField({widget: forms.PasswordInput})
 
@@ -31,13 +31,13 @@ var TestForm = forms.Form({
 app.all('/', function(req, res) {
   var form, msg = 'Log In'
   if (req.method == 'POST') {
-    form = TestForm({data: req.body})
+    form = new TestForm({data: req.body})
     if (form.isValid()) {
       msg = 'Welcome back'
     }
   }
   else {
-    form = TestForm()
+    form = new TestForm()
   }
   res.render('demo.jade', {
     form: form
