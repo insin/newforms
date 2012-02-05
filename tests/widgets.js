@@ -900,20 +900,20 @@ QUnit.test("SplitDateTimeWidget", 12, function() {
 
   // Django #13390  - SplitDateTimeWidget should recognise when it's no
   // longer required.
-  var SplitDateForm = forms.Form({
+  var SplitDateForm = forms.Form.extend({
     field: forms.DateTimeField({required: false, widget: forms.SplitDateTimeWidget})
   })
-  var f = SplitDateForm({data: {field: ""}})
+  var f = new SplitDateForm({data: {field: ""}})
   strictEqual(f.isValid(), true)
-  f = SplitDateForm({data: {field: ["", ""]}})
+  f = new SplitDateForm({data: {field: ["", ""]}})
   strictEqual(f.isValid(), true)
 
-  var SplitDateRequiredForm = forms.Form({
+  var SplitDateRequiredForm = forms.Form.extend({
     field: forms.DateTimeField({required: true, widget: forms.SplitDateTimeWidget})
   })
-  f = SplitDateRequiredForm({data: {field: ""}})
+  f = new SplitDateRequiredForm({data: {field: ""}})
   strictEqual(f.isValid(), false)
-  f = SplitDateRequiredForm({data: {field: ["", ""]}})
+  f = new SplitDateRequiredForm({data: {field: ["", ""]}})
   strictEqual(f.isValid(), false)
 })
 

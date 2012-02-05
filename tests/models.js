@@ -57,12 +57,12 @@ object.extend(forms.ModelInterface, {
   }
 })
 
-var ModelTestForm = forms.Form({
+var ModelTestForm = forms.Form.extend({
   thing: forms.ModelChoiceField(ThingQuery())
 })
 
 QUnit.test('ModelChoiceField', 16, function() {
-  var form = ModelTestForm()
+  var form = new ModelTestForm()
   equal(''+form.boundField('thing'),
 '<select name="thing" id="id_thing">\n' +
 '<option value="" selected="selected">---------</option>\n' +

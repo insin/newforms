@@ -1,3 +1,15 @@
+0.2.0 / 2012-02-05
+==================
+
+* Backwards-incompatible change to ``forms.Form`` -- this used to be a factory
+  function, but is now a constructor created with `Concur`_ which, when
+  extended from, will move given Field properties into the new constructor's
+  baseFields prototype property
+
+* Backwards-incompatible change: renamed ``forms.FormSet`` to
+  ``forms.formsetFactory`` so it's named like the factory function it is, rather
+  than like a constructor
+
 0.1.1 / 2012-02-01
 ==================
 

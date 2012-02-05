@@ -2,13 +2,13 @@ QUnit.module("forms")
 
 ;(function() {
 
-var Person = forms.Form({
+var Person = forms.Form.extend({
   first_name: forms.CharField()
 , last_name: forms.CharField()
 , birthday: forms.DateField()
 })
 
-var PersonNew = forms.Form({
+var PersonNew = forms.Form.extend({
   first_name: forms.CharField({
     widget: forms.TextInput({attrs: {id: "first_name_id"}})
   })
@@ -18,7 +18,7 @@ var PersonNew = forms.Form({
 
 QUnit.test("Form", 12, function() {
   // Pass a data object when initialising
-  var p = Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}})
+  var p = new Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}})
   strictEqual(p.isBound, true)
   strictEqual(p.errors().isPopulated(), false)
   strictEqual(p.isValid(), true)
@@ -53,7 +53,7 @@ QUnit.test("Form", 12, function() {
 
 QUnit.test("Empty data object", 10, function() {
   // Empty objects are valid, too
-  var p = Person({data: {}})
+  var p = new Person({data: {}})
   strictEqual(p.isBound, true)
   deepEqual(p.errors("first_name").errors, ["This field is required."])
   deepEqual(p.errors("last_name").errors, ["This field is required."])
@@ -85,7 +85,7 @@ QUnit.test("Unbound form", 8, function() {
   // If you don't pass any "data" values, or if you pass null, the Form will
   // be considered unbound and won't do any validation. Form.errors will be
   // empty *but* Form.isValid() will return False.
-  var p = Person()
+  var p = new Person()
   strictEqual(p.isBound, false)
   strictEqual(p.errors().isPopulated(), false)
   strictEqual(p.isValid(), false)
@@ -109,7 +109,7 @@ QUnit.test("Unbound form", 8, function() {
 })
 
 QUnit.test("Validation errors", 12, function() {
-  var p = Person({data: {last_name: "Lennon"}})
+  var p = new Person({data: {last_name: "Lennon"}})
   deepEqual(p.errors("first_name").errors, ["This field is required."])
   deepEqual(p.errors("birthday").errors, ["This field is required."])
   deepEqual(p.isValid(), false)
@@ -127,7 +127,7 @@ QUnit.test("Validation errors", 12, function() {
   equal(""+p.boundField("first_name").errors().asText(),
         "* This field is required.")
 
-  p = Person()
+  p = new Person()
   equal(""+p.boundField("first_name"),
         "<input type=\"text\" name=\"first_name\" id=\"id_first_name\">")
   equal(""+p.boundField("last_name"),
@@ -142,7 +142,7 @@ QUnit.test("cleanedData only fields", 6, function() {
   // example, we pass a bunch of extra fields to the form constructor, but
   // cleanedData contains only the form's fields.
   var data = {first_name: "John", last_name: "Lennon", birthday: "1940-10-9", extra1: "hello", extra2: "hello"}
-  var p = Person({data: data})
+  var p = new Person({data: data})
   strictEqual(p.isValid(), true)
   equal(p.cleanedData.first_name, "John")
   equal(p.cleanedData.last_name, "Lennon")
@@ -157,26 +157,26 @@ QUnit.test("Optional data", 8, function() {
   // not required. In this example, the data object doesn't include a value
   // for the "nick_name" field, but cleanedData includes it. For CharFields,
   // it's set to the empty String.
-  var OptionalPersonForm = forms.Form({
+  var OptionalPersonForm = forms.Form.extend({
     first_name: forms.CharField()
   , last_name: forms.CharField()
   , nick_name: forms.CharField({required: false})
   })
   var data = {first_name: "John", last_name: "Lennon"}
-  var f = OptionalPersonForm({data: data})
+  var f = new OptionalPersonForm({data: data})
   strictEqual(f.isValid(), true)
   strictEqual(f.cleanedData.nick_name, "")
   equal(f.cleanedData.first_name, "John")
   equal(f.cleanedData.last_name, "Lennon")
 
   // For DateFields, it's set to null
-  OptionalPersonForm = forms.Form({
+  OptionalPersonForm = forms.Form.extend({
     first_name: forms.CharField()
   , last_name: forms.CharField()
   , birth_date: forms.DateField({required: false})
   })
   data = {first_name: "John", last_name: "Lennon"}
-  f = OptionalPersonForm({data: data})
+  f = new OptionalPersonForm({data: data})
   strictEqual(f.isValid(), true)
   strictEqual(f.cleanedData.birth_date, null)
   equal(f.cleanedData.first_name, "John")
@@ -188,7 +188,7 @@ QUnit.test("autoId", 3, function() {
   // If it's a string that contains "{name}", newforms will use that as a
   // format string into which the field's name will be inserted. It will also
   // put a <label> around the human-readable labels for a field.
-  var p = Person({autoId: "{name}_id"})
+  var p = new Person({autoId: "{name}_id"})
   equal(p.asTable(),
 "<tr><th><label for=\"first_name_id\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"first_name_id\"></td></tr>\n" +
 "<tr><th><label for=\"last_name_id\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"last_name_id\"></td></tr>\n" +
@@ -206,7 +206,7 @@ QUnit.test("autoId", 3, function() {
 QUnit.test("autoId true", 1, function() {
   // If autoId is any truthy value whose string representation does not
   // contain "{name}", the "id" attribute will be the name of the field.
-  var p = Person({autoId: true})
+  var p = new Person({autoId: true})
   equal(p.asUL(),
 "<li><label for=\"first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"first_name\"></li>\n" +
 "<li><label for=\"last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name\"></li>\n" +
@@ -216,7 +216,7 @@ QUnit.test("autoId true", 1, function() {
 QUnit.test("autoId false", 1, function() {
   // If autoId is any falsy value, an "id" attribute won't be output unless it
   // was manually entered.
-  var p = Person({autoId: false})
+  var p = new Person({autoId: false})
   equal(p.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
@@ -227,7 +227,7 @@ QUnit.test("id on field", 1, function() {
   // In this example, autoId is false, but the "id" attribute for the
   // "first_name" field is given. Also note that field gets a <label>, while
   // the others don't.
-  var p = PersonNew({autoId: false})
+  var p = new PersonNew({autoId: false})
   equal(p.asUL(),
 "<li><label for=\"first_name_id\">First name:</label> <input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
@@ -237,7 +237,7 @@ QUnit.test("id on field", 1, function() {
 QUnit.test("autoId on form and field", 1, function() {
   // If the "id" attribute is specified in the Form and autoId is true, the
   // "id" attribute in the Form gets precedence.
-  var p = PersonNew({autoId: true})
+  var p = new PersonNew({autoId: true})
   equal(p.asUL(),
 "<li><label for=\"first_name_id\">First name:</label> <input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>\n" +
 "<li><label for=\"last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name\"></li>\n" +
@@ -245,48 +245,48 @@ QUnit.test("autoId on form and field", 1, function() {
 })
 
 QUnit.test("Various boolean values", 8, function() {
-  var SignupForm = forms.Form({
+  var SignupForm = forms.Form.extend({
     email: forms.EmailField()
   , get_spam: forms.BooleanField()
   })
-  var f = SignupForm({autoId: false})
+  var f = new SignupForm({autoId: false})
   equal(""+f.boundField("email"),
         "<input type=\"text\" name=\"email\">")
   equal(""+f.boundField("get_spam"),
         "<input type=\"checkbox\" name=\"get_spam\">")
 
-  f = SignupForm({data: {email: "test@example.com", get_spam: true}, autoId: false})
+  f = new SignupForm({data: {email: "test@example.com", get_spam: true}, autoId: false})
   equal(""+f.boundField("email"),
         "<input type=\"text\" name=\"email\" value=\"test@example.com\">")
   equal(""+f.boundField("get_spam"),
         "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">")
 
   // Values of "true" or "True" should be rendered without a value
-  f = SignupForm({data: {email: "test@example.com", get_spam: "true"}, autoId: false})
+  f = new SignupForm({data: {email: "test@example.com", get_spam: "true"}, autoId: false})
   equal(""+f.boundField("get_spam"),
         "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">")
 
-  f = SignupForm({data: {email: "test@example.com", get_spam: "True"}, autoId: false})
+  f = new SignupForm({data: {email: "test@example.com", get_spam: "True"}, autoId: false})
   equal(""+f.boundField("get_spam"),
         "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">")
 
   // Values of "false" or "False" should render unchecked
-  f = SignupForm({data: {email: "test@example.com", get_spam: "false"}, autoId: false})
+  f = new SignupForm({data: {email: "test@example.com", get_spam: "false"}, autoId: false})
   equal(""+f.boundField("get_spam"),
         "<input type=\"checkbox\" name=\"get_spam\">")
 
-  f = SignupForm({data: {email: "test@example.com", get_spam: "False"}, autoId: false})
+  f = new SignupForm({data: {email: "test@example.com", get_spam: "False"}, autoId: false})
   equal(""+f.boundField("get_spam"),
         "<input type=\"checkbox\" name=\"get_spam\">")
 })
 
 QUnit.test("Widget output", 10, function() {
   // Any Field can have a Widget constructor passed to its constructor
-  var ContactForm = forms.Form({
+  var ContactForm = forms.Form.extend({
     subject: forms.CharField()
   , message: forms.CharField({widget: forms.Textarea})
   })
-  var f = ContactForm({autoId: false})
+  var f = new ContactForm({autoId: false})
   equal(""+f.boundField("subject"),
         "<input type=\"text\" name=\"subject\">")
   equal(""+f.boundField("message"),
@@ -302,13 +302,13 @@ QUnit.test("Widget output", 10, function() {
         "<input type=\"hidden\" name=\"subject\">")
 
   //The "widget" parameter to a Field can also be an instance
-  var ContactForm = forms.Form({
+  var ContactForm = forms.Form.extend({
     subject: forms.CharField()
   , message: forms.CharField({
       widget: forms.Textarea({attrs: {rows: 80, cols: 20}})
     })
   })
-  f = ContactForm({autoId: false})
+  f = new ContactForm({autoId: false})
   equal(""+f.boundField("message"),
         "<textarea rows=\"80\" cols=\"20\" name=\"message\"></textarea>")
 
@@ -316,7 +316,7 @@ QUnit.test("Widget output", 10, function() {
   // asHidden()
   equal(""+f.boundField("message").asText(),
         "<input type=\"text\" name=\"message\">")
-  f = ContactForm({data: {subject: "Hello", message: "I love you."}, autoId: false})
+  f = new ContactForm({data: {subject: "Hello", message: "I love you."}, autoId: false})
   equal(""+f.boundField("subject").asTextarea(),
         "<textarea rows=\"10\" cols=\"40\" name=\"subject\">Hello</textarea>")
   equal(""+f.boundField("message").asText(),
@@ -327,17 +327,17 @@ QUnit.test("Widget output", 10, function() {
 
 QUnit.test("Forms with choices", 9, function() {
   // For a form with a <select>, use ChoiceField
-  var FrameworkForm = forms.Form({
+  var FrameworkForm = forms.Form.extend({
     name: forms.CharField()
   , language: forms.ChoiceField({choices: [["P", "Python"], ["J", "Java"]]})
   })
-  var f = FrameworkForm({autoId: false})
+  var f = new FrameworkForm({autoId: false})
   equal(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "<option value=\"P\">Python</option>\n" +
 "<option value=\"J\">Java</option>\n" +
 "</select>")
-  f = FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
+  f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
   equal(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "<option value=\"P\" selected=\"selected\">Python</option>\n" +
@@ -347,11 +347,11 @@ QUnit.test("Forms with choices", 9, function() {
   // A subtlety: If one of the choices' value is the empty string and the form
   // is unbound, then the <option> for the empty-string choice will get
   // selected="selected".
-  FrameworkForm = forms.Form({
+  FrameworkForm = forms.Form.extend({
     name: forms.CharField()
   , language: forms.ChoiceField({choices: [["", "------"],["P", "Python"], ["J", "Java"]]})
   })
-  f = FrameworkForm({autoId: false})
+  f = new FrameworkForm({autoId: false})
   equal(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "<option value=\"\" selected=\"selected\">------</option>\n" +
@@ -360,20 +360,20 @@ QUnit.test("Forms with choices", 9, function() {
 "</select>")
 
   // You can specify widget attributes in the Widget constructor
-  FrameworkForm = forms.Form({
+  FrameworkForm = forms.Form.extend({
     name: forms.CharField()
   , language: forms.ChoiceField({
       choices: [["P", "Python"], ["J", "Java"]]
     , widget: forms.Select({attrs: {"class": "foo"}})
     })
   })
-  f = FrameworkForm({autoId: false})
+  f = new FrameworkForm({autoId: false})
   equal(""+f.boundField("language"),
 "<select class=\"foo\" name=\"language\">\n" +
 "<option value=\"P\">Python</option>\n" +
 "<option value=\"J\">Java</option>\n" +
 "</select>")
-  f = FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
+  f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
   equal(""+f.boundField("language"),
 "<select class=\"foo\" name=\"language\">\n" +
 "<option value=\"P\" selected=\"selected\">Python</option>\n" +
@@ -383,7 +383,7 @@ QUnit.test("Forms with choices", 9, function() {
   // When passing a custom widget instance to ChoiceField, note that setting
   // "choices" on the widget is meaningless. The widget will use the choices
   // defined on the Field, not the ones defined on the Widget.
-  FrameworkForm = forms.Form({
+  FrameworkForm = forms.Form.extend({
     name: forms.CharField()
   , language: forms.ChoiceField({
       choices: [["P", "Python"], ["J", "Java"]]
@@ -393,13 +393,13 @@ QUnit.test("Forms with choices", 9, function() {
       })
     })
   })
-  f = FrameworkForm({autoId: false})
+  f = new FrameworkForm({autoId: false})
   equal(""+f.boundField("language"),
 "<select class=\"foo\" name=\"language\">\n" +
 "<option value=\"P\">Python</option>\n" +
 "<option value=\"J\">Java</option>\n" +
 "</select>")
-  f = FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
+  f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
   equal(""+f.boundField("language"),
 "<select class=\"foo\" name=\"language\">\n" +
 "<option value=\"P\" selected=\"selected\">Python</option>\n" +
@@ -407,11 +407,11 @@ QUnit.test("Forms with choices", 9, function() {
 "</select>")
 
   // You can set a ChoiceField's choices after the fact
-  FrameworkForm = forms.Form({
+  FrameworkForm = forms.Form.extend({
     name: forms.CharField()
   , language: forms.ChoiceField()
   })
-  f = FrameworkForm({autoId: false})
+  f = new FrameworkForm({autoId: false})
   equal(""+f.boundField("language"),
 "<select name=\"language\">\n" +
 "</select>")
@@ -425,11 +425,11 @@ QUnit.test("Forms with choices", 9, function() {
 
 QUnit.test("Forms with radio", 7, function() {
   // Add {widget: RadioSelect} to use that widget with a ChoiceField
-  var FrameworkForm = forms.Form({
+  var FrameworkForm = forms.Form.extend({
     name: forms.CharField()
   , language: forms.ChoiceField({choices: [["P", "Python"], ["J", "Java"]], widget: forms.RadioSelect})
   })
-  var f = FrameworkForm({autoId: false})
+  var f = new FrameworkForm({autoId: false})
   equal(""+f.boundField("language"),
 "<ul>\n" +
 "<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
@@ -451,7 +451,7 @@ QUnit.test("Forms with radio", 7, function() {
   // Regarding autoId and <label>, RadioSelect is a special case. Each radio
   // button gets a distinct ID, formed by appending an underscore plus the
   // button's zero-based index.
-  f = FrameworkForm({autoId: "id_{name}"})
+  f = new FrameworkForm({autoId: "id_{name}"})
   equal(""+f.boundField("language"),
 "<ul>\n" +
 "<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
@@ -484,25 +484,25 @@ QUnit.test("Forms with radio", 7, function() {
 QUnit.test("Forms with multiple choice", 4, function() {
   // MultipleChoiceField is a special case, as its data is required to be a
   // list.
-  var SongForm = forms.Form({
+  var SongForm = forms.Form.extend({
     name: forms.CharField()
   , composers: forms.MultipleChoiceField()
   })
-  var f = SongForm({autoId: false})
+  var f = new SongForm({autoId: false})
   equal(""+f.boundField("composers"),
 "<select name=\"composers\" multiple=\"multiple\">\n" +
 "</select>")
-  SongForm = forms.Form({
+  SongForm = forms.Form.extend({
     name: forms.CharField(),
     composers: forms.MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
   })
-  f = SongForm({autoId: false})
+  f = new SongForm({autoId: false})
   equal(""+f.boundField("composers"),
 "<select name=\"composers\" multiple=\"multiple\">\n" +
 "<option value=\"J\">John Lennon</option>\n" +
 "<option value=\"P\">Paul McCartney</option>\n" +
 "</select>")
-  f = SongForm({data: {name: "Yesterday", composers: ["P"]}, autoId: false})
+  f = new SongForm({data: {name: "Yesterday", composers: ["P"]}, autoId: false})
   equal(""+f.boundField("name"),
 "<input type=\"text\" name=\"name\" value=\"Yesterday\">")
   equal(""+f.boundField("composers"),
@@ -513,7 +513,7 @@ QUnit.test("Forms with multiple choice", 4, function() {
 })
 
 QUnit.test("Hidden data", 5, function() {
-  var SongForm = forms.Form({
+  var SongForm = forms.Form.extend({
     name: forms.CharField()
   , composers: forms.MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
   })
@@ -521,18 +521,18 @@ QUnit.test("Hidden data", 5, function() {
   // MultipleChoiceField rendered asHidden() is a special case. Because it can
   // have multiple values, its asHidden() renders multiple
   // <input type="hidden"> tags.
-  var f = SongForm({data: {name: "Yesterday", composers: ["P"]}, autoId: false})
+  var f = new SongForm({data: {name: "Yesterday", composers: ["P"]}, autoId: false})
   equal(""+f.boundField("composers").asHidden(),
 "<input type=\"hidden\" name=\"composers\" value=\"P\">")
-  f = SongForm({data: {name: "Yesterday", composers: ["P", "J"]}, autoId: false})
+  f = new SongForm({data: {name: "Yesterday", composers: ["P", "J"]}, autoId: false})
   equal(""+f.boundField("composers").asHidden(),
 "<input type=\"hidden\" name=\"composers\" value=\"P\"><input type=\"hidden\" name=\"composers\" value=\"J\">")
 
   // DateTimeField rendered asHidden() is special too
-  var MessageForm = forms.Form({
+  var MessageForm = forms.Form.extend({
     when: forms.SplitDateTimeField()
   })
-  f = MessageForm({data: {when_0: "1992-01-01", when_1: "01:01"}})
+  f = new MessageForm({data: {when_0: "1992-01-01", when_1: "01:01"}})
   strictEqual(f.isValid(), true)
   equal(""+f.boundField("when"),
 "<input type=\"text\" name=\"when_0\" id=\"id_when_0\" value=\"1992-01-01\"><input type=\"text\" name=\"when_1\" id=\"id_when_1\" value=\"01:01\">")
@@ -543,26 +543,26 @@ QUnit.test("Hidden data", 5, function() {
 QUnit.test("Mutiple choice checkbox", 3, function() {
   // MultipleChoiceField can also be used with the CheckboxSelectMultiple
   // widget.
-  var SongForm = forms.Form({
+  var SongForm = forms.Form.extend({
     name: forms.CharField()
   , composers: forms.MultipleChoiceField({
       choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]
     , widget: forms.CheckboxSelectMultiple
     })
   })
-  var f = SongForm({autoId: false})
+  var f = new SongForm({autoId: false})
   equal(""+f.boundField("composers"),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\"> John Lennon</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
 "</ul>")
-  f = SongForm({data: {composers: ["J"]}, autoId: false})
+  f = new SongForm({data: {composers: ["J"]}, autoId: false})
   equal(""+f.boundField("composers"),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"> John Lennon</label></li>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
 "</ul>")
-  f = SongForm({data: {composers: ["J", "P"]}, autoId: false})
+  f = new SongForm({data: {composers: ["J", "P"]}, autoId: false})
   equal(""+f.boundField("composers"),
 "<ul>\n" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"> John Lennon</label></li>\n" +
@@ -571,7 +571,7 @@ QUnit.test("Mutiple choice checkbox", 3, function() {
 })
 
 QUnit.test("Checkbox autoId", 1, function() {
-  var SongForm = forms.Form({
+  var SongForm = forms.Form.extend({
     name: forms.CharField()
   , composers: forms.MultipleChoiceField({
       choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]
@@ -581,7 +581,7 @@ QUnit.test("Checkbox autoId", 1, function() {
   // Regarding autoId, CheckboxSelectMultiple is another special case. Each
   // checkbox gets a distinct ID, formed by appending an underscore plus the
   // checkbox's zero-based index.
-  var f = SongForm({autoId: "{name}_id"})
+  var f = new SongForm({autoId: "{name}_id"})
   equal(""+f.boundField("composers"),
 "<ul>\n" +
 "<li><label for=\"composers_id_0\"><input id=\"composers_id_0\" type=\"checkbox\" name=\"composers\" value=\"J\"> John Lennon</label></li>\n" +
@@ -590,7 +590,7 @@ QUnit.test("Checkbox autoId", 1, function() {
 })
 
 QUnit.test("Multiple choice list data", 2, function() {
-  var SongForm = forms.Form({
+  var SongForm = forms.Form.extend({
     name: forms.CharField()
   , composers: forms.MultipleChoiceField({
       choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]
@@ -599,18 +599,18 @@ QUnit.test("Multiple choice list data", 2, function() {
   })
 
   var data = {name: "Yesterday", composers: ["J", "P"]}
-  var f = SongForm(data)
+  var f = new SongForm(data)
   equal(f.errors().isPopulated(), false)
 
   // This also happens to work with Strings if choice values are single
   // characters.
   var data = {name: "Yesterday", composers: "JP"}
-  var f = SongForm(data)
+  var f = new SongForm(data)
   equal(f.errors().isPopulated(), false)
 })
 
 QUnit.test("Multiple hidden", 8, function() {
-  var SongForm = forms.Form({
+  var SongForm = forms.Form.extend({
     name: forms.CharField()
   , composers: forms.MultipleChoiceField({
       choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]
@@ -619,7 +619,7 @@ QUnit.test("Multiple hidden", 8, function() {
   })
 
   // The MultipleHiddenInput widget renders multiple values as hidden fields
-  var SongFormHidden = forms.Form({
+  var SongFormHidden = forms.Form.extend({
     name: forms.CharField()
   , composers: forms.MultipleChoiceField({
       choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]
@@ -627,19 +627,19 @@ QUnit.test("Multiple hidden", 8, function() {
     })
   })
 
-  var f = SongFormHidden({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false})
+  var f = new SongFormHidden({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false})
   equal(""+f.asUL(),
 "<li>Name: <input type=\"text\" name=\"name\" value=\"Yesterday\"><input type=\"hidden\" name=\"composers\" value=\"J\"><input type=\"hidden\" name=\"composers\" value=\"P\"></li>")
 
   // When using MultipleChoiceField, the framework expects a list of input and
   // returns a list of input.
-  f = SongForm({data: {name: "Yesterday"}, autoId: false})
+  f = new SongForm({data: {name: "Yesterday"}, autoId: false})
   deepEqual(f.errors("composers").errors, ["This field is required."])
-  f = SongForm({data: {name: "Yesterday", composers: ["J"]}, autoId: false})
+  f = new SongForm({data: {name: "Yesterday", composers: ["J"]}, autoId: false})
   strictEqual(f.errors().isPopulated(), false)
   deepEqual(f.cleanedData["composers"], ["J"])
   equal(f.cleanedData["name"], "Yesterday")
-  f = SongForm({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false})
+  f = new SongForm({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false})
   strictEqual(f.errors().isPopulated(), false)
   deepEqual(f.cleanedData["composers"], ["J", "P"])
   equal(f.cleanedData["name"], "Yesterday")
@@ -647,7 +647,7 @@ QUnit.test("Multiple hidden", 8, function() {
 
 QUnit.test("Escaping", 2, function() {
   // Validation errors are HTML-escaped when output as HTML
-  var EscapingForm = forms.Form({
+  var EscapingForm = forms.Form.extend({
     specialName: forms.CharField({label: "<em>Special</em> Field"})
   , specialSafeName: forms.CharField({label: DOMBuilder.html.markSafe("<em>Special</em> Field")})
 
@@ -660,11 +660,11 @@ QUnit.test("Escaping", 2, function() {
               "'<b>" + this.cleanedData.specialSafeName + "</b>' is a safe string"))
     }
   })
-  var f = EscapingForm({data: {specialName: "Nothing to escape", specialSafeName: "Nothing to escape"}, autoId: false})
+  var f = new EscapingForm({data: {specialName: "Nothing to escape", specialSafeName: "Nothing to escape"}, autoId: false})
   equal(""+f,
 "<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Nothing to escape&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Nothing to escape\"></td></tr>\n" +
 "<tr><th><em>Special</em> Field:</th><td><ul class=\"errorlist\"><li>'<b>Nothing to escape</b>' is a safe string</li></ul><input type=\"text\" name=\"specialSafeName\" value=\"Nothing to escape\"></td></tr>")
-  f = EscapingForm({
+  f = new EscapingForm({
     data: {
       specialName: "Should escape < & > and <script>alert('xss')</script>"
     , specialSafeName: "<i>Do not escape error message</i>"
@@ -685,7 +685,7 @@ QUnit.test("Validating multiple fields", 20, function() {
   // this.cleanedData, which is an object containing all the data that has
   // been cleaned *so far*, in order by the fields, including the current
   // field (e.g., the field XXX if you're in clean_XXX()).
-  var UserRegistration = forms.Form({
+  var UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10})
   , password1: forms.CharField({widget: forms.PasswordInput})
   , password2: forms.CharField({widget: forms.PasswordInput})
@@ -697,15 +697,15 @@ QUnit.test("Validating multiple fields", 20, function() {
       return this.cleanedData.password2
     }
   })
-  var f = UserRegistration({autoId: false})
+  var f = new UserRegistration({autoId: false})
   strictEqual(f.errors().isPopulated(), false)
-  f = UserRegistration({data: {}, autoId: false})
+  f = new UserRegistration({data: {}, autoId: false})
   deepEqual(f.errors("username").errors, ["This field is required."])
   deepEqual(f.errors("password1").errors, ["This field is required."])
   deepEqual(f.errors("password2").errors, ["This field is required."])
-  f = UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false})
+  f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false})
   deepEqual(f.errors("password2").errors, ["Please make sure your passwords match."])
-  f = UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false})
+  f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false})
   strictEqual(f.errors().isPopulated(), false)
   equal(f.cleanedData.username, "adrian")
   equal(f.cleanedData.password1, "foo")
@@ -719,7 +719,7 @@ QUnit.test("Validating multiple fields", 20, function() {
   // containing all the fields/values that have *not* raised a
   // ValidationError. Also note Form.clean() is required to return a
   // dictionary of all clean data.
-  UserRegistration = forms.Form({
+  UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10})
   , password1: forms.CharField({widget: forms.PasswordInput})
   , password2: forms.CharField({widget: forms.PasswordInput})
@@ -732,7 +732,7 @@ QUnit.test("Validating multiple fields", 20, function() {
       return this.cleanedData
     }
   })
-  f = UserRegistration({data: {}, autoId: false})
+  f = new UserRegistration({data: {}, autoId: false})
   equal(f.asTable(),
 "<tr><th>Username:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>\n" +
 "<tr><th>Password1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password1\"></td></tr>\n" +
@@ -740,7 +740,7 @@ QUnit.test("Validating multiple fields", 20, function() {
   deepEqual(f.errors("username").errors, ["This field is required."])
   deepEqual(f.errors("password1").errors, ["This field is required."])
   deepEqual(f.errors("password2").errors, ["This field is required."])
-  f = UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false})
+  f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false})
   deepEqual(f.errors("__all__").errors, ["Please make sure your passwords match."])
   equal(f.asTable(),
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
@@ -752,7 +752,7 @@ QUnit.test("Validating multiple fields", 20, function() {
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></li>\n" +
 "<li>Password1: <input type=\"password\" name=\"password1\"></li>\n" +
 "<li>Password2: <input type=\"password\" name=\"password2\"></li>")
-  f = UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false})
+  f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false})
   strictEqual(f.errors().isPopulated(), false)
   equal(f.cleanedData.username, "adrian")
   equal(f.cleanedData.password1, "foo")
@@ -763,15 +763,16 @@ QUnit.test("Dynamic construction", 17, function() {
   // It's possible to construct a Form dynamically by adding to this.fields
   // during construction. Don't forget to initialise any parent constructors
   // first. Form provides a postInit() hook suitable for this purpose.
-  var Person = forms.Form({
+  var Person = forms.Form.extend({
     first_name: forms.CharField()
   , last_name: forms.CharField()
 
-  , postInit: function(kwargs) {
+  , constructor: function(kwargs) {
+      Person.__super__.constructor.call(this, kwargs)
       this.fields["birthday"] = forms.DateField()
     }
   })
-  var p = Person({autoId: false})
+  var p = new Person({autoId: false})
   equal(""+p,
 "<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>\n" +
 "<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>\n" +
@@ -779,59 +780,45 @@ QUnit.test("Dynamic construction", 17, function() {
 
   // Instances of a dynamic Form do not persist fields from one Form instance to
   // the next.
-  var MyForm = forms.Form({
-    preInit: function(kwargs) {
-      return {
-        data: null
-      , autoId: false
-      , fieldList: kwargs.fieldList
-      }
-    }
-
-  , postInit: function(kwargs) {
+  var MyForm = forms.Form.extend({
+    constructor: function(kwargs) {
+      MyForm.__super__.constructor.call(this, {data: null, autoId: false})
       for (var i = 0, l = kwargs.fieldList.length; i < l; i++) {
         this.fields[kwargs.fieldList[i][0]] = kwargs.fieldList[i][1]
       }
     }
   })
   var fieldList = [["field1", forms.CharField()], ["field2", forms.CharField()]]
-  var myForm = MyForm({fieldList: fieldList})
+  var myForm = new MyForm({fieldList: fieldList})
   equal(""+myForm,
 "<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
 "<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>")
   fieldList = [["field3", forms.CharField()], ["field4", forms.CharField()]]
-  myForm = MyForm({fieldList: fieldList})
+  myForm = new MyForm({fieldList: fieldList})
   equal(""+myForm,
 "<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
 "<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>")
 
-  MyForm = forms.Form({
+  MyForm = forms.Form.extend({
     default_field_1: forms.CharField()
   , default_field_2: forms.CharField()
 
-  , preInit: function(kwargs) {
-      return {
-        data: null
-      , autoId: false
-      , fieldList: kwargs.fieldList
-      }
-    }
-
-  , postInit: function(kwargs) {
+  , constructor: function(kwargs) {
+      MyForm.__super__.constructor.call(this, {data: null, autoId: false})
       for (var i = 0, l = kwargs.fieldList.length; i < l; i++) {
         this.fields[kwargs.fieldList[i][0]] = kwargs.fieldList[i][1]
       }
     }
   })
   fieldList = [["field1", forms.CharField()], ["field2", forms.CharField()]]
-  myForm = MyForm({fieldList: fieldList})
+  myForm = new MyForm({fieldList: fieldList})
   equal(""+myForm,
 "<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>\n" +
 "<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>\n" +
 "<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
 "<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>")
   fieldList = [["field3", forms.CharField()], ["field4", forms.CharField()]]
-  myForm = MyForm({fieldList: fieldList})
+  myForm = new MyForm({fieldList: fieldList})
   equal(""+myForm,
 "<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>\n" +
 "<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>\n" +
@@ -840,15 +827,12 @@ QUnit.test("Dynamic construction", 17, function() {
 
   // Similarly, changes to field attributes do not persist from one Form
   // instance to the next.
-  Person = forms.Form({
+  Person = forms.Form.extend({
     first_name: forms.CharField({required: false})
   , last_name: forms.CharField({required: false})
 
-  , preInit: function(kwargs) {
-      return {namesRequired: kwargs.namesRequired}
-    }
-
-  , postInit: function(kwargs) {
+  , constructor: function(kwargs) {
+      Person.__super__.constructor.call(this, kwargs)
       if (kwargs.namesRequired) {
         this.fields["first_name"].required = true
         this.fields["first_name"].widget.attrs["class"] = "required"
@@ -857,71 +841,66 @@ QUnit.test("Dynamic construction", 17, function() {
       }
     }
   })
-  var f = Person({namesRequired: false})
+  var f = new Person({namesRequired: false})
   deepEqual([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
        [false, false])
   deepEqual([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
        [{}, {}])
-  f = Person({namesRequired: true})
+  f = new Person({namesRequired: true})
   deepEqual([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
        [true, true])
   deepEqual([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
        [{"class": "required"}, {"class": "required"}])
-  f = Person({namesRequired: false})
+  f = new Person({namesRequired: false})
   deepEqual([f.boundField("first_name").field.required, f.boundField("last_name").field.required],
        [false, false])
   deepEqual([f.boundField("first_name").field.widget.attrs, f.boundField("last_name").field.widget.attrs],
        [{}, {}])
 
-  Person = forms.Form({
+  Person = forms.Form.extend({
     first_name: forms.CharField({maxLength: 30})
   , last_name: forms.CharField({maxLength: 30})
 
-  , preInit: function(kwargs) {
-      return {nameMaxLength: kwargs.nameMaxLength}
-    }
-
-  , postInit: function(kwargs) {
+  , constructor: function(kwargs) {
+      Person.__super__.constructor.call(this, kwargs)
       if (kwargs.nameMaxLength) {
         this.fields["first_name"].maxLength = kwargs.nameMaxLength
         this.fields["last_name"].maxLength = kwargs.nameMaxLength
       }
     }
   })
-  f = Person({nameMaxLength: null})
+  f = new Person({nameMaxLength: null})
   deepEqual([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
        [30, 30])
-  f = Person({nameMaxLength: 20})
+  f = new Person({nameMaxLength: 20})
   deepEqual([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
        [20, 20])
-  f = Person({nameMaxLength: null})
+  f = new Person({nameMaxLength: null})
   deepEqual([f.boundField("first_name").field.maxLength, f.boundField("last_name").field.maxLength],
        [30, 30])
 
   // Similarly, choices do not persist from one Form instance to the next
-  Person = forms.Form({
+  Person = forms.Form.extend({
     first_name: forms.CharField({maxLength: 30})
   , last_name: forms.CharField({maxLength: 30})
   , gender: forms.ChoiceField({choices: [['f', 'Female'], ['m', 'Male']]})
 
-  , preInit: function(kwargs) {
-      return {allowUnspecGender: kwargs ? kwargs.allowUnspecGender : false}
-    }
-
-  , postInit: function(kwargs) {
+  , constructor: function(kwargs) {
+      kwargs = kwargs || {}
+      Person.__super__.constructor.call(this, kwargs)
       if (kwargs.allowUnspecGender) {
         var f = this.fields["gender"]
         f.setChoices(f.choices().concat([['u', 'Unspecified']]))
       }
     }
   })
-  f = Person()
+  f = new Person()
   deepEqual(f.boundField("gender").field.choices(),
             [['f', 'Female'], ['m', 'Male']])
-  f = Person({allowUnspecGender: true})
+  f = new Person({allowUnspecGender: true})
   deepEqual(f.boundField("gender").field.choices(),
             [['f', 'Female'], ['m', 'Male'], ['u', 'Unspecified']])
-  f = Person()
+  f = new Person()
   deepEqual(f.boundField("gender").field.choices(),
             [['f', 'Female'], ['m', 'Male']])
 })
@@ -931,13 +910,13 @@ QUnit.test("Hidden widget", 12, function() {
   // and asP() output of a Form - their verbose names are not displayed, and a
   // separate row is not displayed. They're displayed in the last row of the
   // form, directly after that row's form element.
-  var Person = forms.Form({
+  var Person = forms.Form.extend({
     first_name: forms.CharField()
   , last_name: forms.CharField()
   , hidden_text: forms.CharField({widget: forms.HiddenInput})
   , birthday: forms.DateField()
   })
-  var p = Person({autoId: false})
+  var p = new Person({autoId: false})
   equal(""+p,
 "<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>\n" +
 "<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>\n" +
@@ -952,7 +931,7 @@ QUnit.test("Hidden widget", 12, function() {
 "<p>Birthday: <input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></p>")
 
   // With autoId set, a HiddenInput still gets an id, but it doesn't get a label.
-  p = Person({autoId: "id_{name}"})
+  p = new Person({autoId: "id_{name}"})
   equal(""+p,
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
@@ -970,7 +949,7 @@ QUnit.test("Hidden widget", 12, function() {
   // output will include the error message(s) with the text
   // "(Hidden field [fieldname]) " prepended. This message is displayed at the
   // top of the output, regardless of its field's order in the form.
-  p = Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}, autoId: false})
+  p = new Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}, autoId: false})
   equal(""+p,
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></td></tr>\n" +
 "<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\" value=\"John\"></td></tr>\n" +
@@ -994,11 +973,11 @@ QUnit.test("Hidden widget", 12, function() {
   // the case of asP(), form inputs must reside inside a block-level container
   // to qualify as valid HTML, so the inputs will be wrapped in a <div> in
   // this scenario.
-  var TestForm = forms.Form({
+  var TestForm = forms.Form.extend({
     foo: forms.CharField({widget: forms.HiddenInput})
   , bar: forms.CharField({widget: forms.HiddenInput})
   })
-  p = TestForm({autoId: false})
+  p = new TestForm({autoId: false})
   equal(""+p.asTable(),
 "<tr><td colspan=\"2\"><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></td></tr>")
   equal(""+p.asUL(),
@@ -1009,7 +988,7 @@ QUnit.test("Hidden widget", 12, function() {
 
 QUnit.test("Field order", 1, function() {
   // A Form's fields are displayed in the same order they were defined
-  var TestForm = forms.Form({
+  var TestForm = forms.Form.extend({
     field1: forms.CharField()
   , field2: forms.CharField()
   , field3: forms.CharField()
@@ -1025,7 +1004,7 @@ QUnit.test("Field order", 1, function() {
   , field13: forms.CharField()
   , field14: forms.CharField()
   })
-  var p = TestForm({autoId: false})
+  var p = new TestForm({autoId: false})
   equal(""+p,
 "<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
 "<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>\n" +
@@ -1048,13 +1027,13 @@ QUnit.test("Form HTML attributes", 2, function() {
   // associated Widget. If you set maxLength in a CharField and its associated
   // widget is either a TextInput or PasswordInput, then the widget's rendered
   // HTML will include the "maxlength" attribute.
-  var UserRegistration = forms.Form({
+  var UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10}) // Uses forms.TextInput by default
   , password: forms.CharField({maxLength: 10, widget: forms.PasswordInput})
   , realname: forms.CharField({maxLength: 10, widget: forms.TextInput}) // Redundantly degine widget, just to test
   , address: forms.CharField()
   })
-  var p = UserRegistration({autoId: false})
+  var p = new UserRegistration({autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li>Password: <input maxlength=\"10\" type=\"password\" name=\"password\"></li>\n" +
@@ -1064,11 +1043,11 @@ QUnit.test("Form HTML attributes", 2, function() {
   // If you specify a custom "attrs" that includes the "maxlength" attribute,
   // the Field's maxLength attribute will override whatever "maxlength" you
   // specify in "attrs".
-  UserRegistration = forms.Form({
+  UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10, widget: forms.TextInput({attrs: {maxlength: 20}})})
   , password: forms.CharField({maxLength: 10, widget: forms.PasswordInput})
   })
-  p = UserRegistration({autoId: false})
+  p = new UserRegistration({autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li>Password: <input maxlength=\"10\" type=\"password\" name=\"password\"></li>")
@@ -1079,12 +1058,12 @@ QUnit.test("Specifying labels", 6, function() {
   // Field class. If you don't specify 'label', newforms will use the field
   // name with underscores converted to spaces, and the initial letter
   // capitalised.
-  var UserRegistration = forms.Form({
+  var UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10, label: "Your username"})
   , password1: forms.CharField({widget: forms.PasswordInput})
   , password2: forms.CharField({widget: forms.PasswordInput, label: "Password (again)"})
   })
-  var p = UserRegistration({autoId: false})
+  var p = new UserRegistration({autoId: false})
   equal(""+p.asUL(),
 "<li>Your username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li>Password1: <input type=\"password\" name=\"password1\"></li>\n" +
@@ -1092,14 +1071,14 @@ QUnit.test("Specifying labels", 6, function() {
 
   // Labels for as* methods will only end in a colon if they don't end in
   // other punctuation already.
-  var Questions = forms.Form({
+  var Questions = forms.Form.extend({
     q1: forms.CharField({label: "The first question"})
   , q2: forms.CharField({label: "What is your name?"})
   , q3: forms.CharField({label: "The answer to life is:"})
   , q4: forms.CharField({label: "Answer this question!"})
   , q5: forms.CharField({label: "The last question. Period."})
   })
-  p = Questions({autoId: false})
+  p = new Questions({autoId: false})
   equal(""+p.asP(),
 "<p>The first question: <input type=\"text\" name=\"q1\"></p>\n" +
 "<p>What is your name? <input type=\"text\" name=\"q2\"></p>\n" +
@@ -1109,30 +1088,30 @@ QUnit.test("Specifying labels", 6, function() {
 
   // If a label is set to the empty string for a field, that field won't get a
   // label.
-  UserRegistration = forms.Form({
+  UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10, label: ""})
   , password1: forms.CharField({widget: forms.PasswordInput})
   })
-  p = UserRegistration({autoId: false})
+  p = new UserRegistration({autoId: false})
   equal(""+p.asUL(),
 "<li> <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li>Password1: <input type=\"password\" name=\"password1\"></li>")
-  p = UserRegistration({autoId: "id_{name}"})
+  p = new UserRegistration({autoId: "id_{name}"})
   equal(""+p.asUL(),
 "<li> <input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>\n" +
 "<li><label for=\"id_password1\">Password1:</label> <input type=\"password\" name=\"password1\" id=\"id_password1\"></li>")
 
   // If label is null, newforms will auto-create the label from the field
   // name. This is the default behavior.
-  UserRegistration = forms.Form({
+  UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10, label: null})
   , password1: forms.CharField({widget: forms.PasswordInput})
   })
-  p = UserRegistration({autoId: false})
+  p = new UserRegistration({autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li>Password1: <input type=\"password\" name=\"password1\"></li>")
-  p = UserRegistration({autoId: "id_{name}"})
+  p = new UserRegistration({autoId: "id_{name}"})
   equal(""+p.asUL(),
 "<li><label for=\"id_username\">Username:</label> <input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>\n" +
 "<li><label for=\"id_password1\">Password1:</label> <input type=\"password\" name=\"password1\" id=\"id_password1\"></li>")
@@ -1143,23 +1122,23 @@ QUnit.test("Label suffix", 4, function() {
   // punctuation symbol used at the end of a label.  By default, the colon
   // (:) is used, and is only appended to the label if the label doesn't
   // already end with a punctuation symbol: ., !, ? or :.
-  var FavouriteForm = forms.Form({
+  var FavouriteForm = forms.Form.extend({
     colour: forms.CharField({label: "Favourite colour?"})
   , animal: forms.CharField({label: "Favourite animal"})
   })
-  var f = FavouriteForm({autoId: false})
+  var f = new FavouriteForm({autoId: false})
   equal(""+f.asUL(),
 "<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
 "<li>Favourite animal: <input type=\"text\" name=\"animal\"></li>")
-  f = FavouriteForm({autoId: false, labelSuffix: "?"})
+  f = new FavouriteForm({autoId: false, labelSuffix: "?"})
   equal(""+f.asUL(),
 "<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
 "<li>Favourite animal? <input type=\"text\" name=\"animal\"></li>")
-  f = FavouriteForm({autoId: false, labelSuffix: ""})
+  f = new FavouriteForm({autoId: false, labelSuffix: ""})
   equal(""+f.asUL(),
 "<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
 "<li>Favourite animal <input type=\"text\" name=\"animal\"></li>")
-  f = FavouriteForm({autoId: false, labelSuffix: "\u2192"})
+  f = new FavouriteForm({autoId: false, labelSuffix: "\u2192"})
   equal(""+f.asUL(),
 "<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
 "<li>Favourite animal\u2192 <input type=\"text\" name=\"animal\"></li>")
@@ -1171,28 +1150,28 @@ QUnit.test("Initial data", 6, function() {
   // with *no* data. It is not displayed when a Form is rendered with any data
   // (including an empty object). Also, the initial value is *not* used if
   // data for a particular required field isn't provided.
-  var UserRegistration = forms.Form({
+  var UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10, initial: "django"})
   , password: forms.CharField({widget: forms.PasswordInput})
   })
 
   // Here, we're not submitting any data, so the initial value will be
   // displayed.
-  var p = UserRegistration({autoId: false})
+  var p = new UserRegistration({autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>")
 
   // Here, we're submitting data, so the initial value will *not* be displayed.
-  p = UserRegistration({data: {}, autoId: false})
+  p = new UserRegistration({data: {}, autoId: false})
   equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
-  p = UserRegistration({data: {username: ""}, autoId: false})
+  p = new UserRegistration({data: {username: ""}, autoId: false})
   equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
-  p = UserRegistration({data: {username: "foo"}, autoId: false})
+  p = new UserRegistration({data: {username: "foo"}, autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
@@ -1201,7 +1180,7 @@ QUnit.test("Initial data", 6, function() {
   // In this example, we don't provide a value for "username", and the form
   // raises a validation error rather than using the initial value for
   // "username".
-  p = UserRegistration({data: {password: "secret"}})
+  p = new UserRegistration({data: {password: "secret"}})
   deepEqual(p.errors("username").errors, ["This field is required."])
   strictEqual(p.isValid(), false)
 })
@@ -1212,31 +1191,31 @@ QUnit.test("Dynamic initial data", 8, function() {
   // Form class (i.e., at runtime). Use the "initial" parameter to the Form
   // constructor. This should be an object containing initial values for one
   // or more fields in the form, keyed by field name.
-  var UserRegistration = forms.Form({
+  var UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10})
   , password: forms.CharField({widget: forms.PasswordInput})
   })
 
   // Here, we're not submitting any data, so the initial value will be displayed.
-  var p = UserRegistration({initial: {username: "django"}, autoId: false})
+  var p = new UserRegistration({initial: {username: "django"}, autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>")
-  p = UserRegistration({initial: {username: "stephane"}, autoId: false})
+  p = new UserRegistration({initial: {username: "stephane"}, autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"stephane\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>")
 
   // The "initial" parameter is meaningless if you pass data
-  p = UserRegistration({data: {}, initial: {username: "django"}, autoId: false})
+  p = new UserRegistration({data: {}, initial: {username: "django"}, autoId: false})
   equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
-  p = UserRegistration({data: {username: ""}, initial: {username: "django"}, autoId: false})
+  p = new UserRegistration({data: {username: ""}, initial: {username: "django"}, autoId: false})
   equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
-  p = UserRegistration({data: {username: "foo"}, initial: {username: "django"}, autoId: false})
+  p = new UserRegistration({data: {username: "foo"}, initial: {username: "django"}, autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
@@ -1245,17 +1224,17 @@ QUnit.test("Dynamic initial data", 8, function() {
   // provided. In this example, we don't provide a value for "username", and
   // the form raises a validation error rather than using the initial value
   // for "username".
-  p = UserRegistration({data: {password: "secret"}, initial: {username: "django"}})
+  p = new UserRegistration({data: {password: "secret"}, initial: {username: "django"}})
   deepEqual(p.errors("username").errors, ["This field is required."])
   strictEqual(p.isValid(), false)
 
   // If a Form defines "initial" *and* "initial" is passed as a parameter
   // during construction, then the latter will get precedence.
-  UserRegistration = forms.Form({
+  UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10, initial: "django"})
   , password: forms.CharField({widget: forms.PasswordInput})
   })
-  p = UserRegistration({initial: {username: "babik"}, autoId: false})
+  p = new UserRegistration({initial: {username: "babik"}, autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"babik\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>")
@@ -1264,7 +1243,7 @@ QUnit.test("Dynamic initial data", 8, function() {
 QUnit.test("Callable initial data", 8, function() {
   // The previous technique dealt with raw values as initial data, but it's
   // also possible to specify callable data.
-  var UserRegistration = forms.Form({
+  var UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10})
   , password: forms.CharField({widget: forms.PasswordInput})
   , options: forms.MultipleChoiceField({choices: [["f", "foo"], ["b", "bar"], ["w", "whiz"]]})
@@ -1278,7 +1257,7 @@ QUnit.test("Callable initial data", 8, function() {
 
   // Here, we're not submitting any data, so the initial value will be
   // displayed.
-  var p = UserRegistration({initial: {username: initialDjango, options: initialOptions}, autoId: false})
+  var p = new UserRegistration({initial: {username: initialDjango, options: initialOptions}, autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
@@ -1289,7 +1268,7 @@ QUnit.test("Callable initial data", 8, function() {
 "</select></li>")
 
   // The "initial" parameter is meaningless if you pass data.
-  p = UserRegistration({data: {}, initial: {username: initialDjango, options: initialOptions}, autoId: false})
+  p = new UserRegistration({data: {}, initial: {username: initialDjango, options: initialOptions}, autoId: false})
   equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
@@ -1298,7 +1277,7 @@ QUnit.test("Callable initial data", 8, function() {
 "<option value=\"b\">bar</option>\n" +
 "<option value=\"w\">whiz</option>\n" +
 "</select></li>")
-  p = UserRegistration({data: {username: ""}, initial: {username: initialDjango}, autoId: false})
+  p = new UserRegistration({data: {username: ""}, initial: {username: initialDjango}, autoId: false})
   equal(""+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
@@ -1307,7 +1286,7 @@ QUnit.test("Callable initial data", 8, function() {
 "<option value=\"b\">bar</option>\n" +
 "<option value=\"w\">whiz</option>\n" +
 "</select></li>")
-  p = UserRegistration({data: {username: "foo", options: ["f", "b"]}, initial: {username: initialDjango}, autoId: false})
+  p = new UserRegistration({data: {username: "foo", options: ["f", "b"]}, initial: {username: initialDjango}, autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
@@ -1321,18 +1300,18 @@ QUnit.test("Callable initial data", 8, function() {
   // provided. In this example, we don't provide a value for 'username', and
   // the form raises a validation error rather than using the initial value
   // for 'username'.
-  p = UserRegistration({data: {password: "secret"}, initial: {username: initialDjango, options: initialOptions}})
+  p = new UserRegistration({data: {password: "secret"}, initial: {username: initialDjango, options: initialOptions}})
   deepEqual(p.errors("username").errors, ["This field is required."])
   strictEqual(p.isValid(), false)
 
   // If a Form defines "initial" *and* "initial" is passed as a parameter
   // during construction, then the latter will get precedence.
-  UserRegistration = forms.Form({
+  UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10, initial: initialDjango})
   , password: forms.CharField({widget: forms.PasswordInput})
   , options: forms.MultipleChoiceField({choices: [["f", "foo"], ["b", "bar"], ["w", "whiz"]], initial: initialOtherOptions})
   })
-  p = UserRegistration({autoId: false})
+  p = new UserRegistration({autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
@@ -1341,7 +1320,7 @@ QUnit.test("Callable initial data", 8, function() {
 "<option value=\"b\" selected=\"selected\">bar</option>\n" +
 "<option value=\"w\" selected=\"selected\">whiz</option>\n" +
 "</select></li>")
-  p = UserRegistration({initial: {username: initialStephane, options: initialOptions}, autoId: false})
+  p = new UserRegistration({initial: {username: initialStephane, options: initialOptions}, autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"stephane\"></li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
@@ -1355,12 +1334,12 @@ QUnit.test("Callable initial data", 8, function() {
 QUnit.test("Boundfield values", 4, function() {
   // It's possible to get to the value which would be used for rendering
   // the widget for a field by using the BoundField's value method.
-  var UserRegistration = forms.Form({
+  var UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10, initial: "djangonaut"})
   , password: forms.CharField({widget: forms.PasswordInput})
   })
-  var unbound = UserRegistration()
-  var bound = UserRegistration({data: {password: "foo"}})
+  var unbound = new UserRegistration()
+  var bound = new UserRegistration({data: {password: "foo"}})
   strictEqual(bound.boundField("username").value(), null)
   equal(unbound.boundField("username").value(), "djangonaut")
   equal(bound.boundField("password").value(), "foo")
@@ -1371,11 +1350,11 @@ QUnit.test("Help text", 5, function() {
   // You can specify descriptive text for a field by using the "helpText"
   // argument to a Field class. This help text is displayed when a Form is
   // rendered.
-  var UserRegistration = forms.Form({
+  var UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10, helpText: "e.g., user@example.com"})
   , password: forms.CharField({widget: forms.PasswordInput, helpText: "Choose wisely."})
   })
-  var p = UserRegistration({autoId: false})
+  var p = new UserRegistration({autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"> Choose wisely.</li>")
@@ -1387,52 +1366,52 @@ QUnit.test("Help text", 5, function() {
 "<tr><th>Password:</th><td><input type=\"password\" name=\"password\"><br>Choose wisely.</td></tr>")
 
   // The help text is displayed whether or not data is provided for the form.
-  p = UserRegistration({data: {username: "foo"}, autoId: false})
+  p = new UserRegistration({data: {username: "foo"}, autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"> e.g., user@example.com</li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"> Choose wisely.</li>")
 
   // Help text is not displayed for hidden fields. It can be used for
   // documentation purposes, though.
-  UserRegistration = forms.Form({
+  UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10, helpText: "e.g., user@example.com"})
   , password: forms.CharField({widget: forms.PasswordInput})
   , next: forms.CharField({widget: forms.HiddenInput, initial: "/", helpText: "Redirect destination"})
   })
-  p  = UserRegistration({autoId: false})
+  p  = new UserRegistration({autoId: false})
   equal(""+p.asUL(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</li>\n" +
 "<li>Password: <input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"next\" value=\"/\"></li>")
 })
 
-QUnit.test("Subclassing forms", 9, function() {
+QUnit.test("Subclassing forms", 10, function() {
   // You can subclass a Form to add fields. The resulting form subclass will
   // have all of the fields of the parent Form, plus whichever fields you
   // define in the subclass.
-  var Person = forms.Form({
+  var Person = forms.Form.extend({
     first_name: forms.CharField()
   , last_name: forms.CharField()
   , birthday: forms.DateField()
   })
-  var Musician = forms.Form({
-    form: Person
-  , instrument: forms.CharField()
+  var Musician = Person.extend({
+    instrument: forms.CharField()
   })
-  var p = Person({autoId: false})
+  var p = new Person({autoId: false})
   equal(""+p.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\"></li>")
-  var m = Musician({autoId: false})
+  var m = new Musician({autoId: false})
   equal(""+m.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\"></li>\n" +
 "<li>Instrument: <input type=\"text\" name=\"instrument\"></li>")
 
-  // You can "subclass" multiple forms by passing a list of constructors. The
-  // fields are added in the order in which the parent Forms are listed.
-  var Person = forms.Form({
+  // You can use the fields and prototype functions of multiple forms by passing
+  // a list of constructors as a mixin. The fields are added in the order in
+  // which the Forms are given.
+  var Person = forms.Form.extend({
     first_name: forms.CharField()
   , last_name: forms.CharField()
   , birthday: forms.DateField()
@@ -1445,22 +1424,22 @@ QUnit.test("Subclassing forms", 9, function() {
       throw forms.ValidationError("Method from Person.")
     }
   })
-  var Instrument = forms.Form({
+  var Instrument = forms.Form.extend({
     instrument: forms.CharField()
 
   , clean_birthday: function() {
       throw forms.ValidationError("Method from Instrument.")
     }
   })
-  var Beatle = forms.Form({
-    form: [Person, Instrument]
+  var Beatle = forms.Form.extend({
+    __mixin__: [Person, Instrument]
   , haircut_type: forms.CharField()
 
   , clean_last_name: function() {
       throw forms.ValidationError("Method from Beatle.")
     }
   })
-  var b = Beatle({autoId: false})
+  var b = new Beatle({autoId: false})
   equal(""+b.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
@@ -1468,20 +1447,33 @@ QUnit.test("Subclassing forms", 9, function() {
 "<li>Instrument: <input type=\"text\" name=\"instrument\"></li>\n" +
 "<li>Haircut type: <input type=\"text\" name=\"haircut_type\"></li>")
 
-  var b = Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}})
+  var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}})
   deepEqual(b.errors("first_name").errors, ["Method from Person."])
   deepEqual(b.errors("birthday").errors, ["Method from Instrument."])
   deepEqual(b.errors("last_name").errors, ["Method from Beatle."])
 
-  // JavaScript doesn't support multiple inheritance, so this is actually a
-  // bit of a hack. These tests will highlight the fallout from this (well,
-  // the ones I know about, at least).
-  strictEqual(b instanceof forms.BaseForm, true)
-  strictEqual(b instanceof Person, true)
-  // An instance of the first Form passed as a parent is used as the base
-  // prototype object for our new Form - methods are merely borrowed from any
-  // additional Forms, so instanceof only works for the first Form passed.
-  strictEqual(b instanceof Instrument, false)
+  // You can also mix and match by extending one form and mixing in another.
+  var Beatle = Person.extend({
+    __mixin__: Instrument
+  , haircut_type: forms.CharField()
+
+  , clean_last_name: function() {
+      throw forms.ValidationError("Method from Beatle.")
+    }
+  })
+
+  var b = new Beatle({autoId: false})
+  equal(""+b.asUL(),
+"<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
+"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
+"<li>Birthday: <input type=\"text\" name=\"birthday\"></li>\n" +
+"<li>Instrument: <input type=\"text\" name=\"instrument\"></li>\n" +
+"<li>Haircut type: <input type=\"text\" name=\"haircut_type\"></li>")
+
+  var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}})
+  deepEqual(b.errors("first_name").errors, ["Method from Person."])
+  deepEqual(b.errors("birthday").errors, ["Method from Instrument."])
+  deepEqual(b.errors("last_name").errors, ["Method from Beatle."])
 })
 
 QUnit.test("Forms with prefixes", 30, function() {
@@ -1492,7 +1484,7 @@ QUnit.test("Forms with prefixes", 30, function() {
   // One way to think about this is "namespaces for HTML forms". Notice that
   // in the data argument, each field's key has the prefix, in this case
   // "person1", prepended to the actual field name.
-  var Person = forms.Form({
+  var Person = forms.Form.extend({
     first_name: forms.CharField()
   , last_name: forms.CharField()
   , birthday: forms.DateField()
@@ -1502,7 +1494,7 @@ QUnit.test("Forms with prefixes", 30, function() {
   , "person1-last_name": "Lennon"
   , "person1-birthday": "1940-10-9"
   }
-  var p = Person({data: data, prefix: "person1"})
+  var p = new Person({data: data, prefix: "person1"})
   equal(""+p.asUL(),
 "<li><label for=\"id_person1-first_name\">First name:</label> <input type=\"text\" name=\"person1-first_name\" id=\"id_person1-first_name\" value=\"John\"></li>\n" +
 "<li><label for=\"id_person1-last_name\">Last name:</label> <input type=\"text\" name=\"person1-last_name\" id=\"id_person1-last_name\" value=\"Lennon\"></li>\n" +
@@ -1526,7 +1518,7 @@ QUnit.test("Forms with prefixes", 30, function() {
   , "person1-last_name": ""
   , "person1-birthday": ""
   }
-  p = Person({data: data, prefix: "person1"})
+  p = new Person({data: data, prefix: "person1"})
   deepEqual(p.errors("first_name").errors, ["This field is required."])
   deepEqual(p.errors("last_name").errors, ["This field is required."])
   deepEqual(p.errors("birthday").errors, ["This field is required."])
@@ -1540,7 +1532,7 @@ QUnit.test("Forms with prefixes", 30, function() {
   , "last_name": "Lennon"
   , "birthday": "1940-10-9"
   }
-  p = Person({data: data, prefix: "person1"})
+  p = new Person({data: data, prefix: "person1"})
   deepEqual(p.errors("first_name").errors, ["This field is required."])
   deepEqual(p.errors("last_name").errors, ["This field is required."])
   deepEqual(p.errors("birthday").errors, ["This field is required."])
@@ -1555,12 +1547,12 @@ QUnit.test("Forms with prefixes", 30, function() {
   , "person2-last_name": "Morrison"
   , "person2-birthday": "1943-12-8"
   }
-  var p1 = Person({data: data, prefix: "person1"})
+  var p1 = new Person({data: data, prefix: "person1"})
   strictEqual(p1.isValid(), true)
   equal(p1.cleanedData["first_name"], "John")
   equal(p1.cleanedData["last_name"], "Lennon")
   equal(p1.cleanedData["birthday"].valueOf(), new Date(1940, 9, 9).valueOf())
-  var p2 = Person({data: data, prefix: "person2"})
+  var p2 = new Person({data: data, prefix: "person2"})
   strictEqual(p2.isValid(), true)
   equal(p2.cleanedData["first_name"], "Jim")
   equal(p2.cleanedData["last_name"], "Morrison")
@@ -1570,7 +1562,7 @@ QUnit.test("Forms with prefixes", 30, function() {
   // but a form can alter that behavior by implementing the addPrefix()
   // method. This method takes a field name and returns the prefixed field,
   // according to this.prefix.
-  Person = forms.Form({
+  Person = forms.Form.extend({
     first_name: forms.CharField()
   , last_name: forms.CharField()
   , birthday: forms.DateField()
@@ -1582,7 +1574,7 @@ QUnit.test("Forms with prefixes", 30, function() {
       return fieldName
     }
   })
-  p = Person({prefix: "foo"})
+  p = new Person({prefix: "foo"})
   equal(""+p.asUL(),
 "<li><label for=\"id_foo-prefix-first_name\">First name:</label> <input type=\"text\" name=\"foo-prefix-first_name\" id=\"id_foo-prefix-first_name\"></li>\n" +
 "<li><label for=\"id_foo-prefix-last_name\">Last name:</label> <input type=\"text\" name=\"foo-prefix-last_name\" id=\"id_foo-prefix-last_name\"></li>\n" +
@@ -1592,7 +1584,7 @@ QUnit.test("Forms with prefixes", 30, function() {
       "foo-prefix-last_name": "Lennon",
       "foo-prefix-birthday": "1940-10-9"
   }
-  p = Person({data: data, prefix: "foo"})
+  p = new Person({data: data, prefix: "foo"})
   strictEqual(p.isValid(), true)
   equal(p.cleanedData["first_name"], "John")
   equal(p.cleanedData["last_name"], "Lennon")
@@ -1603,46 +1595,46 @@ QUnit.test("Forms with null boolean", 6, function() {
   // NullBooleanField is a bit of a special case because its presentation
   // (widget) is different than its data. This is handled transparently,
   // though.
-  var Person = forms.Form({
+  var Person = forms.Form.extend({
     name: forms.CharField()
   , is_cool: forms.NullBooleanField()
   })
-  var p = Person({data: {name: "Joe"}, autoId: false})
+  var p = new Person({data: {name: "Joe"}, autoId: false})
   equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select>")
-  p = Person({data: {name: "Joe", is_cool: "1"}, autoId: false})
+  p = new Person({data: {name: "Joe", is_cool: "1"}, autoId: false})
   equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select>")
-  p = Person({data: {name: "Joe", is_cool: "2"}, autoId: false})
+  p = new Person({data: {name: "Joe", is_cool: "2"}, autoId: false})
   equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
 "<option value=\"2\" selected=\"selected\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select>")
-  p = Person({data: {name: "Joe", is_cool: "3"}, autoId: false})
+  p = new Person({data: {name: "Joe", is_cool: "3"}, autoId: false})
   equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\" selected=\"selected\">No</option>\n" +
 "</select>")
-  p = Person({data: {name: "Joe", is_cool: true}, autoId: false})
+  p = new Person({data: {name: "Joe", is_cool: true}, autoId: false})
   equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
 "<option value=\"2\" selected=\"selected\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select>")
-  p = Person({data: {name: "Joe", is_cool: false}, autoId: false})
+  p = new Person({data: {name: "Joe", is_cool: false}, autoId: false})
   equal(""+p.boundField("is_cool"),
 "<select name=\"is_cool\">\n" +
 "<option value=\"1\">Unknown</option>\n" +
@@ -1660,31 +1652,31 @@ QUnit.test("Forms with file fields", 6, function() {
 
   // FileFields are a special case because they take their data from the
   // "files" data object, not "data".
-  var FileForm = forms.Form({file1: forms.FileField()})
-  var f = FileForm({autoId: false})
+  var FileForm = forms.Form.extend({file1: forms.FileField()})
+  var f = new FileForm({autoId: false})
   equal(""+f,
         "<tr><th>File1:</th><td><input type=\"file\" name=\"file1\"></td></tr>")
 
-  f = FileForm({data: {}, files: {}, autoId: false})
+  f = new FileForm({data: {}, files: {}, autoId: false})
   equal(""+f,
         "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"file\" name=\"file1\"></td></tr>")
 
-  f = FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "")}, autoId: false})
+  f = new FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "")}, autoId: false})
   equal(""+f,
         "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>The submitted file is empty.</li></ul><input type=\"file\" name=\"file1\"></td></tr>")
 
-  f = FileForm({data: {}, files: {file1: "something that is not a file"}, autoId: false})
+  f = new FileForm({data: {}, files: {file1: "something that is not a file"}, autoId: false})
   equal(""+f,
         "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>No file was submitted. Check the encoding type on the form.</li></ul><input type=\"file\" name=\"file1\"></td></tr>")
 
-  f = FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "some content")}, autoId: false})
+  f = new FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "some content")}, autoId: false})
   equal(""+f,
         "<tr><th>File1:</th><td><input type=\"file\" name=\"file1\"></td></tr>")
   strictEqual(f.isValid(), true)
 })
 
 QUnit.test("Basic form processing", 3, function() {
-  var UserRegistration = forms.Form({
+  var UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10})
   , password1: forms.CharField({widget: forms.PasswordInput})
   , password2: forms.CharField({widget: forms.PasswordInput})
@@ -1700,13 +1692,13 @@ QUnit.test("Basic form processing", 3, function() {
 
   function myFunction(method, postData) {
     if (method == "POST") {
-      var form = UserRegistration({data: postData, autoId: false})
+      var form = new UserRegistration({data: postData, autoId: false})
       if (form.isValid()) {
         return "VALID"
       }
     }
     else {
-      var form = UserRegistration({autoId: false})
+      var form = new UserRegistration({autoId: false})
     }
     return "<form action=\"\" method=\"POST\">\n<table>\n" +
            form.toString() +
@@ -1745,14 +1737,14 @@ QUnit.test("emptyPermitted", 12, function() {
   // Sometimes (pretty much in formsets) we want to allow a form to pass
   // validation if it is completely empty. We can accomplish this by using the
   // emptyPermitted argument to a form constructor.
-  var SongForm = forms.Form({
+  var SongForm = forms.Form.extend({
     artist: forms.CharField()
   , name: forms.CharField()
   })
 
   // First let's show what happens if emptyPermitted == false (the default)
   var data = {artist: "", name: ""}
-  var form = SongForm({data: data, emptyPermitted: false})
+  var form = new SongForm({data: data, emptyPermitted: false})
   strictEqual(form.isValid(), false)
   deepEqual(form.errors("artist").errors, ["This field is required."])
   deepEqual(form.errors("name").errors, ["This field is required."])
@@ -1760,7 +1752,7 @@ QUnit.test("emptyPermitted", 12, function() {
 
   // Now let's show what happens when emptyPermitted == true and the form is
   // empty.
-  form = SongForm({data: data, emptyPermitted: true})
+  form = new SongForm({data: data, emptyPermitted: true})
   strictEqual(form.isValid(), true)
   strictEqual(form.errors().isPopulated(), false)
   deepEqual(form.cleanedData, {})
@@ -1768,7 +1760,7 @@ QUnit.test("emptyPermitted", 12, function() {
   // But if we fill in data for one of the fields, the form is no longer empty
   // and the whole thing must pass validation.
   data = {artist: "The Doors", name: ""}
-  form = SongForm({data: data, emptyPermitted: true})
+  form = new SongForm({data: data, emptyPermitted: true})
   strictEqual(form.isValid(), false)
   deepEqual(form.errors("name").errors, ["This field is required."])
   equal(typeof form.cleanedData, "undefined")
@@ -1777,29 +1769,29 @@ QUnit.test("emptyPermitted", 12, function() {
   // Make sure that when checking for emptyPermitted that null is treated
   // accordingly.
   data = {artist: null, name: ""}
-  form = SongForm({data: data, emptyPermitted: true})
+  form = new SongForm({data: data, emptyPermitted: true})
   strictEqual(form.isValid(), true)
 
   // However, we *really* need to be sure we are checking for null as any data
   // in initial that is falsy in a boolean context needs to be treated
   // literally.
-  var PriceForm = forms.Form({
+  var PriceForm = forms.Form.extend({
     amount: forms.FloatField()
   , qty: forms.IntegerField()
   })
 
   data = {amount: "0.0", qty: ""}
-  form = PriceForm({data: data, initial: {amount: 0.0}, emptyPermitted: true})
+  form = new PriceForm({data: data, initial: {amount: 0.0}, emptyPermitted: true})
   strictEqual(form.isValid(), true)
 })
 
 QUnit.test("Extracting hidden and visible", 2, function() {
-  var SongForm = forms.Form({
+  var SongForm = forms.Form.extend({
     token: forms.CharField({widget: forms.HiddenInput})
   , artist: forms.CharField()
   , name: forms.CharField()
   })
-  var form = SongForm()
+  var form = new SongForm()
   var hidden = form.hiddenFields()
   deepEqual([hidden.length, hidden[0].name], [1, "token"])
   var visible = form.visibleFields()
@@ -1807,22 +1799,22 @@ QUnit.test("Extracting hidden and visible", 2, function() {
 })
 
 QUnit.test("Hidden initial gets id", 1, function() {
-  var MyForm = forms.Form({
+  var MyForm = forms.Form.extend({
     field1: forms.CharField({maxLength: 50, showHiddenInitial: true})
   })
-  equal(""+MyForm().asTable(),
+  equal(""+new MyForm().asTable(),
 "<tr><th><label for=\"id_field1\">Field1:</label></th><td><input maxlength=\"50\" type=\"text\" name=\"field1\" id=\"id_field1\"><input type=\"hidden\" name=\"initial-field1\" id=\"initial-id_field1\"></td></tr>")
 })
 
 QUnit.test("Error/required HTML classes", 3, function() {
-  var Person = forms.Form({
+  var Person = forms.Form.extend({
     name: forms.CharField()
   , is_cool: forms.NullBooleanField()
   , email: forms.EmailField({required: false})
   , age: forms.IntegerField()
   })
 
-  var p = Person({data: {}})
+  var p = new Person({data: {}})
   p.errorCssClass = "error"
   p.requiredCssClass = "required"
   equal(""+p.asUL(),
@@ -1857,22 +1849,22 @@ QUnit.test("Error/required HTML classes", 3, function() {
 })
 
 QUnit.test("Label split datetime not displayed", 1, function() {
-  var EventForm = forms.Form({
+  var EventForm = forms.Form.extend({
     happened_at: forms.SplitDateTimeField({widget: forms.SplitHiddenDateTimeWidget})
   })
-  var form = EventForm()
+  var form = new EventForm()
   equal(""+form.asUL(),
 "<li><input type=\"hidden\" name=\"happened_at_0\" id=\"id_happened_at_0\"><input type=\"hidden\" name=\"happened_at_1\" id=\"id_happened_at_1\"></li>")
 })
 
 QUnit.test("Multipart-encoded forms", 3, function() {
-  var FormWithoutFile = forms.Form({username: forms.CharField()})
-  var FormWithFile = forms.Form({file: forms.FileField()})
-  var FormWithImage = forms.Form({file: forms.ImageField()})
+  var FormWithoutFile = forms.Form.extend({username: forms.CharField()})
+  var FormWithFile = forms.Form.extend({file: forms.FileField()})
+  var FormWithImage = forms.Form.extend({file: forms.ImageField()})
 
-  strictEqual(FormWithoutFile().isMultipart(), false)
-  strictEqual(FormWithFile().isMultipart(), true)
-  strictEqual(FormWithImage().isMultipart(), true)
+  strictEqual(new FormWithoutFile().isMultipart(), false)
+  strictEqual(new FormWithFile().isMultipart(), true)
+  strictEqual(new FormWithImage().isMultipart(), true)
 })
 
 })()

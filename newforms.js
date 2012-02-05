@@ -1,5 +1,5 @@
 /**
- * newforms 0.1.1 - https://github.com/insin/newforms
+ * newforms 0.2.0 - https://github.com/insin/newforms
  * MIT Licensed
  */
 ;(function() {
@@ -917,18 +917,20 @@ function mixin(dest, src) {
 }
 
 /**
- * Applies mixins specified as a __mixin__ property to the given properties
- * object.
+ * Applies mixins specified as a __mixin__ property on the given properties
+ * object, returning an object containing the mixed in properties.
  */
 function applyMixins(properties) {
   var mixins = properties.__mixin__
   if (!is.Array(mixins)) {
     mixins = [mixins]
   }
+  var mixedProperties = {}
   for (var i = 0, l = mixins.length; i < l; i++) {
-    mixin(properties, mixins[i])
+    mixin(mixedProperties, mixins[i])
   }
   delete properties.__mixin__
+  return object.extend(mixedProperties, properties)
 }
 
 /**
@@ -952,9 +954,6 @@ function inheritFrom(parentConstructor, prototypeProps, constructorProps) {
 
   // Base constructors should only have the properties they're defined with
   if (parentConstructor !== Concur) {
-    // Inherit constructor properties
-    object.extend(childConstructor, parentConstructor)
-
     // Inherit the parent's prototype
     object.inherits(childConstructor, parentConstructor)
     childConstructor.__super__ = parentConstructor.prototype
@@ -983,14 +982,6 @@ var Concur = module.exports = function() {}
  * context, which is expected to be a constructor.
  */
 Concur.extend = function(prototypeProps, constructorProps) {
-  // If any mixins are specified, mix them into the property objects
-  if (prototypeProps && object.hasOwn(prototypeProps, '__mixin__')) {
-    applyMixins(prototypeProps)
-  }
-  if (constructorProps && object.hasOwn(constructorProps, '__mixin__')) {
-    applyMixins(constructorProps)
-  }
-
   // If the constructor being inherited from has a __meta__ function somewhere
   // in its prototype chain, call it to customise prototype and constructor
   // properties before they're used to set up the new constructor's prototype.
@@ -1002,9 +993,16 @@ Concur.extend = function(prototypeProps, constructorProps) {
     this.prototype.__meta__(prototypeProps, constructorProps)
   }
 
+  // If any mixins are specified, mix them into the property objects
+  if (prototypeProps && object.hasOwn(prototypeProps, '__mixin__')) {
+    prototypeProps = applyMixins(prototypeProps)
+  }
+  if (constructorProps && object.hasOwn(constructorProps, '__mixin__')) {
+    constructorProps = applyMixins(constructorProps)
+  }
+
   // Set up and return the new child constructor
-  var parentConstructor = this
-  var childConstructor = inheritFrom(parentConstructor,
+  var childConstructor = inheritFrom(this,
                                      prototypeProps,
                                      constructorProps)
   childConstructor.extend = this.extend
@@ -5722,30 +5720,32 @@ BoundField.prototype.cssClasses = function(extraClasses) {
  * A collection of Fields that knows how to validate and display itself.
  * @constructor
  */
-function BaseForm(kwargs) {
-  kwargs = object.extend({
-    data: null, files: null, autoId: 'id_{name}', prefix: null,
-    initial: null, errorConstructor: ErrorList, labelSuffix: ':',
-    emptyPermitted: false
-  }, kwargs)
-  this.isBound = kwargs.data !== null || kwargs.files !== null
-  this.data = kwargs.data || {}
-  this.files = kwargs.files || {}
-  this.autoId = kwargs.autoId
-  this.prefix = kwargs.prefix
-  this.initial = kwargs.initial || {}
-  this.errorConstructor = kwargs.errorConstructor
-  this.labelSuffix = kwargs.labelSuffix
-  this.emptyPermitted = kwargs.emptyPermitted
-  this._errors = null; // Stores errors after clean() has been called
-  this._changedData = null
+var BaseForm = Concur.extend({
+  constructor: function(kwargs) {
+    kwargs = object.extend({
+      data: null, files: null, autoId: 'id_{name}', prefix: null,
+      initial: null, errorConstructor: ErrorList, labelSuffix: ':',
+      emptyPermitted: false
+    }, kwargs)
+    this.isBound = kwargs.data !== null || kwargs.files !== null
+    this.data = kwargs.data || {}
+    this.files = kwargs.files || {}
+    this.autoId = kwargs.autoId
+    this.prefix = kwargs.prefix
+    this.initial = kwargs.initial || {}
+    this.errorConstructor = kwargs.errorConstructor
+    this.labelSuffix = kwargs.labelSuffix
+    this.emptyPermitted = kwargs.emptyPermitted
+    this._errors = null; // Stores errors after clean() has been called
+    this._changedData = null
 
-  // The baseFields attribute is the *prototype-wide* definition of fields.
-  // Because a particular *instance* might want to alter this.fields, we
-  // create this.fields here by deep copying baseFields. Instances should
-  // always modify this.fields; they should not modify baseFields.
-  this.fields = copy.deepCopy(this.baseFields)
-}
+    // The baseFields attribute is the *prototype-wide* definition of fields.
+    // Because a particular *instance* might want to alter this.fields, we
+    // create this.fields here by deep copying baseFields. Instances should
+    // always modify this.fields; they should not modify baseFields.
+    this.fields = copy.deepCopy(this.baseFields)
+  }
+})
 
 /**
  * Getter for errors, which first cleans the form if there are no errors
@@ -6338,92 +6338,65 @@ BaseForm.prototype.visibleFields = function() {
   })
 }
 
-/**
- * Creates a new form constructor, eliminating some of the steps required when
- * manually defining a new form class and wiring up convenience hooks into the
- * form initialisation process.
- * @param {Object} kwargs
- * @return {function}
- */
-function Form(kwargs) {
-  kwargs = object.extend({
-    form: BaseForm, preInit: null, postInit: null
-  }, kwargs)
-
-  // Create references to special kwargs which will be closed over by the
-  // new form constructor.
-  var bases = is.Array(kwargs.form) ? kwargs.form : [kwargs.form]
-    , preInit = kwargs.preInit
-    , postInit = kwargs.postInit
-
-  // Deliberately shadowing the outer function's kwargs so it won't be
-  // accessible.
-  var formConstructor = function(kwargs) {
-    // Allow the form to be instantiated without the 'new' operator
-    if (!(this instanceof bases[0])) return new formConstructor(kwargs)
-
-    if (preInit !== null) {
-      // If the preInit function returns anything, use the returned value
-      // as the kwargs object for further processing.
-      kwargs = preInit.call(this, kwargs) || kwargs
-    }
-
-    // Instantiate using the first base form we were given
-    bases[0].call(this, kwargs)
-
-    if (postInit !== null) {
-      postInit.call(this, kwargs)
-    }
-  }
-
-  // *Really* inherit from the first base form we were passed
-  object.inherits(formConstructor, bases[0])
-
-  // Borrow methods from any additional base forms - this is a bit of a hack
-  // to fake multiple inheritance, using any additonal base forms as mixins.
-  // We can only use instanceof for the form we really inherited from, but we
-  // can access methods from all our 'parents'.
-  for (var i = 1, l = bases.length; i < l; i++) {
-    object.extend(formConstructor.prototype, bases[i].prototype)
-  }
-
-  // Pop fields from kwargs to contribute towards baseFields.
+function DeclarativeFieldsMeta(prototypeProps, constructorProps) {
+  // Pop fields from prototypeProps to contribute towards baseFields
   var fields = []
-  for (var name in kwargs) {
-    if (object.hasOwn(kwargs, name) && kwargs[name] instanceof Field) {
-      fields.push([name, kwargs[name]])
-      delete kwargs[name]
+  for (var name in prototypeProps) {
+    if (object.hasOwn(prototypeProps, name) &&
+        prototypeProps[name] instanceof Field) {
+      fields.push([name, prototypeProps[name]])
+      delete prototypeProps[name]
     }
   }
   fields.sort(function(a, b) {
     return a[1].creationCounter - b[1].creationCounter
   })
-  // Note that we loop over the base forms in *reverse* to preserve the
-  // correct order of fields. Fields from any given base forms will be first,
-  // in the order they were given; fields from kwargs will be last.
-  for (var i = bases.length - 1; i >= 0; i--) {
-    if (typeof bases[i].prototype.baseFields != 'undefined') {
-      fields = object.items(bases[i].prototype.baseFields).concat(fields)
+
+  // If any mixins which look like form constructors were given, inherit their
+  // fields.
+  if (object.hasOwn(prototypeProps, '__mixin__')) {
+    var mixins = prototypeProps.__mixin__
+    if (!is.Array(mixins)) {
+      mixins = [mixins]
     }
+    // Note that we loop over mixed in forms in *reverse* to preserve the
+    // correct order of fields.
+    for (var i = mixins.length - 1; i >= 0; i--) {
+      var mixin = mixins[i]
+      if (is.Function(mixin) &&
+          typeof mixin.prototype.baseFields != 'undefined') {
+        fields = object.items(mixin.prototype.baseFields).concat(fields)
+        // Replace the mixin with an object containing the other prototype
+        // properties, to avoid overwriting baseFields when the mixin is
+        // applied.
+        var formMixin = object.extend({}, mixin.prototype)
+        delete formMixin.baseFields
+        mixins[i] = formMixin
+      }
+    }
+    prototypeProps.__mixin__ = mixins
   }
-  // Instantiate baseFields from our list of [name, field] pairs
-  formConstructor.prototype.baseFields = object.fromItems(fields)
 
-  // Remove any 'special' properties from kwargs, as they will now be used to
-  // add remaining properties to the new prototype.
-  delete kwargs.form
-  delete kwargs.preInit
-  delete kwargs.postInit
-  // Anything else defined in kwargs should take precedence
-  object.extend(formConstructor.prototype, kwargs)
+  // If we're extending from a form which already has some baseFields, they
+  // should be first.
+  if (typeof this.baseFields != 'undefined') {
+    fields = object.items(this.baseFields).concat(fields)
+  }
 
-  return formConstructor
+  // Where -> is "overridden by":
+  // parent fields -> mixin form fields -> given fields
+  prototypeProps.baseFields = object.fromItems(fields)
 }
+
+var Form = BaseForm.extend({
+  __meta__: DeclarativeFieldsMeta
+})
 
 module.exports = {
   NON_FIELD_ERRORS: NON_FIELD_ERRORS
 , BoundField: BoundField
 , BaseForm: BaseForm
+, DeclarativeFieldsMeta: DeclarativeFieldsMeta
 , Form: Form
 }
 })
@@ -6462,7 +6435,7 @@ var ManagementForm = (function() {
   fields[TOTAL_FORM_COUNT] = IntegerField({widget: HiddenInput})
   fields[INITIAL_FORM_COUNT] = IntegerField({widget: HiddenInput})
   fields[MAX_NUM_FORM_COUNT] = IntegerField({required: false, widget: HiddenInput})
-  return forms.Form(fields)
+  return forms.Form.extend(fields)
 })()
 
 /**
@@ -6499,8 +6472,8 @@ BaseFormSet.getDefaultPrefix = function() {
  */
 BaseFormSet.prototype.managementForm = function() {
   if (this.isBound) {
-    var form = ManagementForm({data: this.data, autoId: this.autoId,
-                               prefix: this.prefix})
+    var form = new ManagementForm({data: this.data, autoId: this.autoId,
+                                  prefix: this.prefix})
     if (!form.isValid()) {
       throw ValidationError('ManagementForm data is missing or has been tampered with')
     }
@@ -6510,9 +6483,9 @@ BaseFormSet.prototype.managementForm = function() {
     initial[TOTAL_FORM_COUNT] = this.totalFormCount()
     initial[INITIAL_FORM_COUNT] = this.initialFormCount()
     initial[MAX_NUM_FORM_COUNT] = this.maxNum
-    var form = ManagementForm({autoId: this.autoId,
-                               prefix: this.prefix,
-                               initial: initial})
+    var form = new ManagementForm({autoId: this.autoId,
+                                   prefix: this.prefix,
+                                   initial: initial})
   }
   return form
 }
@@ -6921,11 +6894,11 @@ BaseFormSet.prototype.asUL = function(doNotCoerce) {
 }
 
 /**
- * Returns a FormSet constructor for the given Form constructor.
+ * Creates a FormSet constructor for the given Form constructor.
  * @param {Form} form
  * @param {Object=} kwargs
  */
-function FormSet(form, kwargs) {
+function formsetFactory(form, kwargs) {
   kwargs = object.extend({
     formset: BaseFormSet, extra: 1, canOrder: false, canDelete: false,
     maxNum: null
@@ -6937,17 +6910,6 @@ function FormSet(form, kwargs) {
     , canDelete = kwargs.canDelete
     , maxNum = kwargs.maxNum
 
-  var formsetConstructor = function(kwargs) {
-    if (!(this instanceof formset)) return new formsetConstructor(kwargs)
-    this.form = form
-    this.extra = extra
-    this.canOrder = canOrder
-    this.canDelete = canDelete
-    this.maxNum = maxNum
-    formset.call(this, kwargs)
-  }
-  object.inherits(formsetConstructor, formset)
-
   // Remove special properties from kwargs, as they will now be used to add
   // properties to the prototype.
   delete kwargs.formset
@@ -6956,13 +6918,22 @@ function FormSet(form, kwargs) {
   delete kwargs.canDelete
   delete kwargs.maxNum
 
-  object.extend(formsetConstructor.prototype, kwargs)
+  kwargs.constructor = function(kwargs) {
+    this.form = form
+    this.extra = extra
+    this.canOrder = canOrder
+    this.canDelete = canDelete
+    this.maxNum = maxNum
+    formset.call(this, kwargs)
+  }
+
+  var formsetConstructor = formset.extend(kwargs)
 
   return formsetConstructor
 }
 
 /**
- * Returns <code>true</code> if every formset in formsets is valid.
+ * Returns true if every formset in formsets is valid.
  */
 function allValid(formsets) {
   var valid = true
@@ -6982,7 +6953,7 @@ module.exports = {
 , DELETION_FIELD_NAME: DELETION_FIELD_NAME
 , ManagementForm: ManagementForm
 , BaseFormSet: BaseFormSet
-, FormSet: FormSet
+, formsetFactory: formsetFactory
 , allValid: allValid
 }
 })

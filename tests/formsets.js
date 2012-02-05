@@ -2,7 +2,7 @@ QUnit.module("formsets")
 
 ;(function() {
 
-var ChoiceForm = forms.Form({
+var ChoiceForm = forms.Form.extend({
   choice: forms.CharField(),
   votes: forms.IntegerField()
 })
@@ -10,9 +10,9 @@ var ChoiceForm = forms.Form({
 // FormSet allows us to use multiple instance of the same form on 1 page.
 // For now, the best way to create a FormSet is by using the FormSet
 // function.
-var ChoiceFormSet = forms.FormSet(ChoiceForm)
+var ChoiceFormSet = forms.formsetFactory(ChoiceForm)
 
-var FavouriteDrinkForm = forms.Form({
+var FavouriteDrinkForm = forms.Form.extend({
   name: forms.CharField()
 })
 
@@ -37,7 +37,7 @@ QUnit.test("Basic FormSet", 4, function() {
   // A FormSet constructor takes the same arguments as Form. Let's create a
   // FormSet for adding data. By default, it displays 1 blank form. It can
   // display more, but we'll look at how to do so later.
-  var formset = ChoiceFormSet({autoId: false, prefix: "choices"})
+  var formset = new ChoiceFormSet({autoId: false, prefix: "choices"})
   equal(""+formset,
 "<tr><td colspan=\"2\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\"></td></tr>\n" +
 "<tr><th>Choice:</th><td><input type=\"text\" name=\"choices-0-choice\"></td></tr>\n" +
@@ -61,13 +61,13 @@ QUnit.test("Basic FormSet", 4, function() {
   // whether all the forms passed validation. However, unlike a Form instance,
   // cleaned_data and errors will be a list of objects rather than just a
   // single object.
-  formset = ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
   deepEqual(formset.forms[0].cleanedData, {choice: "Calexico", votes: 100})
 
   // If a FormSet was not passed any data, its isValid method should return
   // false.
-  formset = ChoiceFormSet()
+  formset = new ChoiceFormSet()
   strictEqual(formset.isValid(), false)
 })
 
@@ -81,7 +81,7 @@ QUnit.test("Formset validation", 2, function() {
   , "choices-0-choice": "Calexico"
   , "choices-0-votes": ""
   }
-  var formset = ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), false)
   deepEqual(formset.errors()[0].get("votes").errors, ["This field is required."])
 })
@@ -91,7 +91,7 @@ QUnit.test("Formset initial data", 3, function() {
   // argument to the constructor, which should be a list of objects. By
   // default, an extra blank form is included.
   var initial = [{choice: "Calexico", votes: 100}]
-  formset = ChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
+  formset = new ChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
   equal(allAsUL(formset.forms),
 "<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>\n" +
@@ -108,7 +108,7 @@ QUnit.test("Formset initial data", 3, function() {
   , "choices-1-choice": ""
   , "choices-1-votes": ""
   }
-  var formset = ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
   deepEqual(formset.cleanedData(), [{choice: "Calexico", votes: 100}, {}])
 })
@@ -128,7 +128,7 @@ QUnit.test("Second form partially filled", 2, function() {
   , "choices-1-choice": "The Decemberists"
   , "choices-1-votes": "" // Missing value
   }
-  var formset = ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), false)
   deepEqual([formset.errors()[0].isPopulated(), formset.errors()[1].get("votes").errors],
       [false, ["This field is required."]])
@@ -147,7 +147,7 @@ QUnit.test("Delete prefilled data", 2, function() {
   , "choices-1-choice": ""
   , "choices-1-votes": ""
   }
-  var formset = ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), false)
   deepEqual([formset.errors()[0].get("choice").errors, formset.errors()[0].get("votes").errors],
       [["This field is required."], ["This field is required."]])
@@ -155,10 +155,10 @@ QUnit.test("Delete prefilled data", 2, function() {
 
 // We can also display more than 1 empty form at a time. To do so, pass an
 // "extra" argument to FormSet.
-var MoreChoiceFormSet = forms.FormSet(ChoiceForm, {extra: 3})
+var MoreChoiceFormSet = forms.formsetFactory(ChoiceForm, {extra: 3})
 
 QUnit.test("Displaying more than one blank form", 3, function() {
-  var formset = MoreChoiceFormSet({autoId: false, prefix: "choices"})
+  var formset = new MoreChoiceFormSet({autoId: false, prefix: "choices"})
   equal(allAsUL(formset.forms),
 "<li>Choice: <input type=\"text\" name=\"choices-0-choice\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-0-votes\"></li>\n" +
@@ -181,7 +181,7 @@ QUnit.test("Displaying more than one blank form", 3, function() {
   , "choices-2-choice": ""
   , "choices-2-votes": ""
   }
-  formset = MoreChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  formset = new MoreChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
   deepEqual(formset.cleanedData(), [{}, {}, {}])
 })
@@ -199,7 +199,7 @@ QUnit.test("Single form completed", 2, function() {
   , "choices-2-choice": ""
   , "choices-2-votes": ""
   }
-  var formset = MoreChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  var formset = new MoreChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
   deepEqual(formset.cleanedData(), [{choice: "Calexico", votes: 100}, {}, {}])
 })
@@ -218,7 +218,7 @@ QUnit.test("Second form partially filled", 2, function() {
   , "choices-2-choice": ""
   , "choices-2-votes": ""
   }
-  var formset = MoreChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  var formset = new MoreChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), false)
   deepEqual([formset.errors()[0].isPopulated(), formset.errors()[1].get("votes").errors, formset.errors()[2].isPopulated()],
        [false, ["This field is required."], false])
@@ -228,7 +228,7 @@ QUnit.test("More initial data", 3, function() {
   // The "extra" argument also works when the formset is pre-filled with
   // initial data.
   var initial = [{choice: "Calexico", votes: 100}]
-  var formset = MoreChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
+  var formset = new MoreChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
   equal(allAsUL(formset.forms),
 "<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>\n" +
@@ -250,10 +250,10 @@ QUnit.test("FormSet with deletion", 6, function() {
   // We can easily add deletion ability to a FormSet with an argument to
   // FormSet. This will add a BooleanField to each form instance. When
   // true, the form will be in formset.deletedForms.
-  var DeleteChoiceFormSet = forms.FormSet(ChoiceForm, {canDelete: true})
+  var DeleteChoiceFormSet = forms.formsetFactory(ChoiceForm, {canDelete: true})
 
   var initial = [{choice: "Calexico", votes: 100}, {choice: "Fergie", votes: 900}]
-  var formset = DeleteChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
+  var formset = new DeleteChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
   equal(allAsUL(formset.forms),
 "<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>\n" +
@@ -282,7 +282,7 @@ QUnit.test("FormSet with deletion", 6, function() {
   , "choices-2-DELETE": ""
   }
 
-  formset = DeleteChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  formset = new DeleteChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
   deepEqual(formset.cleanedData(),
       [{choice: "Calexico", votes: 100, DELETE: false}, {choice: "Fergie", votes: 900, DELETE: true}, {}])
@@ -292,7 +292,7 @@ QUnit.test("FormSet with deletion", 6, function() {
   // If we fill a form with something and then we check the canDelete checkbox
   // for that form, that form's errors should not make the entire formset
   // invalid since it's going to be deleted.
-  var CheckForm = forms.Form({
+  var CheckForm = forms.Form.extend({
     field: forms.IntegerField({minValue: 100})
   })
 
@@ -307,13 +307,13 @@ QUnit.test("FormSet with deletion", 6, function() {
   , "check-2-field": ""
   , "check-2-DELETE": ""
   }
-  var CheckFormSet = forms.FormSet(CheckForm, {canDelete: true})
-  formset = CheckFormSet({data: data, prefix: "check"})
+  var CheckFormSet = forms.formsetFactory(CheckForm, {canDelete: true})
+  formset = new CheckFormSet({data: data, prefix: "check"})
   strictEqual(formset.isValid(), true)
 
   // If we remove the deletion flag now we will have our validation back
   data["check-1-DELETE"] = ""
-  formset = CheckFormSet({data: data, prefix: "check"})
+  formset = new CheckFormSet({data: data, prefix: "check"})
   strictEqual(formset.isValid(), false)
 })
 
@@ -325,11 +325,11 @@ QUnit.test("FormSet with deletion", 6, function() {
 // marked as 1, then the form index is used as a secondary ordering
 // criteria. In order to put something at the front of the list, you'd need
 // to set its order to 0.
-var OrderChoiceFormSet = forms.FormSet(ChoiceForm, {canOrder: true})
+var OrderChoiceFormSet = forms.formsetFactory(ChoiceForm, {canOrder: true})
 
 QUnit.test("FormSets with ordering", 3, function() {
   var initial = [{choice: "Calexico", votes: 100}, {choice: "Fergie", votes: 900}]
-  var formset = OrderChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
+  var formset = new OrderChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
   equal(allAsUL(formset.forms),
 "<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>\n" +
@@ -355,7 +355,7 @@ QUnit.test("FormSets with ordering", 3, function() {
   , "choices-2-votes": "500"
   , "choices-2-ORDER": "0"
   }
-  formset = OrderChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  formset = new OrderChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
   deepEqual(allCleanedData(formset.orderedForms()),
       [ {choice: "The Decemberists", votes: 500, ORDER: 0}
@@ -366,7 +366,7 @@ QUnit.test("FormSets with ordering", 3, function() {
 QUnit.test("Empty ordered fields", 2, function() {
   // Ordering fields are allowed to be left blank, and if they *are* left
   // blank, they will be sorted below everything else.
-  var  data = {
+  var data = {
     "choices-TOTAL_FORMS": "4"
   , "choices-INITIAL_FORMS": "3"
   , "choices-MAX_NUM_FORMS": "0"
@@ -383,7 +383,7 @@ QUnit.test("Empty ordered fields", 2, function() {
   , "choices-3-votes": "50"
   , "choices-3-ORDER": ""
   }
-  var formset = OrderChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  var formset = new OrderChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
   deepEqual(allCleanedData(formset.orderedForms()),
        [ {choice: "Calexico", votes: 100, ORDER: 1}
@@ -399,21 +399,21 @@ QUnit.test("Ordering blank fieldsets", 2, function() {
   , "choices-INITIAL_FORMS": "0"
   , "choices-MAX_NUM_FORMS": "0"
   }
-  var formset = OrderChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  var formset = new OrderChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
   strictEqual(formset.orderedForms().length, 0)
 })
 
 QUnit.test("Formset with ordering and deletion", 4, function() {
   // Let's try throwing ordering and deletion into the same form
-  var ChoiceFormSet = forms.FormSet(ChoiceForm, {canOrder: true, canDelete: true})
+  var ChoiceFormSet = forms.formsetFactory(ChoiceForm, {canOrder: true, canDelete: true})
 
   var initial = [
     {choice: "Calexico", votes: 100}
   , {choice: "Fergie", votes: 900}
   , {choice: "The Decemberists", votes: 500}
   ]
-  var formset = ChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
+  var formset = new ChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
   equal(allAsUL(formset.forms),
 "<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>\n" +
@@ -454,7 +454,7 @@ QUnit.test("Formset with ordering and deletion", 4, function() {
   , "choices-3-ORDER": ""
   , "choices-3-DELETE": ""
   }
-  formset = ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
+  formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
   deepEqual(allCleanedData(formset.orderedForms()),
        [{choice: "The Decemberists", votes: 500, ORDER: 0, DELETE: false},
@@ -466,11 +466,11 @@ QUnit.test("Formset with ordering and deletion", 4, function() {
 QUnit.test("Invalid deleted form with ordering", 2, function() {
   // Should be able to get ordered forms from a valid formset even if a
   // deleted form would have been invalid.
-  var PersonForm = forms.Form({
+  var PersonForm = forms.Form.extend({
     name: forms.CharField()
   })
-  var PeopleFormSet = forms.FormSet(PersonForm, {canDelete: true, canOrder: true})
-  var p = PeopleFormSet({data: {
+  var PeopleFormSet = forms.formsetFactory(PersonForm, {canDelete: true, canOrder: true})
+  var p = new PeopleFormSet({data: {
     "form-0-name": ""
   , "form-0-DELETE": "on" // no name!
   , "form-TOTAL_FORMS": 1
@@ -492,17 +492,17 @@ var BaseFavouriteDrinksFormSet = forms.BaseFormSet.extend()
 BaseFavouriteDrinksFormSet.prototype.clean = function() {
   var seenDrinks = {}
   for (var i = 0, l = this.cleanedData().length; i < l; i++) {
-  if (typeof seenDrinks[this.cleanedData()[i].name] != "undefined") {
-    throw forms.ValidationError("You may only specify a drink once.")
-  }
-  seenDrinks[this.cleanedData()[i].name] = true
+    if (typeof seenDrinks[this.cleanedData()[i].name] != "undefined") {
+      throw forms.ValidationError("You may only specify a drink once.")
+    }
+    seenDrinks[this.cleanedData()[i].name] = true
   }
 }
 
 // Let's define a FormSet that takes a list of favourite drinks, but throws an
 // exception if there are any duplicates. Used to test clean hooks, ands Django
 // regressions 6926 and 12878.
-var FavouriteDrinksFormSet = forms.FormSet(FavouriteDrinkForm, {
+var FavouriteDrinksFormSet = forms.formsetFactory(FavouriteDrinkForm, {
   formset: BaseFavouriteDrinksFormSet
 , extra: 3
 })
@@ -518,7 +518,7 @@ QUnit.test("Clean hook", 10, function() {
     , "drinks-1-name": "Gin and Tonic"
     }
 
-    var formset = formsetConstructor({data: data, prefix: "drinks"})
+    var formset = new formsetConstructor({data: data, prefix: "drinks"})
     strictEqual(formset.isValid(), false)
 
     // Any errors raised by formset.clean() are available via the
@@ -534,7 +534,7 @@ QUnit.test("Clean hook", 10, function() {
     , "drinks-1-name": "Bloody Mary"
     }
 
-    var formset = formsetConstructor({data: data, prefix: "drinks"})
+    var formset = new formsetConstructor({data: data, prefix: "drinks"})
     strictEqual(formset.isValid(), true)
     strictEqual(formset.nonFormErrors().isPopulated(), false)
   }
@@ -544,7 +544,7 @@ QUnit.test("Clean hook", 10, function() {
   // Alternatively, for one-off formsets, a more convenient method is to
   // specify custom methods for the formset in the configuration object
   // passed to FormSet.
-  FavouriteDrinksFormSet = forms.FormSet(FavouriteDrinkForm, {
+  FavouriteDrinksFormSet = forms.formsetFactory(FavouriteDrinkForm, {
     extra: 3
   , clean: function() {
       var seenDrinks = {}
@@ -567,7 +567,7 @@ QUnit.test("Clean hook", 10, function() {
   , "drinks-0-name": "Gin and Tonic"
   , "drinks-1-name": "Gin and Tonic"
   }
-  var formset = FavouriteDrinksFormSet({data: data, prefix: "drinks"})
+  var formset = new FavouriteDrinksFormSet({data: data, prefix: "drinks"})
   strictEqual(formset.isValid(), false)
   equal(""+formset.nonFormErrors(), "<ul class=\"errorlist\"><li>You may only specify a drink once.</li></ul>")
 })
@@ -575,27 +575,27 @@ QUnit.test("Clean hook", 10, function() {
 QUnit.test("Limiting max forms", 4, function() {
   // When not passed, maxNum will take its default value of null, i.e. unlimited
   // number of forms, only controlled by the value of the extra parameter.
-  var LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 3})
-  var formset = LimitedFavouriteDrinkFormSet()
+  var LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 3})
+  var formset = new LimitedFavouriteDrinkFormSet()
   equal(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\"></td></tr>\n" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>\n" +
 "<tr><th><label for=\"id_form-2-name\">Name:</label></th><td><input type=\"text\" name=\"form-2-name\" id=\"id_form-2-name\"></td></tr>")
 
   // If maxNum is 0 then no form is rendered at all
-  LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 3, maxNum: 0})
-  formset = LimitedFavouriteDrinkFormSet()
+  LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 3, maxNum: 0})
+  formset = new LimitedFavouriteDrinkFormSet()
   equal(formset.forms.join(""), "")
 
-  LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 5, maxNum: 2})
-  formset = LimitedFavouriteDrinkFormSet()
+  LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 5, maxNum: 2})
+  formset = new LimitedFavouriteDrinkFormSet()
   equal(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\"></td></tr>\n" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>")
 
   // Ensure that maxNum has no affect when extra is less than maxNum
-  LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2})
-  formset = LimitedFavouriteDrinkFormSet()
+  LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2})
+  formset = new LimitedFavouriteDrinkFormSet()
   equal(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\"></td></tr>")
 })
@@ -608,8 +608,8 @@ QUnit.test("Max num with initial data", 2, function() {
   , {name: "Bloody Mary"}
   , {name: "Jack and Coke"}
   ]
-  var LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2})
-  var formset = LimitedFavouriteDrinkFormSet({initial: initial})
+  var LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2})
+  var formset = new LimitedFavouriteDrinkFormSet({initial: initial})
   equal(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin and Tonic\"></td></tr>\n" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\" value=\"Bloody Mary\"></td></tr>")
@@ -619,8 +619,8 @@ QUnit.test("Max num with initial data", 2, function() {
   initial = [
     {name: "Gin and Tonic"}
   ]
-  LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra:3, maxNum: 2})
-  formset = LimitedFavouriteDrinkFormSet({initial: initial})
+  LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra:3, maxNum: 2})
+  formset = new LimitedFavouriteDrinkFormSet({initial: initial})
   equal(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin and Tonic\"></td></tr>\n" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>")
@@ -634,8 +634,8 @@ QUnit.test("maxNum zero", 1, function() {
     {"name": "Fernet and Coke"}
   , {"name": "Bloody Mary"}
   ]
-  var LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 0})
-  var formset = LimitedFavouriteDrinkFormSet({initial: initial})
+  var LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 0})
+  var formset = new LimitedFavouriteDrinkFormSet({initial: initial})
   strictEqual(formset.forms.join("\n"), "")
 })
 
@@ -647,8 +647,8 @@ QUnit.test("Nore initial than maxNum", 2, function() {
   , {"name": "Bloody Mary"}
   , {"name": "Jack and Coke"}
   ]
-  var LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2})
-  var formset = LimitedFavouriteDrinkFormSet({initial: initial})
+  var LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2})
+  var formset = new LimitedFavouriteDrinkFormSet({initial: initial})
   strictEqual(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Fernet and Coke\"></td></tr>\n" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\" value=\"Bloody Mary\"></td></tr>")
@@ -658,8 +658,8 @@ QUnit.test("Nore initial than maxNum", 2, function() {
   initial = [
     {"name": "Gin Tonic"}
   ]
-  var LimitedFavouriteDrinkFormSet = forms.FormSet(FavouriteDrinkForm, {extra: 1, maxNum: 2})
-  var formset = LimitedFavouriteDrinkFormSet({initial: initial})
+  var LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2})
+  var formset = new LimitedFavouriteDrinkFormSet({initial: initial})
   strictEqual(formset.forms.join("\n"),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin Tonic\"></td></tr>\n" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>")
@@ -668,7 +668,7 @@ QUnit.test("Nore initial than maxNum", 2, function() {
 //Regression tests for Django issue #6926
 QUnit.test("Management form prefix", 3, function() {
   // Make sure the management form has the correct prefix
-  var formset = FavouriteDrinksFormSet()
+  var formset = new FavouriteDrinksFormSet()
   equal(formset.managementForm().prefix, "form")
 
   var data = {
@@ -676,10 +676,10 @@ QUnit.test("Management form prefix", 3, function() {
   , "form-INITIAL_FORMS": "0"
   , "form-MAX_NUM_FORMS": "0"
   }
-  formset = FavouriteDrinksFormSet({data: data})
+  formset = new FavouriteDrinksFormSet({data: data})
   equal(formset.managementForm().prefix, "form")
 
-  formset = FavouriteDrinksFormSet({initial: {}})
+  formset = new FavouriteDrinksFormSet({initial: {}})
   equal(formset.managementForm().prefix, "form")
 })
 
@@ -692,7 +692,7 @@ QUnit.test("Formset clean errors", 2, function() {
   , "drinks-0-name": "Gin and Tonic"
   , "drinks-1-name": "Gin and Tonic"
   }
-  var formset = FavouriteDrinksFormSet({data: data, prefix: "drinks"})
+  var formset = new FavouriteDrinksFormSet({data: data, prefix: "drinks"})
   strictEqual(formset.isValid(), false)
   deepEqual(formset.nonFormErrors().errors, ["You may only specify a drink once."])
 })
@@ -706,36 +706,36 @@ var remderTestData = {
 }
 
 QUnit.test("FormSet asTable", 1, function() {
-  equal(""+ChoiceFormSet({data: remderTestData, autoId: false, prefix: "choices"}).asTable(),
+  equal(""+new ChoiceFormSet({data: remderTestData, autoId: false, prefix: "choices"}).asTable(),
 "<tr><td colspan=\"2\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></td></tr>\n" +
 "<tr><th>Choice:</th><td><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></td></tr>\n" +
 "<tr><th>Votes:</th><td><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></td></tr>")
 })
 
 QUnit.test("FormSet asP", 1, function() {
-  equal(""+ChoiceFormSet({data: remderTestData, autoId: false, prefix: "choices"}).asP(),
+  equal(""+new ChoiceFormSet({data: remderTestData, autoId: false, prefix: "choices"}).asP(),
 "<div><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></div>\n" +
 "<p>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></p>\n" +
 "<p>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></p>")
 })
 
 QUnit.test("FormSet asUL", 1, function() {
-  equal(""+ChoiceFormSet({data: remderTestData, autoId: false, prefix: "choices"}).asUL(),
+  equal(""+new ChoiceFormSet({data: remderTestData, autoId: false, prefix: "choices"}).asUL(),
 "<li><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></li>\n" +
 "<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>")
 })
 
 // 3 Regression tests for Django issue #11418
-var ArticleForm = forms.Form({
+var ArticleForm = forms.Form.extend({
   title: forms.CharField()
 , pub_date: forms.DateField()
 })
 
-var ArticleFormSet = forms.FormSet(ArticleForm)
+var ArticleFormSet = forms.formsetFactory(ArticleForm)
 
 QUnit.test("No data raises ValidationError", 1, function() {
-  raises(function() { ArticleFormSet({data: {}}); })
+  raises(function() { new ArticleFormSet({data: {}}); })
 })
 
 QUnit.test("With management data works fine", 7, function() {
@@ -743,7 +743,7 @@ QUnit.test("With management data works fine", 7, function() {
     "form-TOTAL_FORMS": "1"
   , "form-INITIAL_FORMS": "0"
   }
-  var formset = ArticleFormSet({data: data})
+  var formset = new ArticleFormSet({data: data})
   strictEqual(formset.initialFormCount(), 0)
   strictEqual(formset.totalFormCount(), 1)
   strictEqual(formset.isBound, true)
@@ -762,7 +762,7 @@ QUnit.test("Form errors are caught by FormSet", 4, function() {
   , "form-1-title": "Test"
   , "form-1-pub_date": "" // Missing, but required
   }
-  var formset = ArticleFormSet({data: data})
+  var formset = new ArticleFormSet({data: data})
   strictEqual(formset.isValid(), false)
   strictEqual(formset.errors()[0].isPopulated(), false)
   strictEqual(formset.errors()[1].isPopulated(), true)
@@ -776,8 +776,8 @@ QUnit.test("Empty forms are unbound", 3, function() {
   , "form-0-title": "Test"
   , "form-0-pub_date": "1904-06-16"
   }
-  var unboundFormset = ArticleFormSet()
-  var boundFormset = ArticleFormSet({data: data})
+  var unboundFormset = new ArticleFormSet()
+  var boundFormset = new ArticleFormSet({data: data})
   var emptyForms = [unboundFormset.emptyForm(), boundFormset.emptyForm()]
   // Empty forms should be unbound
   strictEqual(emptyForms[0].isBound, false)
@@ -792,18 +792,18 @@ QUnit.test("Empty formset is valid", 2, function() {
       throw forms.ValidationError("Clean method called")
   }
 
-  var EmptyFsetWontValidateFormset = forms.FormSet(FavouriteDrinkForm, {
+  var EmptyFsetWontValidateFormset = forms.formsetFactory(FavouriteDrinkForm, {
     formset: EmptyFsetWontValidate
   , extra: 0
   })
-  var formset1 = EmptyFsetWontValidateFormset({
+  var formset1 = new EmptyFsetWontValidateFormset({
     data: {
       'form-INITIAL_FORMS': '0'
     , 'form-TOTAL_FORMS': '0'
     }
   , prefix: "form"
   })
-  var formset2 = EmptyFsetWontValidateFormset({
+  var formset2 = new EmptyFsetWontValidateFormset({
     data: {
       'form-INITIAL_FORMS': '0'
     , 'form-TOTAL_FORMS': '1'

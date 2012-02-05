@@ -652,11 +652,11 @@ QUnit.test("NullBooleanField", 14, function() {
   strictEqual(f.clean("hello"), null)
 
   // Make sure that the internal value is preserved if using HiddenInput (Django #7753)
-  var HiddenNullBooleanForm = forms.Form({
+  var HiddenNullBooleanForm = forms.Form.extend({
     hidden_nullbool1: forms.NullBooleanField({widget: forms.HiddenInput, initial: true}),
     hidden_nullbool2: forms.NullBooleanField({widget: forms.HiddenInput, initial: false})
   })
-  f = HiddenNullBooleanForm({data: {hidden_nullbool1: "true", hidden_nullbool2: "false"}})
+  f = new HiddenNullBooleanForm({data: {hidden_nullbool1: "true", hidden_nullbool2: "false"}})
   f.fullClean()
   strictEqual(f.cleanedData.hidden_nullbool1, true)
   strictEqual(f.cleanedData.hidden_nullbool2, false)
@@ -664,12 +664,12 @@ QUnit.test("NullBooleanField", 14, function() {
   // Make sure we're compatible with MySQL, which uses 0 and 1 for its boolean
   // values. (Django #9609)
   var NULLBOOL_CHOICES = [["1", "Yes"], ["0", "No"], ["", "Unknown"]]
-  var MySQLNullBooleanForm = forms.Form({
+  var MySQLNullBooleanForm = forms.Form.extend({
     nullbool0: forms.NullBooleanField({widget: forms.RadioSelect({choices: NULLBOOL_CHOICES})}),
     nullbool1: forms.NullBooleanField({widget: forms.RadioSelect({choices: NULLBOOL_CHOICES})}),
     nullbool2: forms.NullBooleanField({widget: forms.RadioSelect({choices: NULLBOOL_CHOICES})})
   })
-  f = MySQLNullBooleanForm({data: {nullbool0: "1", nullbool1: "0", nullbool2: ""}})
+  f = new MySQLNullBooleanForm({data: {nullbool0: "1", nullbool1: "0", nullbool2: ""}})
   f.fullClean()
   strictEqual(f.cleanedData.nullbool0, true)
   strictEqual(f.cleanedData.nullbool1, false)

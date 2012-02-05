@@ -30,8 +30,8 @@ Node.js::
 
 Browser bundles (all dependencies included):
 
-* `newforms.js`_ - 207KB (47KB gzipped)
-* `newforms.min.js`_ - 76.5KB (20.7KB gzipped)
+* `newforms.js`_ - 206KB (47KB gzipped)
+* `newforms.min.js`_ - 76.3KB (20.7KB gzipped)
 
    * Exposes newforms as a ``forms`` variable.
    * Exposes a ``require()`` function which can be used to access bundled
@@ -83,38 +83,39 @@ Here's a quick guide to getting started with newforms.
   .. _`jade`: http://jade-lang.com/
   .. _`npm`: http://npmjs.org/
 
-* The ``new`` operator is **optional** for all objects provided by
-  newforms, including forms and formset constructors created by factory
-  functions.
+* For convenience and compactness, the ``new`` operator is **optional** when
+  using newforms' Fields, Widgets and other constructors which are commonly used
+  while defining a Form, such as ValidationError -- however ``new`` is **not**
+  automatically optional for the Form and FormSet constructors you create.
 
-* Form constructors are created using the ``forms.Form`` factory function,
-  which takes a single ``Object`` argument defining form fields and any
-  other properties for the form's prototype (validation methods etc.),
-  returning a Form constructor which inherits from ``BaseForm`` by
-  default::
+* Form constructors are created using the ``forms.Form`` constructor's
+  ``extend()`` function, which comes courtesy of `Concur`_. This takes an
+  ``Object`` argument defining form fields and any other properties for the
+  form's prototype (validation methods etc.), returning a constructor which
+  inherits from ``BaseForm``
 
-     var ContactForm = forms.Form({
-       subject: forms.CharField({maxLength: 100})
-     , message: forms.CharField()
-     , sender: forms.EmailField()
-     , ccMyself: forms.BooleanField({required: false})
+     var ContactForm = forms.Form.extend({
+       subject  : forms.CharField({maxLength: 100})
+     , message  : forms.CharField()
+     , sender   : forms.EmailField()
+     , ccMyself : forms.BooleanField({required: false})
      })
 
-     var form = ContactForm()
+     var form = new ContactForm()
 
-* FormSet constructors are created using the ``forms.FormSet`` factory
-  function, which takes a Form constructor and any additional properties
-  for the FormSet defined as an ``Object``, returning a FormSet constructor
-  which inherits from ``BaseFormSet``::
+* FormSet constructors are created using the ``forms.formsetFactory`` function,
+  which takes a Form constructor and any additional properties for the FormSet's
+  prototype defined as an ``Object``, returning a FormSet constructor which
+  inherits from ``BaseFormSet``::
 
-     var ArticleForm = forms.Form({
-       title: forms.CharField()
-     , pubDate: forms.DateField()
+     var ArticleForm = forms.Form.extend({
+       title   : forms.CharField()
+     , pubDate : forms.DateField()
      })
 
-     var ArticleFormSet = forms.FormSet(ArticleForm, {extra: 1})
+     var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 1})
 
-     var formSet = ArticleFormSet()
+     var formSet = new ArticleFormSet()
 
 * The API is largely consistent with Django's API, with the following
   rules of thumb for converting between the two:
@@ -124,7 +125,7 @@ Here's a quick guide to getting started with newforms.
     properties.
 
     Note that this applies *anywhere* Django accepts a keyword argument,
-    even if the convention in Django is to  pass certain keyword arguments
+    even if the convention in Django is topass certain keyword arguments
     positionally, e.g. when passing in POST data to a Form constructor.
 
     *Django (by convention)*::
@@ -133,13 +134,13 @@ Here's a quick guide to getting started with newforms.
 
     *Javascript*::
 
-       var f = MyForm({data: req.body})
+       var f = new MyForm({data: req.body})
 
   * Method and variable names which use ``underscores_in_python`` become
     ``camelCasedInJavaScript``.
 
   * As mentioned above, the ``new`` operator is optional for newforms
-    objects.
+    form components.
 
     *Django*::
 
@@ -151,8 +152,8 @@ Here's a quick guide to getting started with newforms.
        forms.CharField({maxLength: 100})
 
   * Due to limited cross-browser support for properties in JavaScript,
-    Form and FormSet properties such as ``cleaned_data`` and ``errors``
-    become method calls; e.g. ``cleanedData()`` and ``errors()``.
+    Form and FormSet properties from Django such as ``cleaned_data`` and
+    ``errors`` become method calls; e.g. ``cleanedData()`` and ``errors()``.
 
     It's ugly, but it works everywhere.
 
