@@ -39,10 +39,6 @@ https://code.djangoproject.com/changeset/16760
 
    URLField.verifyExists is now deprecated
 
-https://code.djangoproject.com/changeset/17132
-
-   Update integer handling for checkboxes
-
 https://code.djangoproject.com/changeset/17173
 https://code.djangoproject.com/changeset/17175
 

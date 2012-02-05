@@ -205,7 +205,7 @@ QUnit.test("Textarea", 9, function() {
         "<textarea rows=\"10\" cols=\"40\" class=\"special\" name=\"msg\"></textarea>")
 })
 
-QUnit.test("CheckboxInput", 22, function() {
+QUnit.test("CheckboxInput", 24, function() {
   var w = forms.CheckboxInput()
   equal(""+w.render("is_cool", ""),
         "<input type=\"checkbox\" name=\"is_cool\">")
@@ -223,6 +223,12 @@ QUnit.test("CheckboxInput", 22, function() {
 
   equal(""+w.render("is_cool", false, {attrs: {"class": "pretty"}}),
         "<input type=\"checkbox\" name=\"is_cool\" class=\"pretty\">")
+
+  // Regression for Django #17114
+  equal(''+w.render('is_cool', 0),
+        '<input type="checkbox" name="is_cool" value="0" checked="checked">')
+  equal(''+w.render('is_cool', 1),
+        '<input type="checkbox" name="is_cool" value="1" checked="checked">')
 
   // You can also pass "attrs" to the constructor
   w = forms.CheckboxInput({attrs: {"class": "pretty"}})
