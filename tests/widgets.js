@@ -270,7 +270,7 @@ QUnit.test("CheckboxInput", 22, function() {
   strictEqual(w._hasChanged(true, ""), true)
 })
 
-QUnit.test("Select", 12, function() {
+QUnit.test("Select", 13, function() {
   var w = forms.Select()
   equal(""+w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatle\">\n" +
@@ -297,6 +297,16 @@ QUnit.test("Select", 12, function() {
 "<option value=\"G\">George</option>\n" +
 "<option value=\"R\">Ringo</option>\n" +
 "</select>")
+
+  // Only one option can be selected
+  equal(''+w.render('choices', '0', {choices: [['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['0', 'extra']]}),
+'<select name="choices">\n' +
+'<option value="0" selected="selected">0</option>\n' +
+'<option value="1">1</option>\n' +
+'<option value="2">2</option>\n' +
+'<option value="3">3</option>\n' +
+'<option value="0">extra</option>\n' +
+'</select>')
 
   // The value is compared to its String representation
   equal(""+w.render("num", 2, {choices: [['1', '1'], ['2', '2'], ['3', '3']]}),
@@ -416,7 +426,7 @@ QUnit.test("NullBooleanSelect", 12, function() {
   strictEqual(w._hasChanged(true, false), true)
 })
 
-QUnit.test("SelectMultiple", 23, function() {
+QUnit.test("SelectMultiple", 24, function() {
   var w = forms.SelectMultiple()
   equal(""+w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatles\" multiple=\"multiple\">\n" +
@@ -457,6 +467,16 @@ QUnit.test("SelectMultiple", 23, function() {
 "<option value=\"G\">George</option>\n" +
 "<option value=\"R\">Ringo</option>\n" +
 "</select>")
+
+  // Multiple options (with the same value) can be selected
+  equal(''+w.render('choices', ['0'], {choices: [['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['0', 'extra']]}),
+'<select name="choices" multiple="multiple">\n' +
+'<option value="0" selected="selected">0</option>\n' +
+'<option value="1">1</option>\n' +
+'<option value="2">2</option>\n' +
+'<option value="3">3</option>\n' +
+'<option value="0" selected="selected">extra</option>\n' +
+'</select>')
 
   // If multiple values are given, but some of them are not valid, the valid ones are selected
   equal(""+w.render("beatles", ["J", "G", "foo"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
