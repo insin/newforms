@@ -905,6 +905,19 @@ QUnit.test("Dynamic construction", 17, function() {
             [['f', 'Female'], ['m', 'Male']])
 })
 
+QUnit.test("Independent validators", 3, function() {
+  var MyForm = forms.Form.extend({
+    myfield: forms.CharField({maxLength: 25})
+  })
+
+  var f1 = new MyForm()
+    , f2 = new MyForm()
+  f1.fields['myfield'].validators[0] = forms.MaxLengthValidator(12)
+  ok(f1.fields['myfield'].validators[0] !== f2.fields['myfield'].validators[0])
+  cleanErrorEqual(f1.fields['myfield'], 'Ensure this value has at most 12 characters (it has 13).', '1234567890abc')
+  cleanErrorEqual(f2.fields['myfield'], 'Ensure this value has at most 25 characters (it has 26).', 'abcdefghijklmnopqrstuvwxyz')
+})
+
 QUnit.test("Hidden widget", 12, function() {
   // HiddenInput widgets are displayed differently in the asTable(), asUL()
   // and asP() output of a Form - their verbose names are not displayed, and a
