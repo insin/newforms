@@ -39,10 +39,6 @@ https://code.djangoproject.com/changeset/16760
 
    URLField.verifyExists is now deprecated
 
-https://code.djangoproject.com/changeset/16773
-
-   Add FormSet.prototype.hasChanged()
-
 https://code.djangoproject.com/changeset/17046
 
    Make field validators list independent per form instance

@@ -1,3 +1,7 @@
+* Added ``BaseFormSet.prototype.hasChanged()``
+* Changed ``Select`` widget to only allow for one selected option with the same
+  value
+
 0.2.0 / 2012-02-05
 ==================
 

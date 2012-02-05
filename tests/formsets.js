@@ -33,7 +33,7 @@ function allCleanedData(forms) {
   return cleanedData
 }
 
-QUnit.test("Basic FormSet", 4, function() {
+QUnit.test("Basic FormSet", 5, function() {
   // A FormSet constructor takes the same arguments as Form. Let's create a
   // FormSet for adding data. By default, it displays 1 blank form. It can
   // display more, but we'll look at how to do so later.
@@ -65,10 +65,11 @@ QUnit.test("Basic FormSet", 4, function() {
   strictEqual(formset.isValid(), true)
   deepEqual(formset.forms[0].cleanedData, {choice: "Calexico", votes: 100})
 
-  // If a FormSet was not passed any data, its isValid method should return
-  // false.
+  // If a FormSet was not passed any data, its isValid and hasChanged methods
+  // should return false.
   formset = new ChoiceFormSet()
   strictEqual(formset.isValid(), false)
+  strictEqual(formset.hasChanged(), false)
 })
 
 QUnit.test("Formset validation", 2, function() {
@@ -84,6 +85,32 @@ QUnit.test("Formset validation", 2, function() {
   var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), false)
   deepEqual(formset.errors()[0].get("votes").errors, ["This field is required."])
+})
+
+QUnit.test('Formset hasChanged', 5, function() {
+  // hasChanged should be true if any data is passed, even if the formset didn't
+  // validate
+  var data = {
+    'choices-TOTAL_FORMS': '1'
+  , 'choices-INITIAL_FORMS': '0'
+  , 'choices-MAX_NUM_FORMS': '0'
+  , 'choices-0-choice': ''
+  , 'choices-0-votes': ''
+  }
+  var blankFormset = new ChoiceFormSet({data: data, autoId: false, prefix: 'choices'})
+  strictEqual(blankFormset.hasChanged(), false)
+
+  // Invalid formset
+  data['choices-0-choice'] = 'Calexico'
+  var invalidFormset = new ChoiceFormSet({data: data, autoId: false, prefix: 'choices'})
+  strictEqual(invalidFormset.isValid(), false)
+  strictEqual(invalidFormset.hasChanged(), true)
+
+  // Valid formset
+  data['choices-0-votes'] = '100'
+  var validFormset = new ChoiceFormSet({data: data, autoId: false, prefix: 'choices'})
+  strictEqual(validFormset.isValid(), true)
+  strictEqual(validFormset.hasChanged(), true)
 })
 
 QUnit.test("Formset initial data", 3, function() {
