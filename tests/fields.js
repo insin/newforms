@@ -408,7 +408,6 @@ QUnit.test("EmailField", 25, function() {
   equal(f.clean("example@valid-with-hyphens.com"), "example@valid-with-hyphens.com")
   cleanErrorEqual(f, "Enter a valid e-mail address.", "example@.com")
   equal(f.clean('local@domain.with.idn.xyzäöüßabc.part.com'), 'local@domain.with.idn.xyz\xe4\xf6\xfc\xdfabc.part.com')
-  // TODO Test Unicode addresses when when IDNA encoding fallback is implemented
 
   // Hangs "forever" if catastrophic backtracking not fixed
   cleanErrorEqual(f, "Enter a valid e-mail address.", "viewx3dtextx26qx3d@yahoo.comx26latlngx3d15854521645943074058")
