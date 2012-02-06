@@ -1,3 +1,4 @@
+* Changed URL and email address validators to handle IDNA domains.
 * Changed ``CheckboxInput`` to correctly handle ``0`` as a value.
 * Added ``BaseFormSet.prototype.hasChanged()``
 * Changed ``Select`` widget to only allow for one selected option with the same

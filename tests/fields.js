@@ -392,7 +392,7 @@ QUnit.test("RegexField", 24, function() {
   cleanErrorEqual(f, "Enter a valid value.", "12345a")
 })
 
-QUnit.test("EmailField", 24, function() {
+QUnit.test("EmailField", 25, function() {
   var f = forms.EmailField()
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
@@ -407,6 +407,7 @@ QUnit.test("EmailField", 24, function() {
   equal(f.clean("example@valid-----hyphens.com"), "example@valid-----hyphens.com")
   equal(f.clean("example@valid-with-hyphens.com"), "example@valid-with-hyphens.com")
   cleanErrorEqual(f, "Enter a valid e-mail address.", "example@.com")
+  equal(f.clean('local@domain.with.idn.xyzäöüßabc.part.com'), 'local@domain.with.idn.xyz\xe4\xf6\xfc\xdfabc.part.com')
   // TODO Test Unicode addresses when when IDNA encoding fallback is implemented
 
   // Hangs "forever" if catastrophic backtracking not fixed
@@ -461,7 +462,7 @@ QUnit.test("FileField", 19, function() {
   ok(f.clean(new SimpleUploadedFile("name", "")) instanceof SimpleUploadedFile, "Valid uploaded empty file details return the file object")
 })
 
-QUnit.test("URLField", 51, function() {
+QUnit.test("URLField", 63, function() {
   var invalidURLs =
       ["foo", "http://", "http://example", "http://example.", "com.", ".",
        "http://.com", "http://invalid-.com", "http://-invalid.com",
@@ -483,7 +484,8 @@ QUnit.test("URLField", 51, function() {
     cleanErrorEqual(f, "Enter a valid URL.", url)
   }
   equal(f.clean("http://valid-----hyphens.com"), "http://valid-----hyphens.com/")
-  // TODO Test Unicode URL when IDNA encoding fallback is implemented
+  equal(f.clean('http://some.idn.xyzäöüßabc.domain.com:123/blah'),
+        'http://some.idn.xyz\xE4\xF6\xFC\xDFabc.domain.com:123/blah')
   equal(f.clean("www.example.com/s/http://code.djangoproject.com/ticket/13804"),
         "http://www.example.com/s/http://code.djangoproject.com/ticket/13804")
 
@@ -529,7 +531,23 @@ QUnit.test("URLField", 51, function() {
   // Django #11826
   equal(f.clean("http://example.com?some_param=some_value"), "http://example.com/?some_param=some_value")
 
-  // TODO Test Unicode URLs when IDNA encoding fallback is implemented
+  // Valid IDN
+  var urls = [
+    'http://עברית.idn.icann.org/'
+  , 'http://sãopaulo.com/'
+  , 'http://sãopaulo.com.br/'
+  , 'http://пример.испытание/'
+  , 'http://مثال.إختبار/'
+  , 'http://例子.测试/'
+  , 'http://例子.測試/'
+  , 'http://例え.テスト/'
+  , 'http://مثال.آزمایشی/'
+  , 'http://실례.테스트/'
+  , 'http://العربية.idn.icann.org/'
+  ]
+  for (var i = 0, l = urls.length; i < l; i++) {
+    equal(f.clean(urls[i]), urls[i], 'Valid IDN URL')
+  }
 })
 
 QUnit.test("BooleanField", 21, function() {
