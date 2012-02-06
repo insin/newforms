@@ -40,10 +40,6 @@ https://code.djangoproject.com/changeset/17175
 
    Make BoundFields iterable / add subwidgets
 
-https://code.djangoproject.com/changeset/17430
-
-   Enable running validators in MultiValueField
-
 Python-to-JavaScript: Missing Pieces
 ====================================
 

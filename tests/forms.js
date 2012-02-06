@@ -1880,4 +1880,44 @@ QUnit.test("Multipart-encoded forms", 3, function() {
   strictEqual(new FormWithImage().isMultipart(), true)
 })
 
+QUnit.test('MultiValueField validation', 6, function() {
+  function badNames(value) {
+    if (value == 'bad value') {
+      throw forms.ValidationError('bad value not allowed')
+    }
+  }
+
+  var NameField = forms.MultiValueField.extend({
+    constructor: function(kwargs) {
+      if (!(this instanceof forms.Field)) return new NameField(kwargs)
+      kwargs.fields = [
+        forms.CharField({label: 'First name', maxLength: 10})
+      , forms.CharField({label: 'Last name', maxLength: 10})
+      ]
+      NameField.__super__.constructor.call(this, kwargs)
+    }
+  , compress: function(dataList) {
+      return dataList.join(' ')
+    }
+  })
+
+  var NameForm = forms.Form.extend({
+    name: NameField({validators: [badNames]})
+  })
+
+  var form = new NameForm({data: {name: ['bad', 'value']}})
+  form.fullClean()
+  ok(!form.isValid())
+  deepEqual(form.errors('name').errors, ['bad value not allowed'])
+
+  form = new NameForm({data: {name: [ 'should be overly', 'long for the field names']}})
+  ok(!form.isValid())
+  deepEqual(form.errors('name').errors, ['Ensure this value has at most 10 characters (it has 16).',
+                                         'Ensure this value has at most 10 characters (it has 24).'])
+
+  form = new NameForm({data: {name : ['fname', 'lname']}})
+  ok(form.isValid())
+  deepEqual(form.cleanedData, {name: 'fname lname'})
+})
+
 })()
