@@ -481,6 +481,32 @@ QUnit.test("Forms with radio", 7, function() {
 "</ul></p>")
 })
 
+QUnit.test("Forms with iterable BoundFields", 1, function() {
+  var BeatleForm = forms.Form.extend({
+    name: forms.ChoiceField({
+      choices: [['john', 'John'], ['paul', 'Paul'], ['george', 'George'], ['ringo', 'Ringo']]
+    , widget: forms.RadioSelect
+    })
+  })
+  var f = new BeatleForm({autoId: false})
+  equal(f.boundField('name').__iter__().join('\n'),
+'<label><input type="radio" name="name" value="john"> John</label>\n' +
+'<label><input type="radio" name="name" value="paul"> Paul</label>\n' +
+'<label><input type="radio" name="name" value="george"> George</label>\n' +
+'<label><input type="radio" name="name" value="ringo"> Ringo</label>')
+})
+
+QUnit.test("Forms with 'non-iterable' BoundFields", 1, function() {
+  // You can iterate over any BoundField, not just those with a RadioSelect
+  // widget.
+  var BeatleForm = forms.Form.extend({
+    name: forms.CharField()
+  })
+  var f = new BeatleForm({autoId: false})
+  equal(f.boundField('name').__iter__().join('\n'),
+        '<input type="text" name="name">')
+})
+
 QUnit.test("Forms with multiple choice", 4, function() {
   // MultipleChoiceField is a special case, as its data is required to be a
   // list.

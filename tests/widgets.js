@@ -663,7 +663,7 @@ QUnit.test("RadioSelect", 22, function() {
   var radioInputs = r.radioInputs()
   for (var i = 0, inp; inp = radioInputs[i]; i++) {
     inputs1.push(""+inp)
-    inputs2.push(""+DOMBuilder.fragment(inp.labelTag(), DOMBuilder.createElement("br")))
+    inputs2.push(""+DOMBuilder.fragment(inp.render(), DOMBuilder.createElement("br")))
     inputs3.push(""+DOMBuilder.createElement("p", {}, [inp.tag(), " ", inp.choiceLabel]))
     inputs4.push(""+DOMBuilder.fragment(
         inp.name, " ", inp.value, " ", inp.choiceValue, " ", inp.choiceLabel, " ", inp.isChecked()))
@@ -695,7 +695,7 @@ QUnit.test("RadioSelect", 22, function() {
     var inputs = this.radioInputs()
     var items = []
     for (var i = 0, l = inputs.length; i < l; i++) {
-      items.push(inputs[i].labelTag())
+      items.push(inputs[i].render())
       if (i != l - 1) {
         items.push(DOMBuilder.createElement("br"))
       }
