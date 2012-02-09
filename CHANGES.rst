@@ -1,8 +1,10 @@
+* Renamed ``forms.validateIPV4Address`` to ``forms.validateIPv4Address`` for
+  consistency with new IPv6 validation
 * Added SubWidgets to allow you to iterate over invdidiual elements which make
-  up a widget -- currently only used by RadioSelect.
-* Changed MultiValueField to run any validators it was given.
-* Changed URL and email address validators to handle IDNA domains.
-* Changed CheckboxInput to correctly handle ``0`` as a value.
+  up a widget -- currently only used by RadioSelect
+* Changed MultiValueField to run any validators it was given
+* Changed URL and email address validators to handle IDNA domains
+* Changed CheckboxInput to correctly handle ``0`` as a value
 * Added ``BaseFormSet.prototype.hasChanged()``
 * Changed Select widget to only allow for one selected option with the same
   value

@@ -35,11 +35,6 @@ https://code.djangoproject.com/changeset/16366
 
    GenericIPAddressField for IPv4/IPv6 validation
 
-https://code.djangoproject.com/changeset/17173
-https://code.djangoproject.com/changeset/17175
-
-   Make BoundFields iterable / add subwidgets
-
 Python-to-JavaScript: Missing Pieces
 ====================================
 
