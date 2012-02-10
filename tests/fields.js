@@ -726,7 +726,7 @@ QUnit.test("MultipleChoiceField", 25, function() {
   cleanErrorEqual(f, "Select a valid choice. 6 is not one of the available choices.", ["1", "6"])
 })
 
-QUnit.test("TypedMultipleChoiceFIeld", function() {
+QUnit.test("TypedMultipleChoiceField", function() {
   var f = forms.TypedMultipleChoiceField({
     choices: [[1, "+1"], [-1, "-1"]]
   , coerce: function(val) { return parseInt(val, 10); }
@@ -838,6 +838,88 @@ QUnit.test("IPAddressField", 14, function() {
   cleanErrorEqual(f, "Enter a valid IPv4 address.", "127.0.0.")
   cleanErrorEqual(f, "Enter a valid IPv4 address.", "1.2.3.4.5")
   cleanErrorEqual(f, "Enter a valid IPv4 address.", "256.125.1.5")
+})
+
+QUnit.test('GenericIPAddressField', 58, function() {
+  // Invalid arguments
+  raises(function() { forms.GenericIPAddressField({protocol: 'hamster'}) })
+  raises(function() { forms.GenericIPAddressField({protocol: 'ipv4', unpackIPv4: true}) })
+
+  // As generic
+  // The edge cases of the IPv6 validation code are not deeply tested  here,
+  // they are covered in the tests for ipv6.js
+  var f = forms.GenericIPAddressField()
+  cleanErrorEqual(f, 'This field is required.', '')
+  cleanErrorEqual(f, 'This field is required.', null)
+  equal(f.clean('127.0.0.1'), '127.0.0.1')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', 'foo')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '127.0.0.')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '1.2.3.4.5')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '256.125.1.5')
+  equal(f.clean('fe80::223:6cff:fe8a:2e8a'), 'fe80::223:6cff:fe8a:2e8a')
+  equal(f.clean('2a02::223:6cff:fe8a:2e8a'), '2a02::223:6cff:fe8a:2e8a')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '12345:2:3:4')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '1::2:3::4')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', 'foo::223:6cff:fe8a:2e8a')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '1::2:3:4:5:6:7:8')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '1:2')
+
+  // As IPv4 only
+  f = forms.GenericIPAddressField({protocol: 'IPv4'})
+  cleanErrorEqual(f, 'This field is required.', '')
+  cleanErrorEqual(f, 'This field is required.', null)
+  equal(f.clean('127.0.0.1'), '127.0.0.1')
+  cleanErrorEqual(f, 'Enter a valid IPv4 address.', 'foo')
+  cleanErrorEqual(f, 'Enter a valid IPv4 address.', '127.0.0.')
+  cleanErrorEqual(f, 'Enter a valid IPv4 address.', '1.2.3.4.5')
+  cleanErrorEqual(f, 'Enter a valid IPv4 address.', '256.125.1.5')
+  cleanErrorEqual(f, 'Enter a valid IPv4 address.', 'fe80::223:6cff:fe8a:2e8a')
+  cleanErrorEqual(f, 'Enter a valid IPv4 address.', '2a02::223:6cff:fe8a:2e8a')
+
+  // As IPv6 only
+  f = forms.GenericIPAddressField({protocol: 'IPv6'})
+  cleanErrorEqual(f, 'This field is required.', '')
+  cleanErrorEqual(f, 'This field is required.', null)
+  cleanErrorEqual(f, 'Enter a valid IPv6 address.', '127.0.0.1')
+  cleanErrorEqual(f, 'Enter a valid IPv6 address.', 'foo')
+  cleanErrorEqual(f, 'Enter a valid IPv6 address.', '127.0.0.')
+  cleanErrorEqual(f, 'Enter a valid IPv6 address.', '1.2.3.4.5')
+  cleanErrorEqual(f, 'Enter a valid IPv6 address.', '256.125.1.5')
+  equal(f.clean('fe80::223:6cff:fe8a:2e8a'), 'fe80::223:6cff:fe8a:2e8a')
+  equal(f.clean('2a02::223:6cff:fe8a:2e8a'), '2a02::223:6cff:fe8a:2e8a')
+  cleanErrorEqual(f, 'Enter a valid IPv6 address.', '12345:2:3:4')
+  cleanErrorEqual(f, 'Enter a valid IPv6 address.', '1::2:3::4')
+  cleanErrorEqual(f, 'Enter a valid IPv6 address.', 'foo::223:6cff:fe8a:2e8a')
+  cleanErrorEqual(f, 'Enter a valid IPv6 address.', '1::2:3:4:5:6:7:8')
+  cleanErrorEqual(f, 'Enter a valid IPv6 address.', '1:2')
+
+  // As generic, not required
+  f = forms.GenericIPAddressField({required: false})
+  equal(f.clean(''), '')
+  equal(f.clean(null), '')
+  equal(f.clean('127.0.0.1'), '127.0.0.1')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', 'foo')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '127.0.0.')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '1.2.3.4.5')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '256.125.1.5')
+  equal(f.clean('fe80::223:6cff:fe8a:2e8a'), 'fe80::223:6cff:fe8a:2e8a')
+  equal(f.clean('2a02::223:6cff:fe8a:2e8a'), '2a02::223:6cff:fe8a:2e8a')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '12345:2:3:4')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '1::2:3::4')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', 'foo::223:6cff:fe8a:2e8a')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '1::2:3:4:5:6:7:8')
+  cleanErrorEqual(f, 'Enter a valid IPv4 or IPv6 address.', '1:2')
+
+  // Test the normalising code
+  f = forms.GenericIPAddressField()
+  equal(f.clean('::ffff:0a0a:0a0a'), '::ffff:10.10.10.10')
+  equal(f.clean('::ffff:10.10.10.10'), '::ffff:10.10.10.10')
+  equal(f.clean('2001:000:a:0000:0:fe:fe:beef'), '2001:0:a::fe:fe:beef')
+  equal(f.clean('2001::a:0000:0:fe:fe:beef'), '2001:0:a::fe:fe:beef')
+
+  // IPv4 unpacking
+  f = forms.GenericIPAddressField({unpackIPv4: true})
+  equal(f.clean('::ffff:0a0a:0a0a'), '10.10.10.10')
 })
 
 })()

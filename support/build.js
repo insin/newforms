@@ -23,8 +23,8 @@ buildumb.build({
   , 'node_modules/DOMBuilder/support/DOMBuilder.js'  : 'DOMBuilder'
   // newforms
   , 'lib/util.js'       : './util'
-  , 'lib/validators.js' : './validators'
   , 'lib/ipv6.js'       : './ipv6'
+  , 'lib/validators.js' : './validators'
   , 'lib/widgets.js'    : './widgets'
   , 'lib/fields.js'     : './fields'
   , 'lib/forms.js'      : './forms'
@@ -37,7 +37,7 @@ buildumb.build({
   }
 , exposeRequire: true
 , output: 'newforms.js'
-//, compress: 'newforms.min.js'
+, compress: 'newforms.min.js'
 , header: buildumb.formatTemplate(path.join(__dirname, 'header.js'),
                                   require('../package.json').version)
 })

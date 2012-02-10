@@ -1,6 +1,6 @@
 QUnit.module("validators")
 
-QUnit.test("validators", 80, function() {
+QUnit.test("validators", 99, function() {
   var now = new Date(90000)
   var later = new Date(100000)
   var earlier = new Date(80000)
@@ -36,6 +36,25 @@ QUnit.test("validators", 80, function() {
   , [forms.validateIPv4Address, "25.1.1.", forms.ValidationError]
   , [forms.validateIPv4Address, "25,1,1,1", forms.ValidationError]
   , [forms.validateIPv4Address, "25.1 .1.1", forms.ValidationError]
+  , [forms.validateIPv6Address, 'fe80::1', null]
+  , [forms.validateIPv6Address, '::1', null]
+  , [forms.validateIPv6Address, '1:2:3:4:5:6:7:8', null]
+  , [forms.validateIPv6Address, '1:2', forms.ValidationError]
+  , [forms.validateIPv6Address, '::zzz', forms.ValidationError]
+  , [forms.validateIPv6Address, '12345::', forms.ValidationError]
+  , [forms.validateIPv46Address, '1.1.1.1', null]
+  , [forms.validateIPv46Address, '255.0.0.0', null]
+  , [forms.validateIPv46Address, '0.0.0.0', null]
+  , [forms.validateIPv46Address, 'fe80::1', null]
+  , [forms.validateIPv46Address, '::1', null]
+  , [forms.validateIPv46Address, '1:2:3:4:5:6:7:8', null]
+  , [forms.validateIPv46Address, '256.1.1.1', forms.ValidationError]
+  , [forms.validateIPv46Address, '25.1.1.', forms.ValidationError]
+  , [forms.validateIPv46Address, '25,1,1,1', forms.ValidationError]
+  , [forms.validateIPv46Address, '25.1 .1.1', forms.ValidationError]
+  , [forms.validateIPv46Address, '1:2', forms.ValidationError]
+  , [forms.validateIPv46Address, '::zzz', forms.ValidationError]
+  , [forms.validateIPv46Address, '12345::', forms.ValidationError]
   , [forms.validateCommaSeparatedIntegerList, "1", null]
   , [forms.validateCommaSeparatedIntegerList, "1,2,3", null]
   , [forms.validateCommaSeparatedIntegerList, "1,2,3,", null]

@@ -31,14 +31,8 @@ https://code.djangoproject.com/changeset/13484
    Date/time Widget formatting/locale stuff. We already have locale stuff in the
    ``time`` object, so might as well start making use of it.
 
-https://code.djangoproject.com/changeset/16366
-
-   GenericIPAddressField for IPv4/IPv6 validation
-
 Python-to-JavaScript: Missing Pieces
 ====================================
-
-**IPv6 Validator**
 
 **Decimal Implementation**
    Is there a good imlementation out there, or is validating strings,

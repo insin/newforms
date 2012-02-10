@@ -201,6 +201,16 @@ QUnit.test("IPAddressField", 2, function() {
   cleanErrorEqual(f, "INVALID IP ADDRESS", "127.0.0")
 })
 
+QUnit.test("GenericIPAddressField", 2, function() {
+  var e = {
+    required: "REQUIRED"
+  , invalid: "INVALID IP ADDRESS"
+  }
+  var f = forms.GenericIPAddressField({errorMessages: e})
+  cleanErrorEqual(f, "REQUIRED", "")
+  cleanErrorEqual(f, "INVALID IP ADDRESS", "127.0.0")
+})
+
 QUnit.test("SlugField", 2, function() {
   var e = {
     required: "REQUIRED"
