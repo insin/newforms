@@ -30,8 +30,8 @@ Node.js::
 
 Browser bundles (all dependencies included):
 
-* `newforms.js`_ - 206KB (47KB gzipped)
-* `newforms.min.js`_ - 76.3KB (20.7KB gzipped)
+* `newforms.js`_ - 232KB (54KB gzipped)
+* `newforms.min.js`_ - 83.9KB (23.4KB gzipped)
 
    * Exposes newforms as a ``forms`` variable.
    * Exposes a ``require()`` function which can be used to access bundled
