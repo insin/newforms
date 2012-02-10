@@ -1,3 +1,7 @@
+0.3.0 / 2012-02-10
+==================
+
+* Added GenericIPAddressField
 * Renamed ``forms.validateIPV4Address`` to ``forms.validateIPv4Address`` for
   consistency with new IPv6 validation
 * Added SubWidgets to allow you to iterate over invdidiual elements which make
