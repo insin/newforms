@@ -18,10 +18,13 @@ API
 
    .. js:attribute:: kwargs.data (Object)
 
-      input form data, where property names are field names.
+      input form data, where property names are field names. A form with data is
+      considered to be "bound" and ready for use validating and coercing the
+      given data.
+
    .. js:attribute:: kwargs.files (Object)
 
-      input file data
+      input file data.
 
    .. js:attribute:: kwargs.autoId (String)
 
@@ -45,7 +48,7 @@ API
    .. js:attribute:: kwargs.errorConstructor (Function)
 
       the constructor function to be used when creating error details - defaults
-      to ErrorList.
+      to :js:class:`ErrorList`.
 
    .. js:attribute:: kwargs.labelSuffix (String)
 
@@ -55,6 +58,22 @@ API
    .. js:attribute:: kwargs.emptyPermitted (Boolean)
 
       if ``true``, the form is allowed to be empty -- defaults to ``false``.
+
+   .. js:function:: isValid()
+
+      Determines whether or not the form has errors, triggering cleaning of the
+      form first if necessary.
+
+      :return:
+         ``true`` if the form is bound and has no errors, ``false`` otherwise.
+         If errors are being ignored, returns ``false``.
+
+   .. js:function:: errors()
+
+      Getter for errors, which first cleans the form if there are no errors
+      defined yet.
+
+
 
 .. js:class:: BoundField(form, field, name)
 
