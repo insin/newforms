@@ -38,3 +38,19 @@ Python-to-JavaScript: Missing Pieces
    Is there a good imlementation out there, or is validating strings,
    using floats for min/max validation and returning strings good enough
    for the frontend?
+
+Extras
+======
+
+Form Layout
+-----------
+
+The current Form.prototype._htmlOutput is as inflexible as Django's output,
+part of the problem being that Widgets control their own HTML generation and
+that HTML generation is being done entirely in code.
+
+Prior art:
+
+* https://github.com/earle/django-bootstrap
+* https://github.com/brutasse/django-floppyforms
+* https://github.com/pydanny/django-uni-form
