@@ -1156,7 +1156,7 @@ QUnit.test("Specifying labels", 6, function() {
 "<li><label for=\"id_password1\">Password1:</label> <input type=\"password\" name=\"password1\" id=\"id_password1\"></li>")
 })
 
-QUnit.test("Label suffix", 4, function() {
+QUnit.test("Label suffix", 5, function() {
   // You can specify the "labelSuffix" argument to a Form class to modify the
   // punctuation symbol used at the end of a label.  By default, the colon
   // (:) is used, and is only appended to the label if the label doesn't
@@ -1181,6 +1181,11 @@ QUnit.test("Label suffix", 4, function() {
   equal(""+f.asUL(),
 "<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
 "<li>Favourite animal\u2192 <input type=\"text\" name=\"animal\"></li>")
+
+  // Label suffixes are included when label tags are generated directly from
+  // BoundFields.
+  f = new FavouriteForm({autoId: false})
+  equal(''+f.boundField('animal').labelTag(), 'Favourite animal:')
 })
 
 QUnit.test("Initial data", 6, function() {

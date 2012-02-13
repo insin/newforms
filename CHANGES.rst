@@ -1,3 +1,6 @@
+* Changed ``BoundField.protoype.labelTag()`` to also include the form's
+  ``labelSuffix``.
+
 0.3.0 / 2012-02-10
 ==================
 
