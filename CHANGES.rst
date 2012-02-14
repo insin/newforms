@@ -1,5 +1,7 @@
+* Fixed #11: a validator's error message should take precedence unless the field
+  it's validating has defined a custom error message using the same error code
 * Changed ``BoundField.protoype.labelTag()`` to also include the form's
-  ``labelSuffix``.
+  ``labelSuffix``
 
 0.3.0 / 2012-02-10
 ==================
@@ -23,7 +25,6 @@
   function, but is now a constructor created with `Concur`_ which, when
   extended from, will move given Field properties into the new constructor's
   baseFields prototype property
-
 * Backwards-incompatible change: renamed ``forms.FormSet`` to
   ``forms.formsetFactory`` so it's named like the factory function it is, rather
   than like a constructor

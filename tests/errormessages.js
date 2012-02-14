@@ -257,3 +257,20 @@ QUnit.test("Overriding forms.ErrorList", 4, function() {
   equal(""+f.errors("__all__"),
         "<div class=\"error\"><p>I like to be awkward.</p></div>")
 })
+
+QUnit.test('Field validators', 4, function() {
+  // Field validators' error messages should take precedence if the field
+  // doesn't have a custom error message defined for their error code.
+  var v = forms.RegexValidator(/^[a-zA-Z_.-]+$/, 'VALIDATOR')
+  validationErrorEqual(v, 'VALIDATOR', '@@@')
+  var f = forms.CharField({maxLength: 255, validators: [v]})
+  cleanErrorEqual(f, 'VALIDATOR', '@@@^')
+
+  // A field's custom error message should take precedence if defined...
+  f = forms.CharField({maxLength: 255, validators: [v], errorMessages: {invalid: 'FIELD'}})
+  cleanErrorEqual(f, 'FIELD', '@@@^')
+
+  // ..unless it happens to be the same as the default.
+  f = forms.CharField({maxLength: 255, validators: [v], errorMessages: {invalid: 'Enter a valid value.'}})
+  cleanErrorEqual(f, 'VALIDATOR', '@@@^')
+})

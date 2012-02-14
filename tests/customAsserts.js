@@ -24,17 +24,43 @@ function cleanErrorEqual(field, message, var_args) {
   }
   catch (e) {
     if (!(e instanceof forms.ValidationError)) {
-      throw new Error('Method did not throw a ValidationError:' + e)
+      throw new Error('clean() did not throw a ValidationError:' + e)
     }
     deepEqual(e.messages, message)
     return
   }
-  throw new Error('Method did not throw an exception')
+  throw new Error('clean() did not throw an exception')
+}
+
+/**
+ * Asserts that when a validator is called with the given value a
+ * ValidationError is thrown containing the specified error message(s).
+ * @param {{Object|function}} the validator to be tested.
+ * @param {{string|Array.<string>}} the error message or messages which should
+ *     be contained in the resulting ValidationError.
+ * @param {*} value the value to be passed to the validator.
+ */
+function validationErrorEqual(validator, message, value) {
+  if (!(message instanceof Array)) {
+    message = [message]
+  }
+  try {
+    forms.callValidator(validator, value)
+  }
+  catch (e) {
+    if (!(e instanceof forms.ValidationError)) {
+      throw new Error('Validator did not throw a ValidationError:' + e)
+    }
+    deepEqual(e.messages, message)
+    return
+  }
+  throw new Error('Validator did not throw an exception')
 }
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     errorEqual: errorEqual
   , cleanErrorEqual: cleanErrorEqual
+  , validationErrorEqual: validationErrorEqual
   }
 }
