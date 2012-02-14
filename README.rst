@@ -31,15 +31,17 @@ Node.js::
 Browser bundles (all dependencies included):
 
 * `newforms.js`_ - 232KB (54KB gzipped)
+
 * `newforms.min.js`_ - 83.9KB (23.4KB gzipped)
 
-   * Exposes newforms as a ``forms`` variable.
-   * Exposes a ``require()`` function which can be used to access bundled
-     dependencies:
+Browser bundles currently expose:
 
-     * `Concur`_ - sugar for inheritance
-     * `DOMBuilder`_ - interchangeable DOM Element / HTML generation
-     * `isomorph`_ - miscellaneous utilities
+* newforms as a ``forms`` variable.
+* a ``require()`` function which can be used to access bundled dependencies:
+
+  * `Concur`_ - sugar for inheritance
+  * `DOMBuilder`_ - interchangeable DOM Element / HTML generation
+  * `isomorph`_ - miscellaneous utilities
 
 .. _`newforms.js`: https://github.com/insin/newforms/raw/master/newforms.js
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/master/newforms.min.js
@@ -92,7 +94,7 @@ Here's a quick guide to getting started with newforms.
   ``extend()`` function, which comes courtesy of `Concur`_. This takes an
   ``Object`` argument defining form fields and any other properties for the
   form's prototype (validation methods etc.), returning a constructor which
-  inherits from ``BaseForm``
+  inherits from ``BaseForm``::
 
      var ContactForm = forms.Form.extend({
        subject  : forms.CharField({maxLength: 100})
