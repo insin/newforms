@@ -268,7 +268,7 @@ QUnit.test("More initial data", 3, function() {
 
   // Make sure retrieving an empty form works, and it shows up in the form list.
   strictEqual(formset.emptyForm().emptyPermitted, true)
-  equal(formset.emptyForm().asUL(),
+  equal(''+formset.emptyForm().asUL(),
 "<li>Choice: <input type=\"text\" name=\"choices-__prefix__-choice\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-__prefix__-votes\"></li>")
 })

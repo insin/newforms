@@ -64,15 +64,15 @@ QUnit.test("Empty data object", 10, function() {
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>")
-  equal(p.asTable(),
+  equal(''+p.asTable(),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>")
-  equal(p.asUL(),
+  equal(''+p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>\n" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></li>")
-  equal(p.asP(),
+  equal(''+p.asP(),
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
 "<p><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>\n" +
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
@@ -94,15 +94,15 @@ QUnit.test("Unbound form", 8, function() {
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>")
-  equal(p.asTable(),
+  equal(''+p.asTable(),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>")
-  equal(p.asUL(),
+  equal(''+p.asUL(),
 "<li><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>\n" +
 "<li><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>\n" +
 "<li><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></li>")
-  equal(p.asP(),
+  equal(''+p.asP(),
 "<p><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>\n" +
 "<p><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>\n" +
 "<p><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></p>")
@@ -189,15 +189,15 @@ QUnit.test("autoId", 3, function() {
   // format string into which the field's name will be inserted. It will also
   // put a <label> around the human-readable labels for a field.
   var p = new Person({autoId: "{name}_id"})
-  equal(p.asTable(),
+  equal(''+p.asTable(),
 "<tr><th><label for=\"first_name_id\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"first_name_id\"></td></tr>\n" +
 "<tr><th><label for=\"last_name_id\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"last_name_id\"></td></tr>\n" +
 "<tr><th><label for=\"birthday_id\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"birthday_id\"></td></tr>")
-  equal(p.asUL(),
+  equal(''+p.asUL(),
 "<li><label for=\"first_name_id\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"first_name_id\"></li>\n" +
 "<li><label for=\"last_name_id\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name_id\"></li>\n" +
 "<li><label for=\"birthday_id\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday_id\"></li>")
-  equal(p.asP(),
+  equal(''+p.asP(),
 "<p><label for=\"first_name_id\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"first_name_id\"></p>\n" +
 "<p><label for=\"last_name_id\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name_id\"></p>\n" +
 "<p><label for=\"birthday_id\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday_id\"></p>")
@@ -207,7 +207,7 @@ QUnit.test("autoId true", 1, function() {
   // If autoId is any truthy value whose string representation does not
   // contain "{name}", the "id" attribute will be the name of the field.
   var p = new Person({autoId: true})
-  equal(p.asUL(),
+  equal(''+p.asUL(),
 "<li><label for=\"first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"first_name\"></li>\n" +
 "<li><label for=\"last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name\"></li>\n" +
 "<li><label for=\"birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday\"></li>")
@@ -217,7 +217,7 @@ QUnit.test("autoId false", 1, function() {
   // If autoId is any falsy value, an "id" attribute won't be output unless it
   // was manually entered.
   var p = new Person({autoId: false})
-  equal(p.asUL(),
+  equal(''+p.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\"></li>")
@@ -228,7 +228,7 @@ QUnit.test("id on field", 1, function() {
   // "first_name" field is given. Also note that field gets a <label>, while
   // the others don't.
   var p = new PersonNew({autoId: false})
-  equal(p.asUL(),
+  equal(''+p.asUL(),
 "<li><label for=\"first_name_id\">First name:</label> <input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\"></li>")
@@ -238,7 +238,7 @@ QUnit.test("autoId on form and field", 1, function() {
   // If the "id" attribute is specified in the Form and autoId is true, the
   // "id" attribute in the Form gets precedence.
   var p = new PersonNew({autoId: true})
-  equal(p.asUL(),
+  equal(''+p.asUL(),
 "<li><label for=\"first_name_id\">First name:</label> <input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>\n" +
 "<li><label for=\"last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name\"></li>\n" +
 "<li><label for=\"birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday\"></li>")
@@ -759,7 +759,7 @@ QUnit.test("Validating multiple fields", 20, function() {
     }
   })
   f = new UserRegistration({data: {}, autoId: false})
-  equal(f.asTable(),
+  equal(''+f.asTable(),
 "<tr><th>Username:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>\n" +
 "<tr><th>Password1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password1\"></td></tr>\n" +
 "<tr><th>Password2:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password2\"></td></tr>")
@@ -768,12 +768,12 @@ QUnit.test("Validating multiple fields", 20, function() {
   deepEqual(f.errors("password2").errors, ["This field is required."])
   f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false})
   deepEqual(f.errors("__all__").errors, ["Please make sure your passwords match."])
-  equal(f.asTable(),
+  equal(''+f.asTable(),
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
 "<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></td></tr>\n" +
 "<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\"></td></tr>\n" +
 "<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\"></td></tr>")
-  equal(f.asUL(),
+  equal(''+f.asUL(),
 "<li><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></li>\n" +
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></li>\n" +
 "<li>Password1: <input type=\"password\" name=\"password1\"></li>\n" +
@@ -960,11 +960,11 @@ QUnit.test("Hidden widget", 12, function() {
 "<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>\n" +
 "<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>\n" +
 "<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></td></tr>")
-  equal(p.asUL(),
+  equal(''+p.asUL(),
 "<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
 "<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
 "<li>Birthday: <input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></li>")
-  equal(p.asP(),
+  equal(''+p.asP(),
 "<p>First name: <input type=\"text\" name=\"first_name\"></p>\n" +
 "<p>Last name: <input type=\"text\" name=\"last_name\"></p>\n" +
 "<p>Birthday: <input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></p>")
