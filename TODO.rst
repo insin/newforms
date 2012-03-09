@@ -49,6 +49,10 @@ The current Form.prototype._htmlOutput is as inflexible as Django's output,
 part of the problem being that Widgets control their own HTML generation and
 that HTML generation is being done entirely in code.
 
+Interesting tickets:
+
+* https://code.djangoproject.com/ticket/6630 - define fieldsets in a Meta object
+
 Prior art:
 
 * https://github.com/earle/django-bootstrap

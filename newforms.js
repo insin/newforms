@@ -1,5 +1,5 @@
 /**
- * newforms 0.3.0 - https://github.com/insin/newforms
+ * newforms 0.4.0 - https://github.com/insin/newforms
  * MIT Licensed
  */
 ;(function() {
@@ -21,525 +21,6 @@
       modules[rs] = module.exports
     }
   }
-
-require.define("punycode", function(module, exports, require) {
-/*!
- * Punycode.js <http://mths.be/punycode>
- * Copyright 2011 Mathias Bynens <http://mathiasbynens.be/>
- * Available under MIT license <http://mths.be/mit>
- */
-
-;(function(root) {
-
-	/**
-	 * The `punycode` object.
-	 * @name punycode
-	 * @type Object
-	 */
-	var punycode,
-
-	/** Detect free variables `define`, `exports`, `module` and `require` */
-	freeDefine = typeof define == 'function' && typeof define.amd == 'object' &&
-		define.amd && define,
-	freeExports = typeof exports == 'object' && exports,
-	freeModule = typeof module == 'object' && module,
-	freeRequire = typeof require == 'function' && require,
-
-	/** Highest positive signed 32-bit float value */
-	maxInt = 2147483647, // aka. 0x7FFFFFFF or 2^31-1
-
-	/** Bootstring parameters */
-	base = 36,
-	tMin = 1,
-	tMax = 26,
-	skew = 38,
-	damp = 700,
-	initialBias = 72,
-	initialN = 128, // 0x80
-	delimiter = '-', // '\x2D'
-
-	/** Regular expressions */
-	regexNonASCII = /[^ -~]/, // unprintable ASCII chars + non-ASCII chars
-	regexPunycode = /^xn--/,
-
-	/** Error messages */
-	errors = {
-		'overflow': 'Overflow: input needs wider integers to process.',
-		'ucs2decode': 'UCS-2(decode): illegal sequence',
-		'ucs2encode': 'UCS-2(encode): illegal value',
-		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
-		'invalid-input': 'Invalid input'
-	},
-
-	/** Convenience shortcuts */
-	baseMinusTMin = base - tMin,
-	floor = Math.floor,
-	stringFromCharCode = String.fromCharCode,
-
-	/** Temporary variable */
-	key;
-
-	/*--------------------------------------------------------------------------*/
-
-	/**
-	 * A generic error utility function.
-	 * @private
-	 * @param {String} type The error type.
-	 * @returns {Error} Throws a `RangeError` with the applicable error message.
-	 */
-	function error(type) {
-		throw RangeError(errors[type]);
-	}
-
-	/**
-	 * A generic `Array#map` utility function.
-	 * @private
-	 * @param {Array} array The array to iterate over.
-	 * @param {Function} callback The function that gets called for every array
-	 * item.
-	 * @returns {Array} A new array of values returned by the callback function.
-	 */
-	function map(array, fn) {
-		var length = array.length;
-		while (length--) {
-			array[length] = fn(array[length]);
-		}
-		return array;
-	}
-
-	/**
-	 * A simple `Array#map`-like wrapper to work with domain name strings.
-	 * @private
-	 * @param {String} domain The domain name.
-	 * @param {Function} callback The function that gets called for every
-	 * character.
-	 * @returns {Array} A new string of characters returned by the callback
-	 * function.
-	 */
-	function mapDomain(string, fn) {
-		var glue = '.';
-		return map(string.split(glue), fn).join(glue);
-	}
-
-	/**
-	 * Creates an array containing the decimal code points of each Unicode
-	 * character in the string. While JavaScript uses UCS-2 internally,
-	 * this function will convert a pair of surrogate halves (each of which
-	 * UCS-2 exposes as separate characters) into a single code point,
-	 * matching UTF-16.
-	 * @see `punycode.ucs2.encode`
-	 * @see <http://mathiasbynens.be/notes/javascript-encoding>
-	 * @memberOf punycode.ucs2
-	 * @name decode
-	 * @param {String} string The Unicode input string (UCS-2).
-	 * @returns {Array} The new array of code points.
-	 */
-	function ucs2decode(string) {
-		var output = [],
-		    counter = 0,
-		    length = string.length,
-		    value,
-		    extra;
-		while (counter < length) {
-			value = string.charCodeAt(counter++);
-			if ((value & 0xF800) == 0xD800) {
-				extra = string.charCodeAt(counter++);
-				if ((value & 0xFC00) != 0xD800 || (extra & 0xFC00) != 0xDC00) {
-					error('ucs2decode');
-				}
-				value = ((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000;
-			}
-			output.push(value);
-		}
-		return output;
-	}
-
-	/**
-	 * Creates a string based on an array of decimal code points.
-	 * @see `punycode.ucs2.decode`
-	 * @memberOf punycode.ucs2
-	 * @name encode
-	 * @param {Array} codePoints The array of decimal code points.
-	 * @returns {String} The new Unicode string (UCS-2).
-	 */
-	function ucs2encode(array) {
-		return map(array, function(value) {
-			var output = '';
-			if ((value & 0xF800) == 0xD800) {
-				error('ucs2encode');
-			}
-			if (value > 0xFFFF) {
-				value -= 0x10000;
-				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
-				value = 0xDC00 | value & 0x3FF;
-			}
-			output += stringFromCharCode(value);
-			return output;
-		}).join('');
-	}
-
-	/**
-	 * Converts a basic code point into a digit/integer.
-	 * @see `digitToBasic()`
-	 * @private
-	 * @param {Number} codePoint The basic (decimal) code point.
-	 * @returns {Number} The numeric value of a basic code point (for use in
-	 * representing integers) in the range `0` to `base - 1`, or `base` if
-	 * the code point does not represent a value.
-	 */
-	function basicToDigit(codePoint) {
-		return codePoint - 48 < 10
-			? codePoint - 22
-			: codePoint - 65 < 26
-				? codePoint - 65
-				: codePoint - 97 < 26
-					? codePoint - 97
-					: base;
-	}
-
-	/**
-	 * Converts a digit/integer into a basic code point.
-	 * @see `basicToDigit()`
-	 * @private
-	 * @param {Number} digit The numeric value of a basic code point.
-	 * @returns {Number} The basic code point whose value (when used for
-	 * representing integers) is `digit`, which needs to be in the range
-	 * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
-	 * used; else, the lowercase form is used. The behavior is undefined
-	 * if flag is non-zero and `digit` has no uppercase form.
-	 */
-	function digitToBasic(digit, flag) {
-		//  0..25 map to ASCII a..z or A..Z
-		// 26..35 map to ASCII 0..9
-		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
-	}
-
-	/**
-	 * Bias adaptation function as per section 3.4 of RFC 3492.
-	 * http://tools.ietf.org/html/rfc3492#section-3.4
-	 * @private
-	 */
-	function adapt(delta, numPoints, firstTime) {
-		var k = 0;
-		delta = firstTime ? floor(delta / damp) : delta >> 1;
-		delta += floor(delta / numPoints);
-		for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
-			delta = floor(delta / baseMinusTMin);
-		}
-		return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
-	}
-
-	/**
-	 * Converts a basic code point to lowercase is `flag` is falsy, or to
-	 * uppercase if `flag` is truthy. The code point is unchanged if it's
-	 * caseless. The behavior is undefined if `codePoint` is not a basic code
-	 * point.
-	 * @private
-	 * @param {Number} codePoint The numeric value of a basic code point.
-	 * @returns {Number} The resulting basic code point.
-	 */
-	function encodeBasic(codePoint, flag) {
-		codePoint -= (codePoint - 97 < 26) << 5;
-		return codePoint + (!flag && codePoint - 65 < 26) << 5;
-	}
-
-	/**
-	 * Converts a Punycode string of ASCII code points to a string of Unicode
-	 * code points.
-	 * @memberOf punycode
-	 * @param {String} input The Punycode string of ASCII code points.
-	 * @returns {String} The resulting string of Unicode code points.
-	 */
-	function decode(input) {
-		// Don't use UCS-2
-		var output = [],
-		    inputLength = input.length,
-		    out,
-		    i = 0,
-		    n = initialN,
-		    bias = initialBias,
-		    basic,
-		    j,
-		    index,
-		    oldi,
-		    w,
-		    k,
-		    digit,
-		    t,
-		    length,
-		    /** Cached calculation results */
-		    baseMinusT;
-
-		// Handle the basic code points: let `basic` be the number of input code
-		// points before the last delimiter, or `0` if there is none, then copy
-		// the first basic code points to the output.
-
-		basic = input.lastIndexOf(delimiter);
-		if (basic < 0) {
-			basic = 0;
-		}
-
-		for (j = 0; j < basic; ++j) {
-			// if it's not a basic code point
-			if (input.charCodeAt(j) >= 0x80) {
-				error('not-basic');
-			}
-			output.push(input.charCodeAt(j));
-		}
-
-		// Main decoding loop: start just after the last delimiter if any basic code
-		// points were copied; start at the beginning otherwise.
-
-		for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
-
-			// `index` is the index of the next character to be consumed.
-			// Decode a generalized variable-length integer into `delta`,
-			// which gets added to `i`. The overflow checking is easier
-			// if we increase `i` as we go, then subtract off its starting
-			// value at the end to obtain `delta`.
-			for (oldi = i, w = 1, k = base; /* no condition */; k += base) {
-
-				if (index >= inputLength) {
-					error('invalid-input');
-				}
-
-				digit = basicToDigit(input.charCodeAt(index++));
-
-				if (digit >= base || digit > floor((maxInt - i) / w)) {
-					error('overflow');
-				}
-
-				i += digit * w;
-				t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
-
-				if (digit < t) {
-					break;
-				}
-
-				baseMinusT = base - t;
-				if (w > floor(maxInt / baseMinusT)) {
-					error('overflow');
-				}
-
-				w *= baseMinusT;
-
-			}
-
-			out = output.length + 1;
-			bias = adapt(i - oldi, out, oldi == 0);
-
-			// `i` was supposed to wrap around from `out` to `0`,
-			// incrementing `n` each time, so we'll fix that now:
-			if (floor(i / out) > maxInt - n) {
-				error('overflow');
-			}
-
-			n += floor(i / out);
-			i %= out;
-
-			// Insert `n` at position `i` of the output
-			output.splice(i++, 0, n);
-
-		}
-
-		return ucs2encode(output);
-	}
-
-	/**
-	 * Converts a string of Unicode code points to a Punycode string of ASCII
-	 * code points.
-	 * @memberOf punycode
-	 * @param {String} input The string of Unicode code points.
-	 * @returns {String} The resulting Punycode string of ASCII code points.
-	 */
-	function encode(input) {
-		var n,
-		    delta,
-		    handledCPCount,
-		    basicLength,
-		    bias,
-		    j,
-		    m,
-		    q,
-		    k,
-		    t,
-		    currentValue,
-		    output = [],
-		    /** `inputLength` will hold the number of code points in `input`. */
-		    inputLength,
-		    /** Cached calculation results */
-		    handledCPCountPlusOne,
-		    baseMinusT,
-		    qMinusT;
-
-		// Convert the input in UCS-2 to Unicode
-		input = ucs2decode(input);
-
-		// Cache the length
-		inputLength = input.length;
-
-		// Initialize the state
-		n = initialN;
-		delta = 0;
-		bias = initialBias;
-
-		// Handle the basic code points
-		for (j = 0; j < inputLength; ++j) {
-			currentValue = input[j];
-			if (currentValue < 0x80) {
-				output.push(stringFromCharCode(currentValue));
-			}
-		}
-
-		handledCPCount = basicLength = output.length;
-
-		// `handledCPCount` is the number of code points that have been handled;
-		// `basicLength` is the number of basic code points.
-
-		// Finish the basic string - if it is not empty - with a delimiter
-		if (basicLength) {
-			output.push(delimiter);
-		}
-
-		// Main encoding loop:
-		while (handledCPCount < inputLength) {
-
-			// All non-basic code points < n have been handled already. Find the next
-			// larger one:
-			for (m = maxInt, j = 0; j < inputLength; ++j) {
-				currentValue = input[j];
-				if (currentValue >= n && currentValue < m) {
-					m = currentValue;
-				}
-			}
-
-			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
-			// but guard against overflow
-			handledCPCountPlusOne = handledCPCount + 1;
-			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
-				error('overflow');
-			}
-
-			delta += (m - n) * handledCPCountPlusOne;
-			n = m;
-
-			for (j = 0; j < inputLength; ++j) {
-				currentValue = input[j];
-
-				if (currentValue < n && ++delta > maxInt) {
-					error('overflow');
-				}
-
-				if (currentValue == n) {
-					// Represent delta as a generalized variable-length integer
-					for (q = delta, k = base; /* no condition */; k += base) {
-						t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
-						if (q < t) {
-							break;
-						}
-						qMinusT = q - t;
-						baseMinusT = base - t;
-						output.push(
-							stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
-						);
-						q = floor(qMinusT / baseMinusT);
-					}
-
-					output.push(stringFromCharCode(digitToBasic(q, 0)));
-					bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
-					delta = 0;
-					++handledCPCount;
-				}
-			}
-
-			++delta;
-			++n;
-
-		}
-		return output.join('');
-	}
-
-	/**
-	 * Converts a Punycode string representing a domain name to Unicode. Only the
-	 * Punycoded parts of the domain name will be converted, i.e. it doesn't
-	 * matter if you call it on a string that has already been converted to
-	 * Unicode.
-	 * @memberOf punycode
-	 * @param {String} domain The Punycode domain name to convert to Unicode.
-	 * @returns {String} The Unicode representation of the given Punycode
-	 * string.
-	 */
-	function toUnicode(domain) {
-		return mapDomain(domain, function(string) {
-			return regexPunycode.test(string)
-				? decode(string.slice(4).toLowerCase())
-				: string;
-		});
-	}
-
-	/**
-	 * Converts a Unicode string representing a domain name to Punycode. Only the
-	 * non-ASCII parts of the domain name will be converted, i.e. it doesn't
-	 * matter if you call it with a domain that's already in ASCII.
-	 * @memberOf punycode
-	 * @param {String} domain The domain name to convert, as a Unicode string.
-	 * @returns {String} The Punycode representation of the given domain name.
-	 */
-	function toASCII(domain) {
-		return mapDomain(domain, function(string) {
-			return regexNonASCII.test(string)
-				? 'xn--' + encode(string)
-				: string;
-		});
-	}
-
-	/*--------------------------------------------------------------------------*/
-
-	/** Define the public API */
-	punycode = {
-		/**
-		 * A string representing the current Punycode.js version number.
-		 * @memberOf punycode
-		 * @type String
-		 */
-		'version': '1.0.0',
-		/**
-		 * An object of methods to convert from JavaScript's internal character
-		 * representation (UCS-2) to decimal Unicode code points, and back.
-		 * @see <http://mathiasbynens.be/notes/javascript-encoding>
-		 * @memberOf punycode
-		 * @type Object
-		 */
-		'ucs2': {
-			'decode': ucs2decode,
-			'encode': ucs2encode
-		},
-		'decode': decode,
-		'encode': encode,
-		'toASCII': toASCII,
-		'toUnicode': toUnicode
-	};
-
-	/** Expose `punycode` */
-	if (freeExports) {
-		if (freeModule && freeModule.exports == freeExports) {
-			// in Node.js or Ringo 0.8+
-			freeModule.exports = punycode;
-		} else {
-			// in Narwhal or Ringo 0.7-
-			for (key in punycode) {
-				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
-			}
-		}
-	} else if (freeDefine) {
-		// via curl.js or RequireJS
-		define('punycode', punycode);
-	} else {
-		// in a browser or Rhino
-		root.punycode = punycode;
-	}
-
-}(this));})
 
 require.define(["isomorph/lib/is","./is"], function(module, exports, require) {
 var toString = Object.prototype.toString
@@ -1418,6 +899,96 @@ time.strftime = function(date, format, locale) {
 module.exports = time
 })
 
+require.define("isomorph/lib/url", function(module, exports, require) {
+// parseUri 1.2.2
+// (c) Steven Levithan <stevenlevithan.com>
+// MIT License
+function parseUri (str) {
+  var o = parseUri.options
+    , m = o.parser[o.strictMode ? "strict" : "loose"].exec(str)
+    , uri = {}
+    , i = 14
+
+  while (i--) uri[o.key[i]] = m[i] || ""
+
+  uri[o.q.name] = {};
+  uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
+    if ($1) uri[o.q.name][$1] = $2
+  })
+
+  return uri
+}
+
+parseUri.options = {
+  strictMode: false
+, key: ['source','protocol','authority','userInfo','user','password','host','port','relative','path','directory','file','query','anchor']
+, q: {
+    name: 'queryKey'
+  , parser: /(?:^|&)([^&=]*)=?([^&]*)/g
+  }
+, parser: {
+    strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/
+  , loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+  }
+}
+
+// makeURI 1.2.2 - create a URI from an object specification; compatible with
+// parseURI (http://blog.stevenlevithan.com/archives/parseuri)
+// (c) Niall Smart <niallsmart.com>
+// MIT License
+function makeUri(u) {
+  var uri = ''
+  if (u.protocol) {
+    uri += u.protocol + '://'
+  }
+  if (u.user) {
+    uri += u.user
+  }
+  if (u.password) {
+    uri += ':' + u.password
+  }
+  if (u.user || u.password) {
+    uri += '@'
+  }
+  if (u.host) {
+    uri += u.host
+  }
+  if (u.port) {
+    uri += ':' + u.port
+  }
+  if (u.path) {
+    uri += u.path
+  }
+  var qk = u.queryKey
+  var qs = []
+  for (var k in qk) {
+    if (!qk.hasOwnProperty(k)) {
+      continue
+    }
+    var v = encodeURIComponent(qk[k])
+    k = encodeURIComponent(k)
+    if (v) {
+      qs.push(k + '=' + v)
+    }
+    else {
+      qs.push(k)
+    }
+  }
+  if (qs.length > 0) {
+    uri += '?' + qs.join('&')
+  }
+  if (u.anchor) {
+    uri += '#' + u.anchor
+  }
+  return uri
+}
+
+module.exports = {
+  parseUri: parseUri
+, makeUri: makeUri
+}
+})
+
 require.define("Concur", function(module, exports, require) {
 var is = require('isomorph/lib/is')
   , object = require('isomorph/lib/object')
@@ -1467,7 +1038,7 @@ function inheritFrom(parentConstructor, prototypeProps, constructorProps) {
   }
   else {
     childConstructor = function() {
-      return parentConstructor.apply(this, arguments)
+      parentConstructor.apply(this, arguments)
     }
   }
 
@@ -2783,317 +2354,529 @@ require('./dombuilder/html')
 module.exports = DOMBuilder
 })
 
-require.define("./util", function(module, exports, require) {
+require.define("punycode", function(module, exports, require) {
+/*!
+ * Punycode.js <http://mths.be/punycode>
+ * Copyright 2011 Mathias Bynens <http://mathiasbynens.be/>
+ * Available under MIT license <http://mths.be/mit>
+ */
+
+;(function(root) {
+
+	/**
+	 * The `punycode` object.
+	 * @name punycode
+	 * @type Object
+	 */
+	var punycode,
+
+	/** Detect free variables `define`, `exports`, `module` and `require` */
+	freeDefine = typeof define == 'function' && typeof define.amd == 'object' &&
+		define.amd && define,
+	freeExports = typeof exports == 'object' && exports,
+	freeModule = typeof module == 'object' && module,
+	freeRequire = typeof require == 'function' && require,
+
+	/** Highest positive signed 32-bit float value */
+	maxInt = 2147483647, // aka. 0x7FFFFFFF or 2^31-1
+
+	/** Bootstring parameters */
+	base = 36,
+	tMin = 1,
+	tMax = 26,
+	skew = 38,
+	damp = 700,
+	initialBias = 72,
+	initialN = 128, // 0x80
+	delimiter = '-', // '\x2D'
+
+	/** Regular expressions */
+	regexNonASCII = /[^ -~]/, // unprintable ASCII chars + non-ASCII chars
+	regexPunycode = /^xn--/,
+
+	/** Error messages */
+	errors = {
+		'overflow': 'Overflow: input needs wider integers to process.',
+		'ucs2decode': 'UCS-2(decode): illegal sequence',
+		'ucs2encode': 'UCS-2(encode): illegal value',
+		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
+		'invalid-input': 'Invalid input'
+	},
+
+	/** Convenience shortcuts */
+	baseMinusTMin = base - tMin,
+	floor = Math.floor,
+	stringFromCharCode = String.fromCharCode,
+
+	/** Temporary variable */
+	key;
+
+	/*--------------------------------------------------------------------------*/
+
+	/**
+	 * A generic error utility function.
+	 * @private
+	 * @param {String} type The error type.
+	 * @returns {Error} Throws a `RangeError` with the applicable error message.
+	 */
+	function error(type) {
+		throw RangeError(errors[type]);
+	}
+
+	/**
+	 * A generic `Array#map` utility function.
+	 * @private
+	 * @param {Array} array The array to iterate over.
+	 * @param {Function} callback The function that gets called for every array
+	 * item.
+	 * @returns {Array} A new array of values returned by the callback function.
+	 */
+	function map(array, fn) {
+		var length = array.length;
+		while (length--) {
+			array[length] = fn(array[length]);
+		}
+		return array;
+	}
+
+	/**
+	 * A simple `Array#map`-like wrapper to work with domain name strings.
+	 * @private
+	 * @param {String} domain The domain name.
+	 * @param {Function} callback The function that gets called for every
+	 * character.
+	 * @returns {Array} A new string of characters returned by the callback
+	 * function.
+	 */
+	function mapDomain(string, fn) {
+		var glue = '.';
+		return map(string.split(glue), fn).join(glue);
+	}
+
+	/**
+	 * Creates an array containing the decimal code points of each Unicode
+	 * character in the string. While JavaScript uses UCS-2 internally,
+	 * this function will convert a pair of surrogate halves (each of which
+	 * UCS-2 exposes as separate characters) into a single code point,
+	 * matching UTF-16.
+	 * @see `punycode.ucs2.encode`
+	 * @see <http://mathiasbynens.be/notes/javascript-encoding>
+	 * @memberOf punycode.ucs2
+	 * @name decode
+	 * @param {String} string The Unicode input string (UCS-2).
+	 * @returns {Array} The new array of code points.
+	 */
+	function ucs2decode(string) {
+		var output = [],
+		    counter = 0,
+		    length = string.length,
+		    value,
+		    extra;
+		while (counter < length) {
+			value = string.charCodeAt(counter++);
+			if ((value & 0xF800) == 0xD800) {
+				extra = string.charCodeAt(counter++);
+				if ((value & 0xFC00) != 0xD800 || (extra & 0xFC00) != 0xDC00) {
+					error('ucs2decode');
+				}
+				value = ((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000;
+			}
+			output.push(value);
+		}
+		return output;
+	}
+
+	/**
+	 * Creates a string based on an array of decimal code points.
+	 * @see `punycode.ucs2.decode`
+	 * @memberOf punycode.ucs2
+	 * @name encode
+	 * @param {Array} codePoints The array of decimal code points.
+	 * @returns {String} The new Unicode string (UCS-2).
+	 */
+	function ucs2encode(array) {
+		return map(array, function(value) {
+			var output = '';
+			if ((value & 0xF800) == 0xD800) {
+				error('ucs2encode');
+			}
+			if (value > 0xFFFF) {
+				value -= 0x10000;
+				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
+				value = 0xDC00 | value & 0x3FF;
+			}
+			output += stringFromCharCode(value);
+			return output;
+		}).join('');
+	}
+
+	/**
+	 * Converts a basic code point into a digit/integer.
+	 * @see `digitToBasic()`
+	 * @private
+	 * @param {Number} codePoint The basic (decimal) code point.
+	 * @returns {Number} The numeric value of a basic code point (for use in
+	 * representing integers) in the range `0` to `base - 1`, or `base` if
+	 * the code point does not represent a value.
+	 */
+	function basicToDigit(codePoint) {
+		return codePoint - 48 < 10
+			? codePoint - 22
+			: codePoint - 65 < 26
+				? codePoint - 65
+				: codePoint - 97 < 26
+					? codePoint - 97
+					: base;
+	}
+
+	/**
+	 * Converts a digit/integer into a basic code point.
+	 * @see `basicToDigit()`
+	 * @private
+	 * @param {Number} digit The numeric value of a basic code point.
+	 * @returns {Number} The basic code point whose value (when used for
+	 * representing integers) is `digit`, which needs to be in the range
+	 * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
+	 * used; else, the lowercase form is used. The behavior is undefined
+	 * if flag is non-zero and `digit` has no uppercase form.
+	 */
+	function digitToBasic(digit, flag) {
+		//  0..25 map to ASCII a..z or A..Z
+		// 26..35 map to ASCII 0..9
+		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
+	}
+
+	/**
+	 * Bias adaptation function as per section 3.4 of RFC 3492.
+	 * http://tools.ietf.org/html/rfc3492#section-3.4
+	 * @private
+	 */
+	function adapt(delta, numPoints, firstTime) {
+		var k = 0;
+		delta = firstTime ? floor(delta / damp) : delta >> 1;
+		delta += floor(delta / numPoints);
+		for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
+			delta = floor(delta / baseMinusTMin);
+		}
+		return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
+	}
+
+	/**
+	 * Converts a basic code point to lowercase is `flag` is falsy, or to
+	 * uppercase if `flag` is truthy. The code point is unchanged if it's
+	 * caseless. The behavior is undefined if `codePoint` is not a basic code
+	 * point.
+	 * @private
+	 * @param {Number} codePoint The numeric value of a basic code point.
+	 * @returns {Number} The resulting basic code point.
+	 */
+	function encodeBasic(codePoint, flag) {
+		codePoint -= (codePoint - 97 < 26) << 5;
+		return codePoint + (!flag && codePoint - 65 < 26) << 5;
+	}
+
+	/**
+	 * Converts a Punycode string of ASCII code points to a string of Unicode
+	 * code points.
+	 * @memberOf punycode
+	 * @param {String} input The Punycode string of ASCII code points.
+	 * @returns {String} The resulting string of Unicode code points.
+	 */
+	function decode(input) {
+		// Don't use UCS-2
+		var output = [],
+		    inputLength = input.length,
+		    out,
+		    i = 0,
+		    n = initialN,
+		    bias = initialBias,
+		    basic,
+		    j,
+		    index,
+		    oldi,
+		    w,
+		    k,
+		    digit,
+		    t,
+		    length,
+		    /** Cached calculation results */
+		    baseMinusT;
+
+		// Handle the basic code points: let `basic` be the number of input code
+		// points before the last delimiter, or `0` if there is none, then copy
+		// the first basic code points to the output.
+
+		basic = input.lastIndexOf(delimiter);
+		if (basic < 0) {
+			basic = 0;
+		}
+
+		for (j = 0; j < basic; ++j) {
+			// if it's not a basic code point
+			if (input.charCodeAt(j) >= 0x80) {
+				error('not-basic');
+			}
+			output.push(input.charCodeAt(j));
+		}
+
+		// Main decoding loop: start just after the last delimiter if any basic code
+		// points were copied; start at the beginning otherwise.
+
+		for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
+
+			// `index` is the index of the next character to be consumed.
+			// Decode a generalized variable-length integer into `delta`,
+			// which gets added to `i`. The overflow checking is easier
+			// if we increase `i` as we go, then subtract off its starting
+			// value at the end to obtain `delta`.
+			for (oldi = i, w = 1, k = base; /* no condition */; k += base) {
+
+				if (index >= inputLength) {
+					error('invalid-input');
+				}
+
+				digit = basicToDigit(input.charCodeAt(index++));
+
+				if (digit >= base || digit > floor((maxInt - i) / w)) {
+					error('overflow');
+				}
+
+				i += digit * w;
+				t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
+
+				if (digit < t) {
+					break;
+				}
+
+				baseMinusT = base - t;
+				if (w > floor(maxInt / baseMinusT)) {
+					error('overflow');
+				}
+
+				w *= baseMinusT;
+
+			}
+
+			out = output.length + 1;
+			bias = adapt(i - oldi, out, oldi == 0);
+
+			// `i` was supposed to wrap around from `out` to `0`,
+			// incrementing `n` each time, so we'll fix that now:
+			if (floor(i / out) > maxInt - n) {
+				error('overflow');
+			}
+
+			n += floor(i / out);
+			i %= out;
+
+			// Insert `n` at position `i` of the output
+			output.splice(i++, 0, n);
+
+		}
+
+		return ucs2encode(output);
+	}
+
+	/**
+	 * Converts a string of Unicode code points to a Punycode string of ASCII
+	 * code points.
+	 * @memberOf punycode
+	 * @param {String} input The string of Unicode code points.
+	 * @returns {String} The resulting Punycode string of ASCII code points.
+	 */
+	function encode(input) {
+		var n,
+		    delta,
+		    handledCPCount,
+		    basicLength,
+		    bias,
+		    j,
+		    m,
+		    q,
+		    k,
+		    t,
+		    currentValue,
+		    output = [],
+		    /** `inputLength` will hold the number of code points in `input`. */
+		    inputLength,
+		    /** Cached calculation results */
+		    handledCPCountPlusOne,
+		    baseMinusT,
+		    qMinusT;
+
+		// Convert the input in UCS-2 to Unicode
+		input = ucs2decode(input);
+
+		// Cache the length
+		inputLength = input.length;
+
+		// Initialize the state
+		n = initialN;
+		delta = 0;
+		bias = initialBias;
+
+		// Handle the basic code points
+		for (j = 0; j < inputLength; ++j) {
+			currentValue = input[j];
+			if (currentValue < 0x80) {
+				output.push(stringFromCharCode(currentValue));
+			}
+		}
+
+		handledCPCount = basicLength = output.length;
+
+		// `handledCPCount` is the number of code points that have been handled;
+		// `basicLength` is the number of basic code points.
+
+		// Finish the basic string - if it is not empty - with a delimiter
+		if (basicLength) {
+			output.push(delimiter);
+		}
+
+		// Main encoding loop:
+		while (handledCPCount < inputLength) {
+
+			// All non-basic code points < n have been handled already. Find the next
+			// larger one:
+			for (m = maxInt, j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+				if (currentValue >= n && currentValue < m) {
+					m = currentValue;
+				}
+			}
+
+			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
+			// but guard against overflow
+			handledCPCountPlusOne = handledCPCount + 1;
+			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
+				error('overflow');
+			}
+
+			delta += (m - n) * handledCPCountPlusOne;
+			n = m;
+
+			for (j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+
+				if (currentValue < n && ++delta > maxInt) {
+					error('overflow');
+				}
+
+				if (currentValue == n) {
+					// Represent delta as a generalized variable-length integer
+					for (q = delta, k = base; /* no condition */; k += base) {
+						t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
+						if (q < t) {
+							break;
+						}
+						qMinusT = q - t;
+						baseMinusT = base - t;
+						output.push(
+							stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
+						);
+						q = floor(qMinusT / baseMinusT);
+					}
+
+					output.push(stringFromCharCode(digitToBasic(q, 0)));
+					bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
+					delta = 0;
+					++handledCPCount;
+				}
+			}
+
+			++delta;
+			++n;
+
+		}
+		return output.join('');
+	}
+
+	/**
+	 * Converts a Punycode string representing a domain name to Unicode. Only the
+	 * Punycoded parts of the domain name will be converted, i.e. it doesn't
+	 * matter if you call it on a string that has already been converted to
+	 * Unicode.
+	 * @memberOf punycode
+	 * @param {String} domain The Punycode domain name to convert to Unicode.
+	 * @returns {String} The Unicode representation of the given Punycode
+	 * string.
+	 */
+	function toUnicode(domain) {
+		return mapDomain(domain, function(string) {
+			return regexPunycode.test(string)
+				? decode(string.slice(4).toLowerCase())
+				: string;
+		});
+	}
+
+	/**
+	 * Converts a Unicode string representing a domain name to Punycode. Only the
+	 * non-ASCII parts of the domain name will be converted, i.e. it doesn't
+	 * matter if you call it with a domain that's already in ASCII.
+	 * @memberOf punycode
+	 * @param {String} domain The domain name to convert, as a Unicode string.
+	 * @returns {String} The Punycode representation of the given domain name.
+	 */
+	function toASCII(domain) {
+		return mapDomain(domain, function(string) {
+			return regexNonASCII.test(string)
+				? 'xn--' + encode(string)
+				: string;
+		});
+	}
+
+	/*--------------------------------------------------------------------------*/
+
+	/** Define the public API */
+	punycode = {
+		/**
+		 * A string representing the current Punycode.js version number.
+		 * @memberOf punycode
+		 * @type String
+		 */
+		'version': '1.0.0',
+		/**
+		 * An object of methods to convert from JavaScript's internal character
+		 * representation (UCS-2) to decimal Unicode code points, and back.
+		 * @see <http://mathiasbynens.be/notes/javascript-encoding>
+		 * @memberOf punycode
+		 * @type Object
+		 */
+		'ucs2': {
+			'decode': ucs2decode,
+			'encode': ucs2encode
+		},
+		'decode': decode,
+		'encode': encode,
+		'toASCII': toASCII,
+		'toUnicode': toUnicode
+	};
+
+	/** Expose `punycode` */
+	if (freeExports) {
+		if (freeModule && freeModule.exports == freeExports) {
+			// in Node.js or Ringo 0.8+
+			freeModule.exports = punycode;
+		} else {
+			// in Narwhal or Ringo 0.7-
+			for (key in punycode) {
+				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
+			}
+		}
+	} else if (freeDefine) {
+		// via curl.js or RequireJS
+		define('punycode', punycode);
+	} else {
+		// in a browser or Rhino
+		root.punycode = punycode;
+	}
+
+}(this));})
+
+require.define("./errors", function(module, exports, require) {
 var Concur = require('Concur')
-  , DOMBuilder = require('DOMBuilder')
   , is = require('isomorph/lib/is')
   , object = require('isomorph/lib/object')
-
-var DEFAULT_DATE_INPUT_FORMATS = [
-      '%Y-%m-%d'              // '2006-10-25'
-    , '%m/%d/%Y', '%m/%d/%y'  // '10/25/2006', '10/25/06'
-    , '%b %d %Y', '%b %d, %Y' // 'Oct 25 2006', 'Oct 25, 2006'
-    , '%d %b %Y', '%d %b, %Y' // '25 Oct 2006', '25 Oct, 2006'
-    , '%B %d %Y', '%B %d, %Y' // 'October 25 2006', 'October 25, 2006'
-    , '%d %B %Y', '%d %B, %Y' // '25 October 2006', '25 October, 2006'
-    ]
-  , DEFAULT_TIME_INPUT_FORMATS = [
-      '%H:%M:%S' // '14:30:59'
-    , '%H:%M'    // '14:30'
-    ]
-  , DEFAULT_DATETIME_INPUT_FORMATS = [
-      '%Y-%m-%d %H:%M:%S' // '2006-10-25 14:30:59'
-    , '%Y-%m-%d %H:%M'    // '2006-10-25 14:30'
-    , '%Y-%m-%d'          // '2006-10-25'
-    , '%m/%d/%Y %H:%M:%S' // '10/25/2006 14:30:59'
-    , '%m/%d/%Y %H:%M'    // '10/25/2006 14:30'
-    , '%m/%d/%Y'          // '10/25/2006'
-    , '%m/%d/%y %H:%M:%S' // '10/25/06 14:30:59'
-    , '%m/%d/%y %H:%M'    // '10/25/06 14:30'
-    , '%m/%d/%y'          // '10/25/06'
-    ]
-
-function isCallable(o) {
-  return (is.Function(o) || is.Function(o.__call__))
-}
-
-/**
- * Calls a validator, which may be a function or an objects with a
- * __call__ method, with the given value.
- */
-function callValidator(v, value) {
-  if (is.Function(v)) {
-    v(value)
-  }
-  else if (is.Function(v.__call__)) {
-    v.__call__(value)
-  }
-}
-
-/**
- * Allows an Array, an object with an __iter__ method or a function which
- * returns one be used when ultimately expecting an Array.
- */
-function iterate(o) {
-  if (is.Array(o)) {
-    return o
-  }
-  if (is.Function(o)) {
-    o = o()
-  }
-  if (o != null && is.Function(o.__iter__)) {
-    o = o.__iter__()
-  }
-  return o || []
-}
-
-/**
- * Converts 'firstName' and 'first_name' to 'First name', and
- * 'SHOUTING_LIKE_THIS' to 'SHOUTING LIKE THIS'.
- */
-var prettyName = (function() {
-  var capsRE = /([A-Z]+)/g
-    , splitRE = /[ _]+/
-    , trimRE = /(^ +| +$)/g
-    , allCapsRE = /^[A-Z][A-Z0-9]+$/
-
-  return function(name) {
-    // Prefix sequences of caps with spaces and split on all space
-    // characters.
-    var parts = name.replace(capsRE, ' $1').split(splitRE)
-
-    // If we had an initial cap...
-    if (parts[0] === '') {
-      parts.splice(0, 1)
-    }
-
-    // Give the first word an initial cap and all subsequent words an
-    // initial lowercase if not all caps.
-    for (var i = 0, l = parts.length; i < l; i++) {
-      if (i == 0) {
-        parts[0] = parts[0].charAt(0).toUpperCase() +
-                   parts[0].substr(1)
-      }
-      else if (!allCapsRE.test(parts[i])) {
-        parts[i] = parts[i].charAt(0).toLowerCase() +
-                   parts[i].substr(1)
-      }
-    }
-
-    return parts.join(' ')
-  }
-})()
-
-/**
- * Creates an object representing the data held in a form.
- *
- * @param form a form object or a <code>String</code> specifying a form's
- *        <code>name</code> or <code>id</code> attribute. If a
- *        <code>String</code> is given, name is tried before id when attempting
- *        to find the form.
- *
- * @return an object representing the data present in the form. If the form
- *         could not be found, this object will be empty.
- */
-function formData(form) {
-  var data = {}
-  if (is.String(form)) {
-    form = document.forms[form] || document.getElementById(form)
-  }
-  if (!form) {
-    return data
-  }
-
-  for (var i = 0, l = form.elements.length; i < l; i++) {
-    var element = form.elements[i]
-      , type = element.type
-      , value = null
-
-    // Retrieve the element's value (or values)
-    if (type == 'hidden' || type == 'password' || type == 'text' ||
-        type == 'textarea' || ((type == 'checkbox' ||
-                                type == 'radio') && element.checked)) {
-      value = element.value
-    }
-    else if (type == 'select-one') {
-      value = element.options[element.selectedIndex].value
-    }
-    else if (type == 'select-multiple') {
-      value = []
-      for (var j = 0, m = element.options.length; j < m; j++) {
-        if (element.options[j].selected) {
-          value[value.length] = element.options[j].value
-        }
-      }
-      if (value.length == 0) {
-        value = null
-      }
-    }
-
-    // Add any value obtained to the data object
-    if (value !== null) {
-      if (object.hasOwn(data, element.name)) {
-        if (is.Array(data[element.name])) {
-          data[element.name] = data[element.name].concat(value)
-        }
-        else {
-          data[element.name] = [data[element.name], value]
-        }
-      }
-      else {
-        data[element.name] = value
-      }
-    }
-  }
-
-  return data
-}
-
-/**
- * Coerces to string and strips leading and trailing spaces.
- */
-function strip(s) {
-  return (''+s).replace(/(^\s+|\s+$)/g, '')
-}
-
-/**
- * A collection of errors that knows how to display itself in various formats.
- *
- * This object's properties are the field names, and corresponding values are
- * the errors.
- *
- * @constructor
- */
-var ErrorObject = Concur.extend({
-  constructor: function(errors) {
-    if (!(this instanceof ErrorObject)) return new ErrorObject(errors)
-    this.errors = errors || {}
-  }
-})
-
-ErrorObject.prototype.set = function(name, error) {
-  this.errors[name] = error
-}
-
-ErrorObject.prototype.get = function(name) {
-  return this.errors[name]
-}
-
-ErrorObject.prototype.toString = function() {
-  return ''+this.defaultRendering()
-}
-
-ErrorObject.prototype.defaultRendering = function() {
-  return this.asUL()
-}
-
-/**
- * Determines if any errors are present.
- *
- * @return {Boolean} <code>true</code> if this object has had any properties
- *                   set, <code>false</code> otherwise.
- */
-ErrorObject.prototype.isPopulated = function() {
-  for (var name in this.errors) {
-    if (object.hasOwn(this.errors, name)) {
-      return true
-    }
-  }
-  return false
-}
-
-/**
- * Displays error details as a list.
- */
-ErrorObject.prototype.asUL = function() {
-  var items = []
-  for (var name in this.errors) {
-    if (object.hasOwn(this.errors, name)) {
-      items.push(DOMBuilder.createElement('li', {},
-                     [name, this.errors[name].defaultRendering()]))
-    }
-  }
-  if (!items.length) {
-    return DOMBuilder.fragment()
-  }
-  return DOMBuilder.createElement('ul', {'class': 'errorlist'}, items)
-}
-
-/**
- * Displays error details as text.
- */
-ErrorObject.prototype.asText = function() {
-  var items = []
-  for (var name in this.errors) {
-    if (object.hasOwn(this.errors, name)) {
-      items.push('* ' + name)
-      var errorList = this.errors[name]
-      for (var i = 0, l = errorList.errors.length; i < l; i++) {
-        items.push('  * ' + errorList.errors[i])
-      }
-    }
-  }
-  return items.join('\n')
-}
-
-/**
- * A list of errors which knows how to display itself in various formats.
- *
- * @param {Array} [errors] a list of errors.
- * @constructor
- */
-var ErrorList = Concur.extend({
-  constructor: function(errors) {
-    if (!(this instanceof ErrorList)) return new ErrorList(errors)
-    this.errors = errors || []
-  }
-})
-
-ErrorList.prototype.toString = function() {
-  return ''+this.defaultRendering()
-}
-
-ErrorList.prototype.defaultRendering = function() {
-  return this.asUL()
-}
-
-/**
- * Adds errors from another ErrorList.
- *
- * @param {ErrorList} errorList an ErrorList whose errors should be added.
- */
-ErrorList.prototype.extend = function(errorList) {
-  this.errors = this.errors.concat(errorList.errors)
-}
-
-/**
- * Displays errors as a list.
- */
-ErrorList.prototype.asUL = function() {
-  return DOMBuilder.createElement('ul', {'class': 'errorlist'},
-      DOMBuilder.map('li', {}, this.errors))
-}
-
-/**
- * Displays errors as text.
- */
-ErrorList.prototype.asText = function() {
-  var items = []
-  for (var i = 0, l = this.errors.length; i < l; i++) {
-    items.push('* ' + this.errors[i])
-  }
-  return items.join('\n')
-}
-
-/**
- * Determines if any errors are present.
- *
- * @return {Boolean} <code>true</code> if this object contains any errors
- *                   <code>false</code> otherwise.
- */
-ErrorList.prototype.isPopulated = function() {
-  return this.errors.length > 0
-}
 
 /**
  * A validation error, containing a list of messages. Single messages
@@ -3119,113 +2902,17 @@ ValidationError.prototype.toString = function() {
   return ('ValidationError: ' + this.messages.join('; '))
 }
 
-// parseUri 1.2.2
-// (c) Steven Levithan <stevenlevithan.com>
-// MIT License
-function parseUri (str) {
-  var o = parseUri.options
-    , m = o.parser[o.strictMode ? "strict" : "loose"].exec(str)
-    , uri = {}
-    , i = 14
-
-  while (i--) uri[o.key[i]] = m[i] || ""
-
-  uri[o.q.name] = {};
-  uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
-    if ($1) uri[o.q.name][$1] = $2
-  })
-
-  return uri
-}
-
-parseUri.options = {
-  strictMode: false
-, key: ['source','protocol','authority','userInfo','user','password','host','port','relative','path','directory','file','query','anchor']
-, q: {
-    name: 'queryKey'
-  , parser: /(?:^|&)([^&=]*)=?([^&]*)/g
-  }
-, parser: {
-    strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/
-  , loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
-  }
-}
-
-// makeURI 1.2.2 - create a URI from an object specification; compatible with
-// parseURI (http://blog.stevenlevithan.com/archives/parseuri)
-// (c) Niall Smart <niallsmart.com>
-// MIT License
-function makeUri(u) {
-  var uri = ''
-  if (u.protocol) {
-    uri += u.protocol + '://'
-  }
-  if (u.user) {
-    uri += u.user
-  }
-  if (u.password) {
-    uri += ':' + u.password
-  }
-  if (u.user || u.password) {
-    uri += '@'
-  }
-  if (u.host) {
-    uri += u.host
-  }
-  if (u.port) {
-    uri += ':' + u.port
-  }
-  if (u.path) {
-    uri += u.path
-  }
-  var qk = u.queryKey
-  var qs = []
-  for (var k in qk) {
-    if (!qk.hasOwnProperty(k)) {
-      continue
-    }
-    var v = encodeURIComponent(qk[k])
-    k = encodeURIComponent(k)
-    if (v) {
-      qs.push(k + '=' + v)
-    }
-    else {
-      qs.push(k)
-    }
-  }
-  if (qs.length > 0) {
-    uri += '?' + qs.join('&')
-  }
-  if (u.anchor) {
-    uri += '#' + u.anchor
-  }
-  return uri
-}
-
 module.exports = {
-  DEFAULT_DATE_INPUT_FORMATS: DEFAULT_DATE_INPUT_FORMATS
-, DEFAULT_TIME_INPUT_FORMATS: DEFAULT_TIME_INPUT_FORMATS
-, DEFAULT_DATETIME_INPUT_FORMATS: DEFAULT_DATETIME_INPUT_FORMATS
-, callValidator: callValidator
-, ErrorObject: ErrorObject
-, ErrorList: ErrorList
-, formData: formData
-, ValidationError: ValidationError
-, isCallable: isCallable
-, iterate: iterate
-, prettyName: prettyName
-, strip: strip
-, parseUri: parseUri
-, makeUri: makeUri
+  ValidationError: ValidationError
 }
 })
 
 require.define("./ipv6", function(module, exports, require) {
 var object = require('isomorph/lib/object')
 
-var util = require('./util')
+var errors = require('./errors')
 
-var ValidationError = util.ValidationError
+var ValidationError = errors.ValidationError
 
 var hexRE = /^[0-9a-f]+$/
 
@@ -3503,16 +3190,17 @@ module.exports = {
 }
 })
 
-require.define("./validators", function(module, exports, require) {
+require.define(["./validators","validators"], function(module, exports, require) {
 var Concur = require('Concur')
   , is = require('isomorph/lib/is')
   , format = require('isomorph/lib/format').formatObj
   , punycode = require('punycode')
+  , url = require('isomorph/lib/url')
 
-var util = require('./util')
+var errors = require('./errors')
   , ipv6 = require('./ipv6')
 
-var ValidationError = util.ValidationError
+var ValidationError = errors.ValidationError
   , isValidIPv6Address = ipv6.isValidIPv6Address
 
 var EMPTY_VALUES = [null, undefined, '']
@@ -3524,6 +3212,23 @@ var isEmptyValue = function(value) {
     }
   }
   return false
+}
+
+function isCallable(o) {
+  return (is.Function(o) || is.Function(o.__call__))
+}
+
+/**
+ * Calls a validator, which may be a function or an objects with a
+ * __call__ method, with the given value.
+ */
+function callValidator(v, value) {
+  if (is.Function(v)) {
+    v(value)
+  }
+  else if (is.Function(v.__call__)) {
+    v.__call__(value)
+  }
 }
 
 // See also http://tools.ietf.org/html/rfc2822#section-3.2.5
@@ -3585,6 +3290,7 @@ var URLValidator = RegexValidator.extend({
   + '(?:/?|[/?]\\S+)$'
   , 'i'
   )
+, message: 'Enter a valid URL.'
 , __call__: function(value) {
     try {
       RegexValidator.prototype.__call__.call(this, value)
@@ -3595,15 +3301,15 @@ var URLValidator = RegexValidator.extend({
       }
 
       // Trivial case failed - try for possible IDN domain
-      var urlFields = util.parseUri(value)
+      var urlFields = url.parseUri(value)
       try {
         urlFields.host = punycode.toASCII(urlFields.host)
       }
       catch (ue) {
         throw e
       }
-      var url = util.makeUri(urlFields)
-      RegexValidator.prototype.__call__.call(this, url)
+      value = url.makeUri(urlFields)
+      RegexValidator.prototype.__call__.call(this, value)
     }
   }
 })
@@ -3636,6 +3342,9 @@ var EmailValidator = RegexValidator.extend({
     }
   }
 })
+
+/** Validates that input looks like a valid URL. */
+var validateURL = URLValidator()
 
 /** Validates that input looks like a valid e-mail address. */
 var validateEmail =
@@ -3784,9 +3493,12 @@ var MaxLengthValidator = BaseValidator.extend({
 module.exports = {
   EMPTY_VALUES: EMPTY_VALUES
 , isEmptyValue: isEmptyValue
+, isCallable: isCallable
+, callValidator: callValidator
 , RegexValidator: RegexValidator
 , URLValidator: URLValidator
 , EmailValidator: EmailValidator
+, validateURL: validateURL
 , validateEmail: validateEmail
 , validateSlug: validateSlug
 , validateIPv4Address: validateIPv4Address
@@ -3799,6 +3511,316 @@ module.exports = {
 , MinValueValidator: MinValueValidator
 , MaxLengthValidator: MaxLengthValidator
 , MinLengthValidator: MinLengthValidator
+, ValidationError: ValidationError
+, ipv6: ipv6
+}
+})
+
+require.define("./util", function(module, exports, require) {
+var Concur = require('Concur')
+  , DOMBuilder = require('DOMBuilder')
+  , is = require('isomorph/lib/is')
+  , object = require('isomorph/lib/object')
+
+var DEFAULT_DATE_INPUT_FORMATS = [
+      '%Y-%m-%d'              // '2006-10-25'
+    , '%m/%d/%Y', '%m/%d/%y'  // '10/25/2006', '10/25/06'
+    , '%b %d %Y', '%b %d, %Y' // 'Oct 25 2006', 'Oct 25, 2006'
+    , '%d %b %Y', '%d %b, %Y' // '25 Oct 2006', '25 Oct, 2006'
+    , '%B %d %Y', '%B %d, %Y' // 'October 25 2006', 'October 25, 2006'
+    , '%d %B %Y', '%d %B, %Y' // '25 October 2006', '25 October, 2006'
+    ]
+  , DEFAULT_TIME_INPUT_FORMATS = [
+      '%H:%M:%S' // '14:30:59'
+    , '%H:%M'    // '14:30'
+    ]
+  , DEFAULT_DATETIME_INPUT_FORMATS = [
+      '%Y-%m-%d %H:%M:%S' // '2006-10-25 14:30:59'
+    , '%Y-%m-%d %H:%M'    // '2006-10-25 14:30'
+    , '%Y-%m-%d'          // '2006-10-25'
+    , '%m/%d/%Y %H:%M:%S' // '10/25/2006 14:30:59'
+    , '%m/%d/%Y %H:%M'    // '10/25/2006 14:30'
+    , '%m/%d/%Y'          // '10/25/2006'
+    , '%m/%d/%y %H:%M:%S' // '10/25/06 14:30:59'
+    , '%m/%d/%y %H:%M'    // '10/25/06 14:30'
+    , '%m/%d/%y'          // '10/25/06'
+    ]
+
+/**
+ * Allows an Array, an object with an __iter__ method or a function which
+ * returns one be used when ultimately expecting an Array.
+ */
+function iterate(o) {
+  if (is.Array(o)) {
+    return o
+  }
+  if (is.Function(o)) {
+    o = o()
+  }
+  if (o != null && is.Function(o.__iter__)) {
+    o = o.__iter__()
+  }
+  return o || []
+}
+
+/**
+ * Converts 'firstName' and 'first_name' to 'First name', and
+ * 'SHOUTING_LIKE_THIS' to 'SHOUTING LIKE THIS'.
+ */
+var prettyName = (function() {
+  var capsRE = /([A-Z]+)/g
+    , splitRE = /[ _]+/
+    , trimRE = /(^ +| +$)/g
+    , allCapsRE = /^[A-Z][A-Z0-9]+$/
+
+  return function(name) {
+    // Prefix sequences of caps with spaces and split on all space
+    // characters.
+    var parts = name.replace(capsRE, ' $1').split(splitRE)
+
+    // If we had an initial cap...
+    if (parts[0] === '') {
+      parts.splice(0, 1)
+    }
+
+    // Give the first word an initial cap and all subsequent words an
+    // initial lowercase if not all caps.
+    for (var i = 0, l = parts.length; i < l; i++) {
+      if (i == 0) {
+        parts[0] = parts[0].charAt(0).toUpperCase() +
+                   parts[0].substr(1)
+      }
+      else if (!allCapsRE.test(parts[i])) {
+        parts[i] = parts[i].charAt(0).toLowerCase() +
+                   parts[i].substr(1)
+      }
+    }
+
+    return parts.join(' ')
+  }
+})()
+
+/**
+ * Creates an object representing the data held in a form.
+ *
+ * @param form a form object or a <code>String</code> specifying a form's
+ *        <code>name</code> or <code>id</code> attribute. If a
+ *        <code>String</code> is given, name is tried before id when attempting
+ *        to find the form.
+ *
+ * @return an object representing the data present in the form. If the form
+ *         could not be found, this object will be empty.
+ */
+function formData(form) {
+  var data = {}
+  if (is.String(form)) {
+    form = document.forms[form] || document.getElementById(form)
+  }
+  if (!form) {
+    return data
+  }
+
+  for (var i = 0, l = form.elements.length; i < l; i++) {
+    var element = form.elements[i]
+      , type = element.type
+      , value = null
+
+    // Retrieve the element's value (or values)
+    if (type == 'hidden' || type == 'password' || type == 'text' ||
+        type == 'textarea' || ((type == 'checkbox' ||
+                                type == 'radio') && element.checked)) {
+      value = element.value
+    }
+    else if (type == 'select-one') {
+      value = element.options[element.selectedIndex].value
+    }
+    else if (type == 'select-multiple') {
+      value = []
+      for (var j = 0, m = element.options.length; j < m; j++) {
+        if (element.options[j].selected) {
+          value[value.length] = element.options[j].value
+        }
+      }
+      if (value.length == 0) {
+        value = null
+      }
+    }
+
+    // Add any value obtained to the data object
+    if (value !== null) {
+      if (object.hasOwn(data, element.name)) {
+        if (is.Array(data[element.name])) {
+          data[element.name] = data[element.name].concat(value)
+        }
+        else {
+          data[element.name] = [data[element.name], value]
+        }
+      }
+      else {
+        data[element.name] = value
+      }
+    }
+  }
+
+  return data
+}
+
+/**
+ * Coerces to string and strips leading and trailing spaces.
+ */
+function strip(s) {
+  return (''+s).replace(/(^\s+|\s+$)/g, '')
+}
+
+/**
+ * A collection of errors that knows how to display itself in various formats.
+ *
+ * This object's properties are the field names, and corresponding values are
+ * the errors.
+ *
+ * @constructor
+ */
+var ErrorObject = Concur.extend({
+  constructor: function(errors) {
+    if (!(this instanceof ErrorObject)) return new ErrorObject(errors)
+    this.errors = errors || {}
+  }
+})
+
+ErrorObject.prototype.set = function(name, error) {
+  this.errors[name] = error
+}
+
+ErrorObject.prototype.get = function(name) {
+  return this.errors[name]
+}
+
+ErrorObject.prototype.toString = function() {
+  return ''+this.defaultRendering()
+}
+
+ErrorObject.prototype.defaultRendering = function() {
+  return this.asUL()
+}
+
+/**
+ * Determines if any errors are present.
+ *
+ * @return {Boolean} <code>true</code> if this object has had any properties
+ *                   set, <code>false</code> otherwise.
+ */
+ErrorObject.prototype.isPopulated = function() {
+  for (var name in this.errors) {
+    if (object.hasOwn(this.errors, name)) {
+      return true
+    }
+  }
+  return false
+}
+
+/**
+ * Displays error details as a list.
+ */
+ErrorObject.prototype.asUL = function() {
+  var items = []
+  for (var name in this.errors) {
+    if (object.hasOwn(this.errors, name)) {
+      items.push(DOMBuilder.createElement('li', {},
+                     [name, this.errors[name].defaultRendering()]))
+    }
+  }
+  if (!items.length) {
+    return DOMBuilder.fragment()
+  }
+  return DOMBuilder.createElement('ul', {'class': 'errorlist'}, items)
+}
+
+/**
+ * Displays error details as text.
+ */
+ErrorObject.prototype.asText = function() {
+  var items = []
+  for (var name in this.errors) {
+    if (object.hasOwn(this.errors, name)) {
+      items.push('* ' + name)
+      var errorList = this.errors[name]
+      for (var i = 0, l = errorList.errors.length; i < l; i++) {
+        items.push('  * ' + errorList.errors[i])
+      }
+    }
+  }
+  return items.join('\n')
+}
+
+/**
+ * A list of errors which knows how to display itself in various formats.
+ *
+ * @param {Array} [errors] a list of errors.
+ * @constructor
+ */
+var ErrorList = Concur.extend({
+  constructor: function(errors) {
+    if (!(this instanceof ErrorList)) return new ErrorList(errors)
+    this.errors = errors || []
+  }
+})
+
+ErrorList.prototype.toString = function() {
+  return ''+this.defaultRendering()
+}
+
+ErrorList.prototype.defaultRendering = function() {
+  return this.asUL()
+}
+
+/**
+ * Adds errors from another ErrorList.
+ *
+ * @param {ErrorList} errorList an ErrorList whose errors should be added.
+ */
+ErrorList.prototype.extend = function(errorList) {
+  this.errors = this.errors.concat(errorList.errors)
+}
+
+/**
+ * Displays errors as a list.
+ */
+ErrorList.prototype.asUL = function() {
+  return DOMBuilder.createElement('ul', {'class': 'errorlist'},
+      DOMBuilder.map('li', {}, this.errors))
+}
+
+/**
+ * Displays errors as text.
+ */
+ErrorList.prototype.asText = function() {
+  var items = []
+  for (var i = 0, l = this.errors.length; i < l; i++) {
+    items.push('* ' + this.errors[i])
+  }
+  return items.join('\n')
+}
+
+/**
+ * Determines if any errors are present.
+ *
+ * @return {Boolean} <code>true</code> if this object contains any errors
+ *                   <code>false</code> otherwise.
+ */
+ErrorList.prototype.isPopulated = function() {
+  return this.errors.length > 0
+}
+
+module.exports = {
+  DEFAULT_DATE_INPUT_FORMATS: DEFAULT_DATE_INPUT_FORMATS
+, DEFAULT_TIME_INPUT_FORMATS: DEFAULT_TIME_INPUT_FORMATS
+, DEFAULT_DATETIME_INPUT_FORMATS: DEFAULT_DATETIME_INPUT_FORMATS
+, ErrorObject: ErrorObject
+, ErrorList: ErrorList
+, formData: formData
+, iterate: iterate
+, prettyName: prettyName
+, strip: strip
 }
 })
 
@@ -5028,16 +5050,16 @@ var Concur = require('Concur')
   , format = require('isomorph/lib/format').formatObj
   , object = require('isomorph/lib/object')
   , time = require('isomorph/lib/time')
+  , url = require('isomorph/lib/url')
+  , validators = require('validators')
 
 var util = require('./util')
-  , validators = require('./validators')
-  , ipv6 = require('./ipv6')
   , widgets = require('./widgets')
 
-var ValidationError = util.ValidationError
+var ValidationError = validators.ValidationError
   , isEmptyValue = validators.isEmptyValue
   , Widget = widgets.Widget
-  , cleanIPv6Address = ipv6.cleanIPv6Address
+  , cleanIPv6Address = validators.ipv6.cleanIPv6Address
 
 /**
  * An object that is responsible for doing validation and normalisation, or
@@ -5120,14 +5142,16 @@ Field.prototype.runValidators = function(value) {
   var errors = []
   for (var i = 0, l = this.validators.length; i < l; i++) {
     try {
-      util.callValidator(this.validators[i], value)
+      validators.callValidator(this.validators[i], value)
     }
     catch (e) {
       if (!(e instanceof ValidationError)) {
         throw e
       }
+
       if (typeof e.code != 'undefined' &&
-          typeof this.errorMessages[e.code] != 'undefined') {
+          typeof this.errorMessages[e.code] != 'undefined' &&
+          this.errorMessages[e.code] !== this.defaultErrorMessages[e.code]) {
         var message = this.errorMessages[e.code]
         if (typeof e.params != 'undefined') {
           message = format(message, e.params)
@@ -5813,7 +5837,7 @@ URLField.prototype.defaultErrorMessages =
 
 URLField.prototype.toJavaScript = function(value) {
   if (value) {
-    var urlFields = util.parseUri(value)
+    var urlFields = url.parseUri(value)
     if (!urlFields.protocol) {
       // If no URL protocol given, assume http://
       urlFields.protocol = 'http'
@@ -5822,7 +5846,7 @@ URLField.prototype.toJavaScript = function(value) {
       // The path portion may need to be added before query params
       urlFields.path = '/'
     }
-    value = util.makeUri(urlFields)
+    value = url.makeUri(urlFields)
   }
   return CharField.prototype.toJavaScript.call(this, value)
 }
@@ -6433,6 +6457,7 @@ var Concur = require('Concur')
   , format = require('isomorph/lib/format').formatObj
   , object = require('isomorph/lib/object')
   , copy = require('isomorph/lib/copy')
+  , validators = require('validators')
 
 var util = require('./util')
   , fields = require('./fields')
@@ -6440,7 +6465,7 @@ var util = require('./util')
 
 var ErrorList = util.ErrorList
   , ErrorObject = util.ErrorObject
-  , ValidationError = util.ValidationError
+  , ValidationError = validators.ValidationError
   , Field = fields.Field
   , FileField = fields.FileField
   , Textarea = widgets.Textarea
@@ -6621,6 +6646,24 @@ BoundField.prototype.value = function() {
 }
 
 /**
+ * Creates the label value to be displayed, adding the form suffix if there is
+ * one and the label doesn't end in punctuation.
+ */
+BoundField.prototype.getLabel = function() {
+  var isSafe = DOMBuilder.html && DOMBuilder.html.isSafe(this.label)
+  var label = ''+this.label
+  // Only add the suffix if the label does not end in punctuation
+  if (this.form.labelSuffix &&
+      ':?.!'.indexOf(label.charAt(label.length - 1)) == -1) {
+    label += this.form.labelSuffix
+  }
+  if (isSafe) {
+    label = DOMBuilder.html.markSafe(label)
+  }
+  return label
+}
+
+/**
  * Wraps the given contents in a &lt;label&gt;, if the field has an ID
  * attribute. Does not HTML-escape the contents. If contents aren't given, uses
  * the field's HTML-escaped label.
@@ -6642,7 +6685,7 @@ BoundField.prototype.labelTag = function(kwargs) {
     contents = kwargs.contents
   }
   else {
-    contents = this.label
+    contents = this.getLabel()
   }
 
   id = object.get(widget.attrs, 'id', this.autoId())
@@ -6926,17 +6969,7 @@ BaseForm.prototype._htmlOutput = function(normalRow,
     }
 
     if (bf.label) {
-      var isSafe = DOMBuilder.html && DOMBuilder.html.isSafe(bf.label)
-      label = ''+bf.label
-      // Only add the suffix if the label does not end in punctuation
-      if (this.labelSuffix &&
-          ':?.!'.indexOf(label.charAt(label.length - 1)) == -1) {
-        label += this.labelSuffix
-      }
-      if (isSafe) {
-        label = DOMBuilder.html.markSafe(label)
-      }
-      label = bf.labelTag({contents: label}) || ''
+      label = bf.labelTag() || ''
     }
 
     if (bf.field.helpText) {
@@ -7360,6 +7393,7 @@ require.define("./formsets", function(module, exports, require) {
 var Concur = require('Concur')
   , DOMBuilder = require('DOMBuilder')
   , object = require('isomorph/lib/object')
+  , validators = require('validators')
 
 var util = require('./util')
   , widgets = require('./widgets')
@@ -7367,7 +7401,7 @@ var util = require('./util')
   , forms = require('./forms')
 
 var ErrorList = util.ErrorList
-  , ValidationError = util.ValidationError
+  , ValidationError = validators.ValidationError
   , IntegerField = fields.IntegerField
   , BooleanField = fields.BooleanField
   , HiddenInput = widgets.HiddenInput
@@ -7927,13 +7961,13 @@ module.exports = {
 
 require.define("./models", function(module, exports, require) {
 var object = require('isomorph/lib/object')
+  , validators = require('validators')
 
 var util = require('./util')
-  , validators = require('./validators')
   , fields = require('./fields')
 
 var Field = fields.Field
-  , ValidationError = util.ValidationError
+  , ValidationError = validators.ValidationError
 
 /**
  * A means of hooking newforms up with information about your model layer.
@@ -8126,10 +8160,9 @@ module.exports = {
 
 require.define("newforms", function(module, exports, require) {
 var object = require('isomorph/lib/object')
+  , validators = require('validators')
 
 var util = require('./util')
-  , validators = require('./validators')
-  , ipv6 = require('./ipv6')
   , widgets = require('./widgets')
   , fields = require('./fields')
   , forms = require('./forms')
@@ -8138,18 +8171,13 @@ var util = require('./util')
 
 object.extend(
   module.exports
-, { callValidator: util.callValidator
-  , isCallable: util.isCallable
-  , ValidationError: util.ValidationError
+, { ValidationError: validators.ValidationError
   , ErrorObject: util.ErrorObject
   , ErrorList: util.ErrorList
   , formData: util.formData
   , util: {
       iterate: util.iterate
     , prettyName: util.prettyName
-    , parseUri: util.parseUri
-    , makeUri: util.makeUri
-    , ipv6: ipv6
     }
   }
 , validators

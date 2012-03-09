@@ -14,7 +14,6 @@ Contents:
 
    forms
    fields
-   validators
    widgets
    formsets
    models

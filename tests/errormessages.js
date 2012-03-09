@@ -145,7 +145,7 @@ QUnit.test("URLField", 2, function() {
   , invalid: "INVALID"
   , invalidLink: "INVALID LINK"
   }
-  var f = forms.URLField({verifyExists: true, errorMessages: e})
+  var f = forms.URLField({errorMessages: e})
   cleanErrorEqual(f, "REQUIRED", "")
   cleanErrorEqual(f, "INVALID", "abc.c")
 })

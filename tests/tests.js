@@ -8,8 +8,6 @@ global.DOMBuilder = require('DOMBuilder')
 global.forms = require('../lib/newforms')
 
 var tests = [ 'util.js'
-            , 'validators.js'
-            , 'ipv6.js'
             , 'forms.js'
             , 'formsets.js'
             , 'fields.js'

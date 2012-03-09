@@ -1,7 +1,16 @@
+0.4.0 / 2012-03-08
+==================
+
+* Extracted validators into a `validators`_ project and added it as a dependency
+  -- as a result, ``callValidator()``, ``isCallable()`` and IPv6 functions now
+  live under ``forms.validators``
+* Extracted URL utility functions out into `isomorph`_
 * Fixed #11: a validator's error message should take precedence unless the field
   it's validating has defined a custom error message using the same error code
 * Changed ``BoundField.protoype.labelTag()`` to also include the form's
   ``labelSuffix``
+
+.. _`validators`: https://github.com/insin/validators
 
 0.3.0 / 2012-02-10
 ==================
