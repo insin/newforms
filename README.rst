@@ -119,6 +119,23 @@ Here's a quick guide to getting started with newforms.
 
      var formSet = new ArticleFormSet()
 
+* Custom row styling: ``requiredCssClass`` and ``errorCssClass`` can be added to
+  any form and the classes will be applied to each matching row in the form
+  output. To add extra CSS classes to a particular row, pass the 
+  ``extraClasses`` property in the field definition. All of the above are added
+  to the class attribute of the **containing** element, e.g., ``<tr>``, ``<li>``
+  or ``<p>``::
+
+     var PostForm = forms.Form.extend({
+     // Fields
+       postTitle        : forms.CharField({maxLength: 100})
+     , postBody         : forms.CharField({extraClasses: 'larger island'})
+     , allowComments    : forms.BooleanField({required: false})
+     // CSS settings
+     , requiredCssClass : 'required'  // A class to style required fields
+     , errorCssClass    : 'error'     // A class to style fields with errors
+     })
+
 * The API is largely consistent with Django's API, with the following
   rules of thumb for converting between the two:
 
