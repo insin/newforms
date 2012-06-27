@@ -16,7 +16,7 @@
   , "validators": "0.0.x"
   }
 , "devDependencies": {
-    "qqunit": "0.1.x"
+    "qqunit": "0.4.x"
   , "buildumb": "0.1.x"
   }
 , "scripts": {

@@ -32,7 +32,7 @@ QUnit.test("Form", 12, function() {
         "<input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\">")
   equal(""+p.boundField("birthday"),
         "<input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\">")
-  try { p.boundField("nonexistentfield"); } catch (e) { equals(e.message, "Form does not have a 'nonexistentfield' field."); }
+  try { p.boundField("nonexistentfield"); } catch (e) { equal(e.message, "Form does not have a 'nonexistentfield' field."); }
 
   var formOutput = [], boundFields = p.boundFields()
   for (var i = 0, boundField; boundField = boundFields[i]; i++) {
