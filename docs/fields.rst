@@ -304,6 +304,10 @@ API
 
    Validates that its input is a valid IPv4 address.
 
+.. js:class:: GenericIPAddressField([kwargs])
+
+   Validates that its input is a valid IPv4 or IPv6 address.
+
 .. js:class:: SlugField([kwargs])
 
    Validates that its input is a valid slug.

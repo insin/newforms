@@ -2,7 +2,12 @@
 Models
 ======
 
-Work-in-progress.
+Stability
+=========
+
+The models modules is a work-in-progress based on limited experimentation with
+a sync API - it is likely to change extensively to be able to handle an async
+Model API.
 
 API
 ===

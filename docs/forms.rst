@@ -73,8 +73,6 @@ API
       Getter for errors, which first cleans the form if there are no errors
       defined yet.
 
-
-
 .. js:class:: BoundField(form, field, name)
 
    A field and its associated data.
@@ -83,43 +81,31 @@ API
    :param Field field: one of the form's fields.
    :param String name: the name under which the field is held in the form
 
-.. js:function:: Form(kwargs)
+.. js:function:: DeclarativeFieldsMeta({prototypeProps, constructorProps})
 
-   Creates a new form constructor, eliminating some of the steps required when
-   manually defining a new form class and wiring up convenience hooks into the
-   form initialisation process.
+   This function is responsible for setting up form fields when a new Form
+   constructor is being created. It pops any Fields it finds off the form's
+   prototype properties object, determines if any forms are also being mixed-in
+   via a __mixin__ property and handles inheritance of Fields from any form
+   which is being inherited from such that fields will be given this order of
+   precedence should there be a naming conflict with any of these three sources.
 
-   :param Object kwargs:
-      arguments defining options for the created form constructor.
+   1. Fields specified in the prototype properties
+   2. Fields from a mixed-in form
+   3. Fields from the Form being inherited from
 
-      Arguments which are ``Field`` instances will contribute towards the form's
-      ``baseFields``.
+.. js:class:: Form([kwargs])
 
-      All remaining arguments other than those defined below will be added to
-      the new form constructor's ``prototype``, so this object can also be used
-      to define new methods on the resulting form, such as custom ``clean`` and
-      ``cleanFieldName`` methods.
+   Inherits from BaseForm and registers DeclarativeFieldsMeta to be used to set
+   up Fields when this constructor is inherited from.
 
-   .. js:attribute:: kwargs.form (Function|Array)
+   It is intended as the entry point for defining your own forms. You can do
+   this using its ``extend()`` function, which is provided by `Concur`_
 
-      the Form constructor which will provide the prototype for the new Form
-      constructor -- defaults to ``BaseForm``.
+   ..js:function:: Form.extend({prototypeProps, constructorProps})
 
-   .. js:attribute:: kwargs.preInit (Function)
+      Creates a new constrctor which inherits from Form. The new form's fields
+      and prototype properties, such as validation methods, should be passed as
+      ``prototypeProps``.
 
-      if provided, this function will be invoked with any keyword arguments
-      which are passed when a new instance of the form is being created,
-      *before* fields have been created and the prototype constructor called -
-      if a value is returned from the function, it will be used as the kwargs
-      object for further processing, so typical usage of this argument would be
-      to set default kwarg arguments or pop and store kwargs as properties of
-      the form object being created.
-
-   .. js:attribute:: kwargs.postInit (Function)
-
-      if provided, this function will be invoked with any keyword arguments
-      which are passed when a new instance of the form is being created, *after*
-      fields have been created and the prototype constructor called - typical
-      usage of this function would be to dynamically alter the form fields which
-      have just been created or to add/remove fields by altering
-      ``this.fields``.
+   .. _`Concur`: https://github.com/insin/concur

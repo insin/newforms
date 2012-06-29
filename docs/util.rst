@@ -44,37 +44,11 @@ components are exposed on the ``forms`` namespace object.
    an error code and a message parameters object can be provided to enable
    customisation of the resulting error message based on the code.
 
-   .. js:function:: ValidationError.toString()
+   This constructor is actually provided by the `validators`_ package, but is
+   exposed as part of newforms' exports for convenience.
 
-.. js:function:: callValidator(validator, value)
-
-   Calls the given validator with the given value - you may need this if
-   you're overrriding how validators are used.
-
-.. js:function:: util.isCallable(obj)
-
-   Since instances can't be callable in JavaScript, we fake them by defining
-   a ``__call__`` method for validators. This method determines if it's been
-   given a Function or an obejct which has a ``__call__`` function.
+   .. _`validators`: https://github.com/insin/validators
 
 .. js:function:: formData(form)
 
    Creates an object representation of a form's contents.
-
-Other utilities
----------------
-
-Other utilities involved in inplementing newforms are available under a
-``utils`` namespace sub-object.
-
-.. js:attribute:: util.urlparse
-
-   Utilities for working with URLs.
-
-   .. js:function:: util.urlparse.urlsplit(url[, default_scheme[, allow_fragments]])
-
-      Splits a URL into sections, which are returned as an an Object.
-
-   .. js:function:: util.urlparse.urlunsplit(obj)
-
-      Joins URL sections into a complete URL.

@@ -43,7 +43,7 @@ API
       the constructor function to be used when creating error details - defaults
       to ErrorList.
 
-.. js:function:: FormSet(form, [kwargs])
+.. js:function:: formsetFactory(form, [kwargs])
 
    Returns a FormSet constructor for the given Form constructor.
 
