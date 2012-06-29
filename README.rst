@@ -122,7 +122,8 @@ Here's a quick guide to getting started with newforms.
 * Custom row styling: ``requiredCssClass`` and ``errorCssClass`` can be added to
   any form and the classes will be applied to each matching row in the form
   output. To add extra CSS classes to a particular row, pass the 
-  ``extraClasses`` property in the field definition. All of the above are added
+  ``extraClasses`` property in the field definition. To add classes to *all*
+  fields in a form, use ``allContainerCssClass``. All of the above are added
   to the class attribute of the **containing** element, e.g., ``<tr>``, ``<li>``
   or ``<p>``::
 
@@ -132,8 +133,9 @@ Here's a quick guide to getting started with newforms.
      , postBody         : forms.CharField({extraClasses: 'larger island'})
      , allowComments    : forms.BooleanField({required: false})
      // CSS settings
-     , requiredCssClass : 'required'  // A class to style required fields
-     , errorCssClass    : 'error'     // A class to style fields with errors
+     , requiredCssClass       : 'required'  // A class to style required fields
+     , errorCssClass          : 'error'     // A class to style fields with errors
+     , allContainerCssClass   : 'form-row'  // A class to style fields with errors
      })
 
 * The API is largely consistent with Django's API, with the following
