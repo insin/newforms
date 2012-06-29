@@ -1,7 +1,7 @@
 QUnit.module("extra stuff")
 
 QUnit.test("MultiWidget and MultiValueField", 7, function() {
-  var time = require('isomorph/lib/time')
+  var time = require('isomorph/time')
   var ComplexWidget = forms.MultiWidget.extend({
     constructor: function(kwargs) {
       if (!(this instanceof ComplexWidget)) return new ComplexWidget(kwargs)

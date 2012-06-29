@@ -1,7 +1,7 @@
 var path = require('path')
 
 var qqunit = require('qqunit')
-  , object = require('isomorph/lib/object')
+  , object = require('isomorph/object')
 
 object.extend(global, require('./customAsserts'))
 global.DOMBuilder = require('DOMBuilder')

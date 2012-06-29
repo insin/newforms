@@ -1,5 +1,5 @@
 /**
- * newforms 0.4.0 - https://github.com/insin/newforms
+ * newforms 0.4.1 - https://github.com/insin/newforms
  * MIT Licensed
  */
 ;(function() {
@@ -22,7 +22,7 @@
     }
   }
 
-require.define(["isomorph/lib/is","./is"], function(module, exports, require) {
+require.define(["isomorph/is","./is"], function(module, exports, require) {
 var toString = Object.prototype.toString
 
 // Type checks
@@ -87,7 +87,7 @@ module.exports = {
 }
 })
 
-require.define("isomorph/lib/format", function(module, exports, require) {
+require.define("isomorph/format", function(module, exports, require) {
 var is = require('./is')
   , slice = Array.prototype.slice
   , formatRegExp = /%[%s]/g
@@ -115,14 +115,36 @@ function formatObj(s, o) {
   return s.replace(formatObjRegExp, function(m, b, p) { return b.length == 2 ? m.slice(1) : o[p] })
 }
 
+var units = 'kMGTPEZY'
+  , stripDecimals = /\.00$|0$/
+
+/**
+ * Formats bytes as a file size with the appropriately scaled units.
+ */
+function fileSize(bytes, threshold) {
+  threshold = Math.min(threshold || 768, 1024)
+  var i = -1
+    , unit = 'bytes'
+    , size = bytes
+  while (size > threshold && i < units.length) {
+    size = size / 1024
+    i++
+  }
+  if (i > -1) {
+    unit = units.charAt(i) + 'B'
+  }
+  return size.toFixed(2).replace(stripDecimals, '') + ' ' + unit
+}
+
 module.exports = {
   format: format
 , formatArr: formatArr
 , formatObj: formatObj
+, fileSize: fileSize
 }
 })
 
-require.define("isomorph/lib/object", function(module, exports, require) {
+require.define("isomorph/object", function(module, exports, require) {
 /**
  * Callbound version of Object.prototype.hasOwnProperty(), ready to be called
  * with an object and property name.
@@ -216,7 +238,7 @@ module.exports = {
 }
 })
 
-require.define("isomorph/lib/array", function(module, exports, require) {
+require.define("isomorph/array", function(module, exports, require) {
 var is = require('./is')
 
 var splice = Array.prototype.splice
@@ -247,7 +269,7 @@ module.exports = {
 }
 })
 
-require.define("isomorph/lib/copy", function(module, exports, require) {
+require.define("isomorph/copy", function(module, exports, require) {
 var is = require('./is')
 
 /* This file is part of OWL JavaScript Utilities.
@@ -548,7 +570,7 @@ module.exports = {
 }
 })
 
-require.define("isomorph/lib/time", function(module, exports, require) {
+require.define("isomorph/time", function(module, exports, require) {
 var is = require('./is')
 
 /**
@@ -899,7 +921,7 @@ time.strftime = function(date, format, locale) {
 module.exports = time
 })
 
-require.define("isomorph/lib/url", function(module, exports, require) {
+require.define("isomorph/url", function(module, exports, require) {
 // parseUri 1.2.2
 // (c) Steven Levithan <stevenlevithan.com>
 // MIT License
@@ -990,8 +1012,8 @@ module.exports = {
 })
 
 require.define("Concur", function(module, exports, require) {
-var is = require('isomorph/lib/is')
-  , object = require('isomorph/lib/object')
+var is = require('isomorph/is')
+  , object = require('isomorph/object')
 
 /**
  * Mixes in properties from one object to another. If the source object is a
@@ -1101,9 +1123,9 @@ Concur.extend = function(prototypeProps, constructorProps) {
 })
 
 require.define(["./dombuilder/core","./core"], function(module, exports, require) {
-var is = require('isomorph/lib/is')
-  , object = require('isomorph/lib/object')
-  , array = require('isomorph/lib/array')
+var is = require('isomorph/is')
+  , object = require('isomorph/object')
+  , array = require('isomorph/array')
 
 // Native functions
 var toString = Object.prototype.toString
@@ -1128,12 +1150,26 @@ var EVENT_ATTRS = (JQUERY_AVAILABLE
                      'mouseout mouseenter mouseleave change select submit ' +
                      'keydown keypress keyup error').split(' '))
     )
+
 /**
  * Element name for fragments.
  * @const
  * @type {string}
  */
 var FRAGMENT_NAME = '#document-fragment'
+
+/**
+ * Regular Expression which parses out tag names with optional id and class
+ * definitions as part of the tag name.
+ * @const
+ * @type {RegExp}
+ */
+var BUILD_TAG_RE = new RegExp(
+      '^([a-z][a-z0-9]*)?'               // tag name
+    + '(?:#([a-z][-:\\w]*))?'            // id, excluding leading '#'
+    + '(?:\\.([-\\w]+(?:\\.[-\\w]+)*))?' // class(es), excluding leading '.'
+    , 'i'
+    )
 
 /**
  * Tag names defined in the HTML 4.01 Strict and Frameset DTDs and new elements
@@ -1449,28 +1485,53 @@ var DOMBuilder = {
    * @return {*}
    */
 , build: function(content, mode) {
+    // Default to the configured output mode if called without one
     mode = mode || this.mode
-    var elementName = content[0]
-      , isFragment = (elementName == FRAGMENT_NAME)
+
+    var tagName = content[0]
+      , isFragment = (tagName == FRAGMENT_NAME)
       , attrs = (!isFragment && isPlainObject(content[1], mode)
                  ? content[1]
                  : null)
       , childStartIndex = (attrs === null ? 1 : 2)
       , l = content.length
-      , built = []
+      , children = []
       , item
+
+    // Extract id and classes from tagName for non-fragment elements, defaulting
+    // the tagName to 'div' if none was specified.
+    if (!isFragment) {
+      if (attrs === null) {
+        attrs = {}
+      }
+      var tagParts = BUILD_TAG_RE.exec(tagName)
+      if (!tagParts) {
+        throw new Error(tagName + ' is not a valid tag definition')
+      }
+      tagName = tagParts[1] || 'div'
+      if (tagParts[2]) {
+        attrs.id = tagParts[2]
+      }
+      if (tagParts[3]) {
+        attrs['class'] = tagParts[3].replace(/\./g, ' ')
+      }
+    }
+
+    // Build child contents first
     for (var i = childStartIndex; i < l; i++) {
       item = content[i]
       if (is.Array(item)) {
-        built.push(this.build(item, mode))
+        children.push(this.build(item, mode))
       }
       else {
-        built.push(item)
+        children.push(item)
       }
     }
+
+    // Build the current element
     return (isFragment
-            ? this.modes[mode].fragment(built)
-            : this.modes[mode].createElement(elementName, attrs, built))
+            ? this.modes[mode].fragment(children)
+            : this.modes[mode].createElement(tagName, attrs, children))
   }
 
   /**
@@ -1626,7 +1687,7 @@ module.exports = DOMBuilder
 
 require.define("./dombuilder/dom", function(module, exports, require) {
 var DOMBuilder =require('./core')
-  , object = require('isomorph/lib/object')
+  , object = require('isomorph/object')
 
 var document = window.document
   // DOMBuilder utilities
@@ -1870,7 +1931,7 @@ DOMBuilder.addMode({
 
 require.define("./dombuilder/html", function(module, exports, require) {
 var DOMBuilder = require('./core')
-  , object = require('isomorph/lib/object')
+  , object = require('isomorph/object')
 
 // Native functions
 var splice = Array.prototype.splice
@@ -2355,12 +2416,7 @@ module.exports = DOMBuilder
 })
 
 require.define("punycode", function(module, exports, require) {
-/*!
- * Punycode.js <http://mths.be/punycode>
- * Copyright 2011 Mathias Bynens <http://mathiasbynens.be/>
- * Available under MIT license <http://mths.be/mit>
- */
-
+/*! http://mths.be/punycode by @mathias */
 ;(function(root) {
 
 	/**
@@ -2642,7 +2698,7 @@ require.define("punycode", function(module, exports, require) {
 				}
 
 				i += digit * w;
-				t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
+				t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
 
 				if (digit < t) {
 					break;
@@ -2765,7 +2821,7 @@ require.define("punycode", function(module, exports, require) {
 				if (currentValue == n) {
 					// Represent delta as a generalized variable-length integer
 					for (q = delta, k = base; /* no condition */; k += base) {
-						t = k <= bias ? tMin : k >= bias + tMax ? tMax : k - bias;
+						t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
 						if (q < t) {
 							break;
 						}
@@ -2875,8 +2931,8 @@ require.define("punycode", function(module, exports, require) {
 
 require.define("./errors", function(module, exports, require) {
 var Concur = require('Concur')
-  , is = require('isomorph/lib/is')
-  , object = require('isomorph/lib/object')
+  , is = require('isomorph/is')
+  , object = require('isomorph/object')
 
 /**
  * A validation error, containing a list of messages. Single messages
@@ -2908,7 +2964,7 @@ module.exports = {
 })
 
 require.define("./ipv6", function(module, exports, require) {
-var object = require('isomorph/lib/object')
+var object = require('isomorph/object')
 
 var errors = require('./errors')
 
@@ -3192,10 +3248,10 @@ module.exports = {
 
 require.define(["./validators","validators"], function(module, exports, require) {
 var Concur = require('Concur')
-  , is = require('isomorph/lib/is')
-  , format = require('isomorph/lib/format').formatObj
+  , is = require('isomorph/is')
+  , format = require('isomorph/format').formatObj
   , punycode = require('punycode')
-  , url = require('isomorph/lib/url')
+  , url = require('isomorph/url')
 
 var errors = require('./errors')
   , ipv6 = require('./ipv6')
@@ -3519,8 +3575,8 @@ module.exports = {
 require.define("./util", function(module, exports, require) {
 var Concur = require('Concur')
   , DOMBuilder = require('DOMBuilder')
-  , is = require('isomorph/lib/is')
-  , object = require('isomorph/lib/object')
+  , is = require('isomorph/is')
+  , object = require('isomorph/object')
 
 var DEFAULT_DATE_INPUT_FORMATS = [
       '%Y-%m-%d'              // '2006-10-25'
@@ -3827,10 +3883,10 @@ module.exports = {
 require.define("./widgets", function(module, exports, require) {
 var Concur = require('Concur')
   , DOMBuilder = require('DOMBuilder')
-  , is = require('isomorph/lib/is')
-  , format = require('isomorph/lib/format').formatObj
-  , object = require('isomorph/lib/object')
-  , time = require('isomorph/lib/time')
+  , is = require('isomorph/is')
+  , format = require('isomorph/format').formatObj
+  , object = require('isomorph/object')
+  , time = require('isomorph/time')
 
 var util = require('./util')
 
@@ -5046,11 +5102,11 @@ module.exports = {
 
 require.define("./fields", function(module, exports, require) {
 var Concur = require('Concur')
-  , is = require('isomorph/lib/is')
-  , format = require('isomorph/lib/format').formatObj
-  , object = require('isomorph/lib/object')
-  , time = require('isomorph/lib/time')
-  , url = require('isomorph/lib/url')
+  , is = require('isomorph/is')
+  , format = require('isomorph/format').formatObj
+  , object = require('isomorph/object')
+  , time = require('isomorph/time')
+  , url = require('isomorph/url')
   , validators = require('validators')
 
 var util = require('./util')
@@ -5074,13 +5130,14 @@ var Field = Concur.extend({
     kwargs = object.extend({
       required: true, widget: null, label: null, initial: null,
       helpText: null, errorMessages: null, showHiddenInitial: false,
-      validators: []
+      validators: [], extraClasses: null
     }, kwargs)
     this.required = kwargs.required
     this.label = kwargs.label
     this.initial = kwargs.initial
     this.showHiddenInitial = kwargs.showHiddenInitial
     this.helpText = kwargs.helpText || ''
+    this.extraClasses = kwargs.extraClasses
 
     var widget = kwargs.widget || this.widget
     if (!(widget instanceof Widget)) {
@@ -6453,10 +6510,10 @@ module.exports = {
 require.define("./forms", function(module, exports, require) {
 var Concur = require('Concur')
   , DOMBuilder = require('DOMBuilder')
-  , is = require('isomorph/lib/is')
-  , format = require('isomorph/lib/format').formatObj
-  , object = require('isomorph/lib/object')
-  , copy = require('isomorph/lib/copy')
+  , is = require('isomorph/is')
+  , format = require('isomorph/format').formatObj
+  , object = require('isomorph/object')
+  , copy = require('isomorph/copy')
   , validators = require('validators')
 
 var util = require('./util')
@@ -6700,7 +6757,7 @@ BoundField.prototype.labelTag = function(kwargs) {
  * Returns a string of space-separated CSS classes for this field.
  */
 BoundField.prototype.cssClasses = function(extraClasses) {
-  extraClasses = extraClasses || null
+  extraClasses = extraClasses || this.field.extraClasses
   if (extraClasses !== null && is.Function(extraClasses.split)) {
     extraClasses = extraClasses.split()
   }
@@ -7392,7 +7449,7 @@ module.exports = {
 require.define("./formsets", function(module, exports, require) {
 var Concur = require('Concur')
   , DOMBuilder = require('DOMBuilder')
-  , object = require('isomorph/lib/object')
+  , object = require('isomorph/object')
   , validators = require('validators')
 
 var util = require('./util')
@@ -7960,7 +8017,7 @@ module.exports = {
 })
 
 require.define("./models", function(module, exports, require) {
-var object = require('isomorph/lib/object')
+var object = require('isomorph/object')
   , validators = require('validators')
 
 var util = require('./util')
@@ -8159,7 +8216,7 @@ module.exports = {
 })
 
 require.define("newforms", function(module, exports, require) {
-var object = require('isomorph/lib/object')
+var object = require('isomorph/object')
   , validators = require('validators')
 
 var util = require('./util')

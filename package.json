@@ -1,7 +1,7 @@
 {
   "name": "newforms"
 , "description": "Form validation, display and type coercion for browsers and Node.js"
-, "version": "0.4.0"
+, "version": "0.4.1"
 , "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)"
 , "tags": ["dualsided", "forms", "validation", "coercion"]
 , "main": "./lib/newforms"
@@ -12,7 +12,7 @@
 , "dependencies": {
     "Concur": "0.2.x"
   , "DOMBuilder": ">=2.0.x"
-  , "isomorph": ">=0.1.9"
+  , "isomorph": "0.2.x"
   , "validators": "0.0.x"
   }
 , "devDependencies": {

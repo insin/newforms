@@ -6,13 +6,13 @@ buildumb.build({
   root: path.normalize(path.join(__dirname, '..'))
 , modules: {
   // isomorph
-    'node_modules/isomorph/lib/is.js'     : ['isomorph/lib/is', './is']
-  , 'node_modules/isomorph/lib/format.js' : 'isomorph/lib/format'
-  , 'node_modules/isomorph/lib/object.js' : 'isomorph/lib/object'
-  , 'node_modules/isomorph/lib/array.js'  : 'isomorph/lib/array'
-  , 'node_modules/isomorph/lib/copy.js'   : 'isomorph/lib/copy'
-  , 'node_modules/isomorph/lib/time.js'   : 'isomorph/lib/time'
-  , 'node_modules/isomorph/lib/url.js'    : 'isomorph/lib/url'
+    'node_modules/isomorph/is.js'     : ['isomorph/is', './is']
+  , 'node_modules/isomorph/format.js' : 'isomorph/format'
+  , 'node_modules/isomorph/object.js' : 'isomorph/object'
+  , 'node_modules/isomorph/array.js'  : 'isomorph/array'
+  , 'node_modules/isomorph/copy.js'   : 'isomorph/copy'
+  , 'node_modules/isomorph/time.js'   : 'isomorph/time'
+  , 'node_modules/isomorph/url.js'    : 'isomorph/url'
   // Concur
   , 'node_modules/Concur/lib/concur.js': 'Concur'
   // DOMBuilder

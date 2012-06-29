@@ -5,3 +5,5 @@ tests
 .gitignore
 .travis.yml
 TODO.rst
+/newforms.js
+/newforms.min.js

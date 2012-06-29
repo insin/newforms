@@ -2,7 +2,7 @@ QUnit.module('models')
 
 ;(function() {
 
-var object = require('isomorph/lib/object')
+var object = require('isomorph/object')
 
 // Mock out a model interface
 
