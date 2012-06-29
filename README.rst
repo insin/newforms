@@ -1,9 +1,12 @@
-========================
-newforms |travis_status|
-========================
+======================================
+newforms |travis_status| |qunit_tests|
+======================================
 
 .. |travis_status| image:: https://secure.travis-ci.org/insin/newforms.png
    :target: http://travis-ci.org/insin/newforms
+
+.. |qunit_tests| image:: http://insin.github.com/img/qunit-tests.png
+   :target: http://insin.github.com/newforms/tests.html
 
 A JavaScript port of `Django`_'s `form-handling library`_, which runs in
 browsers in `Node.js`_
@@ -12,14 +15,17 @@ browsers in `Node.js`_
 .. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/
 .. _`Node.js`: http://nodejs.org
 
-- `Fragile`_ - use of newforms and ``ModelChoiceField`` in `Sacrum`_
-- `Demo page`_
-- `QUnit tests`_
+Demos
+=====
 
-.. _`Fragile`: http://jonathan.buchanan153.users.btopenworld.com/sacrum/fragile/fragile.html
+- `Demo page`_ - uses a FormSet to create multiple instances of the same Form,
+  with just about every type of Field in newforms.
+- `Fragile`_ - use of newforms and ModelChoiceField in `Sacrum`_ for creation
+  and validation of add/edit forms.
+
+.. _`Demo page`: http://insin.github.com/newforms/demo.html
+.. _`Fragile`: http://insin.github.com/sacrum/fragile.html
 .. _`Sacrum`: https://github.com/insin/sacrum
-.. _`Demo page`: http://jonathan.buchanan153.users.btopenworld.com/newforms/demo/demo.html
-.. _`QUnit tests`: http://jonathan.buchanan153.users.btopenworld.com/newforms/tests/tests.html
 
 Install
 =======
@@ -30,9 +36,9 @@ Node.js::
 
 Browser bundles (all dependencies included):
 
-* `newforms.js`_ - 232KB (54KB gzipped)
+* `newforms.js`_ - 234 kB (54.6 kB gzipped)
 
-* `newforms.min.js`_ - 83.9KB (23.4KB gzipped)
+* `newforms.min.js`_ - 84.5 kB (23.7 kB gzipped)
 
 Browser bundles currently expose:
 
@@ -48,11 +54,6 @@ Browser bundles currently expose:
 .. _`Concur`: https://github.com/insin/concur
 .. _`DOMBuilder`: https://github.com/insin/DOMBuilder
 .. _`isomorph`: https://github.com/insin/isomorph
-
-Documentation (WIP)
-===================
-
-http://newforms.readthedocs.org
 
 Usage
 =====
@@ -121,7 +122,7 @@ Here's a quick guide to getting started with newforms.
 
 * Custom row styling: ``requiredCssClass`` and ``errorCssClass`` can be added to
   any form and the classes will be applied to each matching row in the form
-  output. To add extra CSS classes to a particular row, pass the 
+  output. To add extra CSS classes to a particular row, pass the
   ``extraClasses`` property in the field definition. All of the above are added
   to the class attribute of the **containing** element, e.g., ``<tr>``, ``<li>``
   or ``<p>``::
@@ -188,6 +189,13 @@ Here's a quick guide to getting started with newforms.
 
 The unit tests exercise the library thoroughly, so dip in for examples of
 further usage in the meantime.
+
+Documentation (WIP)
+===================
+
+API documentation is underway, but guide documentation is yet to be started:
+
+* http://newforms.readthedocs.org
 
 MIT License
 ===========
