@@ -1,5 +1,5 @@
 /**
- * newforms 0.4.1 - https://github.com/insin/newforms
+ * newforms 0.4.2-pre - https://github.com/insin/newforms
  * MIT Licensed
  */
 ;(function() {
@@ -6762,6 +6762,9 @@ BoundField.prototype.cssClasses = function(extraClasses) {
     extraClasses = extraClasses.split()
   }
   extraClasses = extraClasses || []
+  if (typeof this.form.rowCssClass != 'undefined') {
+    extraClasses.push(this.form.rowCssClass)
+  }
   if (this.errors().isPopulated() &&
       typeof this.form.errorCssClass != 'undefined') {
     extraClasses.push(this.form.errorCssClass)
