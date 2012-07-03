@@ -1850,7 +1850,7 @@ QUnit.test("Hidden initial gets id", 1, function() {
 "<tr><th><label for=\"id_field1\">Field1:</label></th><td><input maxlength=\"50\" type=\"text\" name=\"field1\" id=\"id_field1\"><input type=\"hidden\" name=\"initial-field1\" id=\"initial-id_field1\"></td></tr>")
 })
 
-QUnit.test("Error/required HTML classes", 3, function() {
+QUnit.test("Row/error/required HTML classes", 3, function() {
   var Person = forms.Form.extend({
     name: forms.CharField()
   , is_cool: forms.NullBooleanField()
@@ -1859,37 +1859,38 @@ QUnit.test("Error/required HTML classes", 3, function() {
   })
 
   var p = new Person({data: {}})
+  p.rowCssClass = "row"
   p.errorCssClass = "error"
   p.requiredCssClass = "required"
   equal(""+p.asUL(),
-"<li class=\"error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></li>\n" +
-"<li class=\"required\"><label for=\"id_is_cool\">Is cool:</label> <select name=\"is_cool\" id=\"id_is_cool\">\n" +
+"<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></li>\n" +
+"<li class=\"row required\"><label for=\"id_is_cool\">Is cool:</label> <select name=\"is_cool\" id=\"id_is_cool\">\n" +
 "<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select></li>\n" +
-"<li><label for=\"id_email\">Email:</label> <input type=\"text\" name=\"email\" id=\"id_email\"></li>\n" +
-"<li class=\"error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_age\">Age:</label> <input type=\"text\" name=\"age\" id=\"id_age\"></li>")
+"<li class=\"row\"><label for=\"id_email\">Email:</label> <input type=\"text\" name=\"email\" id=\"id_email\"></li>\n" +
+"<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_age\">Age:</label> <input type=\"text\" name=\"age\" id=\"id_age\"></li>")
   equal(""+p.asP(),
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
-"<p class=\"error required\"><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></p>\n" +
-"<p class=\"required\"><label for=\"id_is_cool\">Is cool:</label> <select name=\"is_cool\" id=\"id_is_cool\">\n" +
+"<p class=\"row error required\"><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></p>\n" +
+"<p class=\"row required\"><label for=\"id_is_cool\">Is cool:</label> <select name=\"is_cool\" id=\"id_is_cool\">\n" +
 "<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select></p>\n" +
-"<p><label for=\"id_email\">Email:</label> <input type=\"text\" name=\"email\" id=\"id_email\"></p>\n" +
+"<p class=\"row\"><label for=\"id_email\">Email:</label> <input type=\"text\" name=\"email\" id=\"id_email\"></p>\n" +
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
-"<p class=\"error required\"><label for=\"id_age\">Age:</label> <input type=\"text\" name=\"age\" id=\"id_age\"></p>")
+"<p class=\"row error required\"><label for=\"id_age\">Age:</label> <input type=\"text\" name=\"age\" id=\"id_age\"></p>")
   equal(""+p.asTable(),
-"<tr class=\"error required\"><th><label for=\"id_name\">Name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>\n" +
-"<tr class=\"required\"><th><label for=\"id_is_cool\">Is cool:</label></th><td><select name=\"is_cool\" id=\"id_is_cool\">\n" +
+"<tr class=\"row error required\"><th><label for=\"id_name\">Name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>\n" +
+"<tr class=\"row required\"><th><label for=\"id_is_cool\">Is cool:</label></th><td><select name=\"is_cool\" id=\"id_is_cool\">\n" +
 "<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
 "<option value=\"2\">Yes</option>\n" +
 "<option value=\"3\">No</option>\n" +
 "</select></td></tr>\n" +
-"<tr><th><label for=\"id_email\">Email:</label></th><td><input type=\"text\" name=\"email\" id=\"id_email\"></td></tr>\n" +
-"<tr class=\"error required\"><th><label for=\"id_age\">Age:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"age\" id=\"id_age\"></td></tr>")
+"<tr class=\"row\"><th><label for=\"id_email\">Email:</label></th><td><input type=\"text\" name=\"email\" id=\"id_email\"></td></tr>\n" +
+"<tr class=\"row error required\"><th><label for=\"id_age\">Age:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"age\" id=\"id_age\"></td></tr>")
 })
 
 QUnit.test("Label split datetime not displayed", 1, function() {
