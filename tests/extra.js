@@ -114,7 +114,7 @@ QUnit.test("Forms with *only* hidden fields", 4, function() {
   var HiddenForm = forms.Form.extend({
     data: forms.IntegerField({widget: forms.HiddenInput})
   })
-  f = new HiddenForm({data: {}})
+  var f = new HiddenForm({data: {}})
   equal(""+f.asP(),
 "<div><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>")
   equal(""+f.asTable(),
