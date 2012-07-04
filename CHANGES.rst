@@ -1,3 +1,12 @@
+* Fixed ``FloatField.prototype._hasChanged()``, which wasn't comparing against
+  the field's initial value
+* Added ``managementFormCssClass`` to BaseFormSet's kwargs, to provide a CSS
+  class for the row generated to hold the management form's hidden fields
+* Added use of ``hiddenFieldRowCssClass`` to provide a CSS class for Form rows
+  which were generated solely to wrap empty fields to avoid generating invalid
+  HTML
+* Added use of ``rowCssClass`` to provide a class for each row in a Form
+
 0.4.1 / 2012-06-29
 ==================
 
