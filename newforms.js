@@ -3626,7 +3626,6 @@ function iterate(o) {
 var prettyName = (function() {
   var capsRE = /([A-Z]+)/g
     , splitRE = /[ _]+/
-    , trimRE = /(^ +| +$)/g
     , allCapsRE = /^[A-Z][A-Z0-9]+$/
 
   return function(name) {
@@ -7538,9 +7537,10 @@ BaseFormSet.getDefaultPrefix = function() {
  * Returns the ManagementForm instance for this FormSet.
  */
 BaseFormSet.prototype.managementForm = function() {
+  var form
   if (this.isBound) {
-    var form = new ManagementForm({data: this.data, autoId: this.autoId,
-                                   prefix: this.prefix})
+    form = new ManagementForm({data: this.data, autoId: this.autoId,
+                               prefix: this.prefix})
     if (!form.isValid()) {
       throw ValidationError('ManagementForm data is missing or has been tampered with')
     }
@@ -7550,9 +7550,9 @@ BaseFormSet.prototype.managementForm = function() {
     initial[TOTAL_FORM_COUNT] = this.totalFormCount()
     initial[INITIAL_FORM_COUNT] = this.initialFormCount()
     initial[MAX_NUM_FORM_COUNT] = this.maxNum
-    var form = new ManagementForm({autoId: this.autoId,
-                                   prefix: this.prefix,
-                                   initial: initial})
+    form = new ManagementForm({autoId: this.autoId,
+                               prefix: this.prefix,
+                               initial: initial})
   }
   if (this.managementFormCssClass !== null) {
     form.hiddenFieldRowCssClass = this.managementFormCssClass
