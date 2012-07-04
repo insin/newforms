@@ -117,7 +117,7 @@ QUnit.test("IntegerField", 51, function() {
   strictEqual(f.minValue, 10)
 })
 
-QUnit.test("FloatField", 27, function() {
+QUnit.test("FloatField", 34, function() {
   var f = forms.FloatField()
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
@@ -152,6 +152,13 @@ QUnit.test("FloatField", 27, function() {
 
   // FloatField implements its own _hasChanged due to String coercion issues
   // in JavaScript.
+  strictEqual(f._hasChanged(null, ''), false)
+  strictEqual(f._hasChanged('', ''), false)
+  strictEqual(f._hasChanged('', null), false)
+  strictEqual(f._hasChanged(null, 0), true)
+  strictEqual(f._hasChanged('', 0), true)
+  strictEqual(f._hasChanged("0.0", 1.0), true)
+  strictEqual(f._hasChanged("1.0", 0.0), true)
   strictEqual(f._hasChanged("0.0", 0.0), false)
   strictEqual(f._hasChanged("1.0", 1.0), false)
 })
