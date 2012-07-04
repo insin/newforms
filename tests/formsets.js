@@ -289,8 +289,7 @@ QUnit.test("FormSet with deletion", 6, function() {
 "<li>Votes: <input type=\"text\" name=\"choices-1-votes\" value=\"900\"></li>\n" +
 "<li>Delete: <input type=\"checkbox\" name=\"choices-1-DELETE\"></li>\n" +
 "<li>Choice: <input type=\"text\" name=\"choices-2-choice\"></li>\n" +
-"<li>Votes: <input type=\"text\" name=\"choices-2-votes\"></li>\n" +
-"<li>Delete: <input type=\"checkbox\" name=\"choices-2-DELETE\"></li>")
+"<li>Votes: <input type=\"text\" name=\"choices-2-votes\"></li>")
 
   // To delete something, we just need to set that form's special delete field
   // to "on". Let's go ahead and delete Fergie.
@@ -312,7 +311,7 @@ QUnit.test("FormSet with deletion", 6, function() {
   formset = new DeleteChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
   deepEqual(formset.cleanedData(),
-      [{choice: "Calexico", votes: 100, DELETE: false}, {choice: "Fergie", votes: 900, DELETE: true}, {}])
+      [{choice: "Calexico", votes: 100}, {}])
   deepEqual(allCleanedData(formset.deletedForms()),
       [{choice: "Fergie", votes: 900, DELETE: true}])
 
@@ -456,8 +455,7 @@ QUnit.test("Formset with ordering and deletion", 4, function() {
 "<li>Delete: <input type=\"checkbox\" name=\"choices-2-DELETE\"></li>\n" +
 "<li>Choice: <input type=\"text\" name=\"choices-3-choice\"></li>\n" +
 "<li>Votes: <input type=\"text\" name=\"choices-3-votes\"></li>\n" +
-"<li>Order: <input type=\"text\" name=\"choices-3-ORDER\"></li>\n" +
-"<li>Delete: <input type=\"checkbox\" name=\"choices-3-DELETE\"></li>")
+"<li>Order: <input type=\"text\" name=\"choices-3-ORDER\"></li>")
 
   // Let's delete Fergie, and put The Decemberists ahead of Calexico
   var data = {

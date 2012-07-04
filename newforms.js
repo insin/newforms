@@ -7581,7 +7581,8 @@ BaseFormSet.prototype.emptyForm = function(kwargs) {
 }
 
 /**
- * Returns a list of form.cleanedData objects for every form in this.forms.
+ * Returns a list of form.cleanedData objects for every form in this.forms,
+ * except for those in forms marked for deletion.
  */
 BaseFormSet.prototype.cleanedData = function() {
   if (!this.isValid()) {
@@ -7590,7 +7591,19 @@ BaseFormSet.prototype.cleanedData = function() {
   }
   var cleaned = []
   for (var i = 0, l = this.forms.length; i < l; i++) {
-    cleaned.push(this.forms[i].cleanedData)
+    var form = this.forms[i]
+    if (this.canDelete) {
+      // Don't add cleanedData from forms marked for deletion
+      if (!this._shouldDeleteForm(form)) {
+        // Remove the deletion field we added to the form from its cleanedData
+        var cleanedData = form.cleanedData
+        delete cleanedData[DELETION_FIELD_NAME]
+        cleaned.push(cleanedData)
+      }
+    }
+    else {
+      cleaned.push(form.cleanedData)
+    }
   }
   return cleaned
 }
@@ -7803,6 +7816,9 @@ BaseFormSet.prototype.nonFormErrors = function() {
 }
 
 BaseFormSet.prototype._shouldDeleteForm = function(form) {
+  if (!object.hasOwn(form.fields, DELETION_FIELD_NAME)) {
+    return false
+  }
   // The way we lookup the value of the deletion field here takes
   // more code than we'd like, but the form's cleanedData will not
   // exist if the form is invalid.
@@ -7908,7 +7924,7 @@ BaseFormSet.prototype.addFields = function(form, index) {
     }
   }
 
-  if (this.canDelete) {
+  if (this.canDelete && index < this.initialFormCount()) {
     form.fields[DELETION_FIELD_NAME] =
         BooleanField({label: 'Delete', required: false})
   }

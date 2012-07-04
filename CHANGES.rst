@@ -1,3 +1,7 @@
+* Automatically-added deletion fields are no longer included in the list of
+  cleanedData for a FormSet [`whardeman`_]
+* Data for forms marked for deletion is no longer present in a FormSet's
+  cleanedData [`whardeman`_]
 * Fixed ``FloatField.prototype._hasChanged()``, which wasn't comparing against
   the field's initial value
 * Added ``managementFormCssClass`` to BaseFormSet's kwargs, to provide a CSS
@@ -6,11 +10,13 @@
   which were generated solely to wrap empty fields to avoid generating invalid
   HTML
 * Added use of ``rowCssClass`` to provide a class for each row in a Form
+  [`whardeman`_]
 
 0.4.1 / 2012-06-29
 ==================
 
 * Updated to isomorph 0.2
+* Added ``extraClasses`` to Field's kwargs [`whardeman`_]
 
 0.4.0 / 2012-03-08
 ==================
@@ -70,3 +76,4 @@
 
 .. _`isomorph`: https://github.com/insin/isomorph
 .. _`Concur`: https://github.com/insin/concur
+.. _`whardeman`: https://github.com/whardeman
