@@ -753,6 +753,22 @@ QUnit.test("FormSet asUL", 1, function() {
 "<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>")
 })
 
+QUnit.test("Management form CSS class", 3, function() {
+  var formset = new ChoiceFormSet({data: remderTestData, autoId: false, prefix: "choices", managementFormCssClass: "managementForm"})
+  equal(""+formset.asTable(),
+"<tr class=\"managementForm\"><td colspan=\"2\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></td></tr>\n" +
+"<tr><th>Choice:</th><td><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></td></tr>\n" +
+"<tr><th>Votes:</th><td><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></td></tr>")
+  equal(""+formset.asP(),
+"<div class=\"managementForm\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></div>\n" +
+"<p>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></p>\n" +
+"<p>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></p>")
+  equal(""+formset.asUL(),
+"<li class=\"managementForm\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></li>\n" +
+"<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>\n" +
+"<li>Votes: <input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>")
+})
+
 // 3 Regression tests for Django issue #11418
 var ArticleForm = forms.Form.extend({
   title: forms.CharField()

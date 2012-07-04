@@ -98,7 +98,7 @@ QUnit.test("Extra attrs", 1, function() {
 "<p>F2: <input class=\"special\" type=\"text\" name=\"f2\"></p>")
 })
 
-QUnit.test("Data field", 4, function() {
+QUnit.test("Data field", 2, function() {
   var DataForm = forms.Form.extend({
     data: forms.CharField({maxLength: 10})
   })
@@ -106,7 +106,9 @@ QUnit.test("Data field", 4, function() {
   var f = new DataForm({data: {data: "xyzzy"}})
   strictEqual(f.isValid(), true)
   deepEqual(f.cleanedData, {data: "xyzzy"})
+})
 
+QUnit.test("Forms with *only* hidden fields", 4, function() {
   //  A form with *only* hidden fields that has errors is going to be very
   // unusual.
   var HiddenForm = forms.Form.extend({
@@ -117,4 +119,17 @@ QUnit.test("Data field", 4, function() {
 "<div><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>")
   equal(""+f.asTable(),
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>")
+
+  // A form with only hidden fields can make use of the hiddenFieldRowCssClass
+  // property if a row is created solely to hold hidden fields and causes style
+  // issues.
+  var HiddenForm = forms.Form.extend({
+    data: forms.IntegerField({widget: forms.HiddenInput})
+  , hiddenFieldRowCssClass: "hiddenFields"
+  })
+  f = new HiddenForm()
+  equal(""+f.asP(),
+"<div class=\"hiddenFields\"><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>")
+  equal(""+f.asTable(),
+"<tr class=\"hiddenFields\"><td colspan=\"2\"><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>")
 })

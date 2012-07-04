@@ -7060,7 +7060,7 @@ BaseForm.prototype._htmlOutput = function(normalRow,
   // Put hidden fields in their own error row if there were no rows to
   // display.
   if (hiddenFields.length > 0 && rows.length == 0) {
-    rows.push(errorRow('', hiddenFields))
+    rows.push(errorRow('', hiddenFields, this.hiddenFieldRowCssClass))
   }
   if (doNotCoerce === true || DOMBuilder.mode == 'dom') {
     return rows
@@ -7104,12 +7104,16 @@ BaseForm.prototype.asTable = (function() {
     ])
   }
 
-  var errorRow = function(errors, extraContent) {
+  var errorRow = function(errors, extraContent, htmlClassAttr) {
     var contents = [errors]
     if (extraContent) {
       contents = contents.concat(extraContent)
     }
-    return DOMBuilder.createElement('tr', {}, [
+    var rowAttrs = {}
+    if (htmlClassAttr) {
+      rowAttrs['class'] = htmlClassAttr
+    }
+    return DOMBuilder.createElement('tr', rowAttrs, [
       DOMBuilder.createElement('td', {colSpan: 2}, contents)
     ])
   }
@@ -7154,12 +7158,16 @@ BaseForm.prototype.asUL = (function() {
     return DOMBuilder.createElement('li', rowAttrs, contents)
   }
 
-  var errorRow = function(errors, extraContent) {
+  var errorRow = function(errors, extraContent, htmlClassAttr) {
     var contents = [errors]
     if (extraContent) {
       contents = contents.concat(extraContent)
     }
-    return DOMBuilder.createElement('li', {}, contents)
+    var rowAttrs = {}
+    if (htmlClassAttr) {
+      rowAttrs['class'] = htmlClassAttr
+    }
+    return DOMBuilder.createElement('li', rowAttrs, contents)
   }
 
   return function(doNotCoerce) {
@@ -7198,11 +7206,15 @@ BaseForm.prototype.asP = (function() {
     return DOMBuilder.createElement('p', rowAttrs, contents)
   }
 
-  var errorRow = function(errors, extraContent) {
+  var errorRow = function(errors, extraContent, htmlClassAttr) {
     if (extraContent) {
+      var rowAttrs = {}
+      if (htmlClassAttr) {
+        rowAttrs['class'] = htmlClassAttr
+      }
       // When provided extraContent is usually hidden fields, so we need
       // to give it a block scope wrapper in this case for HTML validity.
-      return DOMBuilder.createElement('div', {}, [errors].concat(extraContent))
+      return DOMBuilder.createElement('div', rowAttrs, [errors].concat(extraContent))
     }
     // Otherwise, just display errors as they are
     return errors
@@ -7496,7 +7508,7 @@ var BaseFormSet = Concur.extend({
   constructor: function(kwargs) {
     kwargs = object.extend({
       data: null, files: null, autoId: 'id_{name}', prefix: null,
-      initial: null, errorConstructor: ErrorList
+      initial: null, errorConstructor: ErrorList, managementFormCssClass: null
     }, kwargs)
     this.isBound = kwargs.data !== null || kwargs.files !== null
     this.prefix = kwargs.prefix || BaseFormSet.getDefaultPrefix()
@@ -7505,6 +7517,7 @@ var BaseFormSet = Concur.extend({
     this.files = kwargs.files || {}
     this.initial = kwargs.initial
     this.errorConstructor = kwargs.errorConstructor
+    this.managementFormCssClass = kwargs.managementFormCssClass
     this._errors = null
     this._nonFormErrors = null
 
@@ -7522,7 +7535,7 @@ BaseFormSet.getDefaultPrefix = function() {
 BaseFormSet.prototype.managementForm = function() {
   if (this.isBound) {
     var form = new ManagementForm({data: this.data, autoId: this.autoId,
-                                  prefix: this.prefix})
+                                   prefix: this.prefix})
     if (!form.isValid()) {
       throw ValidationError('ManagementForm data is missing or has been tampered with')
     }
@@ -7535,6 +7548,9 @@ BaseFormSet.prototype.managementForm = function() {
     var form = new ManagementForm({autoId: this.autoId,
                                    prefix: this.prefix,
                                    initial: initial})
+  }
+  if (this.managementFormCssClass !== null) {
+    form.hiddenFieldRowCssClass = this.managementFormCssClass
   }
   return form
 }
