@@ -1,6 +1,9 @@
+0.4.2 / 2012-07-15
+==================
+
 * Automatically-added deletion fields are no longer included in the list of
   cleanedData for a FormSet [`whardeman`_]
-* Data for forms marked for deletion is no longer present in a FormSet's
+* Data from forms marked for deletion are no longer present in a FormSet's
   cleanedData [`whardeman`_]
 * Fixed ``FloatField.prototype._hasChanged()``, which wasn't comparing against
   the field's initial value

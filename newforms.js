@@ -1,11 +1,17 @@
 /**
- * newforms 0.4.2-pre - https://github.com/insin/newforms
+ * newforms 0.4.2 - https://github.com/insin/newforms
  * MIT Licensed
  */
 ;(function() {
-  var modules = {}
+  var _require = window.require
+    , modules = {}
   function require(name) {
     return modules[name]
+  }
+  require.noConflict = function() {
+    if (window.require === require) {
+      window.require = _require
+    }
   }
   require.define = function(rs, fn) {
     var module = {}
@@ -8287,6 +8293,6 @@ object.extend(
 })
 
 window['forms'] = require('newforms')
-window['require'] = require
+window.require = require
 
 })();

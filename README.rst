@@ -34,23 +34,34 @@ Node.js::
 
    npm install newforms
 
-Browser bundles (all dependencies included):
+::
 
-* `newforms.js`_ - 234 kB (54.6 kB gzipped)
+   var forms = require('newforms')
 
-* `newforms.min.js`_ - 84.5 kB (23.7 kB gzipped)
+Browser bundles (all dependencies included) which export a ``forms`` variable
+are included with the Node.js install (in ``./node_modules/newforms/``), or
+can be downloaded below:
 
-Browser bundles currently expose:
+* `newforms.js`_ - 235 kB (54.8 kB gzipped)
 
-* newforms as a ``forms`` variable.
-* a ``require()`` function which can be used to access bundled dependencies:
-
-  * `Concur`_ - sugar for inheritance
-  * `DOMBuilder`_ - interchangeable DOM Element / HTML generation
-  * `isomorph`_ - miscellaneous utilities
+* `newforms.min.js`_ - 84 kB (23.8 kB gzipped)
 
 .. _`newforms.js`: https://github.com/insin/newforms/raw/master/newforms.js
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/master/newforms.min.js
+
+Browser bundles also export a ``require()`` function, which can be used to
+access bundled dependencies, which are:
+
+  * `Concur`_ - sugar for inheritance
+  * `DOMBuilder`_ - interchangeable DOM Element / HTML generation
+  * Certain submodules of `isomorph`_ - miscellaneous utilities
+
+If you already have a ``require`` variable you don't want to be overwritten,
+call ``require.noConflict()``::
+
+   <script src="/js/newforms.min.js"></script>
+   <script>require.noConflict()</script>
+
 .. _`Concur`: https://github.com/insin/concur
 .. _`DOMBuilder`: https://github.com/insin/DOMBuilder
 .. _`isomorph`: https://github.com/insin/isomorph
