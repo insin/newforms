@@ -1,9 +1,9 @@
 {
   "name": "newforms"
 , "description": "Form validation, display and type coercion for browsers and Node.js"
-, "version": "0.4.2-pre"
+, "version": "0.5.0-dev"
 , "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)"
-, "tags": ["dualsided", "forms", "validation", "coercion"]
+, "tags": ["isomorphic", "forms", "validation", "coercion"]
 , "main": "./lib/newforms"
 , "repository": {
     "type": "git"
@@ -11,13 +11,21 @@
   }
 , "dependencies": {
     "Concur": "0.2.x"
-  , "DOMBuilder": ">=2.0.x"
   , "isomorph": "0.2.x"
   , "validators": "0.0.x"
   }
 , "devDependencies": {
+    "browserify": "~3.20.0",
+    "gulp": "~3.5.0",
+    "gulp-browserify": "~0.3.4",
+    "gulp-concat": "~2.1.7",
+    "gulp-jshint": "~1.3.4",
+    "gulp-plumber": "~0.5.6",
+    "gulp-rename": "~0.2.2",
+    "gulp-uglify": "~0.2.0",
+    "gulp-util": "~2.2.13",
+    "jshint-stylish": "~0.1.5",
     "qqunit": "0.4.x"
-  , "buildumb": "0.1.x"
   }
 , "scripts": {
     "test": "node tests/tests.js"
