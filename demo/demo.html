@@ -12,11 +12,9 @@
   ul.errorlist li { margin-bottom: 5px; padding-left: 5px; border-radius: 1em; -moz-border-radius: 1em; background-color: #f33; color: #fff; }
   ul.errorlist li:before { content: "\2622"; font-size: 18px; color: #ff0; margin-right: 3px; }
   </style>
-  <!-- newforms -->
+  <script src="http://fb.me/react-0.8.0.js"></script>
   <script src="../newforms.js"></script>
   <script>
-  var DOMBuilder = require('DOMBuilder')
-
   var FakeFile = function() { this.url = "#something"; }
   FakeFile.prototype.toString = function() { return this.url;}
 
@@ -81,7 +79,7 @@
           }
         }),
     email:
-        forms.EmailField({widget: forms.TextInput({attrs: {maxlength: "200"}}),
+        forms.EmailField({widget: forms.TextInput({attrs: {maxLength: "200"}}),
                     label: "Your email address"}),
     zeeMikrofilm:
         forms.FileField({required: false, label: "Please upload zee mikrofilm"}),
@@ -173,26 +171,6 @@
     initial: initial
   })
 
-  var dom = DOMBuilder.dom
-
-  function refreshFormDisplay() {
-    var form = document.getElementById("demoForm")
-    form.innerHTML = ""
-    form.appendChild(DOMBuilder.fragment(
-      // FormSet management form
-      formset.managementForm().asP(),
-      // Display each form in the FormSet
-      DOMBuilder.fragment.map(formset.forms, function(form, loop) {
-        return [
-          dom.H2("Contact Form " + (loop.index + 1))
-        , dom.TABLE(dom.TBODY(
-            form.asTable()
-          ))
-        ]
-      })
-    ))
-  }
-
   function validateFormSet() {
     // For server-side validation, a new formset instance is created for
     // each request - client side validation is yet to be implemented.
@@ -201,9 +179,47 @@
     refreshFormDisplay()
   }
 
-  window.onload = function() {
-    document.getElementById('validate').onclick = validateFormSet
-    refreshFormDisplay()
+  var DemoForm = React.createClass({
+    displayName: 'DemoForm'
+
+  , getInitialState: function() {
+      return {
+        formset: new ContactFormFormSet({initial: initial})
+      }
+    }
+
+  , validate: function() {
+      data = forms.formData('demoForm')
+      this.setState({
+        formset: new ContactFormFormSet({data: data, initial: initial})
+      })
+    }
+
+  , render: function() {
+      var forms = this.state.formset.forms.map(function(form, i) {
+        return [
+          React.DOM.h2(null, 'Contact Form #' + (i+1))
+        , React.DOM.table(null
+          , React.DOM.tbody(null, form.asTable())
+          )
+        ]
+      })
+
+      return React.DOM.div(null
+      , React.DOM.input({type: 'button', value: 'Validate Form', onClick: this.validate})
+      , React.DOM.form({id: 'demoForm', ref: 'demoForm'}
+        , formset.managementForm().asP()
+        , forms
+        )
+      , React.DOM.input({type: 'button', value: 'Validate Form', onClick: this.validate})
+      )
+    }
+  })
+
+  function renderToString() {
+    React.renderComponentToString(DemoForm(), function(html) {
+      document.getElementById('htmlVersion').value = html.replace(/ data-react[-\w]+="[^"]+"/g, '')
+    })
   }
   </script>
 </head>
@@ -223,10 +239,18 @@
   display of the form.
 </p>
 
-<input type="button" value="Validate" id="validate">
+<p>
+  <input type="button" value="Render to HTML string" onClick="renderToString()">
+  <br>
+  <textarea id="htmlVersion" rows="6" cols="60"></textarea>
+</p>
 
-<form id="demoForm">
-</form>
+<div id="demo">
+</div>
+
+<script>
+React.renderComponent(DemoForm(), document.getElementById('demo'))
+</script>
 
 </body>
 </html>
