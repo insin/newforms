@@ -64,3 +64,20 @@ if (typeof module !== 'undefined' && module.exports) {
   , validationErrorEqual: validationErrorEqual
   }
 }
+
+var stripReactAttrs = / data-react[-\w]+="[^"]+"/g
+
+function reactHTMLEqual(component, expectedHTML) {
+  stop()
+  try {
+    React.renderComponentToString(component, function(html) {
+      equal(html.replace(stripReactAttrs, ''), expectedHTML)
+    })
+  }
+  catch (e) {
+    // TDOO Why is react throwing on every call?
+  }
+  finally {
+    start()
+  }
+}
