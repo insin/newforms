@@ -66,12 +66,25 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 var stripReactAttrs = / data-react[-\w]+="[^"]+"/g
+var stripWrapper = /^<div>|<\/div>$/g
 
-function reactHTMLEqual(component, expectedHTML) {
+function reactHTMLEqual(component, expectedHTML, message) {
+  if (typeof component == 'string') {
+    return strictEqual(component, expectedHTML, message)
+  }
+  var wrapped = false
+  if (Array.isArray(component)) {
+    component = React.DOM.div(null, component)
+    wrapped = true
+  }
   stop()
   try {
     React.renderComponentToString(component, function(html) {
-      equal(html.replace(stripReactAttrs, ''), expectedHTML)
+      html = html.replace(stripReactAttrs, '')
+      if (wrapped) {
+        html = html.replace(stripWrapper, '')
+      }
+      equal(html, expectedHTML, message)
     })
   }
   catch (e) {

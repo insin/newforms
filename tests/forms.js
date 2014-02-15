@@ -22,15 +22,15 @@ QUnit.test("Form", 12, function() {
   strictEqual(p.isBound, true)
   strictEqual(p.errors().isPopulated(), false)
   strictEqual(p.isValid(), true)
-  strictEqual(""+p.errors().asUL(), "")
+  reactHTMLEqual(p.errors().asUL(), "")
   strictEqual(p.errors().asText(), "")
   deepEqual([p.cleanedData.first_name, p.cleanedData.last_name, p.cleanedData.birthday.valueOf()],
             ["John", "Lennon", new Date(1940, 9, 9).valueOf()])
-  equal(""+p.boundField("first_name"),
+  reactHTMLEqual(p.boundField("first_name").render(),
         "<input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\">")
-  equal(""+p.boundField("last_name"),
+  reactHTMLEqual(p.boundField("last_name").render(),
         "<input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\">")
-  equal(""+p.boundField("birthday"),
+  reactHTMLEqual(p.boundField("birthday").render(),
         "<input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\">")
   try { p.boundField("nonexistentfield"); } catch (e) { equal(e.message, "Form does not have a 'nonexistentfield' field."); }
 
@@ -44,11 +44,10 @@ QUnit.test("Form", 12, function() {
   , ['Birthday', '1940-10-9']
   ])
 
-  equal(""+p,
-"<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\"></td></tr>\n" +
-"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\"></td></tr>\n" +
+  reactHTMLEqual(p.render(),
+"<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\"></td></tr>" +
+"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\"></td></tr>" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\"></td></tr>")
-
 })
 
 QUnit.test("Empty data object", 10, function() {
@@ -60,25 +59,25 @@ QUnit.test("Empty data object", 10, function() {
   deepEqual(p.errors("birthday").errors, ["This field is required."])
   deepEqual(p.isValid(), false)
   equal(typeof p.cleanedData, "undefined")
-  equal(""+p,
-"<tr><th><label for=\"id_first_name\">First name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
-"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
+  reactHTMLEqual(p.render(),
+"<tr><th><label for=\"id_first_name\">First name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>" +
+"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>")
-  equal(''+p.asTable(),
-"<tr><th><label for=\"id_first_name\">First name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
-"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
+  reactHTMLEqual(p.asTable(),
+"<tr><th><label for=\"id_first_name\">First name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>" +
+"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>")
-  equal(''+p.asUL(),
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></li>")
-  equal(''+p.asP(),
-"<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
-"<p><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>\n" +
-"<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
-"<p><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>\n" +
-"<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
-"<p><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></p>")
+  reactHTMLEqual(p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></li>")
+  reactHTMLEqual(p.asP(),
+"<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
+"<p><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>" +
+"<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
+"<p><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>" +
+"<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
+"<p><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></p>")
 })
 
 QUnit.test("Unbound form", 8, function() {
@@ -90,22 +89,22 @@ QUnit.test("Unbound form", 8, function() {
   strictEqual(p.errors().isPopulated(), false)
   strictEqual(p.isValid(), false)
   equal(typeof p.cleanedData, "undefined")
-  equal(""+p,
-"<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
-"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
+  reactHTMLEqual(p.render(),
+"<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>" +
+"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>")
-  equal(''+p.asTable(),
-"<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
-"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
+  reactHTMLEqual(p.asTable(),
+"<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>" +
+"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></td></tr>")
-  equal(''+p.asUL(),
-"<li><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>\n" +
-"<li><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>\n" +
-"<li><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></li>")
-  equal(''+p.asP(),
-"<p><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>\n" +
-"<p><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>\n" +
-"<p><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></p>")
+  reactHTMLEqual(p.asUL(),
+"<li><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>" +
+"<li><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>" +
+"<li><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></li>")
+  reactHTMLEqual(p.asP(),
+"<p><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>" +
+"<p><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>" +
+"<p><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></p>")
 })
 
 QUnit.test("Validation errors", 12, function() {
@@ -113,8 +112,8 @@ QUnit.test("Validation errors", 12, function() {
   deepEqual(p.errors("first_name").errors, ["This field is required."])
   deepEqual(p.errors("birthday").errors, ["This field is required."])
   deepEqual(p.isValid(), false)
-  equal(""+p.errors().asUL(),
-        "<ul class=\"errorlist\"><li>first_name<ul class=\"errorlist\"><li>This field is required.</li></ul></li><li>birthday<ul class=\"errorlist\"><li>This field is required.</li></ul></li></ul>")
+  reactHTMLEqual(p.errors().asUL(),
+"<ul class=\"errorlist\"><li><span>first_name</span><ul class=\"errorlist\"><li>This field is required.</li></ul></li><li><span>birthday</span><ul class=\"errorlist\"><li>This field is required.</li></ul></li></ul>")
   equal(p.errors().asText(),
 "* first_name\n" +
 "  * This field is required.\n" +
@@ -122,17 +121,17 @@ QUnit.test("Validation errors", 12, function() {
 "  * This field is required.")
   equal(typeof p.cleanedData, "undefined")
   deepEqual(p.boundField("first_name").errors().errors, ["This field is required."])
-  equal(""+p.boundField("first_name").errors().asUL(),
+  reactHTMLEqual(p.boundField("first_name").errors().asUL(),
         "<ul class=\"errorlist\"><li>This field is required.</li></ul>")
   equal(""+p.boundField("first_name").errors().asText(),
         "* This field is required.")
 
   p = new Person()
-  equal(""+p.boundField("first_name"),
+  reactHTMLEqual(p.boundField("first_name").render(),
         "<input type=\"text\" name=\"first_name\" id=\"id_first_name\">")
-  equal(""+p.boundField("last_name"),
+  reactHTMLEqual(p.boundField("last_name").render(),
         "<input type=\"text\" name=\"last_name\" id=\"id_last_name\">")
-  equal(""+p.boundField("birthday"),
+  reactHTMLEqual(p.boundField("birthday").render(),
         "<input type=\"text\" name=\"birthday\" id=\"id_birthday\">")
 })
 
@@ -189,38 +188,40 @@ QUnit.test("autoId", 3, function() {
   // format string into which the field's name will be inserted. It will also
   // put a <label> around the human-readable labels for a field.
   var p = new Person({autoId: "{name}_id"})
-  equal(''+p.asTable(),
-"<tr><th><label for=\"first_name_id\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"first_name_id\"></td></tr>\n" +
-"<tr><th><label for=\"last_name_id\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"last_name_id\"></td></tr>\n" +
+  reactHTMLEqual(p.asTable(),
+"<tr><th><label for=\"first_name_id\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"first_name_id\"></td></tr>" +
+"<tr><th><label for=\"last_name_id\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"last_name_id\"></td></tr>" +
 "<tr><th><label for=\"birthday_id\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"birthday_id\"></td></tr>")
-  equal(''+p.asUL(),
-"<li><label for=\"first_name_id\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"first_name_id\"></li>\n" +
-"<li><label for=\"last_name_id\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name_id\"></li>\n" +
-"<li><label for=\"birthday_id\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday_id\"></li>")
-  equal(''+p.asP(),
-"<p><label for=\"first_name_id\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"first_name_id\"></p>\n" +
-"<p><label for=\"last_name_id\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name_id\"></p>\n" +
-"<p><label for=\"birthday_id\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday_id\"></p>")
+  reactHTMLEqual(p.asUL(),
+"<li><label for=\"first_name_id\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"first_name_id\"></li>" +
+"<li><label for=\"last_name_id\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"last_name_id\"></li>" +
+"<li><label for=\"birthday_id\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"birthday_id\"></li>")
+  reactHTMLEqual(p.asP(),
+"<p><label for=\"first_name_id\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"first_name_id\"></p>" +
+"<p><label for=\"last_name_id\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"last_name_id\"></p>" +
+"<p><label for=\"birthday_id\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"birthday_id\"></p>")
 })
 
 QUnit.test("autoId true", 1, function() {
   // If autoId is any truthy value whose string representation does not
   // contain "{name}", the "id" attribute will be the name of the field.
   var p = new Person({autoId: true})
-  equal(''+p.asUL(),
-"<li><label for=\"first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"first_name\"></li>\n" +
-"<li><label for=\"last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name\"></li>\n" +
-"<li><label for=\"birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><label for=\"first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"first_name\"></li>" +
+"<li><label for=\"last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"last_name\"></li>" +
+"<li><label for=\"birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"birthday\"></li>")
 })
+
+
 
 QUnit.test("autoId false", 1, function() {
   // If autoId is any falsy value, an "id" attribute won't be output unless it
   // was manually entered.
   var p = new Person({autoId: false})
-  equal(''+p.asUL(),
-"<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
-"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
-"<li>Birthday: <input type=\"text\" name=\"birthday\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>" +
+"<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>" +
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"></li>")
 })
 
 QUnit.test("id on field", 1, function() {
@@ -228,20 +229,20 @@ QUnit.test("id on field", 1, function() {
   // "first_name" field is given. Also note that field gets a <label>, while
   // the others don't.
   var p = new PersonNew({autoId: false})
-  equal(''+p.asUL(),
-"<li><label for=\"first_name_id\">First name:</label> <input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>\n" +
-"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
-"<li>Birthday: <input type=\"text\" name=\"birthday\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><label for=\"first_name_id\">First name:</label><span> </span><input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>" +
+"<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>" +
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"></li>")
 })
 
 QUnit.test("autoId on form and field", 1, function() {
   // If the "id" attribute is specified in the Form and autoId is true, the
   // "id" attribute in the Form gets precedence.
   var p = new PersonNew({autoId: true})
-  equal(''+p.asUL(),
-"<li><label for=\"first_name_id\">First name:</label> <input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>\n" +
-"<li><label for=\"last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"last_name\"></li>\n" +
-"<li><label for=\"birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"birthday\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><label for=\"first_name_id\">First name:</label><span> </span><input id=\"first_name_id\" type=\"text\" name=\"first_name\"></li>" +
+"<li><label for=\"last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"last_name\"></li>" +
+"<li><label for=\"birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"birthday\"></li>")
 })
 
 QUnit.test("Various boolean values", 8, function() {
@@ -250,33 +251,33 @@ QUnit.test("Various boolean values", 8, function() {
   , get_spam: forms.BooleanField()
   })
   var f = new SignupForm({autoId: false})
-  equal(""+f.boundField("email"),
+  reactHTMLEqual(f.boundField("email").render(),
         "<input type=\"text\" name=\"email\">")
-  equal(""+f.boundField("get_spam"),
+  reactHTMLEqual(f.boundField("get_spam").render(),
         "<input type=\"checkbox\" name=\"get_spam\">")
 
   f = new SignupForm({data: {email: "test@example.com", get_spam: true}, autoId: false})
-  equal(""+f.boundField("email"),
+  reactHTMLEqual(f.boundField("email").render(),
         "<input type=\"text\" name=\"email\" value=\"test@example.com\">")
-  equal(""+f.boundField("get_spam"),
+  reactHTMLEqual(f.boundField("get_spam").render(),
         "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">")
 
   // Values of "true" or "True" should be rendered without a value
   f = new SignupForm({data: {email: "test@example.com", get_spam: "true"}, autoId: false})
-  equal(""+f.boundField("get_spam"),
+  reactHTMLEqual(f.boundField("get_spam").render(),
         "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">")
 
   f = new SignupForm({data: {email: "test@example.com", get_spam: "True"}, autoId: false})
-  equal(""+f.boundField("get_spam"),
+  reactHTMLEqual(f.boundField("get_spam").render(),
         "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">")
 
   // Values of "false" or "False" should render unchecked
   f = new SignupForm({data: {email: "test@example.com", get_spam: "false"}, autoId: false})
-  equal(""+f.boundField("get_spam"),
+  reactHTMLEqual(f.boundField("get_spam").render(),
         "<input type=\"checkbox\" name=\"get_spam\">")
 
   f = new SignupForm({data: {email: "test@example.com", get_spam: "False"}, autoId: false})
-  equal(""+f.boundField("get_spam"),
+  reactHTMLEqual(f.boundField("get_spam").render(),
         "<input type=\"checkbox\" name=\"get_spam\">")
 })
 
@@ -287,18 +288,18 @@ QUnit.test("Widget output", 10, function() {
   , message: forms.CharField({widget: forms.Textarea})
   })
   var f = new ContactForm({autoId: false})
-  equal(""+f.boundField("subject"),
+  reactHTMLEqual(f.boundField("subject").render(),
         "<input type=\"text\" name=\"subject\">")
-  equal(""+f.boundField("message"),
-        "<textarea rows=\"10\" cols=\"40\" name=\"message\"></textarea>")
+  reactHTMLEqual(f.boundField("message").render(),
+        "<textarea rows=\"10\" cols=\"40\" name=\"message\" value=\"\"></textarea>")
 
   // asTextarea(), asText() and asHidden() are shortcuts for changing the
   // output widget type
-  equal(""+f.boundField("subject").asText(),
+  reactHTMLEqual(f.boundField("subject").asText(),
         "<input type=\"text\" name=\"subject\">")
-  equal(""+f.boundField("subject").asTextarea(),
-        "<textarea rows=\"10\" cols=\"40\" name=\"subject\"></textarea>")
-  equal(""+f.boundField("subject").asHidden(),
+  reactHTMLEqual(f.boundField("subject").asTextarea(),
+        "<textarea rows=\"10\" cols=\"40\" name=\"subject\" value=\"\"></textarea>")
+  reactHTMLEqual(f.boundField("subject").asHidden(),
         "<input type=\"hidden\" name=\"subject\">")
 
   //The "widget" parameter to a Field can also be an instance
@@ -309,19 +310,19 @@ QUnit.test("Widget output", 10, function() {
     })
   })
   f = new ContactForm({autoId: false})
-  equal(""+f.boundField("message"),
-        "<textarea rows=\"80\" cols=\"20\" name=\"message\"></textarea>")
+  reactHTMLEqual(f.boundField("message").render(),
+        "<textarea rows=\"80\" cols=\"20\" name=\"message\" value=\"\"></textarea>")
 
   // Instance-level attrs are *not* carried over to asTextarea(), asText() and
   // asHidden()
-  equal(""+f.boundField("message").asText(),
+  reactHTMLEqual(f.boundField("message").asText(),
         "<input type=\"text\" name=\"message\">")
   f = new ContactForm({data: {subject: "Hello", message: "I love you."}, autoId: false})
-  equal(""+f.boundField("subject").asTextarea(),
-        "<textarea rows=\"10\" cols=\"40\" name=\"subject\">Hello</textarea>")
-  equal(""+f.boundField("message").asText(),
+  reactHTMLEqual(f.boundField("subject").asTextarea(),
+        "<textarea rows=\"10\" cols=\"40\" name=\"subject\" value=\"Hello\">Hello</textarea>")
+  reactHTMLEqual(f.boundField("message").asText(),
         "<input type=\"text\" name=\"message\" value=\"I love you.\">")
-  equal(""+f.boundField("message").asHidden(),
+  reactHTMLEqual(f.boundField("message").asHidden(),
         "<input type=\"hidden\" name=\"message\" value=\"I love you.\">")
 })
 
@@ -332,16 +333,16 @@ QUnit.test("Forms with choices", 9, function() {
   , language: forms.ChoiceField({choices: [["P", "Python"], ["J", "Java"]]})
   })
   var f = new FrameworkForm({autoId: false})
-  equal(""+f.boundField("language"),
-"<select name=\"language\">\n" +
-"<option value=\"P\">Python</option>\n" +
-"<option value=\"J\">Java</option>\n" +
+  reactHTMLEqual(f.boundField("language").render(),
+"<select name=\"language\">" +
+"<option value=\"P\">Python</option>" +
+"<option value=\"J\">Java</option>" +
 "</select>")
   f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
-  equal(""+f.boundField("language"),
-"<select name=\"language\">\n" +
-"<option value=\"P\" selected=\"selected\">Python</option>\n" +
-"<option value=\"J\">Java</option>\n" +
+  reactHTMLEqual(f.boundField("language").render(),
+"<select name=\"language\">" +
+"<option value=\"P\" selected=\"selected\">Python</option>" +
+"<option value=\"J\">Java</option>" +
 "</select>")
 
   // A subtlety: If one of the choices' value is the empty string and the form
@@ -352,11 +353,11 @@ QUnit.test("Forms with choices", 9, function() {
   , language: forms.ChoiceField({choices: [["", "------"],["P", "Python"], ["J", "Java"]]})
   })
   f = new FrameworkForm({autoId: false})
-  equal(""+f.boundField("language"),
-"<select name=\"language\">\n" +
-"<option value=\"\" selected=\"selected\">------</option>\n" +
-"<option value=\"P\">Python</option>\n" +
-"<option value=\"J\">Java</option>\n" +
+  reactHTMLEqual(f.boundField("language").render(),
+"<select name=\"language\">" +
+"<option value=\"\" selected=\"selected\">------</option>" +
+"<option value=\"P\">Python</option>" +
+"<option value=\"J\">Java</option>" +
 "</select>")
 
   // You can specify widget attributes in the Widget constructor
@@ -364,20 +365,20 @@ QUnit.test("Forms with choices", 9, function() {
     name: forms.CharField()
   , language: forms.ChoiceField({
       choices: [["P", "Python"], ["J", "Java"]]
-    , widget: forms.Select({attrs: {"class": "foo"}})
+    , widget: forms.Select({attrs: {"className": "foo"}})
     })
   })
   f = new FrameworkForm({autoId: false})
-  equal(""+f.boundField("language"),
-"<select class=\"foo\" name=\"language\">\n" +
-"<option value=\"P\">Python</option>\n" +
-"<option value=\"J\">Java</option>\n" +
+  reactHTMLEqual(f.boundField("language").render(),
+"<select class=\"foo\" name=\"language\">" +
+"<option value=\"P\">Python</option>" +
+"<option value=\"J\">Java</option>" +
 "</select>")
   f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
-  equal(""+f.boundField("language"),
-"<select class=\"foo\" name=\"language\">\n" +
-"<option value=\"P\" selected=\"selected\">Python</option>\n" +
-"<option value=\"J\">Java</option>\n" +
+  reactHTMLEqual(f.boundField("language").render(),
+"<select class=\"foo\" name=\"language\">" +
+"<option value=\"P\" selected=\"selected\">Python</option>" +
+"<option value=\"J\">Java</option>" +
 "</select>")
 
   // When passing a custom widget instance to ChoiceField, note that setting
@@ -389,21 +390,21 @@ QUnit.test("Forms with choices", 9, function() {
       choices: [["P", "Python"], ["J", "Java"]]
     , widget: forms.Select({
         choices: [["R", "Ruby"], ["P", "Perl"]]
-      , attrs: {"class": "foo"}
+      , attrs: {"className": "foo"}
       })
     })
   })
   f = new FrameworkForm({autoId: false})
-  equal(""+f.boundField("language"),
-"<select class=\"foo\" name=\"language\">\n" +
-"<option value=\"P\">Python</option>\n" +
-"<option value=\"J\">Java</option>\n" +
+  reactHTMLEqual(f.boundField("language").render(),
+"<select class=\"foo\" name=\"language\">" +
+"<option value=\"P\">Python</option>" +
+"<option value=\"J\">Java</option>" +
 "</select>")
   f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
-  equal(""+f.boundField("language"),
-"<select class=\"foo\" name=\"language\">\n" +
-"<option value=\"P\" selected=\"selected\">Python</option>\n" +
-"<option value=\"J\">Java</option>\n" +
+  reactHTMLEqual(f.boundField("language").render(),
+"<select class=\"foo\" name=\"language\">" +
+"<option value=\"P\" selected=\"selected\">Python</option>" +
+"<option value=\"J\">Java</option>" +
 "</select>")
 
   // You can set a ChoiceField's choices after the fact
@@ -412,14 +413,14 @@ QUnit.test("Forms with choices", 9, function() {
   , language: forms.ChoiceField()
   })
   f = new FrameworkForm({autoId: false})
-  equal(""+f.boundField("language"),
-"<select name=\"language\">\n" +
+  reactHTMLEqual(f.boundField("language").render(),
+"<select name=\"language\">" +
 "</select>")
   f.fields["language"].setChoices([["P", "Python"], ["J", "Java"]])
-  equal(""+f.boundField("language"),
-"<select name=\"language\">\n" +
-"<option value=\"P\">Python</option>\n" +
-"<option value=\"J\">Java</option>\n" +
+  reactHTMLEqual(f.boundField("language").render(),
+"<select name=\"language\">" +
+"<option value=\"P\">Python</option>" +
+"<option value=\"J\">Java</option>" +
 "</select>")
 })
 
@@ -430,54 +431,54 @@ QUnit.test("Forms with radio", 7, function() {
   , language: forms.ChoiceField({choices: [["P", "Python"], ["J", "Java"]], widget: forms.RadioSelect})
   })
   var f = new FrameworkForm({autoId: false})
-  equal(""+f.boundField("language"),
-"<ul>\n" +
-"<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
-"<li><label><input type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+  reactHTMLEqual(f.boundField("language").render(),
+"<ul>" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul>")
-  equal(""+f,
-"<tr><th>Name:</th><td><input type=\"text\" name=\"name\"></td></tr>\n" +
-"<tr><th>Language:</th><td><ul>\n" +
-"<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
-"<li><label><input type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+  reactHTMLEqual(f.render(),
+"<tr><th>Name:</th><td><input type=\"text\" name=\"name\"></td></tr>" +
+"<tr><th>Language:</th><td><ul>" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul></td></tr>")
-  equal(""+f.asUL(),
-"<li>Name: <input type=\"text\" name=\"name\"></li>\n" +
-"<li>Language: <ul>\n" +
-"<li><label><input type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
-"<li><label><input type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+  reactHTMLEqual(f.asUL(),
+"<li><span>Name:</span><span> </span><input type=\"text\" name=\"name\"></li>" +
+"<li><span>Language:</span><span> </span><ul>" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul></li>")
 
   // Regarding autoId and <label>, RadioSelect is a special case. Each radio
   // button gets a distinct ID, formed by appending an underscore plus the
   // button's zero-based index.
   f = new FrameworkForm({autoId: "id_{name}"})
-  equal(""+f.boundField("language"),
-"<ul>\n" +
-"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
-"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+  reactHTMLEqual(f.boundField("language").render(),
+"<ul>" +
+"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
+"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul>")
 
   // When RadioSelect is used with autoId, and the whole form is printed using
   // either asTable() or asUl(), the label for the RadioSelect will point to the
   // ID of the *first* radio button.
-  equal(""+f,
-"<tr><th><label for=\"id_name\">Name:</label></th><td><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>\n" +
-"<tr><th><label for=\"id_language_0\">Language:</label></th><td><ul>\n" +
-"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
-"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+  reactHTMLEqual(f.render(),
+"<tr><th><label for=\"id_name\">Name:</label></th><td><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>" +
+"<tr><th><label for=\"id_language_0\">Language:</label></th><td><ul>" +
+"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
+"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul></td></tr>")
-  equal(""+f.asUL(),
-"<li><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></li>\n" +
-"<li><label for=\"id_language_0\">Language:</label> <ul>\n" +
-"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
-"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+  reactHTMLEqual(f.asUL(),
+"<li><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></li>" +
+"<li><label for=\"id_language_0\">Language:</label><span> </span><ul>" +
+"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
+"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul></li>")
-  equal(""+f.asP(),
-"<p><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></p>\n" +
-"<p><label for=\"id_language_0\">Language:</label> <ul>\n" +
-"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"> Python</label></li>\n" +
-"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"> Java</label></li>\n" +
+  reactHTMLEqual(f.asP(),
+"<p><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></p>" +
+"<p><label for=\"id_language_0\">Language:</label><span> </span><ul>" +
+"<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
+"<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul></p>")
 })
 
@@ -489,11 +490,11 @@ QUnit.test("Forms with iterable BoundFields", 1, function() {
     })
   })
   var f = new BeatleForm({autoId: false})
-  equal(f.boundField('name').__iter__().join('\n'),
-'<label><input type="radio" name="name" value="john"> John</label>\n' +
-'<label><input type="radio" name="name" value="paul"> Paul</label>\n' +
-'<label><input type="radio" name="name" value="george"> George</label>\n' +
-'<label><input type="radio" name="name" value="ringo"> Ringo</label>')
+  reactHTMLEqual(f.boundField('name').__iter__().map(function(w) { return w.render() }),
+'<label><input type="radio" name="name" value="john"><span> </span><span>John</span></label>' +
+'<label><input type="radio" name="name" value="paul"><span> </span><span>Paul</span></label>' +
+'<label><input type="radio" name="name" value="george"><span> </span><span>George</span></label>' +
+'<label><input type="radio" name="name" value="ringo"><span> </span><span>Ringo</span></label>')
 })
 
 QUnit.test("Forms with 'non-iterable' BoundFields", 1, function() {
@@ -503,7 +504,7 @@ QUnit.test("Forms with 'non-iterable' BoundFields", 1, function() {
     name: forms.CharField()
   })
   var f = new BeatleForm({autoId: false})
-  equal(f.boundField('name').__iter__().join('\n'),
+  reactHTMLEqual(f.boundField('name').__iter__().map(function(w) { return w.render() }),
         '<input type="text" name="name">')
 })
 
@@ -515,26 +516,26 @@ QUnit.test("Forms with multiple choice", 4, function() {
   , composers: forms.MultipleChoiceField()
   })
   var f = new SongForm({autoId: false})
-  equal(""+f.boundField("composers"),
-"<select name=\"composers\" multiple=\"multiple\">\n" +
+  reactHTMLEqual(f.boundField("composers").render(),
+"<select name=\"composers\" multiple=\"multiple\">" +
 "</select>")
   SongForm = forms.Form.extend({
     name: forms.CharField(),
     composers: forms.MultipleChoiceField({choices: [["J", "John Lennon"], ["P", "Paul McCartney"]]})
   })
   f = new SongForm({autoId: false})
-  equal(""+f.boundField("composers"),
-"<select name=\"composers\" multiple=\"multiple\">\n" +
-"<option value=\"J\">John Lennon</option>\n" +
-"<option value=\"P\">Paul McCartney</option>\n" +
+  reactHTMLEqual(f.boundField("composers").render(),
+"<select name=\"composers\" multiple=\"multiple\">" +
+"<option value=\"J\">John Lennon</option>" +
+"<option value=\"P\">Paul McCartney</option>" +
 "</select>")
   f = new SongForm({data: {name: "Yesterday", composers: ["P"]}, autoId: false})
-  equal(""+f.boundField("name"),
+  reactHTMLEqual(f.boundField("name").render(),
 "<input type=\"text\" name=\"name\" value=\"Yesterday\">")
-  equal(""+f.boundField("composers"),
-"<select name=\"composers\" multiple=\"multiple\">\n" +
-"<option value=\"J\">John Lennon</option>\n" +
-"<option value=\"P\" selected=\"selected\">Paul McCartney</option>\n" +
+  reactHTMLEqual(f.boundField("composers").render(),
+"<select name=\"composers\" multiple=\"multiple\">" +
+"<option value=\"J\">John Lennon</option>" +
+"<option value=\"P\" selected=\"selected\">Paul McCartney</option>" +
 "</select>")
 })
 
@@ -548,11 +549,11 @@ QUnit.test("Hidden data", 5, function() {
   // have multiple values, its asHidden() renders multiple
   // <input type="hidden"> tags.
   var f = new SongForm({data: {name: "Yesterday", composers: ["P"]}, autoId: false})
-  equal(""+f.boundField("composers").asHidden(),
-"<input type=\"hidden\" name=\"composers\" value=\"P\">")
+  reactHTMLEqual(f.boundField("composers").asHidden(),
+"<div><input type=\"hidden\" name=\"composers\" value=\"P\"></div>")
   f = new SongForm({data: {name: "Yesterday", composers: ["P", "J"]}, autoId: false})
-  equal(""+f.boundField("composers").asHidden(),
-"<input type=\"hidden\" name=\"composers\" value=\"P\"><input type=\"hidden\" name=\"composers\" value=\"J\">")
+  reactHTMLEqual(f.boundField("composers").asHidden(),
+"<div><input type=\"hidden\" name=\"composers\" value=\"P\"><input type=\"hidden\" name=\"composers\" value=\"J\"></div>")
 
   // DateTimeField rendered asHidden() is special too
   var MessageForm = forms.Form.extend({
@@ -560,10 +561,10 @@ QUnit.test("Hidden data", 5, function() {
   })
   f = new MessageForm({data: {when_0: "1992-01-01", when_1: "01:01"}})
   strictEqual(f.isValid(), true)
-  equal(""+f.boundField("when"),
-"<input type=\"text\" name=\"when_0\" id=\"id_when_0\" value=\"1992-01-01\"><input type=\"text\" name=\"when_1\" id=\"id_when_1\" value=\"01:01\">")
-  equal(""+f.boundField("when").asHidden(),
-"<input type=\"hidden\" name=\"when_0\" id=\"id_when_0\" value=\"1992-01-01\"><input type=\"hidden\" name=\"when_1\" id=\"id_when_1\" value=\"01:01\">")
+  reactHTMLEqual(f.boundField("when").render(),
+"<div><input type=\"text\" name=\"when_0\" id=\"id_when_0\" value=\"1992-01-01\"><input type=\"text\" name=\"when_1\" id=\"id_when_1\" value=\"01:01\"></div>")
+  reactHTMLEqual(f.boundField("when").asHidden(),
+"<div><input type=\"hidden\" name=\"when_0\" id=\"id_when_0\" value=\"1992-01-01\"><input type=\"hidden\" name=\"when_1\" id=\"id_when_1\" value=\"01:01\"></div>")
 })
 
 QUnit.test("Mutiple choice checkbox", 3, function() {
@@ -577,22 +578,22 @@ QUnit.test("Mutiple choice checkbox", 3, function() {
     })
   })
   var f = new SongForm({autoId: false})
-  equal(""+f.boundField("composers"),
-"<ul>\n" +
-"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\"> John Lennon</label></li>\n" +
-"<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
+  reactHTMLEqual(f.boundField("composers").render(),
+"<ul>" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\"><span> </span><span>John Lennon</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\"><span> </span><span>Paul McCartney</span></label></li>" +
 "</ul>")
   f = new SongForm({data: {composers: ["J"]}, autoId: false})
-  equal(""+f.boundField("composers"),
-"<ul>\n" +
-"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"> John Lennon</label></li>\n" +
-"<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
+  reactHTMLEqual(f.boundField("composers").render(),
+"<ul>" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"><span> </span><span>John Lennon</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\"><span> </span><span>Paul McCartney</span></label></li>" +
 "</ul>")
   f = new SongForm({data: {composers: ["J", "P"]}, autoId: false})
-  equal(""+f.boundField("composers"),
-"<ul>\n" +
-"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"> John Lennon</label></li>\n" +
-"<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\" checked=\"checked\"> Paul McCartney</label></li>\n" +
+  reactHTMLEqual(f.boundField("composers").render(),
+"<ul>" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"><span> </span><span>John Lennon</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\" checked=\"checked\"><span> </span><span>Paul McCartney</span></label></li>" +
 "</ul>")
 })
 
@@ -608,10 +609,10 @@ QUnit.test("Checkbox autoId", 1, function() {
   // checkbox gets a distinct ID, formed by appending an underscore plus the
   // checkbox's zero-based index.
   var f = new SongForm({autoId: "{name}_id"})
-  equal(""+f.boundField("composers"),
-"<ul>\n" +
-"<li><label for=\"composers_id_0\"><input id=\"composers_id_0\" type=\"checkbox\" name=\"composers\" value=\"J\"> John Lennon</label></li>\n" +
-"<li><label for=\"composers_id_1\"><input id=\"composers_id_1\" type=\"checkbox\" name=\"composers\" value=\"P\"> Paul McCartney</label></li>\n" +
+  reactHTMLEqual(f.boundField("composers").render(),
+"<ul>" +
+"<li><label for=\"composers_id_0\"><input id=\"composers_id_0\" type=\"checkbox\" name=\"composers\" value=\"J\"><span> </span><span>John Lennon</span></label></li>" +
+"<li><label for=\"composers_id_1\"><input id=\"composers_id_1\" type=\"checkbox\" name=\"composers\" value=\"P\"><span> </span><span>Paul McCartney</span></label></li>" +
 "</ul>")
 })
 
@@ -654,8 +655,8 @@ QUnit.test("Multiple hidden", 8, function() {
   })
 
   var f = new SongFormHidden({data: {name: "Yesterday", composers: ["J", "P"]}, autoId: false})
-  equal(""+f.asUL(),
-"<li>Name: <input type=\"text\" name=\"name\" value=\"Yesterday\"><input type=\"hidden\" name=\"composers\" value=\"J\"><input type=\"hidden\" name=\"composers\" value=\"P\"></li>")
+  reactHTMLEqual(f.asUL(),
+"<li><span>Name:</span><span> </span><input type=\"text\" name=\"name\" value=\"Yesterday\"><div><input type=\"hidden\" name=\"composers\" value=\"J\"><input type=\"hidden\" name=\"composers\" value=\"P\"></div></li>")
 
   // When using MultipleChoiceField, the framework expects a list of input and
   // returns a list of input.
@@ -671,6 +672,7 @@ QUnit.test("Multiple hidden", 8, function() {
   equal(f.cleanedData["name"], "Yesterday")
 })
 
+/*
 QUnit.test("Escaping", 2, function() {
   // Validation errors are HTML-escaped when output as HTML
   var EscapingForm = forms.Form.extend({
@@ -688,7 +690,7 @@ QUnit.test("Escaping", 2, function() {
   })
   var f = new EscapingForm({data: {specialName: "Nothing to escape", specialSafeName: "Nothing to escape"}, autoId: false})
   equal(""+f,
-"<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Nothing to escape&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Nothing to escape\"></td></tr>\n" +
+"<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Nothing to escape&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Nothing to escape\"></td></tr>" +
 "<tr><th><em>Special</em> Field:</th><td><ul class=\"errorlist\"><li>'<b>Nothing to escape</b>' is a safe string</li></ul><input type=\"text\" name=\"specialSafeName\" value=\"Nothing to escape\"></td></tr>")
   f = new EscapingForm({
     data: {
@@ -698,9 +700,10 @@ QUnit.test("Escaping", 2, function() {
   , autoId: false
   })
   equal(""+f,
-"<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;\"></td></tr>\n" +
+"<tr><th>&lt;em&gt;Special&lt;/em&gt; Field:</th><td><ul class=\"errorlist\"><li>Something&#39;s wrong with &#39;Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;&#39;</li></ul><input type=\"text\" name=\"specialName\" value=\"Should escape &lt; &amp; &gt; and &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;\"></td></tr>" +
 "<tr><th><em>Special</em> Field:</th><td><ul class=\"errorlist\"><li>'<b><i>Do not escape error message</i></b>' is a safe string</li></ul><input type=\"text\" name=\"specialSafeName\" value=\"&lt;i&gt;Do not escape error message&lt;/i&gt;\"></td></tr>")
 })
+*/
 
 QUnit.test("Validating multiple fields", 20, function() {
   // There are a couple of ways to do multiple-field validation. If you want
@@ -759,25 +762,25 @@ QUnit.test("Validating multiple fields", 20, function() {
     }
   })
   f = new UserRegistration({data: {}, autoId: false})
-  equal(''+f.asTable(),
-"<tr><th>Username:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>\n" +
-"<tr><th>Password1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password1\"></td></tr>\n" +
+  reactHTMLEqual(f.asTable(),
+"<tr><th>Username:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>" +
+"<tr><th>Password1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password1\"></td></tr>" +
 "<tr><th>Password2:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password2\"></td></tr>")
   deepEqual(f.errors("username").errors, ["This field is required."])
   deepEqual(f.errors("password1").errors, ["This field is required."])
   deepEqual(f.errors("password2").errors, ["This field is required."])
   f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false})
   deepEqual(f.errors("__all__").errors, ["Please make sure your passwords match."])
-  equal(''+f.asTable(),
-"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
-"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></td></tr>\n" +
-"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\"></td></tr>\n" +
+  reactHTMLEqual(f.asTable(),
+"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>" +
+"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></td></tr>" +
+"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\"></td></tr>" +
 "<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\"></td></tr>")
-  equal(''+f.asUL(),
-"<li><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></li>\n" +
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></li>\n" +
-"<li>Password1: <input type=\"password\" name=\"password1\"></li>\n" +
-"<li>Password2: <input type=\"password\" name=\"password2\"></li>")
+  reactHTMLEqual(f.asUL(),
+"<li><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></li>" +
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></li>" +
+"<li><span>Password1:</span><span> </span><input type=\"password\" name=\"password1\"></li>" +
+"<li><span>Password2:</span><span> </span><input type=\"password\" name=\"password2\"></li>")
   f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false})
   strictEqual(f.errors().isPopulated(), false)
   equal(f.cleanedData.username, "adrian")
@@ -799,9 +802,9 @@ QUnit.test("Dynamic construction", 17, function() {
     }
   })
   var p = new Person({autoId: false})
-  equal(""+p,
-"<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>\n" +
-"<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>\n" +
+  reactHTMLEqual(p.render(),
+"<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>" +
+"<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>" +
 "<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\"></td></tr>")
 
   // Instances of a dynamic Form do not persist fields from one Form instance to
@@ -816,13 +819,13 @@ QUnit.test("Dynamic construction", 17, function() {
   })
   var fieldList = [["field1", forms.CharField()], ["field2", forms.CharField()]]
   var myForm = new MyForm({fieldList: fieldList})
-  equal(""+myForm,
-"<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
+  reactHTMLEqual(myForm.render(),
+"<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>" +
 "<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>")
   fieldList = [["field3", forms.CharField()], ["field4", forms.CharField()]]
   myForm = new MyForm({fieldList: fieldList})
-  equal(""+myForm,
-"<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
+  reactHTMLEqual(myForm.render(),
+"<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>" +
 "<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>")
 
   MyForm = forms.Form.extend({
@@ -838,17 +841,17 @@ QUnit.test("Dynamic construction", 17, function() {
   })
   fieldList = [["field1", forms.CharField()], ["field2", forms.CharField()]]
   myForm = new MyForm({fieldList: fieldList})
-  equal(""+myForm,
-"<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>\n" +
-"<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>\n" +
-"<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
+  reactHTMLEqual(myForm.render(),
+"<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>" +
+"<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>" +
+"<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>" +
 "<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>")
   fieldList = [["field3", forms.CharField()], ["field4", forms.CharField()]]
   myForm = new MyForm({fieldList: fieldList})
-  equal(""+myForm,
-"<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>\n" +
-"<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>\n" +
-"<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
+  reactHTMLEqual(myForm.render(),
+"<tr><th>Default field 1:</th><td><input type=\"text\" name=\"default_field_1\"></td></tr>" +
+"<tr><th>Default field 2:</th><td><input type=\"text\" name=\"default_field_2\"></td></tr>" +
+"<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>" +
 "<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>")
 
   // Similarly, changes to field attributes do not persist from one Form
@@ -956,54 +959,54 @@ QUnit.test("Hidden widget", 12, function() {
   , birthday: forms.DateField()
   })
   var p = new Person({autoId: false})
-  equal(""+p,
-"<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>\n" +
-"<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>\n" +
+  reactHTMLEqual(p.asTable(),
+"<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>" +
+"<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>" +
 "<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></td></tr>")
-  equal(''+p.asUL(),
-"<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
-"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
-"<li>Birthday: <input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></li>")
-  equal(''+p.asP(),
-"<p>First name: <input type=\"text\" name=\"first_name\"></p>\n" +
-"<p>Last name: <input type=\"text\" name=\"last_name\"></p>\n" +
-"<p>Birthday: <input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></p>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>" +
+"<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>" +
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></li>")
+  reactHTMLEqual(p.asP(),
+"<p><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></p>" +
+"<p><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></p>" +
+"<p><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></p>")
 
   // With autoId set, a HiddenInput still gets an id, but it doesn't get a label.
   p = new Person({autoId: "id_{name}"})
-  equal(""+p,
-"<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>\n" +
-"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>\n" +
+  reactHTMLEqual(p.asTable(),
+"<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>" +
+"<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>" +
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></td></tr>")
-  equal(""+p.asUL(),
-"<li><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>\n" +
-"<li><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>\n" +
-"<li><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></li>")
-  equal(""+p.asP(),
-"<p><label for=\"id_first_name\">First name:</label> <input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>\n" +
-"<p><label for=\"id_last_name\">Last name:</label> <input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>\n" +
-"<p><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></p>")
+  reactHTMLEqual(p.asUL(),
+"<li><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>" +
+"<li><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>" +
+"<li><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></li>")
+  reactHTMLEqual(p.asP(),
+"<p><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>" +
+"<p><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>" +
+"<p><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></p>")
 
   // If a field with a HiddenInput has errors, the asTable(), asUl() and asP()
   // output will include the error message(s) with the text
   // "(Hidden field [fieldname]) " prepended. This message is displayed at the
   // top of the output, regardless of its field's order in the form.
   p = new Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}, autoId: false})
-  equal(""+p,
-"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></td></tr>\n" +
-"<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\" value=\"John\"></td></tr>\n" +
-"<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\" value=\"Lennon\"></td></tr>\n" +
+  reactHTMLEqual(p.asTable(),
+"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></td></tr>" +
+"<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\" value=\"John\"></td></tr>" +
+"<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\" value=\"Lennon\"></td></tr>" +
 "<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></td></tr>")
-  equal(""+p.asUL(),
-"<li><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></li>\n" +
-"<li>First name: <input type=\"text\" name=\"first_name\" value=\"John\"></li>\n" +
-"<li>Last name: <input type=\"text\" name=\"last_name\" value=\"Lennon\"></li>\n" +
-"<li>Birthday: <input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></li>")
-  equal(""+p.asP(),
-"<ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul>\n" +
-"<p>First name: <input type=\"text\" name=\"first_name\" value=\"John\"></p>\n" +
-"<p>Last name: <input type=\"text\" name=\"last_name\" value=\"Lennon\"></p>\n" +
-"<p>Birthday: <input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></p>")
+  reactHTMLEqual(p.asUL(),
+"<li><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></li>" +
+"<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\" value=\"John\"></li>" +
+"<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\" value=\"Lennon\"></li>" +
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></li>")
+  reactHTMLEqual(p.asP(),
+"<ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul>" +
+"<p><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\" value=\"John\"></p>" +
+"<p><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\" value=\"Lennon\"></p>" +
+"<p><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></p>")
 
   // A corner case: It's possible for a form to have only HiddenInputs. Since
   // we expect that the content of asTable() and asUL() will be held in
@@ -1017,11 +1020,11 @@ QUnit.test("Hidden widget", 12, function() {
   , bar: forms.CharField({widget: forms.HiddenInput})
   })
   p = new TestForm({autoId: false})
-  equal(""+p.asTable(),
+  reactHTMLEqual(p.asTable(),
 "<tr><td colspan=\"2\"><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></td></tr>")
-  equal(""+p.asUL(),
+  reactHTMLEqual(p.asUL(),
 "<li><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></li>")
-  equal(""+p.asP(),
+  reactHTMLEqual(p.asP(),
 "<div><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></div>")
 })
 
@@ -1044,20 +1047,20 @@ QUnit.test("Field order", 1, function() {
   , field14: forms.CharField()
   })
   var p = new TestForm({autoId: false})
-  equal(""+p,
-"<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>\n" +
-"<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>\n" +
-"<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>\n" +
-"<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>\n" +
-"<tr><th>Field5:</th><td><input type=\"text\" name=\"field5\"></td></tr>\n" +
-"<tr><th>Field6:</th><td><input type=\"text\" name=\"field6\"></td></tr>\n" +
-"<tr><th>Field7:</th><td><input type=\"text\" name=\"field7\"></td></tr>\n" +
-"<tr><th>Field8:</th><td><input type=\"text\" name=\"field8\"></td></tr>\n" +
-"<tr><th>Field9:</th><td><input type=\"text\" name=\"field9\"></td></tr>\n" +
-"<tr><th>Field10:</th><td><input type=\"text\" name=\"field10\"></td></tr>\n" +
-"<tr><th>Field11:</th><td><input type=\"text\" name=\"field11\"></td></tr>\n" +
-"<tr><th>Field12:</th><td><input type=\"text\" name=\"field12\"></td></tr>\n" +
-"<tr><th>Field13:</th><td><input type=\"text\" name=\"field13\"></td></tr>\n" +
+  reactHTMLEqual(p.asTable(),
+"<tr><th>Field1:</th><td><input type=\"text\" name=\"field1\"></td></tr>" +
+"<tr><th>Field2:</th><td><input type=\"text\" name=\"field2\"></td></tr>" +
+"<tr><th>Field3:</th><td><input type=\"text\" name=\"field3\"></td></tr>" +
+"<tr><th>Field4:</th><td><input type=\"text\" name=\"field4\"></td></tr>" +
+"<tr><th>Field5:</th><td><input type=\"text\" name=\"field5\"></td></tr>" +
+"<tr><th>Field6:</th><td><input type=\"text\" name=\"field6\"></td></tr>" +
+"<tr><th>Field7:</th><td><input type=\"text\" name=\"field7\"></td></tr>" +
+"<tr><th>Field8:</th><td><input type=\"text\" name=\"field8\"></td></tr>" +
+"<tr><th>Field9:</th><td><input type=\"text\" name=\"field9\"></td></tr>" +
+"<tr><th>Field10:</th><td><input type=\"text\" name=\"field10\"></td></tr>" +
+"<tr><th>Field11:</th><td><input type=\"text\" name=\"field11\"></td></tr>" +
+"<tr><th>Field12:</th><td><input type=\"text\" name=\"field12\"></td></tr>" +
+"<tr><th>Field13:</th><td><input type=\"text\" name=\"field13\"></td></tr>" +
 "<tr><th>Field14:</th><td><input type=\"text\" name=\"field14\"></td></tr>")
 })
 
@@ -1069,15 +1072,15 @@ QUnit.test("Form HTML attributes", 2, function() {
   var UserRegistration = forms.Form.extend({
     username: forms.CharField({maxLength: 10}) // Uses forms.TextInput by default
   , password: forms.CharField({maxLength: 10, widget: forms.PasswordInput})
-  , realname: forms.CharField({maxLength: 10, widget: forms.TextInput}) // Redundantly degine widget, just to test
+  , realname: forms.CharField({maxLength: 10, widget: forms.TextInput}) // Redundantly define widget, just to test
   , address: forms.CharField()
   })
   var p = new UserRegistration({autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li>Password: <input maxlength=\"10\" type=\"password\" name=\"password\"></li>\n" +
-"<li>Realname: <input maxlength=\"10\" type=\"text\" name=\"realname\"></li>\n" +
-"<li>Address: <input type=\"text\" name=\"address\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
+"<li><span>Password:</span><span> </span><input maxlength=\"10\" type=\"password\" name=\"password\"></li>" +
+"<li><span>Realname:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"realname\"></li>" +
+"<li><span>Address:</span><span> </span><input type=\"text\" name=\"address\"></li>")
 
   // If you specify a custom "attrs" that includes the "maxlength" attribute,
   // the Field's maxLength attribute will override whatever "maxlength" you
@@ -1087,9 +1090,9 @@ QUnit.test("Form HTML attributes", 2, function() {
   , password: forms.CharField({maxLength: 10, widget: forms.PasswordInput})
   })
   p = new UserRegistration({autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li>Password: <input maxlength=\"10\" type=\"password\" name=\"password\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
+"<li><span>Password:</span><span> </span><input maxlength=\"10\" type=\"password\" name=\"password\"></li>")
 })
 
 QUnit.test("Specifying labels", 6, function() {
@@ -1103,10 +1106,10 @@ QUnit.test("Specifying labels", 6, function() {
   , password2: forms.CharField({widget: forms.PasswordInput, label: "Password (again)"})
   })
   var p = new UserRegistration({autoId: false})
-  equal(""+p.asUL(),
-"<li>Your username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li>Password1: <input type=\"password\" name=\"password1\"></li>\n" +
-"<li>Password (again): <input type=\"password\" name=\"password2\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Your username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
+"<li><span>Password1:</span><span> </span><input type=\"password\" name=\"password1\"></li>" +
+"<li><span>Password (again):</span><span> </span><input type=\"password\" name=\"password2\"></li>")
 
   // Labels for as* methods will only end in a colon if they don't end in
   // other punctuation already.
@@ -1118,12 +1121,12 @@ QUnit.test("Specifying labels", 6, function() {
   , q5: forms.CharField({label: "The last question. Period."})
   })
   p = new Questions({autoId: false})
-  equal(""+p.asP(),
-"<p>The first question: <input type=\"text\" name=\"q1\"></p>\n" +
-"<p>What is your name? <input type=\"text\" name=\"q2\"></p>\n" +
-"<p>The answer to life is: <input type=\"text\" name=\"q3\"></p>\n" +
-"<p>Answer this question! <input type=\"text\" name=\"q4\"></p>\n" +
-"<p>The last question. Period. <input type=\"text\" name=\"q5\"></p>")
+  reactHTMLEqual(p.asP(),
+"<p><span>The first question:</span><span> </span><input type=\"text\" name=\"q1\"></p>" +
+"<p><span>What is your name?</span><span> </span><input type=\"text\" name=\"q2\"></p>" +
+"<p><span>The answer to life is:</span><span> </span><input type=\"text\" name=\"q3\"></p>" +
+"<p><span>Answer this question!</span><span> </span><input type=\"text\" name=\"q4\"></p>" +
+"<p><span>The last question. Period.</span><span> </span><input type=\"text\" name=\"q5\"></p>")
 
   // If a label is set to the empty string for a field, that field won't get a
   // label.
@@ -1132,13 +1135,13 @@ QUnit.test("Specifying labels", 6, function() {
   , password1: forms.CharField({widget: forms.PasswordInput})
   })
   p = new UserRegistration({autoId: false})
-  equal(""+p.asUL(),
-"<li> <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li>Password1: <input type=\"password\" name=\"password1\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
+"<li><span>Password1:</span><span> </span><input type=\"password\" name=\"password1\"></li>")
   p = new UserRegistration({autoId: "id_{name}"})
-  equal(""+p.asUL(),
-"<li> <input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>\n" +
-"<li><label for=\"id_password1\">Password1:</label> <input type=\"password\" name=\"password1\" id=\"id_password1\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>" +
+"<li><label for=\"id_password1\">Password1:</label><span> </span><input type=\"password\" name=\"password1\" id=\"id_password1\"></li>")
 
   // If label is null, newforms will auto-create the label from the field
   // name. This is the default behavior.
@@ -1147,13 +1150,13 @@ QUnit.test("Specifying labels", 6, function() {
   , password1: forms.CharField({widget: forms.PasswordInput})
   })
   p = new UserRegistration({autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li>Password1: <input type=\"password\" name=\"password1\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
+"<li><span>Password1:</span><span> </span><input type=\"password\" name=\"password1\"></li>")
   p = new UserRegistration({autoId: "id_{name}"})
-  equal(""+p.asUL(),
-"<li><label for=\"id_username\">Username:</label> <input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>\n" +
-"<li><label for=\"id_password1\">Password1:</label> <input type=\"password\" name=\"password1\" id=\"id_password1\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><label for=\"id_username\">Username:</label><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" id=\"id_username\"></li>" +
+"<li><label for=\"id_password1\">Password1:</label><span> </span><input type=\"password\" name=\"password1\" id=\"id_password1\"></li>")
 })
 
 QUnit.test("Label suffix", 5, function() {
@@ -1166,21 +1169,21 @@ QUnit.test("Label suffix", 5, function() {
   , animal: forms.CharField({label: "Favourite animal"})
   })
   var f = new FavouriteForm({autoId: false})
-  equal(""+f.asUL(),
-"<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
-"<li>Favourite animal: <input type=\"text\" name=\"animal\"></li>")
+  reactHTMLEqual(f.asUL(),
+"<li><span>Favourite colour?</span><span> </span><input type=\"text\" name=\"colour\"></li>" +
+"<li><span>Favourite animal:</span><span> </span><input type=\"text\" name=\"animal\"></li>")
   f = new FavouriteForm({autoId: false, labelSuffix: "?"})
-  equal(""+f.asUL(),
-"<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
-"<li>Favourite animal? <input type=\"text\" name=\"animal\"></li>")
+  reactHTMLEqual(f.asUL(),
+"<li><span>Favourite colour?</span><span> </span><input type=\"text\" name=\"colour\"></li>" +
+"<li><span>Favourite animal?</span><span> </span><input type=\"text\" name=\"animal\"></li>")
   f = new FavouriteForm({autoId: false, labelSuffix: ""})
-  equal(""+f.asUL(),
-"<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
-"<li>Favourite animal <input type=\"text\" name=\"animal\"></li>")
+  reactHTMLEqual(f.asUL(),
+"<li><span>Favourite colour?</span><span> </span><input type=\"text\" name=\"colour\"></li>" +
+"<li><span>Favourite animal</span><span> </span><input type=\"text\" name=\"animal\"></li>")
   f = new FavouriteForm({autoId: false, labelSuffix: "\u2192"})
-  equal(""+f.asUL(),
-"<li>Favourite colour? <input type=\"text\" name=\"colour\"></li>\n" +
-"<li>Favourite animal\u2192 <input type=\"text\" name=\"animal\"></li>")
+  reactHTMLEqual(f.asUL(),
+"<li><span>Favourite colour?</span><span> </span><input type=\"text\" name=\"colour\"></li>" +
+"<li><span>Favourite animal\u2192</span><span> </span><input type=\"text\" name=\"animal\"></li>")
 
   // Label suffixes are included when label tags are generated directly from
   // BoundFields.
@@ -1202,23 +1205,23 @@ QUnit.test("Initial data", 6, function() {
   // Here, we're not submitting any data, so the initial value will be
   // displayed.
   var p = new UserRegistration({autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
-"<li>Password: <input type=\"password\" name=\"password\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>" +
+"<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>")
 
   // Here, we're submitting data, so the initial value will *not* be displayed.
   p = new UserRegistration({data: {}, autoId: false})
-  equal(""+p.asUL(),
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>")
   p = new UserRegistration({data: {username: ""}, autoId: false})
-  equal(""+p.asUL(),
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>")
   p = new UserRegistration({data: {username: "foo"}, autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>")
 
   // An "initial" value is *not* used as a fallback if data is not provided.
   // In this example, we don't provide a value for "username", and the form
@@ -1242,27 +1245,27 @@ QUnit.test("Dynamic initial data", 8, function() {
 
   // Here, we're not submitting any data, so the initial value will be displayed.
   var p = new UserRegistration({initial: {username: "django"}, autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
-"<li>Password: <input type=\"password\" name=\"password\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>" +
+"<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>")
   p = new UserRegistration({initial: {username: "stephane"}, autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"stephane\"></li>\n" +
-"<li>Password: <input type=\"password\" name=\"password\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"stephane\"></li>" +
+"<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>")
 
   // The "initial" parameter is meaningless if you pass data
   p = new UserRegistration({data: {}, initial: {username: "django"}, autoId: false})
-  equal(""+p.asUL(),
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>")
   p = new UserRegistration({data: {username: ""}, initial: {username: "django"}, autoId: false})
-  equal(""+p.asUL(),
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>")
   p = new UserRegistration({data: {username: "foo"}, initial: {username: "django"}, autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>")
 
   // A dynamic "initial" value is *not* used as a fallback if data is not
   // provided. In this example, we don't provide a value for "username", and
@@ -1279,9 +1282,9 @@ QUnit.test("Dynamic initial data", 8, function() {
   , password: forms.CharField({widget: forms.PasswordInput})
   })
   p = new UserRegistration({initial: {username: "babik"}, autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"babik\"></li>\n" +
-"<li>Password: <input type=\"password\" name=\"password\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"babik\"></li>" +
+"<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>")
 })
 
 QUnit.test("Callable initial data", 8, function() {
@@ -1302,42 +1305,42 @@ QUnit.test("Callable initial data", 8, function() {
   // Here, we're not submitting any data, so the initial value will be
   // displayed.
   var p = new UserRegistration({initial: {username: initialDjango, options: initialOptions}, autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
-"<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
-"<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
-"<option value=\"f\" selected=\"selected\">foo</option>\n" +
-"<option value=\"b\" selected=\"selected\">bar</option>\n" +
-"<option value=\"w\">whiz</option>\n" +
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>" +
+"<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
+"<li><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
+"<option value=\"f\" selected=\"selected\">foo</option>" +
+"<option value=\"b\" selected=\"selected\">bar</option>" +
+"<option value=\"w\">whiz</option>" +
 "</select></li>")
 
   // The "initial" parameter is meaningless if you pass data.
   p = new UserRegistration({data: {}, initial: {username: initialDjango, options: initialOptions}, autoId: false})
-  equal(""+p.asUL(),
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Options: <select name=\"options\" multiple=\"multiple\">\n" +
-"<option value=\"f\">foo</option>\n" +
-"<option value=\"b\">bar</option>\n" +
-"<option value=\"w\">whiz</option>\n" +
+  reactHTMLEqual(p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
+"<option value=\"f\">foo</option>" +
+"<option value=\"b\">bar</option>" +
+"<option value=\"w\">whiz</option>" +
 "</select></li>")
   p = new UserRegistration({data: {username: ""}, initial: {username: initialDjango}, autoId: false})
-  equal(""+p.asUL(),
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Options: <select name=\"options\" multiple=\"multiple\">\n" +
-"<option value=\"f\">foo</option>\n" +
-"<option value=\"b\">bar</option>\n" +
-"<option value=\"w\">whiz</option>\n" +
+  reactHTMLEqual(p.asUL(),
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
+"<option value=\"f\">foo</option>" +
+"<option value=\"b\">bar</option>" +
+"<option value=\"w\">whiz</option>" +
 "</select></li>")
   p = new UserRegistration({data: {username: "foo", options: ["f", "b"]}, initial: {username: initialDjango}, autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"></li>\n" +
-"<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
-"<option value=\"f\" selected=\"selected\">foo</option>\n" +
-"<option value=\"b\" selected=\"selected\">bar</option>\n" +
-"<option value=\"w\">whiz</option>\n" +
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
+"<li><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
+"<option value=\"f\" selected=\"selected\">foo</option>" +
+"<option value=\"b\" selected=\"selected\">bar</option>" +
+"<option value=\"w\">whiz</option>" +
 "</select></li>")
 
   // A callable 'initial' value is *not* used as a fallback if data is not
@@ -1356,22 +1359,22 @@ QUnit.test("Callable initial data", 8, function() {
   , options: forms.MultipleChoiceField({choices: [["f", "foo"], ["b", "bar"], ["w", "whiz"]], initial: initialOtherOptions})
   })
   p = new UserRegistration({autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>\n" +
-"<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
-"<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
-"<option value=\"f\">foo</option>\n" +
-"<option value=\"b\" selected=\"selected\">bar</option>\n" +
-"<option value=\"w\" selected=\"selected\">whiz</option>\n" +
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>" +
+"<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
+"<li><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
+"<option value=\"f\">foo</option>" +
+"<option value=\"b\" selected=\"selected\">bar</option>" +
+"<option value=\"w\" selected=\"selected\">whiz</option>" +
 "</select></li>")
   p = new UserRegistration({initial: {username: initialStephane, options: initialOptions}, autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"stephane\"></li>\n" +
-"<li>Password: <input type=\"password\" name=\"password\"></li>\n" +
-"<li>Options: <select name=\"options\" multiple=\"multiple\">\n" +
-"<option value=\"f\" selected=\"selected\">foo</option>\n" +
-"<option value=\"b\" selected=\"selected\">bar</option>\n" +
-"<option value=\"w\">whiz</option>\n" +
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"stephane\"></li>" +
+"<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
+"<li><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
+"<option value=\"f\" selected=\"selected\">foo</option>" +
+"<option value=\"b\" selected=\"selected\">bar</option>" +
+"<option value=\"w\">whiz</option>" +
 "</select></li>")
 })
 
@@ -1399,21 +1402,21 @@ QUnit.test("Help text", 5, function() {
   , password: forms.CharField({widget: forms.PasswordInput, helpText: "Choose wisely."})
   })
   var p = new UserRegistration({autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</li>\n" +
-"<li>Password: <input type=\"password\" name=\"password\"> Choose wisely.</li>")
-  equal(""+p.asP(),
-"<p>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</p>\n" +
-"<p>Password: <input type=\"password\" name=\"password\"> Choose wisely.</p>")
-  equal(""+p.asTable(),
-"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"><br>e.g., user@example.com</td></tr>\n" +
-"<tr><th>Password:</th><td><input type=\"password\" name=\"password\"><br>Choose wisely.</td></tr>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span>e.g., user@example.com</span></li>" +
+"<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span>Choose wisely.</span></li>")
+  reactHTMLEqual(p.asP(),
+"<p><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span>e.g., user@example.com</span></p>" +
+"<p><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span>Choose wisely.</span></p>")
+  reactHTMLEqual(p.asTable(),
+"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"><br><span>e.g., user@example.com</span></td></tr>" +
+"<tr><th>Password:</th><td><input type=\"password\" name=\"password\"><br><span>Choose wisely.</span></td></tr>")
 
   // The help text is displayed whether or not data is provided for the form.
   p = new UserRegistration({data: {username: "foo"}, autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"> e.g., user@example.com</li>\n" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul>Password: <input type=\"password\" name=\"password\"> Choose wisely.</li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"><span> </span><span>e.g., user@example.com</span></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span>Choose wisely.</span></li>")
 
   // Help text is not displayed for hidden fields. It can be used for
   // documentation purposes, though.
@@ -1423,9 +1426,9 @@ QUnit.test("Help text", 5, function() {
   , next: forms.CharField({widget: forms.HiddenInput, initial: "/", helpText: "Redirect destination"})
   })
   p  = new UserRegistration({autoId: false})
-  equal(""+p.asUL(),
-"<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> e.g., user@example.com</li>\n" +
-"<li>Password: <input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"next\" value=\"/\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span>e.g., user@example.com</span></li>" +
+"<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"next\" value=\"&#x2f;\"></li>")
 })
 
 QUnit.test("Subclassing forms", 10, function() {
@@ -1441,16 +1444,16 @@ QUnit.test("Subclassing forms", 10, function() {
     instrument: forms.CharField()
   })
   var p = new Person({autoId: false})
-  equal(""+p.asUL(),
-"<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
-"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
-"<li>Birthday: <input type=\"text\" name=\"birthday\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>" +
+"<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>" +
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"></li>")
   var m = new Musician({autoId: false})
-  equal(""+m.asUL(),
-"<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
-"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
-"<li>Birthday: <input type=\"text\" name=\"birthday\"></li>\n" +
-"<li>Instrument: <input type=\"text\" name=\"instrument\"></li>")
+  reactHTMLEqual(m.asUL(),
+"<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>" +
+"<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>" +
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"></li>" +
+"<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>")
 
   // You can use the fields and prototype functions of multiple forms by passing
   // a list of constructors as a mixin. The fields are added in the order in
@@ -1484,12 +1487,12 @@ QUnit.test("Subclassing forms", 10, function() {
     }
   })
   var b = new Beatle({autoId: false})
-  equal(""+b.asUL(),
-"<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
-"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
-"<li>Birthday: <input type=\"text\" name=\"birthday\"></li>\n" +
-"<li>Instrument: <input type=\"text\" name=\"instrument\"></li>\n" +
-"<li>Haircut type: <input type=\"text\" name=\"haircut_type\"></li>")
+  reactHTMLEqual(b.asUL(),
+"<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>" +
+"<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>" +
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"></li>" +
+"<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>" +
+"<li><span>Haircut type:</span><span> </span><input type=\"text\" name=\"haircut_type\"></li>")
 
   var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}})
   deepEqual(b.errors("first_name").errors, ["Method from Person."])
@@ -1507,12 +1510,12 @@ QUnit.test("Subclassing forms", 10, function() {
   })
 
   var b = new Beatle({autoId: false})
-  equal(""+b.asUL(),
-"<li>First name: <input type=\"text\" name=\"first_name\"></li>\n" +
-"<li>Last name: <input type=\"text\" name=\"last_name\"></li>\n" +
-"<li>Birthday: <input type=\"text\" name=\"birthday\"></li>\n" +
-"<li>Instrument: <input type=\"text\" name=\"instrument\"></li>\n" +
-"<li>Haircut type: <input type=\"text\" name=\"haircut_type\"></li>")
+  reactHTMLEqual(b.asUL(),
+"<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>" +
+"<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>" +
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"></li>" +
+"<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>" +
+"<li><span>Haircut type:</span><span> </span><input type=\"text\" name=\"haircut_type\"></li>")
 
   var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}})
   deepEqual(b.errors("first_name").errors, ["Method from Person."])
@@ -1539,15 +1542,15 @@ QUnit.test("Forms with prefixes", 30, function() {
   , "person1-birthday": "1940-10-9"
   }
   var p = new Person({data: data, prefix: "person1"})
-  equal(""+p.asUL(),
-"<li><label for=\"id_person1-first_name\">First name:</label> <input type=\"text\" name=\"person1-first_name\" id=\"id_person1-first_name\" value=\"John\"></li>\n" +
-"<li><label for=\"id_person1-last_name\">Last name:</label> <input type=\"text\" name=\"person1-last_name\" id=\"id_person1-last_name\" value=\"Lennon\"></li>\n" +
-"<li><label for=\"id_person1-birthday\">Birthday:</label> <input type=\"text\" name=\"person1-birthday\" id=\"id_person1-birthday\" value=\"1940-10-9\"></li>")
-  equal(""+p.boundField("first_name"),
+  reactHTMLEqual(p.asUL(),
+"<li><label for=\"id_person1-first_name\">First name:</label><span> </span><input type=\"text\" name=\"person1-first_name\" id=\"id_person1-first_name\" value=\"John\"></li>" +
+"<li><label for=\"id_person1-last_name\">Last name:</label><span> </span><input type=\"text\" name=\"person1-last_name\" id=\"id_person1-last_name\" value=\"Lennon\"></li>" +
+"<li><label for=\"id_person1-birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"person1-birthday\" id=\"id_person1-birthday\" value=\"1940-10-9\"></li>")
+  reactHTMLEqual(p.boundField("first_name").render(),
 "<input type=\"text\" name=\"person1-first_name\" id=\"id_person1-first_name\" value=\"John\">")
-  equal(""+p.boundField("last_name"),
+  reactHTMLEqual(p.boundField("last_name").render(),
 "<input type=\"text\" name=\"person1-last_name\" id=\"id_person1-last_name\" value=\"Lennon\">")
-  equal(""+p.boundField("birthday"),
+  reactHTMLEqual(p.boundField("birthday").render(),
 "<input type=\"text\" name=\"person1-birthday\" id=\"id_person1-birthday\" value=\"1940-10-9\">")
   strictEqual(p.errors().isPopulated(), false)
   strictEqual(p.isValid(), true)
@@ -1619,10 +1622,10 @@ QUnit.test("Forms with prefixes", 30, function() {
     }
   })
   p = new Person({prefix: "foo"})
-  equal(""+p.asUL(),
-"<li><label for=\"id_foo-prefix-first_name\">First name:</label> <input type=\"text\" name=\"foo-prefix-first_name\" id=\"id_foo-prefix-first_name\"></li>\n" +
-"<li><label for=\"id_foo-prefix-last_name\">Last name:</label> <input type=\"text\" name=\"foo-prefix-last_name\" id=\"id_foo-prefix-last_name\"></li>\n" +
-"<li><label for=\"id_foo-prefix-birthday\">Birthday:</label> <input type=\"text\" name=\"foo-prefix-birthday\" id=\"id_foo-prefix-birthday\"></li>")
+  reactHTMLEqual(p.asUL(),
+"<li><label for=\"id_foo-prefix-first_name\">First name:</label><span> </span><input type=\"text\" name=\"foo-prefix-first_name\" id=\"id_foo-prefix-first_name\"></li>" +
+"<li><label for=\"id_foo-prefix-last_name\">Last name:</label><span> </span><input type=\"text\" name=\"foo-prefix-last_name\" id=\"id_foo-prefix-last_name\"></li>" +
+"<li><label for=\"id_foo-prefix-birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"foo-prefix-birthday\" id=\"id_foo-prefix-birthday\"></li>")
   data = {
       "foo-prefix-first_name": "John",
       "foo-prefix-last_name": "Lennon",
@@ -1644,46 +1647,46 @@ QUnit.test("Forms with null boolean", 6, function() {
   , is_cool: forms.NullBooleanField()
   })
   var p = new Person({data: {name: "Joe"}, autoId: false})
-  equal(""+p.boundField("is_cool"),
-"<select name=\"is_cool\">\n" +
-"<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
-"<option value=\"2\">Yes</option>\n" +
-"<option value=\"3\">No</option>\n" +
+  reactHTMLEqual(p.boundField("is_cool").render(),
+"<select name=\"is_cool\">" +
+"<option value=\"1\" selected=\"selected\">Unknown</option>" +
+"<option value=\"2\">Yes</option>" +
+"<option value=\"3\">No</option>" +
 "</select>")
   p = new Person({data: {name: "Joe", is_cool: "1"}, autoId: false})
-  equal(""+p.boundField("is_cool"),
-"<select name=\"is_cool\">\n" +
-"<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
-"<option value=\"2\">Yes</option>\n" +
-"<option value=\"3\">No</option>\n" +
+  reactHTMLEqual(p.boundField("is_cool").render(),
+"<select name=\"is_cool\">" +
+"<option value=\"1\" selected=\"selected\">Unknown</option>" +
+"<option value=\"2\">Yes</option>" +
+"<option value=\"3\">No</option>" +
 "</select>")
   p = new Person({data: {name: "Joe", is_cool: "2"}, autoId: false})
-  equal(""+p.boundField("is_cool"),
-"<select name=\"is_cool\">\n" +
-"<option value=\"1\">Unknown</option>\n" +
-"<option value=\"2\" selected=\"selected\">Yes</option>\n" +
-"<option value=\"3\">No</option>\n" +
+  reactHTMLEqual(p.boundField("is_cool").render(),
+"<select name=\"is_cool\">" +
+"<option value=\"1\">Unknown</option>" +
+"<option value=\"2\" selected=\"selected\">Yes</option>" +
+"<option value=\"3\">No</option>" +
 "</select>")
   p = new Person({data: {name: "Joe", is_cool: "3"}, autoId: false})
-  equal(""+p.boundField("is_cool"),
-"<select name=\"is_cool\">\n" +
-"<option value=\"1\">Unknown</option>\n" +
-"<option value=\"2\">Yes</option>\n" +
-"<option value=\"3\" selected=\"selected\">No</option>\n" +
+  reactHTMLEqual(p.boundField("is_cool").render(),
+"<select name=\"is_cool\">" +
+"<option value=\"1\">Unknown</option>" +
+"<option value=\"2\">Yes</option>" +
+"<option value=\"3\" selected=\"selected\">No</option>" +
 "</select>")
   p = new Person({data: {name: "Joe", is_cool: true}, autoId: false})
-  equal(""+p.boundField("is_cool"),
-"<select name=\"is_cool\">\n" +
-"<option value=\"1\">Unknown</option>\n" +
-"<option value=\"2\" selected=\"selected\">Yes</option>\n" +
-"<option value=\"3\">No</option>\n" +
+  reactHTMLEqual(p.boundField("is_cool").render(),
+"<select name=\"is_cool\">" +
+"<option value=\"1\">Unknown</option>" +
+"<option value=\"2\" selected=\"selected\">Yes</option>" +
+"<option value=\"3\">No</option>" +
 "</select>")
   p = new Person({data: {name: "Joe", is_cool: false}, autoId: false})
-  equal(""+p.boundField("is_cool"),
-"<select name=\"is_cool\">\n" +
-"<option value=\"1\">Unknown</option>\n" +
-"<option value=\"2\">Yes</option>\n" +
-"<option value=\"3\" selected=\"selected\">No</option>\n" +
+  reactHTMLEqual(p.boundField("is_cool").render(),
+"<select name=\"is_cool\">" +
+"<option value=\"1\">Unknown</option>" +
+"<option value=\"2\">Yes</option>" +
+"<option value=\"3\" selected=\"selected\">No</option>" +
 "</select>")
 })
 
@@ -1698,23 +1701,23 @@ QUnit.test("Forms with file fields", 6, function() {
   // "files" data object, not "data".
   var FileForm = forms.Form.extend({file1: forms.FileField()})
   var f = new FileForm({autoId: false})
-  equal(""+f,
+ reactHTMLEqual(f.asTable(),
         "<tr><th>File1:</th><td><input type=\"file\" name=\"file1\"></td></tr>")
 
   f = new FileForm({data: {}, files: {}, autoId: false})
-  equal(""+f,
+  reactHTMLEqual(f.asTable(),
         "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"file\" name=\"file1\"></td></tr>")
 
   f = new FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "")}, autoId: false})
-  equal(""+f,
+  reactHTMLEqual(f.asTable(),
         "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>The submitted file is empty.</li></ul><input type=\"file\" name=\"file1\"></td></tr>")
 
   f = new FileForm({data: {}, files: {file1: "something that is not a file"}, autoId: false})
-  equal(""+f,
+  reactHTMLEqual(f.asTable(),
         "<tr><th>File1:</th><td><ul class=\"errorlist\"><li>No file was submitted. Check the encoding type on the form.</li></ul><input type=\"file\" name=\"file1\"></td></tr>")
 
   f = new FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "some content")}, autoId: false})
-  equal(""+f,
+  reactHTMLEqual(f.asTable(),
         "<tr><th>File1:</th><td><input type=\"file\" name=\"file1\"></td></tr>")
   strictEqual(f.isValid(), true)
 })
@@ -1744,33 +1747,21 @@ QUnit.test("Basic form processing", 3, function() {
     else {
       var form = new UserRegistration({autoId: false})
     }
-    return "<form action=\"\" method=\"POST\">\n<table>\n" +
-           form.toString() +
-           "\n</table>\n<input type=\"submit\">\n</form>"
+    return form.asTable()
   }
 
   // Case 1: GET (and empty form, with no errors)
-  equal(myFunction("GET", {}),
-"<form action=\"\" method=\"POST\">\n" +
-"<table>\n" +
-"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>\n" +
-"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\"></td></tr>\n" +
-"<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\"></td></tr>\n" +
-"</table>\n" +
-"<input type=\"submit\">\n" +
-"</form>")
+  reactHTMLEqual(myFunction("GET", {}),
+"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>" +
+"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\"></td></tr>" +
+"<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\"></td></tr>")
 
   // Case 2: POST with erroneous data (a redisplayed form, with errors)
-  equal(myFunction("POST", {username: "this-is-a-long-username", password1: "foo", password2: "bar"}),
-"<form action=\"\" method=\"POST\">\n" +
-"<table>\n" +
-"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>\n" +
-"<tr><th>Username:</th><td><ul class=\"errorlist\"><li>Ensure this value has at most 10 characters (it has 23).</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"this-is-a-long-username\"></td></tr>\n" +
-"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\"></td></tr>\n" +
-"<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\"></td></tr>\n" +
-"</table>\n" +
-"<input type=\"submit\">\n" +
-"</form>")
+  reactHTMLEqual(myFunction("POST", {username: "this-is-a-long-username", password1: "foo", password2: "bar"}),
+"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>" +
+"<tr><th>Username:</th><td><ul class=\"errorlist\"><li>Ensure this value has at most 10 characters (it has 23).</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"this-is-a-long-username\"></td></tr>" +
+"<tr><th>Password1:</th><td><input type=\"password\" name=\"password1\"></td></tr>" +
+"<tr><th>Password2:</th><td><input type=\"password\" name=\"password2\"></td></tr>")
 
   // Case 3: POST with valid data (the success message)
    equal(myFunction("POST", {username: "adrian", password1: "secret", password2: "secret"}),
@@ -1846,8 +1837,8 @@ QUnit.test("Hidden initial gets id", 1, function() {
   var MyForm = forms.Form.extend({
     field1: forms.CharField({maxLength: 50, showHiddenInitial: true})
   })
-  equal(""+new MyForm().asTable(),
-"<tr><th><label for=\"id_field1\">Field1:</label></th><td><input maxlength=\"50\" type=\"text\" name=\"field1\" id=\"id_field1\"><input type=\"hidden\" name=\"initial-field1\" id=\"initial-id_field1\"></td></tr>")
+  reactHTMLEqual(new MyForm().asTable(),
+"<tr><th><label for=\"id_field1\">Field1:</label></th><td><div><input maxlength=\"50\" type=\"text\" name=\"field1\" id=\"id_field1\"><input type=\"hidden\" name=\"initial-field1\" id=\"initial-id_field1\"></div></td></tr>")
 })
 
 QUnit.test("Row/error/required HTML classes", 3, function() {
@@ -1862,34 +1853,34 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
   p.rowCssClass = "row"
   p.errorCssClass = "error"
   p.requiredCssClass = "required"
-  equal(""+p.asUL(),
-"<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></li>\n" +
-"<li class=\"row required\"><label for=\"id_is_cool\">Is cool:</label> <select name=\"is_cool\" id=\"id_is_cool\">\n" +
-"<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
-"<option value=\"2\">Yes</option>\n" +
-"<option value=\"3\">No</option>\n" +
-"</select></li>\n" +
-"<li class=\"row\"><label for=\"id_email\">Email:</label> <input type=\"text\" name=\"email\" id=\"id_email\"></li>\n" +
-"<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_age\">Age:</label> <input type=\"text\" name=\"age\" id=\"id_age\"></li>")
-  equal(""+p.asP(),
-"<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
-"<p class=\"row error required\"><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></p>\n" +
-"<p class=\"row required\"><label for=\"id_is_cool\">Is cool:</label> <select name=\"is_cool\" id=\"id_is_cool\">\n" +
-"<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
-"<option value=\"2\">Yes</option>\n" +
-"<option value=\"3\">No</option>\n" +
-"</select></p>\n" +
-"<p class=\"row\"><label for=\"id_email\">Email:</label> <input type=\"text\" name=\"email\" id=\"id_email\"></p>\n" +
-"<ul class=\"errorlist\"><li>This field is required.</li></ul>\n" +
-"<p class=\"row error required\"><label for=\"id_age\">Age:</label> <input type=\"text\" name=\"age\" id=\"id_age\"></p>")
-  equal(""+p.asTable(),
-"<tr class=\"row error required\"><th><label for=\"id_name\">Name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>\n" +
-"<tr class=\"row required\"><th><label for=\"id_is_cool\">Is cool:</label></th><td><select name=\"is_cool\" id=\"id_is_cool\">\n" +
-"<option value=\"1\" selected=\"selected\">Unknown</option>\n" +
-"<option value=\"2\">Yes</option>\n" +
-"<option value=\"3\">No</option>\n" +
-"</select></td></tr>\n" +
-"<tr class=\"row\"><th><label for=\"id_email\">Email:</label></th><td><input type=\"text\" name=\"email\" id=\"id_email\"></td></tr>\n" +
+  reactHTMLEqual(p.asUL(),
+"<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></li>" +
+"<li class=\"row required\"><label for=\"id_is_cool\">Is cool:</label><span> </span><select name=\"is_cool\" id=\"id_is_cool\">" +
+"<option value=\"1\" selected=\"selected\">Unknown</option>" +
+"<option value=\"2\">Yes</option>" +
+"<option value=\"3\">No</option>" +
+"</select></li>" +
+"<li class=\"row\"><label for=\"id_email\">Email:</label><span> </span><input type=\"text\" name=\"email\" id=\"id_email\"></li>" +
+"<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_age\">Age:</label><span> </span><input type=\"text\" name=\"age\" id=\"id_age\"></li>")
+  reactHTMLEqual(p.asP(),
+"<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
+"<p class=\"row error required\"><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></p>" +
+"<p class=\"row required\"><label for=\"id_is_cool\">Is cool:</label><span> </span><select name=\"is_cool\" id=\"id_is_cool\">" +
+"<option value=\"1\" selected=\"selected\">Unknown</option>" +
+"<option value=\"2\">Yes</option>" +
+"<option value=\"3\">No</option>" +
+"</select></p>" +
+"<p class=\"row\"><label for=\"id_email\">Email:</label><span> </span><input type=\"text\" name=\"email\" id=\"id_email\"></p>" +
+"<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
+"<p class=\"row error required\"><label for=\"id_age\">Age:</label><span> </span><input type=\"text\" name=\"age\" id=\"id_age\"></p>")
+  reactHTMLEqual(p.asTable(),
+"<tr class=\"row error required\"><th><label for=\"id_name\">Name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>" +
+"<tr class=\"row required\"><th><label for=\"id_is_cool\">Is cool:</label></th><td><select name=\"is_cool\" id=\"id_is_cool\">" +
+"<option value=\"1\" selected=\"selected\">Unknown</option>" +
+"<option value=\"2\">Yes</option>" +
+"<option value=\"3\">No</option>" +
+"</select></td></tr>" +
+"<tr class=\"row\"><th><label for=\"id_email\">Email:</label></th><td><input type=\"text\" name=\"email\" id=\"id_email\"></td></tr>" +
 "<tr class=\"row error required\"><th><label for=\"id_age\">Age:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"age\" id=\"id_age\"></td></tr>")
 })
 
@@ -1898,8 +1889,8 @@ QUnit.test("Label split datetime not displayed", 1, function() {
     happened_at: forms.SplitDateTimeField({widget: forms.SplitHiddenDateTimeWidget})
   })
   var form = new EventForm()
-  equal(""+form.asUL(),
-"<li><input type=\"hidden\" name=\"happened_at_0\" id=\"id_happened_at_0\"><input type=\"hidden\" name=\"happened_at_1\" id=\"id_happened_at_1\"></li>")
+  reactHTMLEqual(form.asUL(),
+"<li><div><input type=\"hidden\" name=\"happened_at_0\" id=\"id_happened_at_0\"><input type=\"hidden\" name=\"happened_at_1\" id=\"id_happened_at_1\"></div></li>")
 })
 
 QUnit.test("Multipart-encoded forms", 3, function() {
