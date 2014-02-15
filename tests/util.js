@@ -16,31 +16,21 @@ QUnit.test("prettyName", 7, function() {
   equal(forms.util.prettyName("butNOTThatClever"), "But nOTThat clever")
 })
 
-QUnit.test("ValidationError", 7, function() {
+QUnit.test("ValidationError", 4, function() {
+  stop()
   // Can take a string
-  equal(""+forms.ErrorList(forms.ValidationError("There was an error.").messages).asUL(),
+  reactHTMLEqual(forms.ErrorList(forms.ValidationError("There was an error.").messages).asUL(),
         "<ul class=\"errorlist\"><li>There was an error.</li></ul>")
 
   // Can take a list
-  equal(""+forms.ErrorList(forms.ValidationError(["Error one.", "Error two."]).messages).asUL(),
+  reactHTMLEqual(forms.ErrorList(forms.ValidationError(["Error one.", "Error two."]).messages).asUL(),
         "<ul class=\"errorlist\"><li>Error one.</li><li>Error two.</li></ul>")
-
-  // Can take a non-string
-  function VeryBadError() {}
-  VeryBadError.prototype = {
-    toString: function() { return "A very bad error." }
-  }
-  equal(""+forms.ErrorList(forms.ValidationError(new VeryBadError()).messages).asUL(),
-        "<ul class=\"errorlist\"><li>A very bad error.</li></ul>")
 
   // Escapes appropriately
   var example = "Example of link: <a href=\"http://www.example.com/\">example</a>"
-  equal(""+forms.ErrorList(forms.ValidationError(example).messages).asUL(),
-        "<ul class=\"errorlist\"><li>Example of link: &lt;a href=&quot;http://www.example.com/&quot;&gt;example&lt;/a&gt;</li></ul>")
-  equal(""+forms.ErrorList(forms.ValidationError(DOMBuilder.html.markSafe(example)).messages).asUL(),
-        "<ul class=\"errorlist\"><li>Example of link: <a href=\"http://www.example.com/\">example</a></li></ul>")
-  equal(""+forms.ErrorObject({name: new forms.ErrorList(forms.ValidationError(example).messages)}).asUL(),
-        "<ul class=\"errorlist\"><li>name<ul class=\"errorlist\"><li>Example of link: &lt;a href=&quot;http://www.example.com/&quot;&gt;example&lt;/a&gt;</li></ul></li></ul>")
-  equal(""+forms.ErrorObject({name: new forms.ErrorList(forms.ValidationError(DOMBuilder.html.markSafe(example)).messages)}).asUL(),
-        "<ul class=\"errorlist\"><li>name<ul class=\"errorlist\"><li>Example of link: <a href=\"http://www.example.com/\">example</a></li></ul></li></ul>")
+  reactHTMLEqual(forms.ErrorList(forms.ValidationError(example).messages).asUL(),
+        "<ul class=\"errorlist\"><li>Example of link: &lt;a href=&quot;http:&#x2f;&#x2f;www.example.com&#x2f;&quot;&gt;example&lt;&#x2f;a&gt;</li></ul>")
+  reactHTMLEqual(forms.ErrorObject({name: new forms.ErrorList(forms.ValidationError(example).messages)}).asUL(),
+        "<ul class=\"errorlist\"><li><span>name</span><ul class=\"errorlist\"><li>Example of link: &lt;a href=&quot;http:&#x2f;&#x2f;www.example.com&#x2f;&quot;&gt;example&lt;&#x2f;a&gt;</li></ul></li></ul>")
+  start()
 })
