@@ -1,7 +1,7 @@
 QUnit.module("extra stuff")
 
 QUnit.test("MultiWidget and MultiValueField", 7, function() {
-  var time = require('isomorph/time')
+  var time = isomorph.time
   var ComplexWidget = forms.MultiWidget.extend({
     constructor: function(kwargs) {
       if (!(this instanceof ComplexWidget)) return new ComplexWidget(kwargs)
@@ -16,22 +16,22 @@ QUnit.test("MultiWidget and MultiValueField", 7, function() {
   ComplexWidget.prototype.decompress = function(value) {
     if (value) {
       var data = value.split(",")
-      return [data[0], data[1], time.strpdate(data[2], "%Y-%m-%d %H:%M:%S")]
+      return [data[0], data[1].split(""), time.strpdate(data[2], "%Y-%m-%d %H:%M:%S")]
     }
     return [null, null, null]
   }
   ComplexWidget.prototype.formatOutput = function(renderedWidgets) {
-    return DOMBuilder.createElement("div", {"class": "complex"}, renderedWidgets)
+    return React.DOM.div({"className": "complex"}, renderedWidgets)
   }
 
   var w = ComplexWidget()
-  equal(""+w.render("name", "some text,JP,2007-04-25 06:24:00"),
-"<div class=\"complex\"><input type=\"text\" name=\"name_0\" value=\"some text\"><select name=\"name_1\" multiple=\"multiple\">\n" +
-"<option value=\"J\" selected=\"selected\">John</option>\n" +
-"<option value=\"P\" selected=\"selected\">Paul</option>\n" +
-"<option value=\"G\">George</option>\n" +
-"<option value=\"R\">Ringo</option>\n" +
-"</select><input type=\"text\" name=\"name_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"name_2_1\" value=\"06:24:00\"></div>")
+  reactHTMLEqual(w.render("name", "some text,JP,2007-04-25 06:24:00"),
+"<div class=\"complex\"><input type=\"text\" name=\"name_0\" value=\"some text\"><select name=\"name_1\" multiple=\"multiple\">" +
+"<option value=\"J\" selected=\"selected\">John</option>" +
+"<option value=\"P\" selected=\"selected\">Paul</option>" +
+"<option value=\"G\">George</option>" +
+"<option value=\"R\">Ringo</option>" +
+"</select><div><input type=\"text\" name=\"name_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"name_2_1\" value=\"06:24:00\"></div></div>")
 
   var ComplexField = forms.MultiValueField.extend({
     constructor: function(kwargs) {
@@ -66,36 +66,36 @@ QUnit.test("MultiWidget and MultiValueField", 7, function() {
     field1: ComplexField({widget: w})
   })
   f = new ComplexFieldForm()
-  equal(""+f,
-"<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" id=\"id_field1_0\"><select name=\"field1_1\" multiple=\"multiple\" id=\"id_field1_1\">\n" +
-"<option value=\"J\">John</option>\n" +
-"<option value=\"P\">Paul</option>\n" +
-"<option value=\"G\">George</option>\n" +
-"<option value=\"R\">Ringo</option>\n" +
-"</select><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\"></div></td></tr>")
+  reactHTMLEqual(f.asTable(),
+"<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" id=\"id_field1_0\"><select name=\"field1_1\" multiple=\"multiple\" id=\"id_field1_1\">" +
+"<option value=\"J\">John</option>" +
+"<option value=\"P\">Paul</option>" +
+"<option value=\"G\">George</option>" +
+"<option value=\"R\">Ringo</option>" +
+"</select><div><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\"></div></div></td></tr>")
 
   f = new ComplexFieldForm({data: {field1_0: "some text", field1_1 :["J", "P"], field1_2_0: "2007-04-25", field1_2_1: "06:24:00"}})
-  equal(""+f,
-"<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" id=\"id_field1_0\" value=\"some text\"><select name=\"field1_1\" multiple=\"multiple\" id=\"id_field1_1\">\n" +
-"<option value=\"J\" selected=\"selected\">John</option>\n" +
-"<option value=\"P\" selected=\"selected\">Paul</option>\n" +
-"<option value=\"G\">George</option>\n" +
-"<option value=\"R\">Ringo</option>\n" +
-"</select><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\" value=\"06:24:00\"></div></td></tr>")
+  reactHTMLEqual(f.asTable(),
+"<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" id=\"id_field1_0\" value=\"some text\"><select name=\"field1_1\" multiple=\"multiple\" id=\"id_field1_1\">" +
+"<option value=\"J\" selected=\"selected\">John</option>" +
+"<option value=\"P\" selected=\"selected\">Paul</option>" +
+"<option value=\"G\">George</option>" +
+"<option value=\"R\">Ringo</option>" +
+"</select><div><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\" value=\"06:24:00\"></div></div></td></tr>")
 
   equal(f.cleanedData["field1"], "some text,JP,2007-04-25 06:24:00")
 })
 
 QUnit.test("Extra attrs", 1, function() {
-  var extraAttrs = {"class": "special"}
+  var extraAttrs = {"className": "special"}
   var TestForm = forms.Form.extend({
     f1: forms.CharField({maxLength: 10, widget: new forms.TextInput({attrs: extraAttrs})})
   , f2: forms.CharField({widget: forms.TextInput({attrs: extraAttrs})})
   })
 
-  equal(""+new TestForm({autoId: false}).asP(),
-"<p>F1: <input class=\"special\" maxlength=\"10\" type=\"text\" name=\"f1\"></p>\n" +
-"<p>F2: <input class=\"special\" type=\"text\" name=\"f2\"></p>")
+  reactHTMLEqual(new TestForm({autoId: false}).asP(),
+"<p><span>F1:</span><span> </span><input class=\"special\" maxlength=\"10\" type=\"text\" name=\"f1\"></p>" +
+"<p><span>F2:</span><span> </span><input class=\"special\" type=\"text\" name=\"f2\"></p>")
 })
 
 QUnit.test("Data field", 2, function() {
@@ -115,9 +115,9 @@ QUnit.test("Forms with *only* hidden fields", 4, function() {
     data: forms.IntegerField({widget: forms.HiddenInput})
   })
   var f = new HiddenForm({data: {}})
-  equal(""+f.asP(),
+  reactHTMLEqual(f.asP(),
 "<div><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>")
-  equal(""+f.asTable(),
+  reactHTMLEqual(f.asTable(),
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>")
 
   // A form with only hidden fields can make use of the hiddenFieldRowCssClass
@@ -128,8 +128,8 @@ QUnit.test("Forms with *only* hidden fields", 4, function() {
   , hiddenFieldRowCssClass: "hiddenFields"
   })
   f = new HiddenForm()
-  equal(""+f.asP(),
+  reactHTMLEqual(f.asP(),
 "<div class=\"hiddenFields\"><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>")
-  equal(""+f.asTable(),
+  reactHTMLEqual(f.asTable(),
 "<tr class=\"hiddenFields\"><td colspan=\"2\"><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>")
 })
