@@ -2,11 +2,18 @@ var gulp = require('gulp')
 
 var browserify = require('gulp-browserify')
 var concat = require('gulp-concat')
+var header = require('gulp-header')
 var jshint = require('gulp-jshint')
 var plumber = require('gulp-plumber')
 var rename = require('gulp-rename')
 var uglify = require('gulp-uglify')
 var gutil = require('gulp-util')
+
+var pkg = require('./package.json');
+var srcHeader = '/**\n\
+ * newforms <%= pkg.version %> - https://github.com/insin/newforms\n\
+ * MIT Licensed\n\
+ */\n'
 
 var jsPath = './lib/*.js'
 var jsEntryPoint = './lib/newforms.js'
@@ -29,12 +36,14 @@ gulp.task('build-js', ['lint'], function(){
       console.error(e)
     })
     .pipe(concat('newforms.js'))
+    .pipe(header(srcHeader, {pkg: pkg}))
     .pipe(gulp.dest('./'))
 
   if (gutil.env.production) {
     stream = stream
       .pipe(rename('newforms.min.js'))
       .pipe(uglify())
+      .pipe(header(srcHeader, {pkg: pkg}))
       .pipe(gulp.dest('./'))
   }
 

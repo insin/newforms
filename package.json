@@ -1,24 +1,30 @@
 {
-  "name": "newforms"
-, "description": "Form validation, display and type coercion for browsers and Node.js"
-, "version": "0.5.0-dev"
-, "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)"
-, "tags": ["isomorphic", "forms", "validation", "coercion"]
-, "main": "./lib/newforms"
-, "repository": {
-    "type": "git"
-,   "url": "http://github.com/insin/newforms.git"
-  }
-, "dependencies": {
-    "Concur": "0.2.x"
-  , "isomorph": "0.2.x"
-  , "validators": "0.0.x"
-  }
-, "devDependencies": {
+  "name": "newforms",
+  "description": "Form validation, display and type coercion for browsers and Node.js",
+  "version": "0.5.0-dev",
+  "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
+  "tags": [
+    "isomorphic",
+    "forms",
+    "validation",
+    "coercion"
+  ],
+  "main": "./lib/newforms",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/insin/newforms.git"
+  },
+  "dependencies": {
+    "Concur": "0.2.x",
+    "isomorph": "0.2.x",
+    "validators": "0.0.x"
+  },
+  "devDependencies": {
     "browserify": "~3.20.0",
     "gulp": "~3.5.0",
     "gulp-browserify": "~0.3.4",
     "gulp-concat": "~2.1.7",
+    "gulp-header": "~1.0.2",
     "gulp-jshint": "~1.3.4",
     "gulp-plumber": "~0.5.6",
     "gulp-rename": "~0.2.2",
@@ -27,8 +33,8 @@
     "jshint-stylish": "~0.1.5",
     "qqunit": "0.6.x",
     "react": "0.8.0"
-  }
-, "scripts": {
+  },
+  "scripts": {
     "test": "node tests/tests.js"
   }
 }
