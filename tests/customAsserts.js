@@ -65,32 +65,33 @@ if (typeof module !== 'undefined' && module.exports) {
   }
 }
 
-var stripReactAttrs = / data-react[-\w]+="[^"]+"/g
-var stripWrapper = /^<div>|<\/div>$/g
-
-function reactHTMLEqual(component, expectedHTML, message) {
-  if (typeof component == 'string') {
-    return strictEqual(component, expectedHTML, message)
+var reactHTMLEqual = (function() {
+  var reactAttrs = / data-react[-\w]+="[^"]+"/g
+  var wrapper = /^<div>|<\/div>$/g
+  return function reactHTMLEqual(component, expectedHTML, message) {
+    if (typeof component == 'string') {
+      return strictEqual(component, expectedHTML, message)
+    }
+    var wrapped = false
+    if (Array.isArray(component)) {
+      component = React.DOM.div(null, component)
+      wrapped = true
+    }
+    stop()
+    try {
+      React.renderComponentToString(component, function(html) {
+        html = html.replace(reactAttrs, '')
+        if (wrapped) {
+          html = html.replace(wrapper, '')
+        }
+        equal(html, expectedHTML, message)
+      })
+    }
+    catch (e) {
+      // TDOO Why is react throwing on every call?
+    }
+    finally {
+      start()
+    }
   }
-  var wrapped = false
-  if (Array.isArray(component)) {
-    component = React.DOM.div(null, component)
-    wrapped = true
-  }
-  stop()
-  try {
-    React.renderComponentToString(component, function(html) {
-      html = html.replace(stripReactAttrs, '')
-      if (wrapped) {
-        html = html.replace(stripWrapper, '')
-      }
-      equal(html, expectedHTML, message)
-    })
-  }
-  catch (e) {
-    // TDOO Why is react throwing on every call?
-  }
-  finally {
-    start()
-  }
-}
+})()
