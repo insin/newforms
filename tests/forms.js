@@ -1086,7 +1086,7 @@ QUnit.test("Form HTML attributes", 2, function() {
   // the Field's maxLength attribute will override whatever "maxlength" you
   // specify in "attrs".
   UserRegistration = forms.Form.extend({
-    username: forms.CharField({maxLength: 10, widget: forms.TextInput({attrs: {maxlength: 20}})})
+    username: forms.CharField({maxLength: 10, widget: forms.TextInput({attrs: {maxLength: 20}})})
   , password: forms.CharField({maxLength: 10, widget: forms.PasswordInput})
   })
   p = new UserRegistration({autoId: false})
