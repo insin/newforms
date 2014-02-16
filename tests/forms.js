@@ -245,7 +245,7 @@ QUnit.test("autoId on form and field", 1, function() {
 "<li><label for=\"birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"birthday\"></li>")
 })
 
-QUnit.test("Various boolean values", 8, function() {
+QUnit.test("Various boolean values", 10, function() {
   var SignupForm = forms.Form.extend({
     email: forms.EmailField()
   , get_spam: forms.BooleanField()
@@ -279,6 +279,11 @@ QUnit.test("Various boolean values", 8, function() {
   f = new SignupForm({data: {email: "test@example.com", get_spam: "False"}, autoId: false})
   reactHTMLEqual(f.boundField("get_spam").render(),
         "<input type=\"checkbox\" name=\"get_spam\">")
+
+  // A value of '0' should be interpreted as true
+  f = new SignupForm({data: {email: "test@example.com", get_spam: "0"}, autoId: false})
+  strictEqual(f.isValid(), true)
+  strictEqual(f.cleanedData['get_spam'], true)
 })
 
 QUnit.test("Widget output", 10, function() {

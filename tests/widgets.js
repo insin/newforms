@@ -201,7 +201,7 @@ QUnit.test("Textarea", 8, function() {
         "<textarea rows=\"10\" cols=\"40\" class=\"special\" name=\"msg\" value=\"\"></textarea>")
 })
 
-QUnit.test("CheckboxInput", 22, function() {
+QUnit.test("CheckboxInput", 24, function() {
   var w = forms.CheckboxInput()
   reactHTMLEqual(w.render("is_cool", ""),
         "<input type=\"checkbox\" name=\"is_cool\">")
@@ -255,6 +255,10 @@ QUnit.test("CheckboxInput", 22, function() {
   // the data (because HTML form submission doesn't send any result for
   // unchecked checkboxes).
   strictEqual(w.valueFromData({}, {}, 'testing'), false)
+
+  var value = w.valueFromData({testing: '0'}, {}, 'testing')
+  equal(typeof value, 'boolean')
+  strictEqual(value, true)
 
   strictEqual(w._hasChanged(null, null), false)
   strictEqual(w._hasChanged(null, ""), false)
