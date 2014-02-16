@@ -201,7 +201,7 @@ QUnit.test("Textarea", 8, function() {
         "<textarea rows=\"10\" cols=\"40\" class=\"special\" name=\"msg\" value=\"\"></textarea>")
 })
 
-QUnit.test("CheckboxInput", 24, function() {
+QUnit.test("CheckboxInput", 22, function() {
   var w = forms.CheckboxInput()
   reactHTMLEqual(w.render("is_cool", ""),
         "<input type=\"checkbox\" name=\"is_cool\">")
@@ -248,16 +248,8 @@ QUnit.test("CheckboxInput", 24, function() {
   reactHTMLEqual(w.render("greeting", "hello & goodbye"),
         "<input type=\"checkbox\" name=\"greeting\" value=\"hello &amp; goodbye\" checked=\"checked\">")
 
-  // A subtlety: If the "checkTest" argument cannot handle a value and throws
-  // an exception,  the exception will be swallowed and the box will not be
-  // checked. In this example, the "checkTest" assumes the value has an
-  // indexOf() method, which fails for the values true, false and null.
-  reactHTMLEqual(w.render("greeting", true),
-        "<input type=\"checkbox\" name=\"greeting\">")
-  reactHTMLEqual(w.render("greeting", false),
-        "<input type=\"checkbox\" name=\"greeting\">")
-  reactHTMLEqual(w.render("greeting", null),
-        "<input type=\"checkbox\" name=\"greeting\">")
+  // Calling "checkTest" shouldn't swallow exceptions
+  throws(function() { w.render("greeting", true) }, "Calling checkTest() shouldn't swallow exceptions")
 
   // The CheckboxInput widget will return False if the key is not found in
   // the data (because HTML form submission doesn't send any result for
