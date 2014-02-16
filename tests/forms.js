@@ -252,13 +252,13 @@ QUnit.test("Various boolean values", 10, function() {
   })
   var f = new SignupForm({autoId: false})
   reactHTMLEqual(f.boundField("email").render(),
-        "<input type=\"text\" name=\"email\">")
+        "<input type=\"email\" name=\"email\">")
   reactHTMLEqual(f.boundField("get_spam").render(),
         "<input type=\"checkbox\" name=\"get_spam\">")
 
   f = new SignupForm({data: {email: "test@example.com", get_spam: true}, autoId: false})
   reactHTMLEqual(f.boundField("email").render(),
-        "<input type=\"text\" name=\"email\" value=\"test@example.com\">")
+        "<input type=\"email\" name=\"email\" value=\"test@example.com\">")
   reactHTMLEqual(f.boundField("get_spam").render(),
         "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">")
 
@@ -1865,7 +1865,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select></li>" +
-"<li class=\"row\"><label for=\"id_email\">Email:</label><span> </span><input type=\"text\" name=\"email\" id=\"id_email\"></li>" +
+"<li class=\"row\"><label for=\"id_email\">Email:</label><span> </span><input type=\"email\" name=\"email\" id=\"id_email\"></li>" +
 "<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_age\">Age:</label><span> </span><input type=\"text\" name=\"age\" id=\"id_age\"></li>")
   reactHTMLEqual(p.asP(),
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
@@ -1875,7 +1875,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select></p>" +
-"<p class=\"row\"><label for=\"id_email\">Email:</label><span> </span><input type=\"text\" name=\"email\" id=\"id_email\"></p>" +
+"<p class=\"row\"><label for=\"id_email\">Email:</label><span> </span><input type=\"email\" name=\"email\" id=\"id_email\"></p>" +
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
 "<p class=\"row error required\"><label for=\"id_age\">Age:</label><span> </span><input type=\"text\" name=\"age\" id=\"id_age\"></p>")
   reactHTMLEqual(p.asTable(),
@@ -1885,7 +1885,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select></td></tr>" +
-"<tr class=\"row\"><th><label for=\"id_email\">Email:</label></th><td><input type=\"text\" name=\"email\" id=\"id_email\"></td></tr>" +
+"<tr class=\"row\"><th><label for=\"id_email\">Email:</label></th><td><input type=\"email\" name=\"email\" id=\"id_email\"></td></tr>" +
 "<tr class=\"row error required\"><th><label for=\"id_age\">Age:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"age\" id=\"id_age\"></td></tr>")
 })
 

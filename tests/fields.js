@@ -2,6 +2,11 @@ QUnit.module("fields")
 
 ;(function() {
 
+function widgetRendersTo(field, expectedHTML) {
+  var _Form  = forms.Form.extend({f: field})
+  reactHTMLEqual(new _Form().boundField('f').render(), expectedHTML)
+}
+
 QUnit.test("Field sets widget isRequired", 2, function() {
   strictEqual(new forms.Field({required: true}).widget.isRequired, true)
   strictEqual(new forms.Field({required: false}).widget.isRequired, false)
@@ -399,8 +404,9 @@ QUnit.test("RegexField", 24, function() {
   cleanErrorEqual(f, "Enter a valid value.", "12345a")
 })
 
-QUnit.test("EmailField", 25, function() {
+QUnit.test("EmailField", 27, function() {
   var f = forms.EmailField()
+  widgetRendersTo(f, "<input type=\"email\" name=\"f\" id=\"id_f\">")
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
   equal(f.clean("person@example.com"), "person@example.com")
@@ -430,6 +436,7 @@ QUnit.test("EmailField", 25, function() {
 
   // EmailField also has minLength and maxLength parameters, for convenience.
   f = forms.EmailField({minLength: 10, maxLength: 15})
+  widgetRendersTo(f, "<input maxlength=\"15\" type=\"email\" name=\"f\" id=\"id_f\">")
   cleanErrorEqual(f, "Ensure this value has at least 10 characters (it has 9).", "a@foo.com")
   equal(f.clean("alf@foo.com"), "alf@foo.com")
   cleanErrorEqual(f, "Ensure this value has at most 15 characters (it has 20).", "alf123456788@foo.com")
