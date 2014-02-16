@@ -748,7 +748,7 @@ QUnit.test("RadioSelect", 21, function() {
 "</ul>")
 })
 
-QUnit.test("CheckboxSelectMultiple", 19, function() {
+QUnit.test("CheckboxSelectMultiple", 21, function() {
   var w = forms.CheckboxSelectMultiple()
   reactHTMLEqual(w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
@@ -855,6 +855,27 @@ QUnit.test("CheckboxSelectMultiple", 19, function() {
   strictEqual(w._hasChanged([1, 2], ["1"]), true)
   strictEqual(w._hasChanged([1, 2], ["1", "3"]), true)
   strictEqual(w._hasChanged([2, 1], ["1", "2"]), false)
+
+  // Each input gets a separate ID
+  reactHTMLEqual(forms.CheckboxSelectMultiple().render('letters', ['a', 'c'], {
+    choices: [['a', 'A'], ['b', 'B'], ['c', 'C']]
+  , attrs: {id: 'abc'}
+  }),
+"<ul>" +
+"<li><label for=\"abc_0\"><input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked=\"checked\"><span> </span><span>A</span></label></li>" +
+"<li><label for=\"abc_1\"><input id=\"abc_1\" type=\"checkbox\" name=\"letters\" value=\"b\"><span> </span><span>B</span></label></li>" +
+"<li><label for=\"abc_2\"><input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked=\"checked\"><span> </span><span>C</span></label></li>" +
+"</ul>")
+
+  // Each input gets a separate ID when the ID is passed to the constructor
+  reactHTMLEqual(forms.CheckboxSelectMultiple({attrs: {id: 'abc'}}).render('letters', ['a', 'c'], {
+    choices: [['a', 'A'], ['b', 'B'], ['c', 'C']]
+  }),
+"<ul>" +
+"<li><label for=\"abc_0\"><input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked=\"checked\"><span> </span><span>A</span></label></li>" +
+"<li><label for=\"abc_1\"><input id=\"abc_1\" type=\"checkbox\" name=\"letters\" value=\"b\"><span> </span><span>B</span></label></li>" +
+"<li><label for=\"abc_2\"><input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked=\"checked\"><span> </span><span>C</span></label></li>" +
+"</ul>")
 })
 
 QUnit.test("MultiWidget", 8, function() {
