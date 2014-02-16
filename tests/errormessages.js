@@ -236,25 +236,26 @@ QUnit.test("Overriding forms.ErrorList", 4, function() {
     forms.ErrorList.apply(this, arguments)
   }
   CustomErrorList.prototype = new forms.ErrorList()
-  CustomErrorList.prototype.defaultRendering = function() {
+  CustomErrorList.prototype.render = function() {
     return this.asDIV()
   }
   CustomErrorList.prototype.asDIV = function() {
-    return DOMBuilder.createElement("div", {"class": "error"},
-                                    DOMBuilder.map("p", {}, this.errors))
+    return React.DOM.div({"className": "error"}, this.errors.map(function(error) {
+      return React.DOM.p(null, error)
+    }))
   }
 
   // This form should render errors the default way.
   var f = new TestForm({data: {first_name: "John"}})
-  equal(""+f.boundField("last_name").errors(),
+  reactHTMLEqual(f.boundField("last_name").errors().render(),
         "<ul class=\"errorlist\"><li>This field is required.</li></ul>")
-  equal(""+f.errors("__all__"),
+  reactHTMLEqual(f.errors("__all__").render(),
         "<ul class=\"errorlist\"><li>I like to be awkward.</li></ul>")
 
   f = new TestForm({data: {first_name: "John"}, errorConstructor: CustomErrorList})
-  equal(""+f.boundField("last_name").errors(),
+  reactHTMLEqual(f.boundField("last_name").errors().render(),
         "<div class=\"error\"><p>This field is required.</p></div>")
-  equal(""+f.errors("__all__"),
+  reactHTMLEqual(f.errors("__all__").render(),
         "<div class=\"error\"><p>I like to be awkward.</p></div>")
 })
 
