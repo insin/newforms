@@ -2,7 +2,7 @@ QUnit.module('models')
 
 ;(function() {
 
-var object = require('isomorph/object')
+var object = isomorph.object
 
 // Mock out a model interface
 
@@ -63,12 +63,12 @@ var ModelTestForm = forms.Form.extend({
 
 QUnit.test('ModelChoiceField', 16, function() {
   var form = new ModelTestForm()
-  equal(''+form.boundField('thing'),
-'<select name="thing" id="id_thing">\n' +
-'<option value="" selected="selected">---------</option>\n' +
-'<option value="1">Thing 1</option>\n' +
-'<option value="2">Thing 2</option>\n' +
-'<option value="3">Thing 3</option>\n' +
+  reactHTMLEqual(form.boundField('thing').render(),
+'<select name="thing" id="id_thing">' +
+'<option value="" selected="selected">---------</option>' +
+'<option value="1">Thing 1</option>' +
+'<option value="2">Thing 2</option>' +
+'<option value="3">Thing 3</option>' +
 '</select>')
 
   var f = forms.ModelChoiceField(ThingQuery())
