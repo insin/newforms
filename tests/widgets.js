@@ -14,11 +14,11 @@ QUnit.test("TextInput", 8, function() {
         "<input type=\"text\" name=\"email\" class=\"fun\" value=\"test@example.com\">")
 
   // You can also pass "attrs" to the constructor
-  w = forms.TextInput({attrs: {"className": "fun"}})
+  w = forms.TextInput({attrs: {"className": "fun", "type": "email"}})
   reactHTMLEqual(w.render("email", ""),
-        "<input class=\"fun\" type=\"text\" name=\"email\">")
+        "<input class=\"fun\" type=\"email\" name=\"email\">")
   reactHTMLEqual(w.render("email", "foo@example.com"),
-        "<input class=\"fun\" type=\"text\" name=\"email\" value=\"foo@example.com\">")
+        "<input class=\"fun\" type=\"email\" name=\"email\" value=\"foo@example.com\">")
 
   // Attributes passed to render() get precedence over those passed to the constructor
   w = forms.TextInput({attrs: {"className": "pretty"}})
@@ -939,9 +939,9 @@ QUnit.test("DateTimeInput", 5, function() {
         "<input type=\"text\" name=\"date\" value=\"2007-09-17 12:51:00\">")
 
   // Use "format" to change the way a value is displayed
-  w = forms.DateTimeInput({format: "%d/%m/%Y %H:%M"})
+  w = forms.DateTimeInput({format: "%d/%m/%Y %H:%M", attrs: {type: "datetime"}})
   reactHTMLEqual(w.render("date", d),
-        "<input type=\"text\" name=\"date\" value=\"17&#x2f;09&#x2f;2007 12:51\">")
+        "<input type=\"datetime\" name=\"date\" value=\"17&#x2f;09&#x2f;2007 12:51\">")
   strictEqual(w._hasChanged(d, "17/09/2007 12:51"), false)
 })
 
@@ -959,9 +959,9 @@ QUnit.test("DateInput", 5, function() {
         "<input type=\"text\" name=\"date\" value=\"2007-09-17\">")
 
   // Use "format" to change the way a value is displayed
-  w = forms.DateInput({format: "%d/%m/%Y"})
+  w = forms.DateInput({format: "%d/%m/%Y", attrs: {type: "date"}})
   reactHTMLEqual(w.render("date", d),
-        "<input type=\"text\" name=\"date\" value=\"17&#x2f;09&#x2f;2007\">")
+        "<input type=\"date\" name=\"date\" value=\"17&#x2f;09&#x2f;2007\">")
   strictEqual(w._hasChanged(d, "17/09/2007"), false)
 })
 
@@ -981,9 +981,9 @@ QUnit.test("TimeInput", 6, function() {
         "<input type=\"text\" name=\"time\" value=\"13:12:11\">")
 
   // Use "format" to change the way a value is displayed
-  w = forms.TimeInput({format: "%H:%M"})
+  w = forms.TimeInput({format: "%H:%M", attrs: {type: "time"}})
   reactHTMLEqual(w.render("time", t),
-        "<input type=\"text\" name=\"time\" value=\"12:51\">")
+        "<input type=\"time\" name=\"time\" value=\"12:51\">")
   strictEqual(w._hasChanged(t, "12:51"), false)
 })
 
