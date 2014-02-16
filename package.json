@@ -25,7 +25,8 @@
     "gulp-uglify": "~0.2.0",
     "gulp-util": "~2.2.13",
     "jshint-stylish": "~0.1.5",
-    "qqunit": "0.4.x"
+    "qqunit": "0.6.x",
+    "react": "0.8.0"
   }
 , "scripts": {
     "test": "node tests/tests.js"

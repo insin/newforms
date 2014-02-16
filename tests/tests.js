@@ -4,7 +4,8 @@ var qqunit = require('qqunit')
   , object = require('isomorph/object')
 
 object.extend(global, require('./customAsserts'))
-global.DOMBuilder = require('DOMBuilder')
+global.React = require('react')
+global.isomorph = require('isomorph')
 global.forms = require('../lib/newforms')
 
 var tests = [ 'util.js'

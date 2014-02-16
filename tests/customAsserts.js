@@ -57,14 +57,6 @@ function validationErrorEqual(validator, message, value) {
   throw new Error('Validator did not throw an exception')
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    errorEqual: errorEqual
-  , cleanErrorEqual: cleanErrorEqual
-  , validationErrorEqual: validationErrorEqual
-  }
-}
-
 var reactHTMLEqual = (function() {
   var reactAttrs = / data-react[-\w]+="[^"]+"/g
   var wrapper = /^<div>|<\/div>$/g
@@ -95,3 +87,12 @@ var reactHTMLEqual = (function() {
     }
   }
 })()
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    errorEqual: errorEqual
+  , cleanErrorEqual: cleanErrorEqual
+  , validationErrorEqual: validationErrorEqual
+  , reactHTMLEqual: reactHTMLEqual
+  }
+}
