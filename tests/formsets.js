@@ -783,8 +783,8 @@ var ArticleForm = forms.Form.extend({
 
 var ArticleFormSet = forms.formsetFactory(ArticleForm)
 
-QUnit.test("No data raises ValidationError", 1, function() {
-  raises(function() { new ArticleFormSet({data: {}}); })
+QUnit.test("No data throws ValidationError", 1, function() {
+  throws(function() { new ArticleFormSet({data: {}}); })
 })
 
 QUnit.test("With management data works fine", 7, function() {

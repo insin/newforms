@@ -720,7 +720,7 @@ QUnit.test("RadioSelect", 21, function() {
   reactHTMLEqual(r.radioInput(0).render(), "<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label>")
   strictEqual(r.radioInput(0).isChecked(), true)
   strictEqual(r.radioInput(1).isChecked(), false)
-  raises(function() { r.radioInput(10); })
+  throws(function() { r.radioInput(10); })
 
   // Choices are escaped correctly
   w = forms.RadioSelect()

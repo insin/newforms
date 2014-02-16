@@ -849,8 +849,8 @@ QUnit.test("IPAddressField", 14, function() {
 
 QUnit.test('GenericIPAddressField', 58, function() {
   // Invalid arguments
-  raises(function() { forms.GenericIPAddressField({protocol: 'hamster'}) })
-  raises(function() { forms.GenericIPAddressField({protocol: 'ipv4', unpackIPv4: true}) })
+  throws(function() { forms.GenericIPAddressField({protocol: 'hamster'}) })
+  throws(function() { forms.GenericIPAddressField({protocol: 'ipv4', unpackIPv4: true}) })
 
   // As generic
   // The edge cases of the IPv6 validation code are not deeply tested  here,
