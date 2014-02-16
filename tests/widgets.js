@@ -201,7 +201,7 @@ QUnit.test("Textarea", 8, function() {
         "<textarea rows=\"10\" cols=\"40\" class=\"special\" name=\"msg\" value=\"\"></textarea>")
 })
 
-QUnit.test("CheckboxInput", 24, function() {
+QUnit.test("CheckboxInput", 25, function() {
   var w = forms.CheckboxInput()
   reactHTMLEqual(w.render("is_cool", ""),
         "<input type=\"checkbox\" name=\"is_cool\">")
@@ -266,6 +266,8 @@ QUnit.test("CheckboxInput", 24, function() {
   strictEqual(w._hasChanged(false, "on"), true)
   strictEqual(w._hasChanged(true, "on"), false)
   strictEqual(w._hasChanged(true, ""), true)
+  // Initial value may have mutated to a string due to showhiddenInitial
+  strictEqual(w._hasChanged("false", "on"), true)
 })
 
 QUnit.test("Select", 13, function() {
