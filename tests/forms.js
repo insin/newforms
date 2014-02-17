@@ -1383,6 +1383,41 @@ QUnit.test("Callable initial data", 8, function() {
 "</select></li>")
 })
 
+QUnit.test("Changed data", 6, function() {
+  var Person = forms.Form.extend({
+    first_name: forms.CharField({initial: 'Hans'})
+  , last_name: forms.CharField({initial: 'Greatel'})
+  , birthday: forms.DateField({initial: new Date(1974, 7, 16)})
+  })
+
+  var p = new Person({data: {first_name: 'Hans', last_name: 'Scrmbl', birthday: '1974-08-16'}})
+  strictEqual(p.isValid(), true)
+  var changedData = p.changedData()
+  strictEqual(changedData.indexOf('first_name') !== -1, false)
+  strictEqual(changedData.indexOf('last_name') !== -1, true)
+  strictEqual(changedData.indexOf('birthday') !== -1, false)
+
+  // Test that a field throwing ValidationError is always in changedData
+  var PedanticField = forms.Field.extend({
+    toJavaScript: function() {
+      throw forms.ValidationError('Whatever')
+    }
+  })
+
+  var Person2 = Person.extend({
+    pedantic: new PedanticField({initial:'whatever', showHiddenInitial: true})
+  })
+
+  p = new Person2({data: {
+    first_name: 'Hans'
+  , last_name: 'Scrmbl'
+  , birthday: '1974-08-16'
+  , 'initial-pedantic': 'whatever'
+  }})
+  strictEqual(p.isValid(), false)
+  strictEqual(p.changedData().indexOf('pedantic') !== -1, true)
+})
+
 QUnit.test("Boundfield values", 4, function() {
   // It's possible to get to the value which would be used for rendering
   // the widget for a field by using the BoundField's value method.
