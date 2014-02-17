@@ -871,7 +871,7 @@ QUnit.test("ComboField", 10, function() {
 
 // TODO Test FilePathField when newforms can be run on the backend
 
-QUnit.test("SplitDateTimeField", 23, function() {
+QUnit.test("SplitDateTimeField", 24, function() {
   var f = forms.SplitDateTimeField()
   strictEqual(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
        new Date(2006, 0, 10, 7, 30).valueOf())
@@ -900,6 +900,7 @@ QUnit.test("SplitDateTimeField", 23, function() {
   cleanErrorEqual(f, ["Enter a valid date."], ["", "07:30"])
 
   f = forms.SplitDateTimeField({inputDateFormats: ["%d/%m/%Y"]})
+  strictEqual(f._hasChanged(['11/01/2012', '09:18:15'], ['11/01/2012', '09:18:15']), false)
   strictEqual(f._hasChanged(new Date(2008, 4, 6, 12, 40, 0), ["2008-05-05", "12:40:00"]), true)
   strictEqual(f._hasChanged(new Date(2008, 4, 6, 12, 40, 0), ["06/05/2008", "12:40"]), false)
   strictEqual(f._hasChanged(new Date(2008, 4, 6, 12, 40, 0), ["06/05/2008", "12:41"]), true)
