@@ -54,6 +54,8 @@ QUnit.test("CharField", 30, function() {
   equal(f.clean("1234567890a"), "1234567890a")
   strictEqual(f.maxLength, null)
   strictEqual(f.minLength, 10)
+
+  // TODO test_charfield_widget_attrs
 })
 
 QUnit.test("IntegerField", 51, function() {
@@ -155,6 +157,8 @@ QUnit.test("FloatField", 34, function() {
   strictEqual(f.maxValue, 1.5)
   strictEqual(f.minValue, 0.5)
 
+  // TODO test_floatfield_widget_attrs
+
   // FloatField implements its own _hasChanged due to String coercion issues
   // in JavaScript.
   strictEqual(f._hasChanged(null, ''), false)
@@ -166,6 +170,8 @@ QUnit.test("FloatField", 34, function() {
   strictEqual(f._hasChanged("1.0", 0.0), true)
   strictEqual(f._hasChanged("0.0", 0.0), false)
   strictEqual(f._hasChanged("1.0", 1.0), false)
+
+  // TODO test_floatfield_changed
 })
 
 QUnit.test("DecimalField", 57, function() {
@@ -241,6 +247,10 @@ QUnit.test("DecimalField", 57, function() {
   f = forms.DecimalField({maxDigits: 2, decimalPlaces: 2})
   equal(f.clean(".01"), "0.01")
   cleanErrorEqual(f, "Ensure that there are no more than 0 digits before the decimal point.", "1.1")
+
+  // TODO test_decimalfield_widget_attrs
+
+  // TODO test_decimalfield_changed
 })
 
 QUnit.test("DateField", 33, function() {
@@ -420,6 +430,8 @@ QUnit.test("RegexField", 24, function() {
   equal(f.clean("1234567890"), "1234567890")
   cleanErrorEqual(f, "Ensure this value has at most 10 characters (it has 11).", "12345678901")
   cleanErrorEqual(f, "Enter a valid value.", "12345a")
+
+  // TODO test_change_regex_after_init
 })
 
 QUnit.test("EmailField", 27, function() {
@@ -600,6 +612,8 @@ QUnit.test("URLField", 65, function() {
   for (var i = 0, l = urls.length; i < l; i++) {
     equal(f.clean(urls[i]), urls[i], 'Valid IDN URL')
   }
+
+  // TODO Test URLField correctly validates IPv6
 })
 
 QUnit.test("BooleanField", 28, function() {
@@ -717,6 +731,10 @@ QUnit.test("TypedChoiceField", 9, function() {
       emptyValue: null
   })
   strictEqual(f.clean(""), null)
+
+  // TODO test_typedchoicefield_has_changed
+
+  // TODO test_typedchoicefield_special_coerce
 })
 
 QUnit.test("NullBooleanField", 21, function() {
@@ -851,6 +869,10 @@ QUnit.test("TypedMultipleChoiceField", function() {
   , emptyValue: null
   })
   strictEqual(f.clean([]), null)
+
+  // TODO test_typedmultiplechoicefield_has_changed
+
+  // TODO test_typedmultiplechoicefield_special_coerce
 })
 
 QUnit.test("ComboField", 10, function() {
@@ -933,7 +955,6 @@ QUnit.test('GenericIPAddressField', 58, function() {
   throws(function() { forms.GenericIPAddressField({protocol: 'hamster'}) })
   throws(function() { forms.GenericIPAddressField({protocol: 'ipv4', unpackIPv4: true}) })
 
-  // As generic
   // The edge cases of the IPv6 validation code are not deeply tested  here,
   // they are covered in the tests for ipv6.js
   var f = forms.GenericIPAddressField()

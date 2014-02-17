@@ -212,8 +212,6 @@ QUnit.test("autoId true", 1, function() {
 "<li><label for=\"birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"birthday\"></li>")
 })
 
-
-
 QUnit.test("autoId false", 1, function() {
   // If autoId is any falsy value, an "id" attribute won't be output unless it
   // was manually entered.
@@ -763,9 +761,15 @@ QUnit.test("Validating multiple fields", 20, function() {
           this.cleanedData.password1 != this.cleanedData.password2) {
         throw forms.ValidationError("Please make sure your passwords match.")
       }
+
+      // TODO Test raising ValidationError that targets multiple fields.
+
+      // TODO Implememt and test Form.addError()
+
       return this.cleanedData
     }
   })
+
   f = new UserRegistration({data: {}, autoId: false})
   reactHTMLEqual(f.asTable(),
 "<tr><th>Username:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>" +
@@ -774,6 +778,7 @@ QUnit.test("Validating multiple fields", 20, function() {
   deepEqual(f.errors("username").errors, ["This field is required."])
   deepEqual(f.errors("password1").errors, ["This field is required."])
   deepEqual(f.errors("password2").errors, ["This field is required."])
+
   f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false})
   deepEqual(f.errors("__all__").errors, ["Please make sure your passwords match."])
   reactHTMLEqual(f.asTable(),
@@ -786,6 +791,7 @@ QUnit.test("Validating multiple fields", 20, function() {
 "<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></li>" +
 "<li><span>Password1:</span><span> </span><input type=\"password\" name=\"password1\"></li>" +
 "<li><span>Password2:</span><span> </span><input type=\"password\" name=\"password2\"></li>")
+
   f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false})
   strictEqual(f.errors().isPopulated(), false)
   equal(f.cleanedData.username, "adrian")
@@ -1983,7 +1989,13 @@ QUnit.test('MultiValueField validation', 6, function() {
   deepEqual(form.cleanedData, {name: 'fname lname'})
 })
 
-QUnit.test('Boundfield label tag', 5, function() {
+// TODO test_multivalue_deep_copy
+
+// TODO test_multivalue_optional_subfields
+
+// TODO test_custom_empty_values
+
+QUnit.test('Boundfield label tag', 3, function() {
   var SomeForm = forms.Form.extend({
     field: forms.CharField()
   })
@@ -1991,10 +2003,26 @@ QUnit.test('Boundfield label tag', 5, function() {
   reactHTMLEqual(boundField.labelTag(), "<label for=\"id_field\">Field:</label>")
   reactHTMLEqual(boundField.labelTag({contents: 'custom'}), "<label for=\"id_field\">custom:</label>")
   reactHTMLEqual(boundField.labelTag({attrs: {className: 'pretty'}}), "<label class=\"pretty\" for=\"id_field\">Field:</label>")
+})
 
-  boundField = new SomeForm({autoId: ''}).boundField('field')
+QUnit.test('Boundfield label tag no id', 2, function() {
+  var SomeForm = forms.Form.extend({
+    field: forms.CharField()
+  })
+
+  var boundField = new SomeForm({autoId: ''}).boundField('field')
   equal(boundField.labelTag(), "Field:")
   equal(boundField.labelTag({contents: 'custom'}), "custom:")
 })
+
+// TODO test_boundfield_label_tag_custom_widget_id_for_label
+
+// TODO test_boundfield_empty_label
+
+// TODO test_label_tag_override
+
+// TODO test_error_dict
+
+// TODO test_error_list
 
 })()

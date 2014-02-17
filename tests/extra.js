@@ -1,5 +1,7 @@
 QUnit.module("extra stuff")
 
+// TODO test_selectdate
+
 QUnit.test("MultiWidget and MultiValueField", 11, function() {
   var time = isomorph.time
   var ComplexWidget = forms.MultiWidget.extend({

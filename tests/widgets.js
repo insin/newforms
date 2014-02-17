@@ -704,6 +704,8 @@ QUnit.test("RadioSelect", 21, function() {
 "</ul>")
 })
 
+// TODO test_nested_choices
+
 QUnit.test("CheckboxSelectMultiple", 14, function() {
   var w = forms.CheckboxSelectMultiple()
   reactHTMLEqual(w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
@@ -825,7 +827,11 @@ QUnit.test("CheckboxSelectMultiple", 14, function() {
 "<li><label for=\"abc_1\"><input id=\"abc_1\" type=\"checkbox\" name=\"letters\" value=\"b\"><span> </span><span>B</span></label></li>" +
 "<li><label for=\"abc_2\"><input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked=\"checked\"><span> </span><span>C</span></label></li>" +
 "</ul>")
+
+    // TODO Iteration of CheckboxFieldRenderer
 })
+
+// TODO test_subwidget
 
 QUnit.test("MultiWidget", 4, function() {
   var MyMultiWidget = forms.MultiWidget.extend()
