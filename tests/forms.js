@@ -1983,4 +1983,18 @@ QUnit.test('MultiValueField validation', 6, function() {
   deepEqual(form.cleanedData, {name: 'fname lname'})
 })
 
+QUnit.test('Boundfield label tag', 5, function() {
+  var SomeForm = forms.Form.extend({
+    field: forms.CharField()
+  })
+  var boundField = new SomeForm().boundField('field')
+  reactHTMLEqual(boundField.labelTag(), "<label for=\"id_field\">Field:</label>")
+  reactHTMLEqual(boundField.labelTag({contents: 'custom'}), "<label for=\"id_field\">custom:</label>")
+  reactHTMLEqual(boundField.labelTag({attrs: {className: 'pretty'}}), "<label class=\"pretty\" for=\"id_field\">Field:</label>")
+
+  boundField = new SomeForm({autoId: ''}).boundField('field')
+  equal(boundField.labelTag(), "Field:")
+  equal(boundField.labelTag({contents: 'custom'}), "custom:")
+})
+
 })()
