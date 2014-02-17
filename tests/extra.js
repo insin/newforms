@@ -1,6 +1,6 @@
 QUnit.module("extra stuff")
 
-QUnit.test("MultiWidget and MultiValueField", 7, function() {
+QUnit.test("MultiWidget and MultiValueField", 11, function() {
   var time = isomorph.time
   var ComplexWidget = forms.MultiWidget.extend({
     constructor: function(kwargs) {
@@ -61,6 +61,19 @@ QUnit.test("MultiWidget and MultiValueField", 7, function() {
 
   // If insufficient data is provided, null is substituted
   cleanErrorEqual(f, "This field is required.", ["some text", ["JP"]])
+
+  // Test with no initial data
+  strictEqual(f._hasChanged(null, ["some text", ["J", "P"], ["2007-04-25","6:24:00"]]), true)
+  // Test when data is the same as initial
+  strictEqual(f._hasChanged("some text,JP,2007-04-25 06:24:00",
+                            ["some text", ["J", "P"], ["2007-04-25","6:24:00"]]), false)
+  // Test when the first widget's data has changed
+  strictEqual(f._hasChanged("some text,JP,2007-04-25 06:24:00",
+                            ["other text", ["J","P"], ["2007-04-25","6:24:00"]]), true)
+  // Test when the last widget's data has changed. This ensures that it is
+  // not short circuiting while testing the widgets.
+  strictEqual(f._hasChanged("some text,JP,2007-04-25 06:24:00",
+                            ["some text", ["J","P"], ["2009-04-25","11:44:00"]]), true)
 
   var ComplexFieldForm = forms.Form.extend({
     field1: ComplexField({widget: w})

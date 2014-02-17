@@ -129,7 +129,7 @@ QUnit.test("MultipleHiddenInput", 12, function() {
         "<div><input type=\"hidden\" name=\"letters\" id=\"hideme_0\" value=\"a\"><input type=\"hidden\" name=\"letters\" id=\"hideme_1\" value=\"b\"><input type=\"hidden\" name=\"letters\" id=\"hideme_2\" value=\"c\"></div>")
 })
 
-QUnit.test("FileInput", 11, function() {
+QUnit.test("FileInput", 7, function() {
   // FileInput widgets don't ever show the value, because the old value is of
   // no use if you are updating the form or if the provided file generated an
   // error.
@@ -151,25 +151,6 @@ QUnit.test("FileInput", 11, function() {
         "<input class=\"fun\" type=\"file\" name=\"email\">")
   reactHTMLEqual(w.render("email", "foo@example.com"),
         "<input class=\"fun\" type=\"file\" name=\"email\">")
-
-  // Test for the behavior of _hasChanged for FileInput. The value of data
-  // will more than likely come from request.FILES. The value of initial data
-  // will likely be a filename stored in the database. Since its value is of
-  // no use to a FileInput it is ignored.
-  w = forms.FileInput()
-
-  // No file was uploaded and no initial data
-  strictEqual(w._hasChanged("", null), false)
-
-  // A file was uploaded and no initial data
-  strictEqual(w._hasChanged("", {filename: "resume.txt", content: "My resume"}), true)
-
-  // A file was not uploaded, but there is initial data
-  strictEqual(w._hasChanged("resume.txt", null), false)
-
-  // A file was uploaded and there is initial data (file identity is not dealt
-  // with here).
-  strictEqual(w._hasChanged("resume.txt", {filename: "resume.txt", content: "My resume"}), true)
 })
 
 QUnit.test("Textarea", 8, function() {
@@ -201,7 +182,7 @@ QUnit.test("Textarea", 8, function() {
         "<textarea rows=\"10\" cols=\"40\" class=\"special\" name=\"msg\" value=\"\"></textarea>")
 })
 
-QUnit.test("CheckboxInput", 25, function() {
+QUnit.test("CheckboxInput", 18, function() {
   var w = forms.CheckboxInput()
   reactHTMLEqual(w.render("is_cool", ""),
         "<input type=\"checkbox\" name=\"is_cool\">")
@@ -259,15 +240,6 @@ QUnit.test("CheckboxInput", 25, function() {
   var value = w.valueFromData({testing: '0'}, {}, 'testing')
   equal(typeof value, 'boolean')
   strictEqual(value, true)
-
-  strictEqual(w._hasChanged(null, null), false)
-  strictEqual(w._hasChanged(null, ""), false)
-  strictEqual(w._hasChanged("", ""), false)
-  strictEqual(w._hasChanged(false, "on"), true)
-  strictEqual(w._hasChanged(true, "on"), false)
-  strictEqual(w._hasChanged(true, ""), true)
-  // Initial value may have mutated to a string due to showhiddenInitial
-  strictEqual(w._hasChanged("false", "on"), true)
 })
 
 QUnit.test("Select", 13, function() {
@@ -384,7 +356,7 @@ QUnit.test("Select", 13, function() {
 "</select>")
 })
 
-QUnit.test("NullBooleanSelect", 12, function() {
+QUnit.test("NullBooleanSelect", 5, function() {
   var w = forms.NullBooleanSelect()
   reactHTMLEqual(w.render("is_cool", true),
 "<select name=\"is_cool\">" +
@@ -416,16 +388,9 @@ QUnit.test("NullBooleanSelect", 12, function() {
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\" selected=\"selected\">No</option>" +
 "</select>")
-  strictEqual(w._hasChanged(false, null), true)
-  strictEqual(w._hasChanged(null, false), true)
-  strictEqual(w._hasChanged(null, null), false)
-  strictEqual(w._hasChanged(false, false), false)
-  strictEqual(w._hasChanged(true, false), true)
-  strictEqual(w._hasChanged(true, null), true)
-  strictEqual(w._hasChanged(true, false), true)
 })
 
-QUnit.test("SelectMultiple", 24, function() {
+QUnit.test("SelectMultiple", 17, function() {
   var w = forms.SelectMultiple()
   reactHTMLEqual(w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatles\" multiple=\"multiple\">" +
@@ -533,15 +498,6 @@ QUnit.test("SelectMultiple", 24, function() {
 "<option value=\"3\">3</option>" +
 "<option value=\"bad\">you &amp; me</option>" +
 "</select>")
-
-  // Test the usage of _hasChanged
-  strictEqual(w._hasChanged(null, null), false)
-  strictEqual(w._hasChanged([], null), false)
-  strictEqual(w._hasChanged(null, [""]), true)
-  strictEqual(w._hasChanged([1, 2], ["1", "2"]), false)
-  strictEqual(w._hasChanged([1, 2], ["1"]), true)
-  strictEqual(w._hasChanged([1, 2], ["1", "3"]), true)
-  strictEqual(w._hasChanged([2, 1], ["1", "2"]), false)
 
   // Choices can be nested one level in order to create HTML optgroups
   w.choices = [['outer1', 'Outer 1'], ['Group "1"', [['inner1', 'Inner 1'], ['inner2', 'Inner 2']]]]
@@ -748,7 +704,7 @@ QUnit.test("RadioSelect", 21, function() {
 "</ul>")
 })
 
-QUnit.test("CheckboxSelectMultiple", 21, function() {
+QUnit.test("CheckboxSelectMultiple", 14, function() {
   var w = forms.CheckboxSelectMultiple()
   reactHTMLEqual(w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
@@ -847,15 +803,6 @@ QUnit.test("CheckboxSelectMultiple", 21, function() {
 "<li><label><input type=\"checkbox\" name=\"escape\" value=\"bad\"><span> </span><span>you &amp; me</span></label></li>" +
 "</ul>")
 
-  // Test the usage of _hasChanged
-  strictEqual(w._hasChanged(null, null), false)
-  strictEqual(w._hasChanged([], null), false)
-  strictEqual(w._hasChanged(null, [""]), true)
-  strictEqual(w._hasChanged([1, 2], ["1", "2"]), false)
-  strictEqual(w._hasChanged([1, 2], ["1"]), true)
-  strictEqual(w._hasChanged([1, 2], ["1", "3"]), true)
-  strictEqual(w._hasChanged([2, 1], ["1", "2"]), false)
-
   // Each input gets a separate ID
   reactHTMLEqual(forms.CheckboxSelectMultiple().render('letters', ['a', 'c'], {
     choices: [['a', 'A'], ['b', 'B'], ['c', 'C']]
@@ -878,7 +825,7 @@ QUnit.test("CheckboxSelectMultiple", 21, function() {
 "</ul>")
 })
 
-QUnit.test("MultiWidget", 8, function() {
+QUnit.test("MultiWidget", 4, function() {
   var MyMultiWidget = forms.MultiWidget.extend()
   MyMultiWidget.prototype.decompress = function(value) {
     if (value) {
@@ -898,20 +845,9 @@ QUnit.test("MultiWidget", 8, function() {
   w = new MyMultiWidget([forms.TextInput({attrs: {"className": "big"}}), forms.TextInput({attrs: {"className": "small"}})], {attrs: {id: "bar"}})
   reactHTMLEqual(w.render("name", ["john", "lennon"]),
         "<div><input class=\"big\" type=\"text\" name=\"name_0\" id=\"bar_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"bar_1\" value=\"lennon\"></div>")
-
-  w = new MyMultiWidget([forms.TextInput(), forms.TextInput()])
-  // Test with no initial data
-  strictEqual(w._hasChanged(null, ["john", "lennon"]), true)
-  // Test when data is the same as initial
-  strictEqual(w._hasChanged("john__lennon", ["john", "lennon"]), false)
-  // Test when the first widget's data has changed
-  strictEqual(w._hasChanged("john__lennon", ["alfred", "lennon"]), true)
-  // Test when the last widget's data has changed. This ensures that it is
-  // not short circuiting while testing the widgets.
-  strictEqual(w._hasChanged("john__lennon", ["john", "denver"]), true)
 })
 
-QUnit.test("SplitDateTimeWidget", 12, function() {
+QUnit.test("SplitDateTimeWidget", 9, function() {
   var w = forms.SplitDateTimeWidget()
   reactHTMLEqual(w.render("date", ""),
         "<div><input type=\"text\" name=\"date_0\"><input type=\"text\" name=\"date_1\"></div>")
@@ -930,10 +866,6 @@ QUnit.test("SplitDateTimeWidget", 12, function() {
   w = forms.SplitDateTimeWidget({dateFormat: "%d/%m/%Y", timeFormat: "%H:%M"})
   reactHTMLEqual(w.render("date", new Date(2006, 0, 10, 7, 30)),
         "<div><input type=\"text\" name=\"date_0\" value=\"10&#x2f;01&#x2f;2006\"><input type=\"text\" name=\"date_1\" value=\"07:30\"></div>")
-
-  strictEqual(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["2008-05-05", "12:40:00"]), true)
-  strictEqual(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:40"]), false)
-  strictEqual(w._hasChanged(new Date(2008, 4, 6, 12, 40, 00), ["06/05/2008", "12:41"]), true)
 
   // Django #13390  - SplitDateTimeWidget should recognise when it's no
   // longer required.
@@ -954,7 +886,7 @@ QUnit.test("SplitDateTimeWidget", 12, function() {
   strictEqual(f.isValid(), false)
 })
 
-QUnit.test("DateTimeInput", 5, function() {
+QUnit.test("DateTimeInput", 4, function() {
   var w = forms.DateTimeInput()
   reactHTMLEqual(w.render("date", null),
         "<input type=\"text\" name=\"date\">")
@@ -969,10 +901,9 @@ QUnit.test("DateTimeInput", 5, function() {
   w = forms.DateTimeInput({format: "%d/%m/%Y %H:%M", attrs: {type: "datetime"}})
   reactHTMLEqual(w.render("date", d),
         "<input type=\"datetime\" name=\"date\" value=\"17&#x2f;09&#x2f;2007 12:51\">")
-  strictEqual(w._hasChanged(d, "17/09/2007 12:51"), false)
 })
 
-QUnit.test("DateInput", 5, function() {
+QUnit.test("DateInput", 4, function() {
   var w = forms.DateInput()
   reactHTMLEqual(w.render("date", null),
         "<input type=\"text\" name=\"date\">")
@@ -989,10 +920,9 @@ QUnit.test("DateInput", 5, function() {
   w = forms.DateInput({format: "%d/%m/%Y", attrs: {type: "date"}})
   reactHTMLEqual(w.render("date", d),
         "<input type=\"date\" name=\"date\" value=\"17&#x2f;09&#x2f;2007\">")
-  strictEqual(w._hasChanged(d, "17/09/2007"), false)
 })
 
-QUnit.test("TimeInput", 6, function() {
+QUnit.test("TimeInput", 5, function() {
   var w = forms.TimeInput()
   reactHTMLEqual(w.render("time", null),
         "<input type=\"text\" name=\"time\">")
@@ -1011,7 +941,6 @@ QUnit.test("TimeInput", 6, function() {
   w = forms.TimeInput({format: "%H:%M", attrs: {type: "time"}})
   reactHTMLEqual(w.render("time", t),
         "<input type=\"time\" name=\"time\" value=\"12:51\">")
-  strictEqual(w._hasChanged(t, "12:51"), false)
 })
 
 QUnit.test("SplitHiddenDateTimeWidget", 3, function() {

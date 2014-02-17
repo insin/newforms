@@ -243,7 +243,7 @@ QUnit.test("DecimalField", 57, function() {
   cleanErrorEqual(f, "Ensure that there are no more than 0 digits before the decimal point.", "1.1")
 })
 
-QUnit.test("DateField", 31, function() {
+QUnit.test("DateField", 33, function() {
   var f = forms.DateField()
   var expected = new Date(2006, 9, 25).valueOf()
   strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), expected)
@@ -263,12 +263,12 @@ QUnit.test("DateField", 31, function() {
   cleanErrorEqual(f, "Enter a valid date.", "25/10/06")
   cleanErrorEqual(f, "This field is required.", null)
 
-  var f = forms.DateField({required: false})
+  f = forms.DateField({required: false})
   strictEqual(f.clean(null), null)
   strictEqual(f.clean(""), null)
 
   // DateField accepts an optional inputFormats parameter
-  var f = forms.DateField({inputFormats: ["%Y %m %d"]})
+  f = forms.DateField({inputFormats: ["%Y %m %d"]})
   strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), expected)
   strictEqual(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), expected)
   strictEqual(f.clean("2006 10 25").valueOf(), expected)
@@ -288,9 +288,14 @@ QUnit.test("DateField", 31, function() {
   strictEqual(f.clean(" October 25, 2006 ").valueOf(), expected)
   strictEqual(f.clean(" 25 October 2006 ").valueOf(), expected)
   cleanErrorEqual(f, "Enter a valid date.", "   ")
+
+  f = forms.DateField({inputFormats: ["%d/%m/%Y"]})
+  var d = new Date(2007, 8, 17)
+  strictEqual(f._hasChanged(d, "17/09/2007"), false)
+  strictEqual(f._hasChanged("17/09/2007", "17/09/2007"), false)
 })
 
-QUnit.test("TimeField", 14, function() {
+QUnit.test("TimeField", 17, function() {
   var f = forms.TimeField()
   strictEqual(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf())
   strictEqual(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf())
@@ -300,7 +305,7 @@ QUnit.test("TimeField", 14, function() {
   cleanErrorEqual(f, "Enter a valid time.", "1:24 p.m.")
 
   // TimeField accepts an optional inputFormats parameter
-  var f = forms.TimeField({inputFormats: ["%I:%M %p"]})
+  f = forms.TimeField({inputFormats: ["%I:%M %p"]})
   strictEqual(f.clean(new Date(1900, 0, 1, 14, 25)).valueOf(), new Date(1900, 0, 1, 14, 25).valueOf())
   strictEqual(f.clean(new Date(1900, 0, 1, 14, 25, 59)).valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf())
   strictEqual(f.clean("4:25 AM").valueOf(), new Date(1900, 0, 1, 4, 25).valueOf())
@@ -315,9 +320,16 @@ QUnit.test("TimeField", 14, function() {
   strictEqual(f.clean("  14:25  ").valueOf(), new Date(1900, 0, 1, 14, 25).valueOf())
   strictEqual(f.clean("  14:25:59  ").valueOf(), new Date(1900, 0, 1, 14, 25, 59).valueOf())
   cleanErrorEqual(f, "Enter a valid time.", "   ")
+
+  f = forms.TimeField({inputFormats: ["%H:%M"]})
+  strictEqual(f._hasChanged(new Date(1900, 0, 1, 12, 51, 34), "12:51"), true)
+  strictEqual(f._hasChanged(new Date(1900, 0, 1, 12, 51), "12:51"), false)
+
+  f = forms.TimeField({inputFormats: ["%I:%M %p"]})
+  strictEqual(f._hasChanged("12:51 PM", "12:51 PM"), false)
 })
 
-QUnit.test("DateTimeField", 34, function() {
+QUnit.test("DateTimeField", 36, function() {
   var f = forms.DateTimeField()
   strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), new Date(2006, 9, 25).valueOf())
   strictEqual(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), new Date(2006, 9, 25, 14, 30).valueOf())
@@ -339,7 +351,7 @@ QUnit.test("DateTimeField", 34, function() {
   cleanErrorEqual(f, "Enter a valid date/time.", "2006-10-25 4:30 p.m.")
 
   // DateField accepts an optional input_formats parameter
-  f = new forms.DateTimeField({inputFormats: ["%Y %m %d %I:%M %p"]})
+  f = forms.DateTimeField({inputFormats: ["%Y %m %d %I:%M %p"]})
   strictEqual(f.clean(new Date(2006, 9, 25)).valueOf(), new Date(2006, 9, 25).valueOf())
   strictEqual(f.clean(new Date(2006, 9, 25, 14, 30)).valueOf(), new Date(2006, 9, 25, 14, 30).valueOf())
   strictEqual(f.clean(new Date(2006, 9, 25, 14, 30, 59)).valueOf(), new Date(2006, 9, 25, 14, 30, 59).valueOf())
@@ -364,6 +376,12 @@ QUnit.test("DateTimeField", 34, function() {
   strictEqual(f.clean(" 10/25/06 14:30:45 ").valueOf(), new Date(2006, 9, 25, 14, 30, 45).valueOf())
   strictEqual(f.clean(" 10/25/06 ").valueOf(), new Date(2006, 9, 25).valueOf())
   cleanErrorEqual(f, "Enter a valid date/time.", "   ")
+
+  f = forms.DateTimeField({inputFormats: ["%Y %m %d %I:%M %p"]})
+  var d = new Date(2006, 9, 17, 14, 30, 0)
+  strictEqual(f._hasChanged(d, "2006 10 17 2:30 PM"), false)
+  // Initial value may be a string from a hidden input
+  strictEqual(f._hasChanged("2006 10 17 2:30 PM", "2006 10 17 2:30 PM"), false)
 })
 
 QUnit.test("RegexField", 24, function() {
@@ -442,7 +460,7 @@ QUnit.test("EmailField", 27, function() {
   cleanErrorEqual(f, "Ensure this value has at most 15 characters (it has 20).", "alf123456788@foo.com")
 })
 
-QUnit.test("FileField", 19, function() {
+QUnit.test("FileField", 23, function() {
   function SimpleUploadedFile(name, content) {
     this.name = name
     this.content = content
@@ -473,6 +491,25 @@ QUnit.test("FileField", 19, function() {
 
   f = forms.FileField({allowEmptyFile: true})
   ok(f.clean(new SimpleUploadedFile("name", "")) instanceof SimpleUploadedFile, "Valid uploaded empty file details return the file object")
+
+  // Test for the behavior of _hasChanged for FileField. The value of data
+  // will more than likely come from request.FILES. The value of initial data
+  // will likely be a filename stored in the database. Since its value is of
+  // no use to a FileField it is ignored.
+  f = forms.FileField()
+
+  // No file was uploaded and no initial data
+  strictEqual(f._hasChanged("", null), false)
+
+  // A file was uploaded and no initial data
+  strictEqual(f._hasChanged("", {filename: "resume.txt", content: "My resume"}), true)
+
+  // A file was not uploaded, but there is initial data
+  strictEqual(f._hasChanged("resume.txt", null), false)
+
+  // A file was uploaded and there is initial data (file identity is not dealt
+  // with here).
+  strictEqual(f._hasChanged("resume.txt", {filename: "resume.txt", content: "My resume"}), true)
 })
 
 QUnit.test("URLField", 63, function() {
@@ -563,7 +600,7 @@ QUnit.test("URLField", 63, function() {
   }
 })
 
-QUnit.test("BooleanField", 21, function() {
+QUnit.test("BooleanField", 28, function() {
   var f = forms.BooleanField()
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
@@ -593,6 +630,16 @@ QUnit.test("BooleanField", 21, function() {
   strictEqual(f.clean("false"), false)
   strictEqual(f.clean("False"), false)
   strictEqual(f.clean("FaLsE"), false)
+
+  f = forms.BooleanField()
+  strictEqual(f._hasChanged(null, null), false)
+  strictEqual(f._hasChanged(null, ""), false)
+  strictEqual(f._hasChanged("", ""), false)
+  strictEqual(f._hasChanged(false, "on"), true)
+  strictEqual(f._hasChanged(true, "on"), false)
+  strictEqual(f._hasChanged(true, ""), true)
+  // Initial value may have mutated to a string due to showhiddenInitial
+  strictEqual(f._hasChanged("false", "on"), true)
 })
 
 QUnit.test("ChoiceField", 19, function() {
@@ -670,7 +717,7 @@ QUnit.test("TypedChoiceField", 9, function() {
   strictEqual(f.clean(""), null)
 })
 
-QUnit.test("NullBooleanField", 14, function() {
+QUnit.test("NullBooleanField", 21, function() {
   var f = forms.NullBooleanField()
   strictEqual(f.clean(""), null)
   strictEqual(f.clean(true), true)
@@ -705,9 +752,18 @@ QUnit.test("NullBooleanField", 14, function() {
   strictEqual(f.cleanedData.nullbool0, true)
   strictEqual(f.cleanedData.nullbool1, false)
   strictEqual(f.cleanedData.nullbool2, null)
+
+  f = forms.NullBooleanField()
+  strictEqual(f._hasChanged(false, null), true)
+  strictEqual(f._hasChanged(null, false), true)
+  strictEqual(f._hasChanged(null, null), false)
+  strictEqual(f._hasChanged(false, false), false)
+  strictEqual(f._hasChanged(true, false), true)
+  strictEqual(f._hasChanged(true, null), true)
+  strictEqual(f._hasChanged(true, false), true)
 })
 
-QUnit.test("MultipleChoiceField", 25, function() {
+QUnit.test("MultipleChoiceField", 32, function() {
   var f = forms.MultipleChoiceField({choices: [["1", "1"], ["2", "2"]]})
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
@@ -719,7 +775,7 @@ QUnit.test("MultipleChoiceField", 25, function() {
   cleanErrorEqual(f, "This field is required.", [])
   cleanErrorEqual(f, "Select a valid choice. 3 is not one of the available choices.", ["3"])
 
-  var f = forms.MultipleChoiceField({choices: [["1", "1"], ["2", "2"]], required: false})
+  f = forms.MultipleChoiceField({choices: [["1", "1"], ["2", "2"]], required: false})
   deepEqual(f.clean(""), [])
   deepEqual(f.clean(null), [])
   deepEqual(f.clean([1]), ["1"])
@@ -738,6 +794,16 @@ QUnit.test("MultipleChoiceField", 25, function() {
   deepEqual(f.clean(["1", "5"]), ["1", "5"])
   cleanErrorEqual(f, "Select a valid choice. 6 is not one of the available choices.", ["6"])
   cleanErrorEqual(f, "Select a valid choice. 6 is not one of the available choices.", ["1", "6"])
+
+   // Test the usage of _hasChanged
+  f = forms.MultipleChoiceField({choices: [[1, 1], [2, 2], [3, 3]]})
+  strictEqual(f._hasChanged(null, null), false)
+  strictEqual(f._hasChanged([], null), false)
+  strictEqual(f._hasChanged(null, [""]), true)
+  strictEqual(f._hasChanged([1, 2], ["1", "2"]), false)
+  strictEqual(f._hasChanged([1, 2], ["1"]), true)
+  strictEqual(f._hasChanged([1, 2], ["1", "3"]), true)
+  strictEqual(f._hasChanged([2, 1], ["1", "2"]), false)
 })
 
 QUnit.test("TypedMultipleChoiceField", function() {
@@ -805,7 +871,7 @@ QUnit.test("ComboField", 10, function() {
 
 // TODO Test FilePathField when newforms can be run on the backend
 
-QUnit.test("SplitDateTimeField", 20, function() {
+QUnit.test("SplitDateTimeField", 23, function() {
   var f = forms.SplitDateTimeField()
   strictEqual(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
        new Date(2006, 0, 10, 7, 30).valueOf())
@@ -816,7 +882,7 @@ QUnit.test("SplitDateTimeField", 20, function() {
   cleanErrorEqual(f, ["Enter a valid time."], ["2006-01-10", "there"])
   cleanErrorEqual(f, ["Enter a valid date."], ["hello", "07:30"])
 
-  var f = forms.SplitDateTimeField({required: false})
+  f = forms.SplitDateTimeField({required: false})
   strictEqual(f.clean([new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]).valueOf(),
        new Date(2006, 0, 10, 7, 30).valueOf())
   strictEqual(f.clean(["2006-01-10", "07:30"]).valueOf(),
@@ -832,6 +898,11 @@ QUnit.test("SplitDateTimeField", 20, function() {
   cleanErrorEqual(f, ["Enter a valid time."], ["2006-01-10", ""])
   cleanErrorEqual(f, ["Enter a valid time."], ["2006-01-10"])
   cleanErrorEqual(f, ["Enter a valid date."], ["", "07:30"])
+
+  f = forms.SplitDateTimeField({inputDateFormats: ["%d/%m/%Y"]})
+  strictEqual(f._hasChanged(new Date(2008, 4, 6, 12, 40, 0), ["2008-05-05", "12:40:00"]), true)
+  strictEqual(f._hasChanged(new Date(2008, 4, 6, 12, 40, 0), ["06/05/2008", "12:40"]), false)
+  strictEqual(f._hasChanged(new Date(2008, 4, 6, 12, 40, 0), ["06/05/2008", "12:41"]), true)
 })
 
 QUnit.test("IPAddressField", 14, function() {
