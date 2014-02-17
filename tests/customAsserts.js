@@ -57,30 +57,62 @@ function validationErrorEqual(validator, message, value) {
   throw new Error('Validator did not throw an exception')
 }
 
+/**
+ * Custom assertion for contents created with React.DOM.
+ */
 var reactHTMLEqual = (function() {
   var reactAttrs = / data-react[-\w]+="[^"]+"/g
-  var wrapper = /^<div>|<\/div>$/g
+  var wrapperElement = /^<div>|<\/div>$/g
+
   return function reactHTMLEqual(component, expectedHTML, message) {
+    // Some components just need to return content strings
     if (typeof component == 'string') {
       return strictEqual(component, expectedHTML, message)
     }
+
+    // If a component renders to an Array it needs to be wrapped with another
+    // element for rendering.
     var wrapped = false
     if (Array.isArray(component)) {
       component = React.DOM.div(null, component)
       wrapped = true
     }
+
+    // If a component is using the "ref" attribute, it needs to be rendered
+    // within a render() method, in which case a function which does the
+    // rendering should be passsed.
+    if (typeof component == 'function') {
+      var renderFunc = component
+      var reactClass = React.createClass({
+        render: function() {
+          var rendered = renderFunc()
+          if (Array.isArray(rendered)) {
+            rendered = React.DOM.div(null, rendered)
+            wrapped = true
+          }
+          return rendered
+        }
+      })
+      component = reactClass()
+    }
+
     stop()
     try {
       React.renderComponentToString(component, function(html) {
         html = html.replace(reactAttrs, '')
+        // Remove HTML for any wrapper element which was added
         if (wrapped) {
-          html = html.replace(wrapper, '')
+          html = html.replace(wrapperElement, '')
         }
         equal(html, expectedHTML, message)
       })
     }
     catch (e) {
-      // TDOO Why is react throwing on every call?
+      // React is throwing these when rendering to String(!?)
+      if (e.message !== "Cannot read property 'firstChild' of undefined" &&
+          e.message !== "ancestorNode is undefined") {
+        throw e
+      }
     }
     finally {
       start()

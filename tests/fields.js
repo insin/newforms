@@ -4,7 +4,7 @@ QUnit.module("fields")
 
 function widgetRendersTo(field, expectedHTML) {
   var _Form  = forms.Form.extend({f: field})
-  reactHTMLEqual(new _Form().boundField('f').render(), expectedHTML)
+  reactHTMLEqual(function() { return new _Form().boundField('f').render() }, expectedHTML)
 }
 
 QUnit.test("Field sets widget isRequired", 2, function() {

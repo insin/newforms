@@ -125,7 +125,7 @@ QUnit.test("MultipleHiddenInput", 12, function() {
 
   // Each input gets a unique id
   w = forms.MultipleHiddenInput()
-  reactHTMLEqual(w.render("letters", ["a", "b", "c"], {attrs: {'id': 'hideme'}}),
+  reactHTMLEqual(w.render.bind(w, "letters", ["a", "b", "c"], {attrs: {'id': 'hideme'}}),
         "<div><input type=\"hidden\" name=\"letters\" id=\"hideme_0\" value=\"a\"><input type=\"hidden\" name=\"letters\" id=\"hideme_1\" value=\"b\"><input type=\"hidden\" name=\"letters\" id=\"hideme_2\" value=\"c\"></div>")
 })
 
@@ -685,7 +685,7 @@ QUnit.test("RadioSelect", 21, function() {
 
   // Attributes provided at instantiation are passed to the constituent inputs
   w = forms.RadioSelect({attrs: {id: "foo"}})
-  reactHTMLEqual(w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
+  reactHTMLEqual(w.render.bind(w, "beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
 "<li><label for=\"foo_0\"><input id=\"foo_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label></li>" +
 "<li><label for=\"foo_1\"><input id=\"foo_1\" type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
@@ -695,7 +695,7 @@ QUnit.test("RadioSelect", 21, function() {
 
   // Attributes provided at render-time are passed to the constituent inputs
   w = forms.RadioSelect()
-  reactHTMLEqual(w.render("beatle", "J", {attrs: {id: "bar"}, choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
+  reactHTMLEqual(w.render.bind(w, "beatle", "J", {attrs: {id: "bar"}, choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
 "<li><label for=\"bar_0\"><input id=\"bar_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label></li>" +
 "<li><label for=\"bar_1\"><input id=\"bar_1\" type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
@@ -804,7 +804,8 @@ QUnit.test("CheckboxSelectMultiple", 14, function() {
 "</ul>")
 
   // Each input gets a separate ID
-  reactHTMLEqual(forms.CheckboxSelectMultiple().render('letters', ['a', 'c'], {
+  w = forms.CheckboxSelectMultiple()
+  reactHTMLEqual(w.render.bind(w, 'letters', ['a', 'c'], {
     choices: [['a', 'A'], ['b', 'B'], ['c', 'C']]
   , attrs: {id: 'abc'}
   }),
@@ -815,7 +816,8 @@ QUnit.test("CheckboxSelectMultiple", 14, function() {
 "</ul>")
 
   // Each input gets a separate ID when the ID is passed to the constructor
-  reactHTMLEqual(forms.CheckboxSelectMultiple({attrs: {id: 'abc'}}).render('letters', ['a', 'c'], {
+  w = forms.CheckboxSelectMultiple({attrs: {id: 'abc'}})
+  reactHTMLEqual(w.render.bind(w, 'letters', ['a', 'c'], {
     choices: [['a', 'A'], ['b', 'B'], ['c', 'C']]
   }),
 "<ul>" +
@@ -839,11 +841,11 @@ QUnit.test("MultiWidget", 4, function() {
         "<div><input class=\"big\" type=\"text\" name=\"name_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" value=\"lennon\"></div>")
   reactHTMLEqual(w.render("name", "john__lennon"),
         "<div><input class=\"big\" type=\"text\" name=\"name_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" value=\"lennon\"></div>")
-  reactHTMLEqual(w.render("name", "john__lennon", {attrs: {id: "foo"}}),
+  reactHTMLEqual(w.render.bind(w, "name", "john__lennon", {attrs: {id: "foo"}}),
         "<div><input class=\"big\" type=\"text\" name=\"name_0\" id=\"foo_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"foo_1\" value=\"lennon\"></div>")
 
   w = new MyMultiWidget([forms.TextInput({attrs: {"className": "big"}}), forms.TextInput({attrs: {"className": "small"}})], {attrs: {id: "bar"}})
-  reactHTMLEqual(w.render("name", ["john", "lennon"]),
+  reactHTMLEqual(w.render.bind(w, "name", ["john", "lennon"]),
         "<div><input class=\"big\" type=\"text\" name=\"name_0\" id=\"bar_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"bar_1\" value=\"lennon\"></div>")
 })
 
@@ -963,7 +965,7 @@ QUnit.test("ClearableFileInput", 6, function() {
   // Clear input renders
   var w = forms.ClearableFileInput()
   w.isRequired = false
-  reactHTMLEqual(w.render("myfile", new FakeFieldFile()),
+  reactHTMLEqual(w.render.bind(w, "myfile", new FakeFieldFile()),
 "<div><span>Currently</span><span>: </span><a href=\"something\">something</a><span> </span><input type=\"checkbox\" name=\"myfile-clear\" id=\"myfile-clear_id\"><span> </span><label for=\"myfile-clear_id\">Clear</label><br><span>Change</span><span>: </span><input type=\"file\" name=\"myfile\"></div>")
 
   // A ClearableFileInput should escape name, filename and URL when rendering
@@ -971,7 +973,7 @@ QUnit.test("ClearableFileInput", 6, function() {
   var StrangeFieldFile = function() { this.url = "something?chapter=1&sect=2&copy=3&lang=en"; }
   StrangeFieldFile.prototype.toString = function() { return "something<div onclick=\"alert('oops')\">.jpg"; }
   var file = new StrangeFieldFile()
-  reactHTMLEqual(w.render("my<div>file", file),
+  reactHTMLEqual(w.render.bind(w, "my<div>file", file),
 "<div><span>Currently</span><span>: </span><a href=\"something?chapter=1&amp;sect=2&amp;copy=3&amp;lang=en\">something&lt;div onclick=&quot;alert(&#x27;oops&#x27;)&quot;&gt;.jpg</a><span> </span><input type=\"checkbox\" name=\"my&lt;div&gt;file-clear\" id=\"my&lt;div&gt;file-clear_id\"><span> </span><label for=\"my&lt;div&gt;file-clear_id\">Clear</label><br><span>Change</span><span>: </span><input type=\"file\" name=\"my&lt;div&gt;file\"></div>")
 
   // A ClearableFileInput instantiated with no initial value does not render

@@ -610,7 +610,7 @@ QUnit.test("Limiting max forms", 4, function() {
   // number of forms, only controlled by the value of the extra parameter.
   var LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 3})
   var formset = new LimitedFavouriteDrinkFormSet()
-  reactHTMLEqual(allAsTable(formset.forms),
+  reactHTMLEqual(allAsTable.bind(null, formset.forms),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\"></td></tr>" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>" +
 "<tr><th><label for=\"id_form-2-name\">Name:</label></th><td><input type=\"text\" name=\"form-2-name\" id=\"id_form-2-name\"></td></tr>")
@@ -622,14 +622,14 @@ QUnit.test("Limiting max forms", 4, function() {
 
   LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 5, maxNum: 2})
   formset = new LimitedFavouriteDrinkFormSet()
-  reactHTMLEqual(allAsTable(formset.forms),
+  reactHTMLEqual(allAsTable.bind(null, formset.forms),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\"></td></tr>" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>")
 
   // Ensure that maxNum has no affect when extra is less than maxNum
   LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2})
   formset = new LimitedFavouriteDrinkFormSet()
-  reactHTMLEqual(allAsTable(formset.forms),
+  reactHTMLEqual(allAsTable.bind(null, formset.forms),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\"></td></tr>")
 })
 
@@ -643,7 +643,7 @@ QUnit.test("Max num with initial data", 2, function() {
   ]
   var LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2})
   var formset = new LimitedFavouriteDrinkFormSet({initial: initial})
-  reactHTMLEqual(allAsTable(formset.forms),
+  reactHTMLEqual(allAsTable.bind(null, formset.forms),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin and Tonic\"></td></tr>" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\" value=\"Bloody Mary\"></td></tr>")
 
@@ -654,7 +654,7 @@ QUnit.test("Max num with initial data", 2, function() {
   ]
   LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra:3, maxNum: 2})
   formset = new LimitedFavouriteDrinkFormSet({initial: initial})
-  reactHTMLEqual(allAsTable(formset.forms),
+  reactHTMLEqual(allAsTable.bind(null, formset.forms),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin and Tonic\"></td></tr>" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>")
 
@@ -682,7 +682,7 @@ QUnit.test("Nore initial than maxNum", 2, function() {
   ]
   var LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2})
   var formset = new LimitedFavouriteDrinkFormSet({initial: initial})
-  reactHTMLEqual(allAsTable(formset.forms),
+  reactHTMLEqual(allAsTable.bind(null, formset.forms),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Fernet and Coke\"></td></tr>" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\" value=\"Bloody Mary\"></td></tr>")
 
@@ -693,7 +693,7 @@ QUnit.test("Nore initial than maxNum", 2, function() {
   ]
   var LimitedFavouriteDrinkFormSet = forms.formsetFactory(FavouriteDrinkForm, {extra: 1, maxNum: 2})
   var formset = new LimitedFavouriteDrinkFormSet({initial: initial})
-  reactHTMLEqual(allAsTable(formset.forms),
+  reactHTMLEqual(allAsTable.bind(null, formset.forms),
 "<tr><th><label for=\"id_form-0-name\">Name:</label></th><td><input type=\"text\" name=\"form-0-name\" id=\"id_form-0-name\" value=\"Gin Tonic\"></td></tr>" +
 "<tr><th><label for=\"id_form-1-name\">Name:</label></th><td><input type=\"text\" name=\"form-1-name\" id=\"id_form-1-name\"></td></tr>")
 })

@@ -63,7 +63,7 @@ var ModelTestForm = forms.Form.extend({
 
 QUnit.test('ModelChoiceField', 16, function() {
   var form = new ModelTestForm()
-  reactHTMLEqual(form.boundField('thing').render(),
+  reactHTMLEqual(function() { return form.boundField('thing').render() },
 '<select name="thing" id="id_thing">' +
 '<option value="" selected="selected">---------</option>' +
 '<option value="1">Thing 1</option>' +

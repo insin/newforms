@@ -79,7 +79,7 @@ QUnit.test("MultiWidget and MultiValueField", 11, function() {
     field1: ComplexField({widget: w})
   })
   f = new ComplexFieldForm()
-  reactHTMLEqual(f.asTable(),
+  reactHTMLEqual(f.asTable.bind(f),
 "<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" id=\"id_field1_0\"><select name=\"field1_1\" multiple=\"multiple\" id=\"id_field1_1\">" +
 "<option value=\"J\">John</option>" +
 "<option value=\"P\">Paul</option>" +
@@ -88,7 +88,7 @@ QUnit.test("MultiWidget and MultiValueField", 11, function() {
 "</select><div><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\"></div></div></td></tr>")
 
   f = new ComplexFieldForm({data: {field1_0: "some text", field1_1 :["J", "P"], field1_2_0: "2007-04-25", field1_2_1: "06:24:00"}})
-  reactHTMLEqual(f.asTable(),
+  reactHTMLEqual(f.asTable.bind(f),
 "<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" id=\"id_field1_0\" value=\"some text\"><select name=\"field1_1\" multiple=\"multiple\" id=\"id_field1_1\">" +
 "<option value=\"J\" selected=\"selected\">John</option>" +
 "<option value=\"P\" selected=\"selected\">Paul</option>" +
@@ -128,9 +128,9 @@ QUnit.test("Forms with *only* hidden fields", 4, function() {
     data: forms.IntegerField({widget: forms.HiddenInput})
   })
   var f = new HiddenForm({data: {}})
-  reactHTMLEqual(f.asP(),
+  reactHTMLEqual(f.asP.bind(f),
 "<div><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>")
-  reactHTMLEqual(f.asTable(),
+  reactHTMLEqual(f.asTable.bind(f),
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>")
 
   // A form with only hidden fields can make use of the hiddenFieldRowCssClass
@@ -141,8 +141,8 @@ QUnit.test("Forms with *only* hidden fields", 4, function() {
   , hiddenFieldRowCssClass: "hiddenFields"
   })
   f = new HiddenForm()
-  reactHTMLEqual(f.asP(),
+  reactHTMLEqual(f.asP.bind(f),
 "<div class=\"hiddenFields\"><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>")
-  reactHTMLEqual(f.asTable(),
+  reactHTMLEqual(f.asTable.bind(f),
 "<tr class=\"hiddenFields\"><td colspan=\"2\"><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>")
 })
