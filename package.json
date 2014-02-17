@@ -35,6 +35,6 @@
     "react": "0.8.0"
   },
   "scripts": {
-    "test": "node tests/tests.js"
+    "test": "gulp build-js && node tests/tests.js"
   }
 }
