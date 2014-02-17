@@ -512,13 +512,14 @@ QUnit.test("FileField", 23, function() {
   strictEqual(f._hasChanged("resume.txt", {filename: "resume.txt", content: "My resume"}), true)
 })
 
-QUnit.test("URLField", 63, function() {
+QUnit.test("URLField", 65, function() {
   var invalidURLs =
       ["foo", "http://", "http://example", "http://example.", "com.", ".",
        "http://.com", "http://invalid-.com", "http://-invalid.com",
        "http://inv-.alid-.com", "http://inv-.-alid.com"]
 
   var f = forms.URLField()
+  widgetRendersTo(f, "<input type=\"url\" name=\"f\" id=\"id_f\">")
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
   equal(f.clean("http://localhost"), "http://localhost/")
@@ -568,6 +569,7 @@ QUnit.test("URLField", 63, function() {
 
   // URLField also has minLength and maxLength parameters, for convenience
   f = forms.URLField({minLength: 15, maxLength: 20})
+  widgetRendersTo(f, "<input maxlength=\"20\" type=\"url\" name=\"f\" id=\"id_f\">")
   cleanErrorEqual(f, "Ensure this value has at least 15 characters (it has 13).", "http://f.com")
   equal(f.clean("http://example.com"), "http://example.com/")
   cleanErrorEqual(f, "Ensure this value has at most 20 characters (it has 38).", "http://abcdefghijklmnopqrstuvwxyz.com")
