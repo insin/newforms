@@ -169,11 +169,15 @@ Field.prototype.widgetAttrs = function(widget) {
 }
 
 /**
- * Django has dropped this method, but we still need to it perform the change
- * check for certain Field types.
+ * Determines if data has changed from initial.
  */
 Field.prototype._hasChanged = function(initial, data) {
-  return this.widget._hasChanged(initial, data)
+  // For purposes of seeing whether something has changed, null is the same
+  // as an empty string, if the data or inital value we get is null, replace
+  // it with ''.
+  var dataValue = (data === null ? '' : data)
+  var initialValue = (initial === null ? '' : initial)
+  return (''+initialValue != ''+dataValue)
 }
 
 /**
@@ -383,7 +387,7 @@ DecimalField.prototype.defaultErrorMessages =
  * against a different value than that given to any defined validators, due to
  * JavaScript lacking a built-in Decimal type. Decimal format and component size
  * checks will be performed against a normalised string representation of the
- * input, whereas Validators will be passed a float version of teh value for
+ * input, whereas Validators will be passed a float version of the value for
  * min/max checking.
  * @param {string|Number} value
  * @return {string} a normalised version of the input.
@@ -496,6 +500,23 @@ BaseTemporalField.prototype.toJavaScript = function(value) {
  */
 BaseTemporalField.prototype.strpdate = function(value, format) {
   return time.strpdate(value, format)
+}
+
+BaseTemporalField.prototype._hasChanged = function(initial, data) {
+  try {
+    data = this.toJavaScript(data)
+  }
+  catch (e) {
+    if (!(e instanceof ValidationError)) { throw e }
+    return true
+  }
+  initial = this.toJavaScript(initial)
+  if (!!initial && !!data) {
+    return initial.getTime() !== data.getTime()
+  }
+  else {
+    return initial !== data
+  }
 }
 
 /**
@@ -655,6 +676,7 @@ var EmailField = CharField.extend({
     if (!(this instanceof Field)) { return new EmailField(kwargs) }
     CharField.call(this, kwargs)
   }
+, widget: widgets.EmailInput
 , defaultValidators: [validators.validateEmail]
 })
 EmailField.prototype.defaultErrorMessages =
@@ -751,6 +773,13 @@ FileField.prototype.boundData = function(data, initial) {
   return data
 }
 
+FileField.prototype._hasChanged = function(initial, data) {
+  if (data === null) {
+    return false
+  }
+  return true
+}
+
 /**
  * Validates that its input is a valid uploaded image.
  * @constructor
@@ -794,6 +823,7 @@ var URLField = CharField.extend({
     CharField.call(this, kwargs)
     this.validators.push(validators.URLValidator())
   }
+, widget: widgets.URLInput
 })
 URLField.prototype.defaultErrorMessages =
     object.extend({}, URLField.prototype.defaultErrorMessages, {
@@ -849,6 +879,16 @@ BooleanField.prototype.toJavaScript = function(value) {
   return value
 }
 
+BooleanField.prototype._hasChanged = function(initial, data) {
+  // Sometimes data or initial could be null or '' which should be the same
+  // thing as false.
+  if (initial === 'false') {
+    // showHiddenInitial may have transformed false to 'false'
+    initial = false
+  }
+  return (Boolean(initial) != Boolean(data))
+}
+
 /**
  * A field whose valid values are <code>null</code>, <code>true</code> and
  * <code>false</code>. Invalid values are cleaned to <code>null</code>.
@@ -879,6 +919,17 @@ NullBooleanField.prototype.toJavaScript = function(value) {
 }
 
 NullBooleanField.prototype.validate = function(value) {}
+
+NullBooleanField.prototype._hasChanged = function(initial, data) {
+  // null (unknown) and false (No) are not the same
+  if (initial !== null) {
+      initial = Boolean(initial)
+  }
+  if (data !== null) {
+      data = Boolean(data)
+  }
+  return initial != data
+}
 
 /**
  * Validates that its input is one of a valid list of choices.
@@ -1033,6 +1084,25 @@ MultipleChoiceField.prototype.validate = function(value) {
           format(this.errorMessages.invalidChoice, {value: value[i]}))
     }
   }
+}
+
+MultipleChoiceField.prototype._hasChanged = function(initial, data) {
+  if (initial === null) {
+    initial = []
+  }
+  if (data === null) {
+    data = []
+  }
+  if (initial.length != data.length) {
+    return true
+  }
+  var dataLookup = object.lookup(data)
+  for (var i = 0, l = initial.length; i < l; i++) {
+    if (typeof dataLookup[''+initial[i]] == 'undefined') {
+      return true
+    }
+  }
+  return false
 }
 
 /**
@@ -1261,6 +1331,27 @@ MultiValueField.prototype.compress = function(dataList) {
   throw new Error('Subclasses must implement this method.')
 }
 
+MultiValueField.prototype._hasChanged = function(initial, data) {
+  var i, l
+
+  if (initial === null) {
+    initial = []
+    for (i = 0, l = data.length; i < l; i++) {
+      initial.push('')
+    }
+  }
+  else if (!(is.Array(initial))) {
+    initial = this.widget.decompress(initial)
+  }
+
+  for (i = 0, l = this.fields.length; i < l; i++) {
+    if (this.fields[i]._hasChanged(initial[i], data[i])) {
+      return true
+    }
+  }
+  return false
+}
+
 /**
  * A MultiValueField consisting of a DateField and a TimeField.
  * @constructor
@@ -1280,7 +1371,7 @@ var SplitDateTimeField = MultiValueField.extend({
     kwargs.fields = [
       DateField({inputFormats: kwargs.inputDateFormats,
                  errorMessages: {invalid: errors.invalidDate}})
-    , TimeField({inputFormats: kwargs.inputDateFormats,
+    , TimeField({inputFormats: kwargs.inputTimeFormats,
                  errorMessages: {invalid: errors.invalidTime}})
     ]
     MultiValueField.call(this, kwargs)
@@ -1509,12 +1600,12 @@ BoundField.prototype.idForLabel = function() {
   return widget.idForLabel(id)
 }
 
-BoundField.prototype.render = function() {
+BoundField.prototype.render = function(kwargs) {
   if (this.field.showHiddenInitial) {
-    return React.DOM.div(null, this.asWidget(),
+    return React.DOM.div(null, this.asWidget(kwargs),
                          this.asHidden({onlyInitial: true}))
   }
-  return this.asWidget()
+  return this.asWidget(kwargs)
 }
 
 /**
@@ -1610,7 +1701,10 @@ BoundField.prototype.value = function() {
  * one and the label doesn't end in punctuation.
  */
 BoundField.prototype.getLabel = function() {
-  var label = ''+this.label
+  return this._addLabelSuffix(''+this.label)
+}
+
+BoundField.prototype._addLabelSuffix = function(label) {
   // Only add the suffix if the label does not end in punctuation
   if (this.form.labelSuffix &&
       ':?.!'.indexOf(label.charAt(label.length - 1)) == -1) {
@@ -1621,8 +1715,7 @@ BoundField.prototype.getLabel = function() {
 
 /**
  * Wraps the given contents in a &lt;label&gt;, if the field has an ID
- * attribute. Does not HTML-escape the contents. If contents aren't given, uses
- * the field's HTML-escaped label.
+ * attribute. If contents aren't given, uses the field's label.
  *
  * If attrs are given, they're used as HTML attributes on the <label> tag.
  *
@@ -1634,19 +1727,17 @@ BoundField.prototype.getLabel = function() {
 BoundField.prototype.labelTag = function(kwargs) {
   kwargs = object.extend({contents: null, attrs: null}, kwargs)
   var contents
-    , widget = this.field.widget
-    , id
-    , attrs
   if (kwargs.contents !== null) {
-    contents = kwargs.contents
+    contents = this._addLabelSuffix(''+kwargs.contents)
   }
   else {
     contents = this.getLabel()
   }
 
-  id = object.get(widget.attrs, 'id', this.autoId())
+  var widget = this.field.widget
+    , id = object.get(widget.attrs, 'id', this.autoId())
   if (id) {
-    attrs = object.extend(kwargs.attrs || {}, {htmlFor: widget.idForLabel(id)})
+    var attrs = object.extend(kwargs.attrs || {}, {htmlFor: widget.idForLabel(id)})
     contents = React.DOM.label(attrs, contents)
   }
   return contents
@@ -1747,8 +1838,16 @@ BaseForm.prototype.changedData = function() {
       if (field.showHiddenInitial) {
         var initialPrefixedName = this.addInitialPrefix(name)
         var hiddenWidget = new field.hiddenWidget()
-        initialValue = hiddenWidget.valueFromData(
-                this.data, this.files, initialPrefixedName)
+        try {
+          initialValue = hiddenWidget.valueFromData(
+                  this.data, this.files, initialPrefixedName)
+        }
+        catch (e) {
+          if (!(e instanceof ValidationError)) { throw e }
+          // Always assume data has changed if validation fails
+          this._changedData.push(name)
+          continue
+        }
       }
 
       if (field._hasChanged(initialValue, dataValue)) {
@@ -1935,7 +2034,7 @@ BaseForm.prototype._htmlOutput = function(normalRow,
     if (errors !== null) {
       errors = errors.render()
     }
-    rows.push(normalRow(label, bf.render(), helpText, errors,
+    rows.push(normalRow(bf.htmlName, label, bf.render(), helpText, errors,
                         htmlClassAttr, extraContent))
   }
 
@@ -1962,7 +2061,7 @@ BaseForm.prototype._htmlOutput = function(normalRow,
  * &lt;table&gt;&lt;/table&gt;.
  */
 BaseForm.prototype.asTable = (function() {
-  var normalRow = function(label, field, helpText, errors, htmlClassAttr,
+  var normalRow = function(key, label, field, helpText, errors, htmlClassAttr,
                            extraContent) {
     var contents = []
     if (errors) {
@@ -1977,7 +2076,7 @@ BaseForm.prototype.asTable = (function() {
       contents = contents.concat(extraContent)
     }
 
-    var rowAttrs = {}
+    var rowAttrs = {key: key}
     if (htmlClassAttr) {
       rowAttrs['className'] = htmlClassAttr
     }
@@ -2014,7 +2113,7 @@ BaseForm.prototype.asTable = (function() {
  * &lt;ul&gt;&lt;/ul&gt;.
  */
 BaseForm.prototype.asUL = (function() {
-  var normalRow = function(label, field, helpText, errors, htmlClassAttr,
+  var normalRow = function(key, label, field, helpText, errors, htmlClassAttr,
                            extraContent) {
     var contents = []
     if (errors) {
@@ -2033,7 +2132,7 @@ BaseForm.prototype.asUL = (function() {
       contents = contents.concat(extraContent)
     }
 
-    var rowAttrs = {}
+    var rowAttrs = {key: key}
     if (htmlClassAttr) {
       rowAttrs.className = htmlClassAttr
     }
@@ -2064,7 +2163,7 @@ BaseForm.prototype.asUL = (function() {
  * Returns this form rendered as HTML &lt;p&gt;s.
  */
 BaseForm.prototype.asP = (function() {
-  var normalRow = function(label, field, helpText, errors, htmlClassAttr,
+  var normalRow = function(key, label, field, helpText, errors, htmlClassAttr,
                            extraContent) {
     var contents = []
     if (label) {
@@ -2080,7 +2179,7 @@ BaseForm.prototype.asP = (function() {
       contents = contents.concat(extraContent)
     }
 
-    var rowAttrs = {}
+    var rowAttrs = {key: key}
     if (htmlClassAttr) {
       rowAttrs.className= htmlClassAttr
     }
@@ -3202,6 +3301,20 @@ function iterate(o) {
   return o || []
 }
 
+// TODO Export to isomorph
+/**
+ * If a property is present in an object, deletes it and returns its value,
+ * otherwise returns a default value.
+ */
+function popProp(obj, prop, defaultValue) {
+  var value = defaultValue
+  if (obj != null && object.hasOwn(obj, prop)) {
+    value = obj[prop]
+    delete obj[prop]
+  }
+  return value
+}
+
 /**
  * Converts 'firstName' and 'first_name' to 'First name', and
  * 'SHOUTING_LIKE_THIS' to 'SHOUTING LIKE THIS'.
@@ -3265,6 +3378,7 @@ function formData(form) {
 
     // Retrieve the element's value (or values)
     if (type == 'hidden' || type == 'password' || type == 'text' ||
+        type == 'email' || type == 'url' ||
         type == 'textarea' || ((type == 'checkbox' ||
                                 type == 'radio') && element.checked)) {
       value = element.value
@@ -3451,6 +3565,7 @@ module.exports = {
 , ErrorList: ErrorList
 , formData: formData
 , iterate: iterate
+, popProp: popProp
 , prettyName: prettyName
 , strip: strip
 }
@@ -3534,6 +3649,7 @@ Widget.prototype.render = function(name, value, kwargs) {
  */
 Widget.prototype.buildAttrs = function(extraAttrs, kwargs) {
   var attrs = object.extend({}, this.attrs, kwargs, extraAttrs)
+  attrs.ref = attrs.id
   return attrs
 }
 
@@ -3549,18 +3665,6 @@ Widget.prototype.buildAttrs = function(extraAttrs, kwargs) {
  */
 Widget.prototype.valueFromData = function(data, files, name) {
   return object.get(data, name, null)
-}
-
-/**
- * Determines if data has changed from initial.
- */
-Widget.prototype._hasChanged = function(initial, data) {
-  // For purposes of seeing whether something has changed, null is the same
-  // as an empty string, if the data or inital value we get is null, replace
-  // it with ''.
-  var dataValue = (data === null ? '' : data)
-  var initialValue = (initial === null ? '' : initial)
-  return (''+initialValue != ''+dataValue)
 }
 
 /**
@@ -3591,7 +3695,7 @@ var Input = Widget.extend({
     if (!(this instanceof Widget)) { return new Input(kwargs) }
     Widget.call(this, kwargs)
   }
-  /** The type attribute of this input. */
+  /** The type attribute of this input - subclasses must define it. */
 , inputType: null
 })
 
@@ -3618,22 +3722,54 @@ Input.prototype.render = function(name, value, kwargs) {
 var TextInput = Input.extend({
   constructor: function(kwargs) {
     if (!(this instanceof Widget)) { return new TextInput(kwargs) }
+    kwargs = object.extend({attrs: null}, kwargs)
+    if (kwargs.attrs != null) {
+      this.inputType = util.popProp(kwargs.attrs, 'type', this.inputType)
+    }
     Input.call(this, kwargs)
   }
 , inputType: 'text'
 })
 
 /**
- * An HTML <input type="password"> widget.
+ * An HTML <input type="email"> widget.
  * @constructor
- * @extends {Input}
+ * @extends {TextInput}
  * @param {Object=} kwargs
  */
-var PasswordInput = Input.extend({
+var EmailInput = TextInput.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) { return new EmailInput(kwargs) }
+    TextInput.call(this, kwargs)
+  }
+, inputType: 'email'
+})
+
+/**
+ * An HTML <input type="url"> widget.
+ * @constructor
+ * @extends {TextInput}
+ * @param {Object=} kwargs
+ */
+var URLInput = TextInput.extend({
+  constructor: function(kwargs) {
+    if (!(this instanceof Widget)) { return new URLInput(kwargs) }
+    TextInput.call(this, kwargs)
+  }
+, inputType: 'url'
+})
+
+/**
+ * An HTML <input type="password"> widget.
+ * @constructor
+ * @extends {TextInput}
+ * @param {Object=} kwargs
+ */
+var PasswordInput = TextInput.extend({
   constructor: function(kwargs) {
     if (!(this instanceof Widget)) { return new PasswordInput(kwargs) }
     kwargs = object.extend({renderValue: false}, kwargs)
-    Input.call(this, kwargs)
+    TextInput.call(this, kwargs)
     this.renderValue = kwargs.renderValue
   }
 , inputType: 'password'
@@ -3643,7 +3779,7 @@ PasswordInput.prototype.render = function(name, value, kwargs) {
   if (!this.renderValue) {
     value = ''
   }
-  return Input.prototype.render.call(this, name, value, kwargs)
+  return TextInput.prototype.render.call(this, name, value, kwargs)
 }
 
 /**
@@ -3729,13 +3865,6 @@ FileInput.prototype.valueFromData = function(data, files, name) {
   return object.get(files, name, null)
 }
 
-FileInput.prototype._hasChanged = function(initial, data) {
-  if (data === null) {
-    return false
-  }
-  return true
-}
-
 var FILE_INPUT_CONTRADICTION = {}
 
 /**
@@ -3818,14 +3947,14 @@ ClearableFileInput.prototype.valueFromData = function(data, files, name) {
  * A <input type="text"> which, if given a Date object to display, formats it as
  * an appropriate date String.
  * @constructor
- * @extends {Input}
+ * @extends {TextInput}
  * @param {Object=} kwargs
  */
-var DateInput = Input.extend({
+var DateInput = TextInput.extend({
   constructor: function(kwargs) {
     if (!(this instanceof Widget)) { return new DateInput(kwargs) }
     kwargs = object.extend({format: null}, kwargs)
-    Input.call(this, kwargs)
+    TextInput.call(this, kwargs)
     if (kwargs.format !== null) {
       this.format = kwargs.format
     }
@@ -3833,7 +3962,6 @@ var DateInput = Input.extend({
       this.format = util.DEFAULT_DATE_INPUT_FORMATS[0]
     }
   }
-, inputType: 'text'
 })
 
 DateInput.prototype._formatValue = function(value) {
@@ -3845,25 +3973,21 @@ DateInput.prototype._formatValue = function(value) {
 
 DateInput.prototype.render = function(name, value, kwargs) {
   value = this._formatValue(value)
-  return Input.prototype.render.call(this, name, value, kwargs)
-}
-
-DateInput.prototype._hasChanged = function(initial, data) {
-  return Input.prototype._hasChanged.call(this, this._formatValue(initial), data)
+  return TextInput.prototype.render.call(this, name, value, kwargs)
 }
 
 /**
  * A <input type="text"> which, if given a Date object to display, formats it as
  * an appropriate datetime String.
  * @constructor
- * @extends {Input}
+ * @extends {TextInput}
  * @param {Object=} kwargs
  */
-var DateTimeInput = Input.extend({
+var DateTimeInput = TextInput.extend({
   constructor: function(kwargs) {
     if (!(this instanceof Widget)) { return new DateTimeInput(kwargs) }
     kwargs = object.extend({format: null}, kwargs)
-    Input.call(this, kwargs)
+    TextInput.call(this, kwargs)
     if (kwargs.format !== null) {
       this.format = kwargs.format
     }
@@ -3871,7 +3995,6 @@ var DateTimeInput = Input.extend({
       this.format = util.DEFAULT_DATETIME_INPUT_FORMATS[0]
     }
   }
-, inputType: 'text'
 })
 
 DateTimeInput.prototype._formatValue = function(value) {
@@ -3883,25 +4006,21 @@ DateTimeInput.prototype._formatValue = function(value) {
 
 DateTimeInput.prototype.render = function(name, value, kwargs) {
   value = this._formatValue(value)
-  return Input.prototype.render.call(this, name, value, kwargs)
-}
-
-DateTimeInput.prototype._hasChanged = function(initial, data) {
-  return Input.prototype._hasChanged.call(this, this._formatValue(initial), data)
+  return TextInput.prototype.render.call(this, name, value, kwargs)
 }
 
 /**
  * A <input type="text"> which, if given a Date object to display, formats it as
  * an appropriate time String.
  * @constructor
- * @extends {Input}
+ * @extends {TextInput}
  * @param {Object=} kwargs
  */
-var TimeInput = Input.extend({
+var TimeInput = TextInput.extend({
   constructor: function(kwargs) {
     if (!(this instanceof Widget)) { return new TimeInput(kwargs) }
     kwargs = object.extend({format: null}, kwargs)
-    Input.call(this, kwargs)
+    TextInput.call(this, kwargs)
     if (kwargs.format !== null) {
       this.format = kwargs.format
     }
@@ -3909,7 +4028,6 @@ var TimeInput = Input.extend({
       this.format = util.DEFAULT_TIME_INPUT_FORMATS[0]
     }
   }
-, inputType: 'text'
 })
 
 TimeInput.prototype._formatValue = function(value) {
@@ -3921,11 +4039,7 @@ TimeInput.prototype._formatValue = function(value) {
 
 TimeInput.prototype.render = function(name, value, kwargs) {
   value = this._formatValue(value)
-  return Input.prototype.render.call(this, name, value, kwargs)
-}
-
-TimeInput.prototype._hasChanged = function(initial, data) {
-  return Input.prototype._hasChanged.call(this, this._formatValue(initial), data)
+  return TextInput.prototype.render.call(this, name, value, kwargs)
 }
 
 /**
@@ -3983,15 +4097,7 @@ var CheckboxInput = Widget.extend({
 
 CheckboxInput.prototype.render = function(name, value, kwargs) {
   kwargs = object.extend({attrs: null}, kwargs)
-  var checked
-  try {
-    checked = this.checkTest(value)
-  }
-  catch (e) {
-    // Silently catch exceptions
-    checked = false
-  }
-
+  var checked = this.checkTest(value)
   var finalAttrs = this.buildAttrs(kwargs.attrs, {type: 'checkbox',
                                                   name: name})
   if (value !== '' && value !== true && value !== false && value !== null &&
@@ -4017,13 +4123,7 @@ CheckboxInput.prototype.valueFromData = function(data, files, name) {
   if (is.String(value)) {
     value = object.get(values, value.toLowerCase(), value)
   }
-  return value
-}
-
-CheckboxInput.prototype._hasChanged = function(initial, data) {
-  // Sometimes data or initial could be null or '' which should be the same
-  // thing as false.
-  return (Boolean(initial) != Boolean(data))
+  return !!value
 }
 
 /**
@@ -4166,18 +4266,6 @@ NullBooleanSelect.prototype.valueFromData = function(data, files, name) {
   return value
 }
 
-NullBooleanSelect.prototype._hasChanged = function(initial, data) {
-  // For a NullBooleanSelect, null (unknown) and false (No)
-  //are not the same
-  if (initial !== null) {
-      initial = Boolean(initial)
-  }
-  if (data !== null) {
-      data = Boolean(data)
-  }
-  return initial != data
-}
-
 /**
  * An HTML <select> widget which allows multiple selections.
  * @constructor
@@ -4239,25 +4327,6 @@ SelectMultiple.prototype.valueFromData = function(data, files, name) {
     return [].concat(data[name])
   }
   return null
-}
-
-SelectMultiple.prototype._hasChanged = function(initial, data) {
-  if (initial === null) {
-    initial = []
-  }
-  if (data === null) {
-    data = []
-  }
-  if (initial.length != data.length) {
-    return true
-  }
-  var dataLookup = object.lookup(data)
-  for (var i = 0, l = initial.length; i < l; i++) {
-    if (typeof dataLookup[''+initial[i]] == 'undefined') {
-      return true
-    }
-  }
-  return false
 }
 
 /**
@@ -4438,8 +4507,8 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, kwargs)
   if (selectedValues === null) {
     selectedValues = []
   }
-  var hasId = (kwargs.attrs !== null && typeof kwargs.attrs.id != 'undefined')
-    , finalAttrs = this.buildAttrs(kwargs.attrs)
+  var finalAttrs = this.buildAttrs(kwargs.attrs)
+    , id = object.get(finalAttrs, 'id', null)
     , selectedValuesLookup = object.lookup(selectedValues)
     , checkTest = function(value) {
         return (typeof selectedValuesLookup[''+value] != 'undefined')
@@ -4453,9 +4522,9 @@ CheckboxSelectMultiple.prototype.render = function(name, selectedValues, kwargs)
       , labelAttrs = {}
     // If an ID attribute was given, add a numeric index as a suffix, so
     // that the checkboxes don't all have the same ID attribute.
-    if (hasId) {
-      object.extend(checkboxAttrs, {id: kwargs.attrs.id + '_' + i})
-      labelAttrs.htmlFor = checkboxAttrs.id
+    if (id !== null) {
+      object.extend(checkboxAttrs, {id: id + '_' + i})
+      labelAttrs.htmlFor = id + '_' + i
     }
 
     var cb = CheckboxInput({attrs: checkboxAttrs, checkTest: checkTest})
@@ -4550,27 +4619,6 @@ MultiWidget.prototype.valueFromData = function(data, files, name) {
   return values
 }
 
-MultiWidget.prototype._hasChanged = function(initial, data) {
-  var i, l
-
-  if (initial === null) {
-    initial = []
-    for (i = 0, l = data.length; i < l; i++) {
-      initial.push('')
-    }
-  }
-  else if (!(is.Array(initial))) {
-    initial = this.decompress(initial)
-  }
-
-  for (i = 0, l = this.widgets.length; i < l; i++) {
-    if (this.widgets[i]._hasChanged(initial[i], data[i])) {
-      return true
-    }
-  }
-  return false
-}
-
 /**
  * Creates an element containing a given list of rendered widgets.
  *
@@ -4645,6 +4693,8 @@ module.exports = {
   Widget: Widget
 , Input: Input
 , TextInput: TextInput
+, EmailInput: EmailInput
+, URLInput: URLInput
 , PasswordInput: PasswordInput
 , HiddenInput: HiddenInput
 , MultipleHiddenInput: MultipleHiddenInput
