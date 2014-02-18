@@ -58,7 +58,7 @@ QUnit.test("Empty data object", 10, function() {
   deepEqual(p.errors("last_name").errors, ["This field is required."])
   deepEqual(p.errors("birthday").errors, ["This field is required."])
   deepEqual(p.isValid(), false)
-  equal(typeof p.cleanedData, "undefined")
+  deepEqual(p.cleanedData, {})
   reactHTMLEqual(p.render.bind(p),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>" +
@@ -107,7 +107,7 @@ QUnit.test("Unbound form", 8, function() {
 "<p><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></p>")
 })
 
-QUnit.test("Validation errors", 12, function() {
+QUnit.test("Validation errors", 11, function() {
   var p = new Person({data: {last_name: "Lennon"}})
   deepEqual(p.errors("first_name").errors, ["This field is required."])
   deepEqual(p.errors("birthday").errors, ["This field is required."])
@@ -119,7 +119,6 @@ QUnit.test("Validation errors", 12, function() {
 "  * This field is required.\n" +
 "* birthday\n" +
 "  * This field is required.")
-  equal(typeof p.cleanedData, "undefined")
   deepEqual(p.boundField("first_name").errors().errors, ["This field is required."])
   reactHTMLEqual(function() { return p.boundField("first_name").errors().asUL() },
         "<ul class=\"errorlist\"><li>This field is required.</li></ul>")
@@ -1829,7 +1828,7 @@ QUnit.test("emptyPermitted", 12, function() {
   strictEqual(form.isValid(), false)
   deepEqual(form.errors("artist").errors, ["This field is required."])
   deepEqual(form.errors("name").errors, ["This field is required."])
-  equal(typeof form.cleanedData, "undefined")
+  deepEqual(form.cleanedData, {})
 
   // Now let's show what happens when emptyPermitted == true and the form is
   // empty.
@@ -1844,7 +1843,7 @@ QUnit.test("emptyPermitted", 12, function() {
   form = new SongForm({data: data, emptyPermitted: true})
   strictEqual(form.isValid(), false)
   deepEqual(form.errors("name").errors, ["This field is required."])
-  equal(typeof form.cleanedData, "undefined")
+  deepEqual(form.cleanedData, {artist: "The Doors"})
 
   // If a field is not given in the data then null is returned for its data.
   // Make sure that when checking for emptyPermitted that null is treated
