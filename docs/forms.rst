@@ -1,3 +1,4 @@
+
 =====
 Forms
 =====
@@ -10,57 +11,153 @@ TBD
 API
 ===
 
+.. js:class:: Form([kwargs])
+
+   Extends :js:class:`BaseForm` and registers :js:func:`DeclarativeFieldsMeta`
+   as a mixin to be used to set up Fields when this constructor is extended.
+
+   This is intended intended as the entry point for defining your own forms.
+
+   You can do this using its ``extend()`` function, which is provided by `Concur`_.
+
+   .. js:function:: Form.extend({prototypeProps, constructorProps})
+
+      Creates a new constructor which inherits from Form.
+
+      :param Object prototypeProps:
+         Form Fields and other prototype properties for the new form, such as a
+         custom constructor and validation methods.
+
+   .. _`Concur`: https://github.com/insin/concur
+
+.. js:function:: DeclarativeFieldsMeta({prototypeProps, constructorProps})
+
+   This mixin function is responsible for setting up form fields when a new Form
+   constructor is being created.
+
+   It pops any Fields it finds off the form's prototype properties object,
+   determines if any forms are also being mixed-in via a ``__mixin__`` property
+   and handles inheritance of Fields from any form which is being inherited from,
+   such that fields will be given the following order of precedence should there be a
+   naming conflict with any of these three sources:
+
+   1. Fields specified in ``prototypeProps``
+   2. Fields from a mixed-in form
+   3. Fields from the Form being inherited from
+
 .. js:class:: BaseForm([kwargs])
 
    A collection of Fields that knows how to validate and display itself.
 
-   :param Object kwargs:
-      form options.
+   :param Object kwargs: form options.
 
-      .. js:attribute:: kwargs.data (Object)
+   .. js:attribute:: kwargs.data
 
-         input form data, where property names are field names. A form with data is
-         considered to be "bound" and ready for use validating and coercing the
-         given data.
+      input form data, where property names are field names. A form with data is
+      considered to be "bound" and ready for use validating and coercing the
+      given data.
 
-      .. js:attribute:: kwargs.files (Object)
+      :type: Object
 
-         input file data.
+   .. js:attribute:: kwargs.files
 
-      .. js:attribute:: kwargs.autoId (String)
+      input file data.
 
-         a template for use when automatically generating ``id`` attributes for
-         fields, which should contain a ``{name}`` placeholder for the field name
-         -- defaults to ``id_{name}``.
+      :type: Object
 
-      .. js:attribute:: kwargs.prefix (String)
+   .. js:attribute:: kwargs.autoId
 
-         a prefix to be applied to the name of each field in this instance of the
-         form - using a prefix allows you to easily work with multiple instances of
-         the same Form object in the same HTML ``<form>``, or to safely mix Form
-         objects which have fields with the same names.
+      a template for use when automatically generating ``id`` attributes for
+      fields, which should contain a ``{name}`` placeholder for the field name
+      -- defaults to ``id_{name}``.
 
-      .. js:attribute:: kwargs.initial (Object)
+      :type: String
 
-         initial form data, where property names are field names - if a field's
-         value is not specified in ``data``, these values will be used when
-         rendering field widgets.
+   .. js:attribute:: kwargs.prefix
 
-      .. js:attribute:: kwargs.errorConstructor (Function)
+      a prefix to be applied to the name of each field in this instance of the
+      form - using a prefix allows you to easily work with multiple instances of
+      the same Form object in the same HTML ``<form>``, or to safely mix Form
+      objects which have fields with the same names.
 
-         the constructor function to be used when creating error details - defaults
-         to :js:class:`ErrorList`.
+      :type: String
 
-      .. js:attribute:: kwargs.labelSuffix (String)
+   .. js:attribute:: kwargs.initial (Object)
 
-         a suffix to be used when generating labels in one of the convenience
-         methods which renders the entire Form - defaults to ``':'``.
+      initial form data, where property names are field names -- if a field's
+      value is not specified in ``data``, these values will be used when
+      rendering field widgets.
 
-      .. js:attribute:: kwargs.emptyPermitted (Boolean)
+      :type: Object
 
-         if ``true``, the form is allowed to be empty -- defaults to ``false``.
+   .. js:attribute:: kwargs.errorConstructor
+
+      the constructor function to be used when creating error details --
+      defaults to :js:class:`ErrorList`.
+
+      :type: Function
+
+   .. js:attribute:: kwargs.labelSuffix
+
+      a suffix to be used when generating labels in one of the convenience
+      methods which renders the entire Form -- defaults to ``':'``.
+
+      :type: String
+
+   .. js:attribute:: kwargs.emptyPermitted
+
+      if ``true``, the form is allowed to be empty -- defaults to ``false``.
+
+      :type: Boolean
+
+   **Instance Properties**
+
+   Form options documented in ``kwargs`` above are set as instance properties.
+
+   The following instance properties are also available:
+
+   .. js:attribute:: form.fields
+
+      Form fields for this instance of the form.
+
+      Since a particular instance might want to alter its fields based on data
+      passed to its constructor, fields given as part of the form definition
+      are deep-copied into ``fields`` every time a new instance is created.
+
+      Instances should only ever modify ``fields``.
+
+      :type: Object with field names as property names and Field instances as properties.
+
+   .. js:attribute:: form.isBound
+
+      Determines if this form has been give input data which can be validated.
+
+      ``true`` if the form was instantiated with ``kwargs.data`` or
+      ``kwargs.files``.
+
+   .. js:attribute:: form.cleanedData
+
+      After a form has been validated, it will have a ``cleanedData`` property.
+      If your data does *not* validate, the ``cleanedData`` Object will contain
+      only the valid fields.
+
+      :type:
+         Object with field names as property names and valid, cleaned values
+         coerced to the appropriate JavaScript type as properties.
 
    **Prototype Functions**
+
+   Prototype functions for validating and getting information about the results
+   of validation.
+
+   .. js:function:: BaseForm#fullClean()
+
+      Validates and cleans ``this.data`` and populates errors and
+      ``cleanedData``.
+
+      You shouldn't need to call this function directly in general use, as it's
+      called for you when necessary by :js:func:`BaseForm#isValid` and
+      :js:func:`BaseForm#errors`.
 
    .. js:function:: BaseForm#isValid()
 
@@ -73,46 +170,120 @@ API
 
    .. js:function:: BaseForm#errors()
 
-      Gettter which  first cleans the form if there are no errors defined yet.
+      Getter for validation errors which first cleans the form if there are no
+      errors defined yet.
 
-      :returns: validation errors for the form.
+      :returns: validation errors for the form, as an :js:class:`ErrorObject`
+
+   .. js:function:: BaseForm#nonFieldErrors()
+
+      :returns:
+         errors that aren't associated with a particular field - i.e., errors
+         generated by :js:func:`BaseForm#clean`. Will be empty if there are
+         none.
+
+   .. js:function:: BaseForm#clean()
+
+      Hook for doing any extra form-wide cleaning after each Field's
+      :js:func:`Field#clean` has been called. Any :js:class:`ValidationError`
+      thrown by this method will not be associated with a particular field; it
+      will have a special-case association with the field named ``'__all__'``.
+
+      :returns: validated, cleaned data.
 
    .. js:function:: BaseForm#changedData()
 
-      :returns: a list of the names of fields which have differenced between
-         their initial and currently bound values.
+      :returns:
+         a list of the names of fields which have differences between their
+         initial and currently bound values.
+
+   .. js:function:: BaseForm#hasChanged()
+
+      :returns: ``true`` if data differs from initial.
+
+   A number of default rendering functions are provided to generate ``React.DOM``
+   representations of a Form's fields.
+
+   These are general-purpose in that they attempt to handle all form rendering
+   scenarios and edge cases, ensuring that valid markup is always produced.
+
+   For flexibility, the output does not include a ``<form>`` or a submit
+   button, just field labels and inputs.
+
+   .. js:function:: BaseForm#render()
+
+      Default rendering method, which calls :js:func:`BaseForm#asTable`
+
+   .. js:function:: BaseForm#asTable()
+
+      Renders the form as a series of ``<tr>`` tags, with ``<th>`` and ``<td>``
+      tags containing field labels and inputs, respectively.
+
+      You're responsible for ensuring the generated rows are placed in a
+      containing ``<table>`` and ``<tbody>``.
+
+   .. js:function:: BaseForm#asUL()
+
+      Renders the form as a series of ``<li>`` tags, with each ``<li>``
+      containing one field. It does not include the ``<ul>`` so that you can
+      specify any HTML attributes on the ``<ul>`` for flexibility.
+
+   .. js:function:: BaseForm#asP()
+
+      Renders the form as a series of ``<p>`` tags, with each ``<p>`` containing
+      one field.
+
+   Prototype functions for use in rendering form fields.
 
    .. js:function:: BaseForm#boundFields([test])
 
-      In lieu of ``__iter__`` in JavaScript, creates a BoundField for each field
-      in the form, in the order in which the fields were created.
+      Creates a :js:class:`BoundField` for each field in the form, in the order
+      in which the fields were created.
 
       :param Function test:
 
          If provided, this function will be called with ``field`` and ``name``
-         arguments - BoundFields will only be generated for fields for
+         arguments - BoundFields will only be generated for fields for which
          ``true`` is returned.
+
+   .. js:function:: BaseForm#boundFieldsObj([test])
+
+      A version of :js:func:`BaseForm#boundFields` which returns an Object with
+      field names as property names and BoundFields as properties.
 
    .. js:function:: BaseForm#boundField(name)
 
-      In lieu of ``__getitem__`` in JavaScript, creates a BoundField for the
-      field with the given name.
+      Creates a :js:class:`BoundField` for the field with the given name.
 
-      :param String name: The name of a field in the form.
+      :param String name: the name of a field in the form.
 
    .. js:function:: BaseForm#hiddenFields()
 
-      :returns: a list of BoundField objects that correspond to hidden fields.
-         Useful for manual form layout.
+      :returns: a list of :js:class:`BoundField` objects that correspond to
+         hidden fields. Useful for manual form layout.
 
    .. js:function:: BaseForm#visibleFields()
 
-      :returns: a list of BoundField objects that do not correspond to hidden
-         fields. The opposite of the `hiddenFields()` function.
+      :returns:
+         a list of :js:class:`BoundField` objects that do not correspond to
+         hidden fields. The opposite of the :js:func:`BaseForm#hiddenFields`
+         function.
+
+   .. js:function:: BaseForm#isMultipart()
+
+      Determines if the form needs to be multipart-encoded in other words, if it
+      has a :js:class:`FileInput`.
+
+      :returns: ``true`` if the form needs to be multipart-encoded.
 
    .. js:function:: BaseForm#addPrefix(fieldName)
 
-      :returns: the givenfield name with a prefix added, if this Form has a prefix.
+      :returns:
+         the given field name with a prefix added, if this Form has a prefix.
+
+   .. js:function:: BaseForm#addInitialPrefix(fieldName)
+
+      Adds an initial prefix for checking dynamic initial values.
 
 .. js:class:: BoundField(form, field, name)
 
@@ -134,19 +305,19 @@ API
 
    **Instance Attributes**
 
-   .. js:attribute:: form (Form)
+   .. js:attribute:: boundField.form (Form)
 
       The form this BoundField wraps a field from.
 
-   .. js:attribute:: field (Field)
+   .. js:attribute:: boundField.field (Field)
 
       The field this BoundField wraps.
 
-   .. js:attribute:: name (String)
+   .. js:attribute:: boundField.name (String)
 
       The name associated with the field in the form.
 
-   .. js:attribute:: htmlName (String)
+   .. js:attribute:: boundField.htmlName (String)
 
       A version of the field's name including any prefix the form has been
       configured with.
@@ -174,53 +345,71 @@ API
 
       :returns: Raw input data for the field or ``null`` if it wasn't given.
 
-   .. js:function:: BoundField#idForLabel
+   .. js:function:: BoundField#idForLabel()
 
-   .. js:function:: BoundField#render
+      Wrapper around the field widget's :js:func:`Widget#idForLabel`. Useful,
+      for example, for focusing on this field regardless of whether it has a
+      single widget or a :js:class:`MutiWidget`.
+
+   .. js:function:: BoundField#render([kwargs])
+
+      Default rendering method - if the field has ``showHiddenInitial`` set,
+      renders the default widget and a hidden version, otherwise just renders
+      the default widget for the field.
+
+      :param Object kwargs: widget options as per :js:func:`BoundField#asWidget`.
 
    .. js:function:: BoundField#asWidget([kwargs])
 
       Renders a widget for the field.
 
-      :param Object kwargs:
+      :param Object kwargs: widget options.
 
-         .. js:attribute:: kwargs.widget (Widget)
+      .. js:attribute:: kwargs.widget (Widget)
 
-            An override for the widget used to render the field - if not
-            provided, the field's configured widget will be used.
+         An override for the widget used to render the field - if not
+         provided, the field's configured widget will be used.
 
-         .. js:attribute:: kwargs.attrs (Object)
+      .. js:attribute:: kwargs.attrs (Object)
 
-            Additional attributes to be added to the field's widget.
+         Additional attributes to be added to the field's widget.
+
+   .. js:function:: BoundField#suWidgets()
+
+      :returns:
+         a list of :js:class:`SubWidget` objects that comprise all widgets in
+         this BoundField. This really is only useful for :js:class:`RadioSelect`
+         widgets, so that you can iterate over individual radio buttons when rendering.
 
    .. js:function:: BoundField#asText([kwargs])
 
       Renders the field as a text input.
 
-      :param Object kwargs:
+      :param Object kwargs: widget options.
 
-         .. js:attribute:: kwargs.attrs (Object)
+      .. js:attribute:: kwargs.attrs (Object)
 
-            Additional attributes to be added to the field's widget.
+         Additional attributes to be added to the field's widget.
 
    .. js:function:: BoundField#asTextarea([kwargs])
 
       Renders the field as a textarea.
 
-      :param Object kwargs:
+      :param Object kwargs: widget options.
 
-         .. js:attribute:: kwargs.attrs (Object)
+      .. js:attribute:: kwargs.attrs (Object)
 
-            Additional attributes to be added to the field's widget.
+         Additional attributes to be added to the field's widget.
 
    .. js:function:: BoundField#asHidden([kwargs])
 
       Renders the field as a hidden field.
 
-      :param Object kwargs:
-         .. js:attribute:: kwargs.attrs (Object)
+      :param Object kwargs: widget options.
 
-            Additional attributes to be added to the field's widget.
+      .. js:attribute:: kwargs.attrs (Object)
+
+         Additional attributes to be added to the field's widget.
 
    .. js:function:: BoundField#value()
 
@@ -239,46 +428,19 @@ API
 
       :param Object kwargs: configuration options.
 
-         .. js:attribute:: kwargs.contents (String)
+      .. js:attribute:: kwargs.contents (String)
 
-            Contents for the label - if not provided, label contents will be
-            generated from the field itself.
+         Contents for the label - if not provided, label contents will be
+         generated from the field itself.
 
-         .. js:attribute:: kwargs.attrs (Object)
+      .. js:attribute:: kwargs.attrs (Object)
 
-            Additional attributes to be added to the label.
+         Additional attributes to be added to the label.
 
    .. js:function:: BoundField#cssClasses([extraClasses])
 
-      Returns a string of space-separated CSS classes for this field.
+      Returns a string of space-separated CSS classes to be applied to the
+      field.
 
-.. js:function:: DeclarativeFieldsMeta({prototypeProps, constructorProps})
-
-   This function is responsible for setting up form fields when a new Form
-   constructor is being created.
-
-   It pops any Fields it finds off the form's prototype properties object,
-   determines if any forms are also being mixed-in via a ``__mixin__`` property
-   and handles inheritance of Fields from any form which is being inherited from,
-   such that fields will be given this order of precedence should there be a
-   naming conflict with any of these three sources.
-
-   1. Fields specified in the prototype properties
-   2. Fields from a mixed-in form
-   3. Fields from the Form being inherited from
-
-.. js:class:: Form([kwargs])
-
-   Inherits from BaseForm and registers DeclarativeFieldsMeta to be used to set
-   up Fields when this constructor is inherited from.
-
-   It is intended as the entry point for defining your own forms. You can do
-   this using its ``extend()`` function, which is provided by `Concur`_
-
-   .. js:function:: Form.extend({prototypeProps, constructorProps})
-
-      Creates a new constrctor which inherits from Form. The new form's fields
-      and prototype properties, such as validation methods, should be passed as
-      ``prototypeProps``.
-
-   .. _`Concur`: https://github.com/insin/concur
+      :param String extraClasses:
+         additional CSS classes to be applied to the field

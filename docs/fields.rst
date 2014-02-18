@@ -198,67 +198,67 @@ API
 
       Defaults to ``[]``.
 
-   .. js:class:: TypedChoiceField([kwargs])
+.. js:class:: TypedChoiceField([kwargs])
 
-      A ChoiceField which returns a value coerced by some provided function.
+   A ChoiceField which returns a value coerced by some provided function.
 
-      :param Object kwargs:
-         field options additional to those specified in ChoiceField.
+   :param Object kwargs:
+      field options additional to those specified in ChoiceField.
 
-      .. js:attribute:: kwargs.coerce (Function)
+   .. js:attribute:: kwargs.coerce (Function)
 
-         a function which takes the String value output by ChoiceField's clean
-         method and coerces it to another type - defaults to a function which
-         returns the given value unaltered.
+      a function which takes the String value output by ChoiceField's clean
+      method and coerces it to another type - defaults to a function which
+      returns the given value unaltered.
 
-      .. js:attribute:: kwargs.emptyValue (Object)
+   .. js:attribute:: kwargs.emptyValue (Object)
 
-         the value which should be returned if the selected value can be validly
-         empty - defaults to ``''``.
+      the value which should be returned if the selected value can be validly
+      empty - defaults to ``''``.
 
-   .. js:class:: MultipleChoiceField([kwargs])
+.. js:class:: MultipleChoiceField([kwargs])
 
-      Validates that its input is one or more of a valid list of choices.
+   Validates that its input is one or more of a valid list of choices.
 
-      .. js:class:: TypedMultipleChoiceField([kwargs])
+.. js:class:: TypedMultipleChoiceField([kwargs])
 
-         A MultipleChoiceField} which returns values coerced by some provided
-         function.
+   A MultipleChoiceField} which returns values coerced by some provided
+   function.
 
-         :param Object kwargs:
-            field options additional to those specified in MultipleChoiceField.
+   :param Object kwargs:
+      field options additional to those specified in MultipleChoiceField.
 
-         .. js:attribute:: kwargs.coerce (Function)
+   .. js:attribute:: kwargs.coerce (Function)
 
-            function which takes the String values output by
-            MultipleChoiceField's toJavaScript method and coerces it to another
-            type - defaults to a function which returns the given value
-            unaltered.
+      function which takes the String values output by
+      MultipleChoiceField's toJavaScript method and coerces it to another
+      type - defaults to a function which returns the given value
+      unaltered.
 
-         .. js:attribute:: kwargs.emptyValue (Object)
+   .. js:attribute:: kwargs.emptyValue (Object)
 
-            the value which should be returned if the selected value can be
-            validly empty - defaults to ``''``.
+      the value which should be returned if the selected value can be
+      validly empty - defaults to ``''``.
 
-   .. js:class:: FilePathField([kwargs])
+.. js:class:: FilePathField([kwargs])
 
-      Allows choosing from files inside a certain directory.
+   Allows choosing from files inside a certain directory.
 
-      :param String path:
-         The absolute path to the directory whose contents you want listed -
-         this directory must exist.
-      :param Object kwargs:
-         field options additional to those supplied in ChoiceField.
+   :param String path:
+      The absolute path to the directory whose contents you want listed -
+      this directory must exist.
+   :param Object kwargs:
+      field options additional to those supplied in ChoiceField.
 
-      .. js:attribute:: kwargs.match (String|RegExp)
+   .. js:attribute:: kwargs.match (String|RegExp)
 
-         a regular expression pattern - if provided, only files with names
-         matching this expression will be allowed as choices.
+      a regular expression pattern - if provided, only files with names
+      matching this expression will be allowed as choices.
 
-      .. js:attribute:: kwargs.recursive (Boolean)
+   .. js:attribute:: kwargs.recursive (Boolean)
 
-         if ``true``, the directory will be descended into recursively and all
-         descendants will be listed as choices - defaults to ``false``.
+      if ``true``, the directory will be descended into recursively and all
+      descendants will be listed as choices - defaults to ``false``.
 
 .. js:class:: ComboField([kwargs])
 
@@ -293,12 +293,12 @@ API
 
       a list of fields to be used to clean a "decompressed" list of values.
 
-   .. js:class:: SplitDateTimeField([kwargs])
+.. js:class:: SplitDateTimeField([kwargs])
 
-      A MultiValueField consisting of a DateField and a TimeField.
+   A MultiValueField consisting of a DateField and a TimeField.
 
-      :param Object kwargs:
-         field options options, as specified in Field and MultiValueField.
+   :param Object kwargs:
+      field options options, as specified in Field and MultiValueField.
 
 .. js:class:: IPAddressField([kwargs])
 

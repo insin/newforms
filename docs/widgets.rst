@@ -10,6 +10,8 @@ TBD
 API
 ===
 
+.. js:class:: SubWidget(parentWidget, name, value[, kwargs])
+
 .. js:class:: Widget([kwargs])
 
    An HTML form widget.
@@ -23,84 +25,108 @@ API
 
       HTML attributes for the rendered widget.
 
+   **Instance Properties**
+
+   .. js:attribute:: widget.attrs
+
+   **Prototype Properties**
+
+   .. js:attribute:: Widget#isHidden
+
+   .. js:attribute:: Widget#needsMultipartForm
+
+   .. js:attribute:: Widget#isRequired
+
+   **Prototype Functions**
+
+   .. js:function:: Widget#subWidgets(name, value[, kwargs])
+
+   .. js:function:: Widget#render(name, value[, kwargs])
+
+   .. js:function:: Widget#buildAttrs(extraAttrs[, kwargs])
+
+   .. js:function:: Widget#valueFromData(data, files, name)
+
+   .. js:function:: Widget#idForLabel(id)
+
 .. js:class:: Input([kwargs])
 
    An HTML <input> widget.
 
-   .. js:class:: TextInput([kwargs])
+.. js:class:: TextInput([kwargs])
 
-      An HTML <input type="text"> widget
+   An HTML <input type="text"> widget
+
+   :param Object kwargs: widget options.
+
+.. js:class:: PasswordInput([kwargs])
+
+    An HTML ``<input type="password">`` widget.
+
+    :param Object kwargs:
+       widget options additional to those specified in Input.
+
+    .. js:attribute:: kwargs.renderValue (Boolean)
+
+       if ``false`` a value will not be rendered for this field - defaults to
+       ``false``.
+
+.. js:class:: HiddenInput([kwargs])
+
+    An HTML <input type="hidden"> widget.
+
+    :param Object kwargs: widget options.
+
+   .. js:class:: MultipleHiddenInput([kwargs])
+
+      A widget that handles <input type="hidden"> for fields that have a list
+      of values.
+
+.. js:class:: FileInput([kwargs])
+
+    An HTML <input type="file"> widget.
+
+    :param Object kwargs: widget options.
+
+   .. js:class:: ClearableFileInput([kwargs])
 
       :param Object kwargs: widget options.
 
-   .. js:class:: PasswordInput([kwargs])
+.. js:class:: DateInput([kwargs])
 
-       An HTML ``<input type="password">`` widget.
+   A <input type="text"> which, if given a Date object to display, formats it
+   as an appropriate date string.
 
-       :param Object kwargs:
-          widget options additional to those specified in Input.
+   :param Object kwargs:
+      widget options additional to those specified in Input.
 
-       .. js:attribute:: kwargs.renderValue (Boolean)
+   .. js:attribute:: kwargs.format (String}
 
-          if ``false`` a value will not be rendered for this field - defaults to
-          ``false``.
+      a time.strftime date format string.
 
-   .. js:class:: HiddenInput([kwargs])
+.. js:class:: DateTimeInput([kwargs])
 
-       An HTML <input type="hidden"> widget.
+   A <input type="text"> which, if given a Date object to display, formats it
+   as an appropriate datetime string.
 
-       :param Object kwargs: widget options.
+   :param Object kwargs:
+      widget options additional to those specified in Input.
 
-      .. js:class:: MultipleHiddenInput([kwargs])
+   .. js:attribute:: kwargs.format (String}
 
-         A widget that handles <input type="hidden"> for fields that have a list
-         of values.
+      a time.strftime datetime format string.
 
-   .. js:class:: FileInput([kwargs])
+.. js:class:: TimeInput([kwargs])
 
-       An HTML <input type="file"> widget.
+   A <input type="text"> which, if given a Date object to display, formats it
+   as an appropriate time string.
 
-       :param Object kwargs: widget options.
+   :param Object kwargs:
+      widget options additional to those specified in Input.
 
-      .. js:class:: ClearableFileInput([kwargs])
+   .. js:attribute:: kwargs.format (String}
 
-         :param Object kwargs: widget options.
-
-   .. js:class:: DateInput([kwargs])
-
-      A <input type="text"> which, if given a Date object to display, formats it
-      as an appropriate date string.
-
-      :param Object kwargs:
-         widget options additional to those specified in Input.
-
-      .. js:attribute:: kwargs.format (String}
-
-         a time.strftime date format string.
-
-   .. js:class:: DateTimeInput([kwargs])
-
-      A <input type="text"> which, if given a Date object to display, formats it
-      as an appropriate datetime string.
-
-      :param Object kwargs:
-         widget options additional to those specified in Input.
-
-      .. js:attribute:: kwargs.format (String}
-
-         a time.strftime datetime format string.
-
-   .. js:class:: TimeInput([kwargs])
-
-      A <input type="text"> which, if given a Date object to display, formats it
-      as an appropriate time string.
-
-      :param Object kwargs:
-         widget options additional to those specified in Input.
-
-      .. js:attribute:: kwargs.format (String}
-
-         a time.strftime time format string.
+      a time.strftime time format string.
 
 .. js:class:: CheckboxInput([kwargs])
 
@@ -132,63 +158,63 @@ API
        choices to be used when rendering the widget, with each choice specified
        as an Array in ``[value, text]`` format.
 
-   .. js:class:: NullBooleanSelect([kwargs])
+.. js:class:: NullBooleanSelect([kwargs])
 
-      A ``<select>`` widget intended to be used with NullBooleanField.
+   A ``<select>`` widget intended to be used with NullBooleanField.
 
-      :param Object kwargs:
-         widget options, as specified in Select. Any ``choices`` provided will
-         be overrridden with the specific choices this widget requires.
+   :param Object kwargs:
+      widget options, as specified in Select. Any ``choices`` provided will
+      be overrridden with the specific choices this widget requires.
 
-   .. js:class:: SelectMultiple([kwargs])
+.. js:class:: SelectMultiple([kwargs])
 
-      An HTML ``<select>`` widget which allows multiple selections.
+   An HTML ``<select>`` widget which allows multiple selections.
 
-      :param Object kwargs: widget options, as specified in Select.
+   :param Object kwargs: widget options, as specified in Select.
 
-   .. js:class:: RadioSelect([kwargs])
+.. js:class:: RadioSelect([kwargs])
 
-      Renders a single select as a list of ``<input type="radio">`` elements.
+   Renders a single select as a list of ``<input type="radio">`` elements.
 
-      :param Object kwargs:
-         widget options additional to those specified in Select.
+   :param Object kwargs:
+      widget options additional to those specified in Select.
 
-      .. js:attribute:: kwargs.renderer (Function)
+   .. js:attribute:: kwargs.renderer (Function)
 
-          a custom RadioFieldRenderer constructor.
+       a custom RadioFieldRenderer constructor.
 
-      .. js:class:: RadioFieldRenderer(name, value, attrs, choices)
+.. js:class:: RadioFieldRenderer(name, value, attrs, choices)
 
-         An object used by RadioSelect to enable customisation of radio
-         widgets.
+   An object used by RadioSelect to enable customisation of radio
+   widgets.
 
-         :param String name: the field name.
-         :param String value: the selected value.
-         :param Object attrs: HTML attributes for the widget.
-         :param Array choices:
-            choices to be used when rendering the widget, with each choice
-            specified as an Array in ``[value, text]`` format.
+   :param String name: the field name.
+   :param String value: the selected value.
+   :param Object attrs: HTML attributes for the widget.
+   :param Array choices:
+      choices to be used when rendering the widget, with each choice
+      specified as an Array in ``[value, text]`` format.
 
-      .. js:class:: RadioInput(name, value, attrs, choice, index)
+.. js:class:: RadioInput(name, value, attrs, choice, index)
 
-         An object used by RadioFieldRenderer that represents a single
-         ``<input type="radio">``.
+   An object used by RadioFieldRenderer that represents a single
+   ``<input type="radio">``.
 
-         :param String name: the field name.
-         :param String value: the selected value.
-         :param Object attrs: HTML attributes for the widget.
-         :param Array choice:
-            choice details to be used when rendering the widget, specified as
-            an Array in ``[value, text]`` format.
-         :param Number index:
-            the index of the radio button this widget represents.
+   :param String name: the field name.
+   :param String value: the selected value.
+   :param Object attrs: HTML attributes for the widget.
+   :param Array choice:
+      choice details to be used when rendering the widget, specified as
+      an Array in ``[value, text]`` format.
+   :param Number index:
+      the index of the radio button this widget represents.
 
-   .. js:class:: CheckboxSelectMultiple([kwargs])
+.. js:class:: CheckboxSelectMultiple([kwargs])
 
-      Multiple selections represented as a list of ``<input type="checkbox">``
-      widgets.
+   Multiple selections represented as a list of ``<input type="checkbox">``
+   widgets.
 
-      :param Object kwargs: widget options, as specified in Select.
+   :param Object kwargs: widget options, as specified in Select.
 
 .. js:class:: MultiWidget(widgets, [kwargs])
 
@@ -199,15 +225,15 @@ API
    :param Array widgets: the list of widgets composing this widget.
    :param Object kwargs: widget options.
 
-   .. js:class:: SplitDateTimeWidget([kwargs])
+.. js:class:: SplitDateTimeWidget([kwargs])
 
-      Splits Date input into two ``<input type="text">`` elements.
+   Splits Date input into two ``<input type="text">`` elements.
 
-      :param Object kwargs:
-         widget optionsadditional to those specified in MultiWidget.
-      :param String [dateFormat]: a time.strftime date format string
-      :param String [timeFormat]: a time.strftime time format string
+   :param Object kwargs:
+      widget optionsadditional to those specified in MultiWidget.
+   :param String [dateFormat]: a time.strftime date format string
+   :param String [timeFormat]: a time.strftime time format string
 
-      .. js:class:: SplitHiddenDateTimeWidget([kwargs])
+.. js:class:: SplitHiddenDateTimeWidget([kwargs])
 
-         Splits Date input into two ``<input type="hidden">`` elements.
+   Splits Date input into two ``<input type="hidden">`` elements.

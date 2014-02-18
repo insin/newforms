@@ -44,11 +44,22 @@ components are exposed on the ``forms`` namespace object.
    an error code and a message parameters object can be provided to enable
    customisation of the resulting error message based on the code.
 
-   This constructor is actually provided by the `validators`_ package, but is
+   This constructor is actually provided by the `validators`_ library, but is
    exposed as part of newforms' exports for convenience.
 
    .. _`validators`: https://github.com/insin/validators
 
 .. js:function:: formData(form)
 
-   Creates an object representation of a form's contents.
+   Creates an object representation of a form's elements' contents.
+
+   :param form:
+      a form DOM node or a String specifying a form's ``name`` or ``id``
+      attribute.
+
+      If a String is given, ``name`` is tried before ``id`` when attempting to
+      find the form in the DOM.
+
+   :returns:
+      an object representing the data present in the form. If the form could not
+      be found, this object will be empty.
