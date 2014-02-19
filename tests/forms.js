@@ -456,7 +456,7 @@ QUnit.test("Forms with radio", 7, function() {
   // button's zero-based index.
   f = new FrameworkForm({autoId: "id_{name}"})
   reactHTMLEqual(function() { return f.boundField("language").render() },
-"<ul>" +
+"<ul id=\"id_language\">" +
 "<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
 "<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul>")
@@ -466,19 +466,19 @@ QUnit.test("Forms with radio", 7, function() {
   // ID of the *first* radio button.
   reactHTMLEqual(f.render.bind(f),
 "<tr><th><label for=\"id_name\">Name:</label></th><td><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>" +
-"<tr><th><label for=\"id_language_0\">Language:</label></th><td><ul>" +
+"<tr><th><label for=\"id_language_0\">Language:</label></th><td><ul id=\"id_language\">" +
 "<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
 "<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul></td></tr>")
   reactHTMLEqual(f.asUL.bind(f),
 "<li><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></li>" +
-"<li><label for=\"id_language_0\">Language:</label><span> </span><ul>" +
+"<li><label for=\"id_language_0\">Language:</label><span> </span><ul id=\"id_language\">" +
 "<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
 "<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul></li>")
   reactHTMLEqual(f.asP.bind(f),
 "<p><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></p>" +
-"<p><label for=\"id_language_0\">Language:</label><span> </span><ul>" +
+"<p><label for=\"id_language_0\">Language:</label><span> </span><ul id=\"id_language\">" +
 "<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
 "<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul></p>")
@@ -612,7 +612,7 @@ QUnit.test("Checkbox autoId", 1, function() {
   // checkbox's zero-based index.
   var f = new SongForm({autoId: "{name}_id"})
   reactHTMLEqual(function() { return f.boundField("composers").render() },
-"<ul>" +
+"<ul id=\"composers_id\">" +
 "<li><label for=\"composers_id_0\"><input id=\"composers_id_0\" type=\"checkbox\" name=\"composers\" value=\"J\"><span> </span><span>John Lennon</span></label></li>" +
 "<li><label for=\"composers_id_1\"><input id=\"composers_id_1\" type=\"checkbox\" name=\"composers\" value=\"P\"><span> </span><span>Paul McCartney</span></label></li>" +
 "</ul>")
