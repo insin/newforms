@@ -13,47 +13,82 @@ API
 .. js:class:: Field([kwargs])
 
    An object that is responsible for doing validation and normalisation, or
-   "cleaning" -- for example: an EmailField makes sure its data is a valid
-   e-mail address -- and makes sure that acceptable "blank" values all have the
-   same representation.
+   "cleaning" -- for example: an :js:class:`EmailField` makes sure its data is a
+   valid e-mail address -- and makes sure that acceptable "blank" values all
+   have the same representation.
 
    :param Object kwargs: field options.
 
-   .. js:attribute:: kwargs.required (Boolean)
+   .. js:attribute:: kwargs.required
 
       determines if the field is required - defaults to ``true``.
 
-   .. js:attribute:: kwargs.widget (Widget)
+      :type: Boolean
+
+   .. js:attribute:: kwargs.widget
 
       overrides the widget used to render the field - if not provided, the
       field's default will be used.
 
-   .. js:attribute:: kwargs.label (String)
+      :type: Widget
+
+   .. js:attribute:: kwargs.label
 
       the label to be displayed for the field - if not provided, will be
       generated from the field's name.
+
+      :type: String
 
    .. js:attribute:: kwargs.initial
 
       an initial value for the field to be used if none is specified by the
       field's form.
 
-   .. js:attribute:: kwargs.helpText (String)
+   .. js:attribute:: kwargs.helpText
 
       help text for the field.
 
-   .. js:attribute:: kwargs.errorMessages (Object)
+      :type: String
+
+   .. js:attribute:: kwargs.errorMessages
 
       custom error messages for the field.
 
-   .. js:attribute:: kwargs.showHiddenInitial (Boolean)
+      :type: Object
+
+   .. js:attribute:: kwargs.showHiddenInitial
 
       specifies if it is necessary to render a hidden widget with initial value
       after the widget.
 
-   .. js:attribute:: kwargs.validators (Array)
+      :type: Boolean
+
+   .. js:attribute:: kwargs.validators
 
       list of addtional validators to use
+
+      :type: Array
+
+   **Prototype Functions**
+
+   .. js:function:: Field#prepareValue(value)
+
+      Hook for any pre-preparation required before a value cane be used.
+
+   .. js:function:: Field#toJavaScript(value)
+
+      Hook for coercing a value to an appropriate JavaScript object.
+
+   .. js:function:: Field#validate(value)
+
+      Hook for validating a value.
+
+   .. js:function:: Field#clean(value)
+
+      Validates the given value and returns its "cleaned" value as an
+      appropriate JavaScript object.
+
+      Raises :js:class:`ValidationError` for any errors.
 
 .. js:class:: CharField([kwargs])
 
@@ -61,13 +96,17 @@ API
 
    :param Object kwargs: field options additional to those specified in Field.
 
-   .. js:attribute:: kwargs.maxLength (Number)
+   .. js:attribute:: kwargs.maxLength
 
       a maximum valid length for the input string.
 
-   .. js:attribute:: kwargs.minLength (Number)
+      :type: Number
+
+   .. js:attribute:: kwargs.minLength
 
       a minimum valid length for the input string.
+
+      :type: Number
 
 .. js:class:: IntegerField([kwargs])
 
@@ -75,13 +114,17 @@ API
 
    :param Object kwargs: field options additional to those specified in Field.
 
-   .. js:attribute:: kwargs.maxValue (Number)
+   .. js:attribute:: kwargs.maxValue
 
       a maximum value for the input.
 
-   .. js:attribute:: kwargs.minValue (Number)
+      :type: Number
+
+   .. js:attribute:: kwargs.minValue
 
       a minimum value for the input.
+
+      :type: Number
 
 .. js:class:: FloatField([kwargs])
 
@@ -89,13 +132,17 @@ API
 
    :param Object kwargs: field options additional to those specified in Field.
 
-   .. js:attribute:: kwargs.maxValue (Number)
+   .. js:attribute:: kwargs.maxValue
 
       a maximum value for the input.
 
-   .. js:attribute:: kwargs.minValue (Number)
+      :type: Number
+
+   .. js:attribute:: kwargs.minValue
 
       a minimum value for the input.
+
+      :type: Number
 
 .. js:class:: DecimalField([kwargs])
 
@@ -103,31 +150,41 @@ API
 
    :param Object kwargs: field options additional to those specified in Field.
 
-   .. js:attribute:: kwargs.maxValue (Number)
+   .. js:attribute:: kwargs.maxValue
 
       a maximum value for the input.
 
-   .. js:attribute:: kwargs.minValue (Number)
+      :type: Number
+
+   .. js:attribute:: kwargs.minValue
 
       a minimum value for the input.
 
-   .. js:attribute:: kwargs.maxDigits (Number)
+      :type: Number
+
+   .. js:attribute:: kwargs.maxDigits
 
       the maximum number of digits the input may contain.
 
-   .. js:attribute:: kwargs.decimalPlaces (Number)
+      :type: Number
+
+   .. js:attribute:: kwargs.decimalPlaces
 
       the maximum number of decimal places the input may contain.
+
+      :type: Number
 
 .. js:class:: BaseTemporalField([kwargs])
 
    Base field for fields which validate that their input is a date or time.
 
-   :param Object kwargs: field options additional to those specified in Field.
+   :param Object kwargs: field options
 
-   .. js:attribute:: kwargs.inputFormats (Array)
+   .. js:attribute:: kwargs.inputFormats
 
-      a list of time.strptime input formats which are considered valid.
+      a list of `time.strptime() format strings`_ which are considered valid.
+
+      :type: Array
 
 .. js:class:: DateField([kwargs])
 
@@ -141,12 +198,12 @@ API
 
    Validates that its input is a date/time.
 
-.. js:class:: RegexField([kwargs])
+.. js:class:: RegexField(regex[, kwargs])
 
    Validates that its input matches a given regular expression.
 
    :param RegExp|String regex: a regular expression.
-   :param Object kwargs: field options, as specified in Field and CharField.
+   :param Object kwargs: field options
 
 .. js:class:: EmailField([kwargs])
 
@@ -156,17 +213,23 @@ API
 
    Validates that its input is a valid uploaded file.
 
-   :param Object kwargs: field options additional to those specified in Field.
+   :param Object kwargs: field options
 
-   .. js:attribute:: kwargs.allowEmptyFile (Boolean)
+   .. js:attribute:: kwargs.maxLength
 
-      ``true`` if empty files are allowed - defaults to ``false``.
+      maximum length of the uploaded file anme.
+
+      :type: Number
+
+   .. js:attribute:: kwargs.allowEmptyFile
+
+      if ``true``, empty files will be allowed -- defaults to ``false``.
+
+      :type: Boolean
 
 .. js:class:: ImageField([kwargs])
 
    Validates that its input is a valid uploaded image.
-
-   :param Object kwargs: field options, as specified in FileField.
 
 .. js:class:: URLField([kwargs])
 
@@ -174,21 +237,21 @@ API
 
 .. js:class:: BooleanField([kwargs])
 
-   Normalises its input to a ``Boolean``.
+   Normalises its input to a boolean primitive.
 
-   .. js:class:: NullBooleanField([kwargs])
+.. js:class:: NullBooleanField([kwargs])
 
-      A field whose valid values are ``null``, ``true`` and ``false``.
+   A field whose valid values are ``null``, ``true`` and ``false``.
 
-      Invalid values are cleaned to ``null``.
+   Invalid values are cleaned to ``null``.
 
 .. js:class:: ChoiceField([kwargs])
 
    Validates that its input is one of a valid list of choices.
 
-   :param Object kwargs: field options additional to those specified in Field.
+   :param Object kwargs: field options
 
-   .. js:attribute:: kwargs.choices (Array)
+   .. js:attribute:: kwargs.choices
 
       a list of choices - each choice should be specified as a list containing
       two items; the first item is a value which should be validated against,
@@ -198,18 +261,21 @@ API
 
       Defaults to ``[]``.
 
+      :type: Array
+
 .. js:class:: TypedChoiceField([kwargs])
 
    A ChoiceField which returns a value coerced by some provided function.
 
-   :param Object kwargs:
-      field options additional to those specified in ChoiceField.
+   :param Object kwargs: field options
 
-   .. js:attribute:: kwargs.coerce (Function)
+   .. js:attribute:: kwargs.coerce
 
       a function which takes the String value output by ChoiceField's clean
       method and coerces it to another type - defaults to a function which
       returns the given value unaltered.
+
+      :type: Function
 
    .. js:attribute:: kwargs.emptyValue (Object)
 
@@ -285,20 +351,19 @@ API
    implement ``compress()``, which takes a list of valid values and returns a
    "compressed" version of those values -- a single value.
 
-   You'll probably want to use this with MultiWidget.
+   You'll probably want to use this with :js:class:`MultiWidget`.
 
-   :param Object kwargs: field options additional to those supplied in Field.
+   :param Object kwargs: field options
 
-   .. js:attribute:: kwargs.fields (Array)
+   .. js:attribute:: kwargs.fields
 
       a list of fields to be used to clean a "decompressed" list of values.
+
+      :type: Array
 
 .. js:class:: SplitDateTimeField([kwargs])
 
    A MultiValueField consisting of a DateField and a TimeField.
-
-   :param Object kwargs:
-      field options options, as specified in Field and MultiValueField.
 
 .. js:class:: IPAddressField([kwargs])
 
@@ -308,6 +373,30 @@ API
 
    Validates that its input is a valid IPv4 or IPv6 address.
 
+   :param Object kwargs: field options
+
+   .. js:attribute:: kwargs.protocol
+
+      determines which protocols are accepted as input. One of:
+
+      * ``'both'``
+      * ``'ipv4'``
+      * ``'ipv6'``
+
+      :type: String
+
+   .. js:attribute:: kwargs.unpackIPv4
+
+      Determines if an IPv4 address that was mapped in a compressed IPv6 address
+      will be unpacked.
+
+      Defaults to ``false`` and can only be set to ``true`` if
+      ``kwargs.protocol`` is ``'both'``.
+
+      :type: Boolean
+
 .. js:class:: SlugField([kwargs])
 
    Validates that its input is a valid slug.
+
+.. _`time.strptime() format strings`: https://github.com/insin/isomorph#formatting-directives
