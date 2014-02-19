@@ -703,7 +703,7 @@ QUnit.test("RadioSelect", 21, function() {
 
 QUnit.test("Nested choices", 2, function() {
   // Choices can be nested for radio buttons
-  w = forms.RadioSelect()
+  var w = forms.RadioSelect()
   w.choices = [
     ['unknown', 'Unknown']
   , ['Audio', [['vinyl', 'Vinyl'], ['cd', 'CD']]]
@@ -867,7 +867,7 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
 "</ul>")
 
   w = forms.CheckboxSelectMultiple()
-  r = w.getRenderer("abc", "b", {choices:[['a', 'A'], ['b', 'B'], ['c', 'C']]})
+  var r = w.getRenderer("abc", "b", {choices:[['a', 'A'], ['b', 'B'], ['c', 'C']]})
   // You can access elements of a CheckboxFieldRenderer
   reactHTMLEqual(r.choiceInputs().map(function(input) { return input.render() }),
 "<label><input type=\"checkbox\" name=\"abc\" value=\"a\"><span> </span><span>A</span></label>" +
