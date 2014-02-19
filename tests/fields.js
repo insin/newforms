@@ -434,35 +434,34 @@ QUnit.test("RegexField", 24, function() {
   // TODO test_change_regex_after_init
 })
 
-QUnit.test("EmailField", 27, function() {
+QUnit.test("EmailField", 25, function() {
   var f = forms.EmailField()
   widgetRendersTo(f, "<input type=\"email\" name=\"f\" id=\"id_f\">")
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
   equal(f.clean("person@example.com"), "person@example.com")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "foo")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "foo@")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "foo@bar")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "example@invalid-.com")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "example@-invalid.com")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "example@inv-.alid-.com")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "example@inv-.-alid.com")
+  cleanErrorEqual(f, "Enter a valid email address.", "foo")
+  cleanErrorEqual(f, "Enter a valid email address.", "foo@")
+  cleanErrorEqual(f, "Enter a valid email address.", "foo@bar")
+  cleanErrorEqual(f, "Enter a valid email address.", "example@invalid-.com")
+  cleanErrorEqual(f, "Enter a valid email address.", "example@-invalid.com")
+  cleanErrorEqual(f, "Enter a valid email address.", "example@inv-.alid-.com")
+  cleanErrorEqual(f, "Enter a valid email address.", "example@inv-.-alid.com")
   equal(f.clean("example@valid-----hyphens.com"), "example@valid-----hyphens.com")
   equal(f.clean("example@valid-with-hyphens.com"), "example@valid-with-hyphens.com")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "example@.com")
+  cleanErrorEqual(f, "Enter a valid email address.", "example@.com")
   equal(f.clean('local@domain.with.idn.xyzäöüßabc.part.com'), 'local@domain.with.idn.xyz\xe4\xf6\xfc\xdfabc.part.com')
 
   // Hangs "forever" if catastrophic backtracking not fixed
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "viewx3dtextx26qx3d@yahoo.comx26latlngx3d15854521645943074058")
+  var addr = "viewx3dtextx26qx3d@yahoo.comx26latlngx3d15854521645943074058"
+  equal(f.clean(addr), addr)
 
   f = forms.EmailField({required: false})
   strictEqual(f.clean(""), "")
   strictEqual(f.clean(null), "")
   equal(f.clean("person@example.com"), "person@example.com")
   equal(f.clean("      example@example.com  \t   \t "), "example@example.com")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "foo")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "foo@")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "foo@bar")
+  cleanErrorEqual(f, "Enter a valid email address.", "foo")
 
   // EmailField also has minLength and maxLength parameters, for convenience.
   f = forms.EmailField({minLength: 10, maxLength: 15})
@@ -881,14 +880,14 @@ QUnit.test("ComboField", 10, function() {
   var f = forms.ComboField({fields: [forms.CharField({maxLength: 20}), forms.EmailField()]})
   equal(f.clean("test@example.com"), "test@example.com")
   cleanErrorEqual(f, "Ensure this value has at most 20 characters (it has 28).", "longemailaddress@example.com")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "not an e-mail")
+  cleanErrorEqual(f, "Enter a valid email address.", "not an email")
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
 
   var f = forms.ComboField({fields: [forms.CharField({maxLength: 20}), forms.EmailField()], required: false})
   equal(f.clean("test@example.com"), "test@example.com")
   cleanErrorEqual(f, "Ensure this value has at most 20 characters (it has 28).", "longemailaddress@example.com")
-  cleanErrorEqual(f, "Enter a valid e-mail address.", "not an e-mail")
+  cleanErrorEqual(f, "Enter a valid email address.", "not an email")
   strictEqual(f.clean(""), "")
   strictEqual(f.clean(null), "")
 })
