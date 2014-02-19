@@ -148,3 +148,13 @@ QUnit.test("Forms with *only* hidden fields", 4, function() {
   reactHTMLEqual(f.asTable.bind(f),
 "<tr class=\"hiddenFields\"><td colspan=\"2\"><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>")
 })
+
+QUnit.test("SlugField normalisation", 1, function() {
+  var f = forms.SlugField()
+  equal(f.clean('    aa-bb-cc    '), 'aa-bb-cc')
+})
+
+QUnit.test("URLField normalisation", 1, function() {
+  var f = forms.URLField()
+  equal(f.clean('http://example.com/     '), 'http://example.com/')
+})
