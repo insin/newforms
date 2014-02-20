@@ -26,7 +26,7 @@ function cleanErrorEqual(field, message, var_args) {
     if (!(e instanceof forms.ValidationError)) {
       throw new Error('clean() did not throw a ValidationError:' + e)
     }
-    deepEqual(e.messages, message)
+    deepEqual(e.messages(), message)
     return
   }
   throw new Error('clean() did not throw an exception')
@@ -51,7 +51,7 @@ function validationErrorEqual(validator, message, value) {
     if (!(e instanceof forms.ValidationError)) {
       throw new Error('Validator did not throw a ValidationError:' + e)
     }
-    deepEqual(e.messages, message)
+    deepEqual(e.messages(), message)
     return
   }
   throw new Error('Validator did not throw an exception')
