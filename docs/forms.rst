@@ -92,8 +92,8 @@ API
 
    .. js:attribute:: kwargs.errorConstructor
 
-      the constructor function to be used when creating error details --
-      defaults to :js:class:`ErrorList`.
+      the constructor function to be used when creating error details. Defaults
+      to :js:class:`ErrorList`.
 
       :type: Function
 
@@ -130,7 +130,7 @@ API
 
    .. js:attribute:: form.isBound
 
-      Determines if this form has been give input data which can be validated.
+      Determines if this form has been given input data which can be validated.
 
       ``true`` if the form was instantiated with ``kwargs.data`` or
       ``kwargs.files``.
@@ -201,8 +201,8 @@ API
 
       :returns: ``true`` if data differs from initial.
 
-   A number of default rendering functions are provided to generate ``React.DOM``
-   representations of a Form's fields.
+   A number of default rendering functions are provided to generate
+   ``React.DOM`` representations of a Form's fields.
 
    These are general-purpose in that they attempt to handle all form rendering
    scenarios and edge cases, ensuring that valid markup is always produced.

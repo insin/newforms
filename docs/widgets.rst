@@ -113,6 +113,10 @@ API
 
    An ``<input type="text">`` widget
 
+.. js:class:: NumberInput([kwargs])
+
+   An ``<input type="number">`` widget
+
 .. js:class:: EmailInput([kwargs])
 
    An ``<input type="email">`` widget
