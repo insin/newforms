@@ -905,7 +905,7 @@ QUnit.test("Subwidget", 3, function() {
 "c abc_2")
 })
 
-QUnit.test("MultiWidget", 4, function() {
+QUnit.test("MultiWidget", 6, function() {
   var MyMultiWidget = forms.MultiWidget.extend()
   MyMultiWidget.prototype.decompress = function(value) {
     if (value) {
@@ -925,6 +925,13 @@ QUnit.test("MultiWidget", 4, function() {
   w = new MyMultiWidget([forms.TextInput({attrs: {"className": "big"}}), forms.TextInput({attrs: {"className": "small"}})], {attrs: {id: "bar"}})
   reactHTMLEqual(w.render.bind(w, "name", ["john", "lennon"]),
         "<div><input class=\"big\" type=\"text\" name=\"name_0\" id=\"bar_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"bar_1\" value=\"lennon\"></div>")
+
+  // Test needsMultipartForm if any widget needs it
+  w = new MyMultiWidget([forms.TextInput(), forms.FileInput()])
+  strictEqual(w.needsMultipartForm, true)
+  // Test needsMultipartForm if no widget needs it
+  w = new MyMultiWidget([forms.TextInput(), forms.TextInput()])
+  strictEqual(w.needsMultipartForm, false)
 })
 
 QUnit.test("SplitDateTimeWidget", 9, function() {
