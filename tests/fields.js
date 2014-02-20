@@ -12,7 +12,7 @@ QUnit.test("Field sets widget isRequired", 2, function() {
   strictEqual(new forms.Field({required: false}).widget.isRequired, false)
 })
 
-QUnit.test("CharField", 30, function() {
+QUnit.test("CharField", 34, function() {
   var f = forms.CharField()
   strictEqual(f.clean(1), "1")
   equal(f.clean("hello"), "hello")
@@ -55,11 +55,23 @@ QUnit.test("CharField", 30, function() {
   strictEqual(f.maxLength, null)
   strictEqual(f.minLength, 10)
 
-  // TODO test_charfield_widget_attrs
+  // Widget attrs
+  // Return an empty object if maxLength is none...
+  f = forms.CharField()
+  deepEqual(f.widgetAttrs(forms.TextInput()), {})
+
+  // ...or if the widget is not TextInput or PasswordInput
+  f = forms.CharField({maxLength: 10})
+  deepEqual(f.widgetAttrs(forms.HiddenInput()), {})
+
+  // Otherwise, return a maxLength attribute equal to maxLength
+  deepEqual(f.widgetAttrs(forms.TextInput()), {maxLength: '10'})
+  deepEqual(f.widgetAttrs(forms.PasswordInput()), {maxLength: '10'})
 })
 
-QUnit.test("IntegerField", 51, function() {
+QUnit.test("IntegerField", 55, function() {
   var f = forms.IntegerField()
+  widgetRendersTo(f, "<input type=\"number\" name=\"f\" id=\"id_f\">" )
   cleanErrorEqual(f, "This field is required.", null)
   cleanErrorEqual(f, "This field is required.", "")
   strictEqual(f.clean("1"), 1)
@@ -90,6 +102,7 @@ QUnit.test("IntegerField", 51, function() {
 
   // IntegerField accepts an optional maxValue parameter
   f = forms.IntegerField({maxValue: 10})
+  widgetRendersTo(f, "<input max=\"10\" type=\"number\" name=\"f\" id=\"id_f\">" )
   cleanErrorEqual(f, "This field is required.", null)
   strictEqual(f.clean(1), 1)
   strictEqual(f.clean(10), 10)
@@ -101,6 +114,7 @@ QUnit.test("IntegerField", 51, function() {
 
   // IntegerField accepts an optional minValue parameter
   f = forms.IntegerField({minValue: 10})
+  widgetRendersTo(f, "<input min=\"10\" type=\"number\" name=\"f\" id=\"id_f\">" )
   cleanErrorEqual(f, "This field is required.", null)
   cleanErrorEqual(f, "Ensure this value is greater than or equal to 10.", 1)
   strictEqual(f.clean(10), 10)
@@ -112,6 +126,7 @@ QUnit.test("IntegerField", 51, function() {
 
   // minValue and maxValue can be used together
   f = forms.IntegerField({minValue: 10, maxValue: 20})
+  widgetRendersTo(f, "<input min=\"10\" max=\"20\" type=\"number\" name=\"f\" id=\"id_f\">")
   cleanErrorEqual(f, "This field is required.", null)
   cleanErrorEqual(f, "Ensure this value is greater than or equal to 10.", 1)
   strictEqual(f.clean(10), 10)
@@ -124,8 +139,9 @@ QUnit.test("IntegerField", 51, function() {
   strictEqual(f.minValue, 10)
 })
 
-QUnit.test("FloatField", 34, function() {
+QUnit.test("FloatField", 38, function() {
   var f = forms.FloatField()
+  widgetRendersTo(f, "<input step=\"any\" type=\"number\" name=\"f\" id=\"id_f\">" )
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
   strictEqual(f.clean(1), 1.0)
@@ -150,6 +166,7 @@ QUnit.test("FloatField", 34, function() {
 
   // FloatField accepts minValue and maxValue just like forms.IntegerField
   f = forms.FloatField({maxValue: 1.5, minValue: 0.5})
+  widgetRendersTo(f, "<input min=\"0.5\" max=\"1.5\" step=\"any\" type=\"number\" name=\"f\" id=\"id_f\">" )
   cleanErrorEqual(f, "Ensure this value is less than or equal to 1.5.", "1.6")
   cleanErrorEqual(f, "Ensure this value is greater than or equal to 0.5.", "0.4")
   strictEqual(f.clean("1.5"), 1.5)
@@ -157,7 +174,10 @@ QUnit.test("FloatField", 34, function() {
   strictEqual(f.maxValue, 1.5)
   strictEqual(f.minValue, 0.5)
 
-  // TODO test_floatfield_widget_attrs
+  f = forms.FloatField({
+    widget: forms.NumberInput({attrs: {step: '0.01', max: '1.0', min: '0.0'}})
+  })
+  widgetRendersTo(f, "<input step=\"0.01\" max=\"1.0\" min=\"0.0\" type=\"number\" name=\"f\" id=\"id_f\">")
 
   // FloatField implements its own _hasChanged due to String coercion issues
   // in JavaScript.
@@ -171,11 +191,14 @@ QUnit.test("FloatField", 34, function() {
   strictEqual(f._hasChanged("0.0", 0.0), false)
   strictEqual(f._hasChanged("1.0", 1.0), false)
 
-  // TODO test_floatfield_changed
+  f = forms.FloatField()
+  var n = 4.35
+  strictEqual(f._hasChanged(n, '4.3500'), false)
 })
 
-QUnit.test("DecimalField", 57, function() {
+QUnit.test("DecimalField", 65, function() {
   var f = forms.DecimalField({maxDigits: 4, decimalPlaces: 2})
+  widgetRendersTo(f, "<input step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\">")
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
   strictEqual(f.clean("1"), "1")
@@ -220,6 +243,7 @@ QUnit.test("DecimalField", 57, function() {
 
   // DecimalField accepts min_value and max_value just like IntegerField
   f = forms.DecimalField({maxDigits: 4, decimalPlaces: 2, maxValue: 1.5, minValue: 0.5})
+  widgetRendersTo(f, "<input min=\"0.5\" max=\"1.5\" step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\">" )
   cleanErrorEqual(f, "Ensure this value is less than or equal to 1.5.", "1.6")
   cleanErrorEqual(f, "Ensure this value is greater than or equal to 0.5.", "0.4")
   strictEqual(f.clean("1.5"), "1.5")
@@ -248,9 +272,24 @@ QUnit.test("DecimalField", 57, function() {
   equal(f.clean(".01"), "0.01")
   cleanErrorEqual(f, "Ensure that there are no more than 0 digits before the decimal point.", "1.1")
 
-  // TODO test_decimalfield_widget_attrs
+  // Widget attrs
+  f = forms.DecimalField({maxDigits: 6, decimalPlaces: 2})
+  deepEqual(f.widgetAttrs(forms.Widget()), {})
+  deepEqual(f.widgetAttrs(forms.NumberInput()), {step: '0.01'})
+  f = forms.DecimalField({maxDigits: 10, decimalPlaces: 0})
+  deepEqual(f.widgetAttrs(forms.NumberInput()), {step: '1'})
+  f = forms.DecimalField({maxDigits: 19, decimalPlaces: 19})
+  deepEqual(f.widgetAttrs(forms.NumberInput()), {step: '1e-19'})
+  f = forms.DecimalField({maxDigits: 20})
+  deepEqual(f.widgetAttrs(forms.NumberInput()), {step: 'any'})
+  f = forms.DecimalField({maxDigits: 6, widget: forms.NumberInput({attrs: {step: '0.01'}})})
+  widgetRendersTo(f, "<input step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\">")
 
-  // TODO test_decimalfield_changed
+  // Let's wait for a native decimal type...
+  // f = forms.DecimalField({maxDigits: 2, decimalPlaces: 2})
+  // var d = 0.1
+  // strictEqual(f._hasChanged(d, '0.10'), false)
+  // strictEqual(f._hasChanged(d, '0.101'), true)
 })
 
 QUnit.test("DateField", 33, function() {

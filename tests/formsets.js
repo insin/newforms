@@ -37,7 +37,7 @@ QUnit.test("Basic FormSet", 5, function() {
   reactHTMLEqual(formset.asTable(),
 "<tr><td colspan=\"2\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"1000\"></td></tr>" +
 "<tr><th>Choice:</th><td><input type=\"text\" name=\"choices-0-choice\"></td></tr>" +
-"<tr><th>Votes:</th><td><input type=\"text\" name=\"choices-0-votes\"></td></tr>")
+"<tr><th>Votes:</th><td><input type=\"number\" name=\"choices-0-votes\"></td></tr>")
 
   // One thing to note is that there needs to be a special value in the data.
   // This value tells the FormSet how many forms were displayed so it can tell
@@ -117,9 +117,9 @@ QUnit.test("Formset initial data", 3, function() {
   formset = new ChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
   reactHTMLEqual(allAsUL(formset.forms()),
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-1-choice\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-1-votes\"></li>")
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-1-votes\"></li>")
 
   // Let's simulate what happens if we submitted this form
   var data = {
@@ -184,11 +184,11 @@ QUnit.test("Displaying more than one blank form", 3, function() {
   var formset = new MoreChoiceFormSet({autoId: false, prefix: "choices"})
   reactHTMLEqual(allAsUL(formset.forms()),
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-0-votes\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-1-choice\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-1-votes\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-1-votes\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-2-choice\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-2-votes\"></li>")
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-2-votes\"></li>")
 
   // Since we displayed every form as blank, we will also accept them back as
   // blank. This may seem a little strange, but later we will show how to
@@ -254,19 +254,19 @@ QUnit.test("More initial data", 3, function() {
   var formset = new MoreChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
   reactHTMLEqual(allAsUL(formset.forms()),
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-1-choice\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-1-votes\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-1-votes\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-2-choice\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-2-votes\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-2-votes\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-3-choice\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-3-votes\"></li>")
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-3-votes\"></li>")
 
   // Make sure retrieving an empty form works, and it shows up in the form list.
   strictEqual(formset.emptyForm().emptyPermitted, true)
   reactHTMLEqual(formset.emptyForm().asUL(),
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-__prefix__-choice\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-__prefix__-votes\"></li>")
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-__prefix__-votes\"></li>")
 })
 
 QUnit.test("FormSet with deletion", 6, function() {
@@ -279,13 +279,13 @@ QUnit.test("FormSet with deletion", 6, function() {
   var formset = new DeleteChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
   reactHTMLEqual(allAsUL(formset.forms()),
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></li>" +
 "<li><span>Delete:</span><span> </span><input type=\"checkbox\" name=\"choices-0-DELETE\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-1-choice\" value=\"Fergie\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-1-votes\" value=\"900\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-1-votes\" value=\"900\"></li>" +
 "<li><span>Delete:</span><span> </span><input type=\"checkbox\" name=\"choices-1-DELETE\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-2-choice\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-2-votes\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-2-votes\"></li>" +
 "<li><span>Delete:</span><span> </span><input type=\"checkbox\" name=\"choices-2-DELETE\"></li>")
 
   // To delete something, we just need to set that form's special delete field
@@ -355,14 +355,14 @@ QUnit.test("FormSets with ordering", 3, function() {
   var formset = new OrderChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
   reactHTMLEqual(allAsUL(formset.forms()),
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>" +
-"<li><span>Order:</span><span> </span><input type=\"text\" name=\"choices-0-ORDER\" value=\"1\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></li>" +
+"<li><span>Order:</span><span> </span><input type=\"number\" name=\"choices-0-ORDER\" value=\"1\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-1-choice\" value=\"Fergie\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-1-votes\" value=\"900\"></li>" +
-"<li><span>Order:</span><span> </span><input type=\"text\" name=\"choices-1-ORDER\" value=\"2\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-1-votes\" value=\"900\"></li>" +
+"<li><span>Order:</span><span> </span><input type=\"number\" name=\"choices-1-ORDER\" value=\"2\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-2-choice\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-2-votes\"></li>" +
-"<li><span>Order:</span><span> </span><input type=\"text\" name=\"choices-2-ORDER\"></li>")
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-2-votes\"></li>" +
+"<li><span>Order:</span><span> </span><input type=\"number\" name=\"choices-2-ORDER\"></li>")
 
   var data = {
     "choices-TOTAL_FORMS": "3"
@@ -439,20 +439,20 @@ QUnit.test("Formset with ordering and deletion", 4, function() {
   var formset = new ChoiceFormSet({initial: initial, autoId: false, prefix: "choices"})
   reactHTMLEqual(allAsUL(formset.forms()),
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>" +
-"<li><span>Order:</span><span> </span><input type=\"text\" name=\"choices-0-ORDER\" value=\"1\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></li>" +
+"<li><span>Order:</span><span> </span><input type=\"number\" name=\"choices-0-ORDER\" value=\"1\"></li>" +
 "<li><span>Delete:</span><span> </span><input type=\"checkbox\" name=\"choices-0-DELETE\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-1-choice\" value=\"Fergie\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-1-votes\" value=\"900\"></li>" +
-"<li><span>Order:</span><span> </span><input type=\"text\" name=\"choices-1-ORDER\" value=\"2\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-1-votes\" value=\"900\"></li>" +
+"<li><span>Order:</span><span> </span><input type=\"number\" name=\"choices-1-ORDER\" value=\"2\"></li>" +
 "<li><span>Delete:</span><span> </span><input type=\"checkbox\" name=\"choices-1-DELETE\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-2-choice\" value=\"The Decemberists\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-2-votes\" value=\"500\"></li>" +
-"<li><span>Order:</span><span> </span><input type=\"text\" name=\"choices-2-ORDER\" value=\"3\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-2-votes\" value=\"500\"></li>" +
+"<li><span>Order:</span><span> </span><input type=\"number\" name=\"choices-2-ORDER\" value=\"3\"></li>" +
 "<li><span>Delete:</span><span> </span><input type=\"checkbox\" name=\"choices-2-DELETE\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-3-choice\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-3-votes\"></li>" +
-"<li><span>Order:</span><span> </span><input type=\"text\" name=\"choices-3-ORDER\"></li>" +
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-3-votes\"></li>" +
+"<li><span>Order:</span><span> </span><input type=\"number\" name=\"choices-3-ORDER\"></li>" +
 "<li><span>Delete:</span><span> </span><input type=\"checkbox\" name=\"choices-3-DELETE\"></li>")
 
   // Let's delete Fergie, and put The Decemberists ahead of Calexico
@@ -779,21 +779,21 @@ QUnit.test("FormSet asTable", 1, function() {
   reactHTMLEqual(new ChoiceFormSet({data: renderTestData, autoId: false, prefix: "choices"}).asTable(),
 "<tr><td colspan=\"2\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></td></tr>" +
 "<tr><th>Choice:</th><td><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></td></tr>" +
-"<tr><th>Votes:</th><td><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></td></tr>")
+"<tr><th>Votes:</th><td><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></td></tr>")
 })
 
 QUnit.test("FormSet asP", 1, function() {
   reactHTMLEqual(new ChoiceFormSet({data: renderTestData, autoId: false, prefix: "choices"}).asP(),
 "<div><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></div>" +
 "<p><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></p>" +
-"<p><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></p>")
+"<p><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></p>")
 })
 
 QUnit.test("FormSet asUL", 1, function() {
   reactHTMLEqual(new ChoiceFormSet({data: renderTestData, autoId: false, prefix: "choices"}).asUL(),
 "<li><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>")
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></li>")
 })
 
 QUnit.test("Management form CSS class", 3, function() {
@@ -801,15 +801,15 @@ QUnit.test("Management form CSS class", 3, function() {
   reactHTMLEqual(formset.asTable(),
 "<tr class=\"managementForm\"><td colspan=\"2\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></td></tr>" +
 "<tr><th>Choice:</th><td><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></td></tr>" +
-"<tr><th>Votes:</th><td><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></td></tr>")
+"<tr><th>Votes:</th><td><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></td></tr>")
   reactHTMLEqual(formset.asP(),
 "<div class=\"managementForm\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></div>" +
 "<p><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></p>" +
-"<p><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></p>")
+"<p><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></p>")
   reactHTMLEqual(formset.asUL(),
 "<li class=\"managementForm\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
-"<li><span>Votes:</span><span> </span><input type=\"text\" name=\"choices-0-votes\" value=\"100\"></li>")
+"<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></li>")
 })
 
 // 3 Regression tests for Django issue #11418

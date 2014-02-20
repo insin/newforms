@@ -1906,7 +1906,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
 "<option value=\"3\">No</option>" +
 "</select></li>" +
 "<li class=\"row\"><label for=\"id_email\">Email:</label><span> </span><input type=\"email\" name=\"email\" id=\"id_email\"></li>" +
-"<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_age\">Age:</label><span> </span><input type=\"text\" name=\"age\" id=\"id_age\"></li>")
+"<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_age\">Age:</label><span> </span><input type=\"number\" name=\"age\" id=\"id_age\"></li>")
   reactHTMLEqual(p.asP.bind(p),
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
 "<p class=\"row error required\"><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></p>" +
@@ -1917,7 +1917,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
 "</select></p>" +
 "<p class=\"row\"><label for=\"id_email\">Email:</label><span> </span><input type=\"email\" name=\"email\" id=\"id_email\"></p>" +
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
-"<p class=\"row error required\"><label for=\"id_age\">Age:</label><span> </span><input type=\"text\" name=\"age\" id=\"id_age\"></p>")
+"<p class=\"row error required\"><label for=\"id_age\">Age:</label><span> </span><input type=\"number\" name=\"age\" id=\"id_age\"></p>")
   reactHTMLEqual(p.asTable.bind(p),
 "<tr class=\"row error required\"><th><label for=\"id_name\">Name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>" +
 "<tr class=\"row required\"><th><label for=\"id_is_cool\">Is cool:</label></th><td><select name=\"is_cool\" id=\"id_is_cool\">" +
@@ -1926,7 +1926,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
 "<option value=\"3\">No</option>" +
 "</select></td></tr>" +
 "<tr class=\"row\"><th><label for=\"id_email\">Email:</label></th><td><input type=\"email\" name=\"email\" id=\"id_email\"></td></tr>" +
-"<tr class=\"row error required\"><th><label for=\"id_age\">Age:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"age\" id=\"id_age\"></td></tr>")
+"<tr class=\"row error required\"><th><label for=\"id_age\">Age:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"number\" name=\"age\" id=\"id_age\"></td></tr>")
 })
 
 QUnit.test("Label split datetime not displayed", 1, function() {
