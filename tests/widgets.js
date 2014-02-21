@@ -188,21 +188,21 @@ QUnit.test("CheckboxInput", 18, function() {
   reactHTMLEqual(w.render("is_cool", false),
         "<input type=\"checkbox\" name=\"is_cool\">")
   reactHTMLEqual(w.render("is_cool", true),
-        "<input type=\"checkbox\" name=\"is_cool\" checked=\"checked\">")
+        "<input type=\"checkbox\" name=\"is_cool\" checked>")
 
   // Using any value that's not in ("", null, false, true) will check the
   // checkbox and set the "value" attribute.
   reactHTMLEqual(w.render("is_cool", "foo"),
-        "<input type=\"checkbox\" name=\"is_cool\" value=\"foo\" checked=\"checked\">")
+        "<input type=\"checkbox\" name=\"is_cool\" value=\"foo\" checked>")
 
   reactHTMLEqual(w.render("is_cool", false, {attrs: {"className": "pretty"}}),
         "<input type=\"checkbox\" name=\"is_cool\" class=\"pretty\">")
 
   // Regression for Django #17114
   reactHTMLEqual(w.render('is_cool', 0),
-        '<input type="checkbox" name="is_cool" value="0" checked="checked">')
+        '<input type="checkbox" name="is_cool" value="0" checked>')
   reactHTMLEqual(w.render('is_cool', 1),
-        '<input type="checkbox" name="is_cool" value="1" checked="checked">')
+        '<input type="checkbox" name="is_cool" value="1" checked>')
 
   // You can also pass "attrs" to the constructor
   w = forms.CheckboxInput({attrs: {"className": "pretty"}})
@@ -220,11 +220,11 @@ QUnit.test("CheckboxInput", 18, function() {
   reactHTMLEqual(w.render("greeting", ""),
         "<input type=\"checkbox\" name=\"greeting\">")
   reactHTMLEqual(w.render("greeting", "hello"),
-        "<input type=\"checkbox\" name=\"greeting\" value=\"hello\" checked=\"checked\">")
+        "<input type=\"checkbox\" name=\"greeting\" value=\"hello\" checked>")
   reactHTMLEqual(w.render("greeting", "hello there"),
-        "<input type=\"checkbox\" name=\"greeting\" value=\"hello there\" checked=\"checked\">")
+        "<input type=\"checkbox\" name=\"greeting\" value=\"hello there\" checked>")
   reactHTMLEqual(w.render("greeting", "hello & goodbye"),
-        "<input type=\"checkbox\" name=\"greeting\" value=\"hello &amp; goodbye\" checked=\"checked\">")
+        "<input type=\"checkbox\" name=\"greeting\" value=\"hello &amp; goodbye\" checked>")
 
   // Calling "checkTest" shouldn't swallow exceptions
   throws(function() { w.render("greeting", true) }, "Calling checkTest() shouldn't swallow exceptions")
@@ -243,7 +243,7 @@ QUnit.test("Select", 13, function() {
   var w = forms.Select()
   reactHTMLEqual(w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatle\">" +
-"<option value=\"J\" selected=\"selected\">John</option>" +
+"<option value=\"J\" selected>John</option>" +
 "<option value=\"P\">Paul</option>" +
 "<option value=\"G\">George</option>" +
 "<option value=\"R\">Ringo</option>" +
@@ -270,7 +270,7 @@ QUnit.test("Select", 13, function() {
   // Only one option can be selected
   reactHTMLEqual(w.render('choices', '0', {choices: [['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['0', 'extra']]}),
 '<select name="choices">' +
-'<option value="0" selected="selected">0</option>' +
+'<option value="0" selected>0</option>' +
 '<option value="1">1</option>' +
 '<option value="2">2</option>' +
 '<option value="3">3</option>' +
@@ -281,19 +281,19 @@ QUnit.test("Select", 13, function() {
   reactHTMLEqual(w.render("num", 2, {choices: [['1', '1'], ['2', '2'], ['3', '3']]}),
 "<select name=\"num\">" +
 "<option value=\"1\">1</option>" +
-"<option value=\"2\" selected=\"selected\">2</option>" +
+"<option value=\"2\" selected>2</option>" +
 "<option value=\"3\">3</option>" +
 "</select>")
   reactHTMLEqual(w.render("num", "2", {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<select name=\"num\">" +
 "<option value=\"1\">1</option>" +
-"<option value=\"2\" selected=\"selected\">2</option>" +
+"<option value=\"2\" selected>2</option>" +
 "<option value=\"3\">3</option>" +
 "</select>")
   reactHTMLEqual(w.render("num", 2, {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<select name=\"num\">" +
 "<option value=\"1\">1</option>" +
-"<option value=\"2\" selected=\"selected\">2</option>" +
+"<option value=\"2\" selected>2</option>" +
 "<option value=\"3\">3</option>" +
 "</select>")
 
@@ -302,7 +302,7 @@ QUnit.test("Select", 13, function() {
   reactHTMLEqual(w.render("num", 2),
 "<select name=\"num\">" +
 "<option value=\"1\">1</option>" +
-"<option value=\"2\" selected=\"selected\">2</option>" +
+"<option value=\"2\" selected>2</option>" +
 "<option value=\"3\">3</option>" +
 "</select>")
 
@@ -310,7 +310,7 @@ QUnit.test("Select", 13, function() {
   reactHTMLEqual(w.render("num", 2, {choices: [[4, 4], [5, 5]]}),
 "<select name=\"num\">" +
 "<option value=\"1\">1</option>" +
-"<option value=\"2\" selected=\"selected\">2</option>" +
+"<option value=\"2\" selected>2</option>" +
 "<option value=\"3\">3</option>" +
 "<option value=\"4\">4</option>" +
 "<option value=\"5\">5</option>" +
@@ -337,7 +337,7 @@ QUnit.test("Select", 13, function() {
 "</select>")
   reactHTMLEqual(w.render("nestchoice", "outer1"),
 "<select name=\"nestchoice\">" +
-"<option value=\"outer1\" selected=\"selected\">Outer 1</option>" +
+"<option value=\"outer1\" selected>Outer 1</option>" +
 "<optgroup label=\"Group &quot;1&quot;\">" +
 "<option value=\"inner1\">Inner 1</option>" +
 "<option value=\"inner2\">Inner 2</option>" +
@@ -347,7 +347,7 @@ QUnit.test("Select", 13, function() {
 "<select name=\"nestchoice\">" +
 "<option value=\"outer1\">Outer 1</option>" +
 "<optgroup label=\"Group &quot;1&quot;\">" +
-"<option value=\"inner1\" selected=\"selected\">Inner 1</option>" +
+"<option value=\"inner1\" selected>Inner 1</option>" +
 "<option value=\"inner2\">Inner 2</option>" +
 "</optgroup>" +
 "</select>")
@@ -358,62 +358,62 @@ QUnit.test("NullBooleanSelect", 5, function() {
   reactHTMLEqual(w.render("is_cool", true),
 "<select name=\"is_cool\">" +
 "<option value=\"1\">Unknown</option>" +
-"<option value=\"2\" selected=\"selected\">Yes</option>" +
+"<option value=\"2\" selected>Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select>")
   reactHTMLEqual(w.render("is_cool", false),
 "<select name=\"is_cool\">" +
 "<option value=\"1\">Unknown</option>" +
 "<option value=\"2\">Yes</option>" +
-"<option value=\"3\" selected=\"selected\">No</option>" +
+"<option value=\"3\" selected>No</option>" +
 "</select>")
   reactHTMLEqual(w.render("is_cool", null),
 "<select name=\"is_cool\">" +
-"<option value=\"1\" selected=\"selected\">Unknown</option>" +
+"<option value=\"1\" selected>Unknown</option>" +
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select>")
   reactHTMLEqual(w.render("is_cool", "2"),
 "<select name=\"is_cool\">" +
 "<option value=\"1\">Unknown</option>" +
-"<option value=\"2\" selected=\"selected\">Yes</option>" +
+"<option value=\"2\" selected>Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select>")
   reactHTMLEqual(w.render("is_cool", "3"),
 "<select name=\"is_cool\">" +
 "<option value=\"1\">Unknown</option>" +
 "<option value=\"2\">Yes</option>" +
-"<option value=\"3\" selected=\"selected\">No</option>" +
+"<option value=\"3\" selected>No</option>" +
 "</select>")
 })
 
 QUnit.test("SelectMultiple", 17, function() {
   var w = forms.SelectMultiple()
   reactHTMLEqual(w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
-"<select name=\"beatles\" multiple=\"multiple\">" +
-"<option value=\"J\" selected=\"selected\">John</option>" +
+"<select name=\"beatles\" multiple>" +
+"<option value=\"J\" selected>John</option>" +
 "<option value=\"P\">Paul</option>" +
 "<option value=\"G\">George</option>" +
 "<option value=\"R\">Ringo</option>" +
 "</select>")
   reactHTMLEqual(w.render("beatles", ["J", "P"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
-"<select name=\"beatles\" multiple=\"multiple\">" +
-"<option value=\"J\" selected=\"selected\">John</option>" +
-"<option value=\"P\" selected=\"selected\">Paul</option>" +
+"<select name=\"beatles\" multiple>" +
+"<option value=\"J\" selected>John</option>" +
+"<option value=\"P\" selected>Paul</option>" +
 "<option value=\"G\">George</option>" +
 "<option value=\"R\">Ringo</option>" +
 "</select>")
   reactHTMLEqual(w.render("beatles", ["J", "P", "R"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
-"<select name=\"beatles\" multiple=\"multiple\">" +
-"<option value=\"J\" selected=\"selected\">John</option>" +
-"<option value=\"P\" selected=\"selected\">Paul</option>" +
+"<select name=\"beatles\" multiple>" +
+"<option value=\"J\" selected>John</option>" +
+"<option value=\"P\" selected>Paul</option>" +
 "<option value=\"G\">George</option>" +
-"<option value=\"R\" selected=\"selected\">Ringo</option>" +
+"<option value=\"R\" selected>Ringo</option>" +
 "</select>")
 
   // If the value is null, none of the options are selected
   reactHTMLEqual(w.render("beatles", null, {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
-"<select name=\"beatles\" multiple=\"multiple\">" +
+"<select name=\"beatles\" multiple>" +
 "<option value=\"J\">John</option>" +
 "<option value=\"P\">Paul</option>" +
 "<option value=\"G\">George</option>" +
@@ -422,7 +422,7 @@ QUnit.test("SelectMultiple", 17, function() {
 
   // If the value corresponds to a label (but not to an option value), none of the options are selected
   reactHTMLEqual(w.render("beatles", ["John"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
-"<select name=\"beatles\" multiple=\"multiple\">" +
+"<select name=\"beatles\" multiple>" +
 "<option value=\"J\">John</option>" +
 "<option value=\"P\">Paul</option>" +
 "<option value=\"G\">George</option>" +
@@ -431,57 +431,57 @@ QUnit.test("SelectMultiple", 17, function() {
 
   // Multiple options (with the same value) can be selected
   reactHTMLEqual(w.render('choices', ['0'], {choices: [['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['0', 'extra']]}),
-'<select name="choices" multiple="multiple">' +
-'<option value="0" selected="selected">0</option>' +
+'<select name="choices" multiple>' +
+'<option value="0" selected>0</option>' +
 '<option value="1">1</option>' +
 '<option value="2">2</option>' +
 '<option value="3">3</option>' +
-'<option value="0" selected="selected">extra</option>' +
+'<option value="0" selected>extra</option>' +
 '</select>')
 
   // If multiple values are given, but some of them are not valid, the valid ones are selected
   reactHTMLEqual(w.render("beatles", ["J", "G", "foo"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
-"<select name=\"beatles\" multiple=\"multiple\">" +
-"<option value=\"J\" selected=\"selected\">John</option>" +
+"<select name=\"beatles\" multiple>" +
+"<option value=\"J\" selected>John</option>" +
 "<option value=\"P\">Paul</option>" +
-"<option value=\"G\" selected=\"selected\">George</option>" +
+"<option value=\"G\" selected>George</option>" +
 "<option value=\"R\">Ringo</option>" +
 "</select>")
 
   // The value is compared to its String representation
   reactHTMLEqual(w.render("nums", [2], {choices: [['1', '1'], ['2', '2'], ['3', '3']]}),
-"<select name=\"nums\" multiple=\"multiple\">" +
+"<select name=\"nums\" multiple>" +
 "<option value=\"1\">1</option>" +
-"<option value=\"2\" selected=\"selected\">2</option>" +
+"<option value=\"2\" selected>2</option>" +
 "<option value=\"3\">3</option>" +
 "</select>")
   reactHTMLEqual(w.render("nums", ["2"], {choices: [[1, 1], [2, 2], [3, 3]]}),
-"<select name=\"nums\" multiple=\"multiple\">" +
+"<select name=\"nums\" multiple>" +
 "<option value=\"1\">1</option>" +
-"<option value=\"2\" selected=\"selected\">2</option>" +
+"<option value=\"2\" selected>2</option>" +
 "<option value=\"3\">3</option>" +
 "</select>")
   reactHTMLEqual(w.render("nums", [2], {choices: [[1, 1], [2, 2], [3, 3]]}),
-"<select name=\"nums\" multiple=\"multiple\">" +
+"<select name=\"nums\" multiple>" +
 "<option value=\"1\">1</option>" +
-"<option value=\"2\" selected=\"selected\">2</option>" +
+"<option value=\"2\" selected>2</option>" +
 "<option value=\"3\">3</option>" +
 "</select>")
 
   // You can also pass "choices" to the constructor:
   w = forms.SelectMultiple({choices: [[1, 1], [2, 2], [3, 3]]})
   reactHTMLEqual(w.render("nums", [2]),
-"<select name=\"nums\" multiple=\"multiple\">" +
+"<select name=\"nums\" multiple>" +
 "<option value=\"1\">1</option>" +
-"<option value=\"2\" selected=\"selected\">2</option>" +
+"<option value=\"2\" selected>2</option>" +
 "<option value=\"3\">3</option>" +
 "</select>")
 
   // If "choices" is passed to both the constructor and render(), then they'll both be in the output
   reactHTMLEqual(w.render("nums", [2], {choices: [[4, 4], [5, 5]]}),
-"<select name=\"nums\" multiple=\"multiple\">" +
+"<select name=\"nums\" multiple>" +
 "<option value=\"1\">1</option>" +
-"<option value=\"2\" selected=\"selected\">2</option>" +
+"<option value=\"2\" selected>2</option>" +
 "<option value=\"3\">3</option>" +
 "<option value=\"4\">4</option>" +
 "<option value=\"5\">5</option>" +
@@ -489,7 +489,7 @@ QUnit.test("SelectMultiple", 17, function() {
 
   // Choices are escaped correctly
   reactHTMLEqual(w.render("nums", null, {choices: [["bad", "you & me"]]}),
-"<select name=\"nums\" multiple=\"multiple\">" +
+"<select name=\"nums\" multiple>" +
 "<option value=\"1\">1</option>" +
 "<option value=\"2\">2</option>" +
 "<option value=\"3\">3</option>" +
@@ -499,7 +499,7 @@ QUnit.test("SelectMultiple", 17, function() {
   // Choices can be nested one level in order to create HTML optgroups
   w.choices = [['outer1', 'Outer 1'], ['Group "1"', [['inner1', 'Inner 1'], ['inner2', 'Inner 2']]]]
   reactHTMLEqual(w.render("nestchoice", null),
-"<select name=\"nestchoice\" multiple=\"multiple\">" +
+"<select name=\"nestchoice\" multiple>" +
 "<option value=\"outer1\">Outer 1</option>" +
 "<optgroup label=\"Group &quot;1&quot;\">" +
 "<option value=\"inner1\">Inner 1</option>" +
@@ -507,27 +507,27 @@ QUnit.test("SelectMultiple", 17, function() {
 "</optgroup>" +
 "</select>")
   reactHTMLEqual(w.render("nestchoice", ["outer1"]),
-"<select name=\"nestchoice\" multiple=\"multiple\">" +
-"<option value=\"outer1\" selected=\"selected\">Outer 1</option>" +
+"<select name=\"nestchoice\" multiple>" +
+"<option value=\"outer1\" selected>Outer 1</option>" +
 "<optgroup label=\"Group &quot;1&quot;\">" +
 "<option value=\"inner1\">Inner 1</option>" +
 "<option value=\"inner2\">Inner 2</option>" +
 "</optgroup>" +
 "</select>")
   reactHTMLEqual(w.render("nestchoice", ["inner1"]),
-"<select name=\"nestchoice\" multiple=\"multiple\">" +
+"<select name=\"nestchoice\" multiple>" +
 "<option value=\"outer1\">Outer 1</option>" +
 "<optgroup label=\"Group &quot;1&quot;\">" +
-"<option value=\"inner1\" selected=\"selected\">Inner 1</option>" +
+"<option value=\"inner1\" selected>Inner 1</option>" +
 "<option value=\"inner2\">Inner 2</option>" +
 "</optgroup>" +
 "</select>")
   reactHTMLEqual(w.render("nestchoice", ["outer1", "inner2"]),
- "<select name=\"nestchoice\" multiple=\"multiple\">" +
-"<option value=\"outer1\" selected=\"selected\">Outer 1</option>" +
+ "<select name=\"nestchoice\" multiple>" +
+"<option value=\"outer1\" selected>Outer 1</option>" +
 "<optgroup label=\"Group &quot;1&quot;\">" +
 "<option value=\"inner1\">Inner 1</option>" +
-"<option value=\"inner2\" selected=\"selected\">Inner 2</option>" +
+"<option value=\"inner2\" selected>Inner 2</option>" +
 "</optgroup>" +
 "</select>")
 })
@@ -536,7 +536,7 @@ QUnit.test("RadioSelect", 21, function() {
   var w = forms.RadioSelect()
   reactHTMLEqual(w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
 "<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
 "<li><label><input type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></label></li>" +
 "<li><label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
@@ -564,19 +564,19 @@ QUnit.test("RadioSelect", 21, function() {
   reactHTMLEqual(w.render("num", 2, {choices: [['1', '1'], ['2', '2'], ['3', '3']]}),
 "<ul>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"><span> </span><span>2</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"3\"><span> </span><span>3</span></label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("num", "2", {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"><span> </span><span>2</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"3\"><span> </span><span>3</span></label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("num", 2, {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"><span> </span><span>2</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"3\"><span> </span><span>3</span></label></li>" +
 "</ul>")
 
@@ -585,7 +585,7 @@ QUnit.test("RadioSelect", 21, function() {
   reactHTMLEqual(w.render("num", 2),
 "<ul>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"><span> </span><span>2</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"3\"><span> </span><span>3</span></label></li>" +
 "</ul>")
 
@@ -593,7 +593,7 @@ QUnit.test("RadioSelect", 21, function() {
   reactHTMLEqual(w.render("num", 2, {choices: [[4, 4], [5, 5]]}),
 "<ul>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked=\"checked\"><span> </span><span>2</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"3\"><span> </span><span>3</span></label></li>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"4\"><span> </span><span>4</span></label></li>" +
 "<li><label><input type=\"radio\" name=\"num\" value=\"5\"><span> </span><span>5</span></label></li>" +
@@ -614,14 +614,14 @@ QUnit.test("RadioSelect", 21, function() {
   }
   reactHTMLEqual(React.DOM.div(null, inputs1),
 "<div>" +
-"<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label><br>" +
+"<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></label><br>" +
 "<label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label><br>" +
 "<label><input type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></label><br>" +
 "<label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label><br>" +
 "</div>")
   reactHTMLEqual(React.DOM.div(null, inputs2),
 "<div>" +
-"<p><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></p>" +
+"<p><input type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></p>" +
 "<p><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></p>" +
 "<p><input type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></p>" +
 "<p><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></p>" +
@@ -650,7 +650,7 @@ QUnit.test("RadioSelect", 21, function() {
 
   w = forms.RadioSelect({renderer: MyRenderer})
   reactHTMLEqual(w.render("beatle", "G", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
-        "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"><span> </span><span>John</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked=\"checked\"><span> </span><span>George</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></div>")
+        "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"><span> </span><span>John</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked><span> </span><span>George</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></div>")
 
   // Or you can use custom RadioSelect fields that use your custom renderer
   var CustomRadioSelect = forms.RadioSelect.extend({
@@ -661,14 +661,14 @@ QUnit.test("RadioSelect", 21, function() {
 
   w = new CustomRadioSelect()
   reactHTMLEqual(w.render("beatle", "G", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
-        "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"><span> </span><span>John</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked=\"checked\"><span> </span><span>George</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></div>")
+        "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"><span> </span><span>John</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked><span> </span><span>George</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></div>")
 
   // A RadioFieldRenderer object also allows index access to individual
   // RadioInput objects.
   w = forms.RadioSelect()
   r = w.getRenderer("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]})
   reactHTMLEqual(r.choiceInput(1).render(), "<label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label>")
-  reactHTMLEqual(r.choiceInput(0).render(), "<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label>")
+  reactHTMLEqual(r.choiceInput(0).render(), "<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></label>")
   strictEqual(r.choiceInput(0).isChecked(), true)
   strictEqual(r.choiceInput(1).isChecked(), false)
   throws(function() { r.choiceInput(10) })
@@ -684,7 +684,7 @@ QUnit.test("RadioSelect", 21, function() {
   w = forms.RadioSelect({attrs: {id: "foo"}})
   reactHTMLEqual(w.render.bind(w, "beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul id=\"foo\">" +
-"<li><label for=\"foo_0\"><input id=\"foo_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label></li>" +
+"<li><label for=\"foo_0\"><input id=\"foo_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
 "<li><label for=\"foo_1\"><input id=\"foo_1\" type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
 "<li><label for=\"foo_2\"><input id=\"foo_2\" type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></label></li>" +
 "<li><label for=\"foo_3\"><input id=\"foo_3\" type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
@@ -694,7 +694,7 @@ QUnit.test("RadioSelect", 21, function() {
   w = forms.RadioSelect()
   reactHTMLEqual(w.render.bind(w, "beatle", "J", {attrs: {id: "bar"}, choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul id=\"bar\">" +
-"<li><label for=\"bar_0\"><input id=\"bar_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label></li>" +
+"<li><label for=\"bar_0\"><input id=\"bar_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
 "<li><label for=\"bar_1\"><input id=\"bar_1\" type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
 "<li><label for=\"bar_2\"><input id=\"bar_2\" type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></label></li>" +
 "<li><label for=\"bar_3\"><input id=\"bar_3\" type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
@@ -719,7 +719,7 @@ QUnit.test("Nested choices", 2, function() {
 "</ul></li>" +
 "<li><span>Video</span><ul id=\"media_2\">" +
   "<li><label for=\"media_2_0\"><input id=\"media_2_0\" type=\"radio\" name=\"nestchoice\" value=\"vhs\"><span> </span><span>VHS</span></label></li>" +
-  "<li><label for=\"media_2_1\"><input id=\"media_2_1\" type=\"radio\" name=\"nestchoice\" value=\"dvd\" checked=\"checked\"><span> </span><span>DVD</span></label></li>" +
+  "<li><label for=\"media_2_1\"><input id=\"media_2_1\" type=\"radio\" name=\"nestchoice\" value=\"dvd\" checked><span> </span><span>DVD</span></label></li>" +
 "</ul></li>" +
 "</ul>")
 
@@ -734,12 +734,12 @@ QUnit.test("Nested choices", 2, function() {
 "<ul id=\"media\">" +
 "<li><label for=\"media_0\"><input id=\"media_0\" type=\"checkbox\" name=\"nestchoice\" value=\"unknown\"><span> </span><span>Unknown</span></label></li>" +
 "<li><span>Audio</span><ul id=\"media_1\">" +
-  "<li><label for=\"media_1_0\"><input id=\"media_1_0\" type=\"checkbox\" name=\"nestchoice\" value=\"vinyl\" checked=\"checked\"><span> </span><span>Vinyl</span></label></li>" +
+  "<li><label for=\"media_1_0\"><input id=\"media_1_0\" type=\"checkbox\" name=\"nestchoice\" value=\"vinyl\" checked><span> </span><span>Vinyl</span></label></li>" +
   "<li><label for=\"media_1_1\"><input id=\"media_1_1\" type=\"checkbox\" name=\"nestchoice\" value=\"cd\"><span> </span><span>CD</span></label></li>" +
 "</ul></li>" +
 "<li><span>Video</span><ul id=\"media_2\">" +
   "<li><label for=\"media_2_0\"><input id=\"media_2_0\" type=\"checkbox\" name=\"nestchoice\" value=\"vhs\"><span> </span><span>VHS</span></label></li>" +
-  "<li><label for=\"media_2_1\"><input id=\"media_2_1\" type=\"checkbox\" name=\"nestchoice\" value=\"dvd\" checked=\"checked\"><span> </span><span>DVD</span></label></li>" +
+  "<li><label for=\"media_2_1\"><input id=\"media_2_1\" type=\"checkbox\" name=\"nestchoice\" value=\"dvd\" checked><span> </span><span>DVD</span></label></li>" +
 "</ul></li>" +
 "</ul>")
 })
@@ -748,24 +748,24 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
   var w = forms.CheckboxSelectMultiple()
   reactHTMLEqual(w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"><span> </span><span>George</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("beatles", ["J", "P"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked=\"checked\"><span> </span><span>Paul</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked><span> </span><span>Paul</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"><span> </span><span>George</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("beatles", ["J", "P", "R"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked=\"checked\"><span> </span><span>Paul</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked><span> </span><span>Paul</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"><span> </span><span>George</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\" checked=\"checked\"><span> </span><span>Ringo</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\" checked><span> </span><span>Ringo</span></label></li>" +
 "</ul>")
 
   // If the value is null, none of the options are selected
@@ -789,9 +789,9 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
   // If multiple values are given, but some of them are not valid, the valid ones are selected
   reactHTMLEqual(w.render("beatles", ["J", "G", "foo"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked=\"checked\"><span> </span><span>John</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\" checked=\"checked\"><span> </span><span>George</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\" checked><span> </span><span>George</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
 "</ul>")
 
@@ -799,19 +799,19 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
   reactHTMLEqual(w.render("nums", [2], {choices: [['1', '1'], ['2', '2'], ['3', '3']]}),
 "<ul>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"><span> </span><span>2</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"><span> </span><span>3</span></label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("nums", ["2"], {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"><span> </span><span>2</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"><span> </span><span>3</span></label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("nums", [2], {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"><span> </span><span>2</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"><span> </span><span>3</span></label></li>" +
 "</ul>")
 
@@ -820,7 +820,7 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
   reactHTMLEqual(w.render("nums", [2]),
 "<ul>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"><span> </span><span>2</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"><span> </span><span>3</span></label></li>" +
 "</ul>")
 
@@ -828,7 +828,7 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
   reactHTMLEqual(w.render("nums", [2], {choices: [[4, 4], [5, 5]]}),
 "<ul>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked=\"checked\"><span> </span><span>2</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"><span> </span><span>3</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"4\"><span> </span><span>4</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"nums\" value=\"5\"><span> </span><span>5</span></label></li>" +
@@ -850,9 +850,9 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
   , attrs: {id: 'abc'}
   }),
 "<ul id=\"abc\">" +
-"<li><label for=\"abc_0\"><input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked=\"checked\"><span> </span><span>A</span></label></li>" +
+"<li><label for=\"abc_0\"><input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked><span> </span><span>A</span></label></li>" +
 "<li><label for=\"abc_1\"><input id=\"abc_1\" type=\"checkbox\" name=\"letters\" value=\"b\"><span> </span><span>B</span></label></li>" +
-"<li><label for=\"abc_2\"><input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked=\"checked\"><span> </span><span>C</span></label></li>" +
+"<li><label for=\"abc_2\"><input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked><span> </span><span>C</span></label></li>" +
 "</ul>")
 
   // Each input gets a separate ID when the ID is passed to the constructor
@@ -861,9 +861,9 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
     choices: [['a', 'A'], ['b', 'B'], ['c', 'C']]
   }),
 "<ul id=\"abc\">" +
-"<li><label for=\"abc_0\"><input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked=\"checked\"><span> </span><span>A</span></label></li>" +
+"<li><label for=\"abc_0\"><input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked><span> </span><span>A</span></label></li>" +
 "<li><label for=\"abc_1\"><input id=\"abc_1\" type=\"checkbox\" name=\"letters\" value=\"b\"><span> </span><span>B</span></label></li>" +
-"<li><label for=\"abc_2\"><input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked=\"checked\"><span> </span><span>C</span></label></li>" +
+"<li><label for=\"abc_2\"><input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked><span> </span><span>C</span></label></li>" +
 "</ul>")
 
   w = forms.CheckboxSelectMultiple()
@@ -871,10 +871,10 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
   // You can access elements of a CheckboxFieldRenderer
   reactHTMLEqual(r.choiceInputs().map(function(input) { return input.render() }),
 "<label><input type=\"checkbox\" name=\"abc\" value=\"a\"><span> </span><span>A</span></label>" +
-"<label><input type=\"checkbox\" name=\"abc\" value=\"b\" checked=\"checked\"><span> </span><span>B</span></label>" +
+"<label><input type=\"checkbox\" name=\"abc\" value=\"b\" checked><span> </span><span>B</span></label>" +
 "<label><input type=\"checkbox\" name=\"abc\" value=\"c\"><span> </span><span>C</span></label>")
   // You can access individual elements
-  reactHTMLEqual(r.choiceInput(1).render(), "<label><input type=\"checkbox\" name=\"abc\" value=\"b\" checked=\"checked\"><span> </span><span>B</span></label>")
+  reactHTMLEqual(r.choiceInput(1).render(), "<label><input type=\"checkbox\" name=\"abc\" value=\"b\" checked><span> </span><span>B</span></label>")
   throws(function() { r.choiceInput(10) })
 })
 
@@ -883,17 +883,17 @@ QUnit.test("Subwidget", 3, function() {
   var w = forms.CheckboxSelectMultiple({attrs: {id: 'abc'}})
   var subWidgets = w.subWidgets("letters", ['a', 'c'], {choices:[['a', 'A'], ['b', 'B'], ['c', 'C']]})
   reactHTMLEqual(function() { return subWidgets.map(function(s) { return s.tag() }) },
-"<input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked=\"checked\">" +
+"<input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked>" +
 "<input id=\"abc_1\" type=\"checkbox\" name=\"letters\" value=\"b\">" +
-"<input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked=\"checked\">")
+"<input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked>")
 
   // Each subwidget tag does not get an ID if the widget does not have an ID specified
   w = forms.CheckboxSelectMultiple()
   subWidgets = w.subWidgets("letters", ['a', 'c'], {choices:[['a', 'A'], ['b', 'B'], ['c', 'C']]})
   reactHTMLEqual(function() { return subWidgets.map(function(s) { return s.tag() }) },
-"<input type=\"checkbox\" name=\"letters\" value=\"a\" checked=\"checked\">" +
+"<input type=\"checkbox\" name=\"letters\" value=\"a\" checked>" +
 "<input type=\"checkbox\" name=\"letters\" value=\"b\">" +
-"<input type=\"checkbox\" name=\"letters\" value=\"c\" checked=\"checked\">")
+"<input type=\"checkbox\" name=\"letters\" value=\"c\" checked>")
 
   // The idForLabel method of the subwidget should return the ID that is used on
   // the subwidget's tag.

@@ -96,27 +96,13 @@ var reactHTMLEqual = (function() {
       component = reactClass()
     }
 
-    stop()
-    try {
-      React.renderComponentToString(component, function(html) {
-        html = html.replace(reactAttrs, '')
-        // Remove HTML for any wrapper element which was added
-        if (wrapped) {
-          html = html.replace(wrapperElement, '')
-        }
-        equal(html, expectedHTML, message)
-      })
+    html = React.renderComponentToString(component)
+    html = html.replace(reactAttrs, '')
+    // Remove HTML for any wrapper element which was added
+    if (wrapped) {
+      html = html.replace(wrapperElement, '')
     }
-    catch (e) {
-      // React is throwing these when rendering to String(!?)
-      if (e.message !== "Cannot read property 'firstChild' of undefined" &&
-          e.message !== "ancestorNode is undefined") {
-        throw e
-      }
-    }
-    finally {
-      start()
-    }
+    equal(html, expectedHTML, message)
   }
 })()
 

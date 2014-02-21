@@ -7,8 +7,13 @@
   <link rel="stylesheet" href="qunit/qunit.css">
   <script src="qunit/qunit.js"></script>
   <!-- Dependencies -->
-  <script src="../vendor/react-0.8.0.js"></script>
-  <script src="../vendor/isomorph-0.2.0.min.js"></script>
+  <!--
+  = This is a manually modified version of React 0.9.0 which hardcodes
+  = ExecutionEnvironment.canUseDOM to false so React.renderComponentToString()
+  = doesn't throw errors.
+  -->
+  <script src="../vendor/react-0.9.0-qunit-testmod.js"></script>
+  <script src="../vendor/isomorph-0.2.1.min.js"></script>
   <!-- Custom assertions -->
   <script src="customAsserts.js"></script>
   <!-- Code under test -->

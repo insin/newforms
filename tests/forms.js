@@ -257,16 +257,16 @@ QUnit.test("Various boolean values", 10, function() {
   reactHTMLEqual(f.boundField("email").render(),
         "<input type=\"email\" name=\"email\" value=\"test@example.com\">")
   reactHTMLEqual(f.boundField("get_spam").render(),
-        "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">")
+        "<input type=\"checkbox\" name=\"get_spam\" checked>")
 
   // Values of "true" or "True" should be rendered without a value
   f = new SignupForm({data: {email: "test@example.com", get_spam: "true"}, autoId: false})
   reactHTMLEqual(f.boundField("get_spam").render(),
-        "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">")
+        "<input type=\"checkbox\" name=\"get_spam\" checked>")
 
   f = new SignupForm({data: {email: "test@example.com", get_spam: "True"}, autoId: false})
   reactHTMLEqual(f.boundField("get_spam").render(),
-        "<input type=\"checkbox\" name=\"get_spam\" checked=\"checked\">")
+        "<input type=\"checkbox\" name=\"get_spam\" checked>")
 
   // Values of "false" or "False" should render unchecked
   f = new SignupForm({data: {email: "test@example.com", get_spam: "false"}, autoId: false})
@@ -343,7 +343,7 @@ QUnit.test("Forms with choices", 9, function() {
   f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
   reactHTMLEqual(f.boundField("language").render(),
 "<select name=\"language\">" +
-"<option value=\"P\" selected=\"selected\">Python</option>" +
+"<option value=\"P\" selected>Python</option>" +
 "<option value=\"J\">Java</option>" +
 "</select>")
 
@@ -357,7 +357,7 @@ QUnit.test("Forms with choices", 9, function() {
   f = new FrameworkForm({autoId: false})
   reactHTMLEqual(f.boundField("language").render(),
 "<select name=\"language\">" +
-"<option value=\"\" selected=\"selected\">------</option>" +
+"<option value=\"\" selected>------</option>" +
 "<option value=\"P\">Python</option>" +
 "<option value=\"J\">Java</option>" +
 "</select>")
@@ -379,7 +379,7 @@ QUnit.test("Forms with choices", 9, function() {
   f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
   reactHTMLEqual(f.boundField("language").render(),
 "<select class=\"foo\" name=\"language\">" +
-"<option value=\"P\" selected=\"selected\">Python</option>" +
+"<option value=\"P\" selected>Python</option>" +
 "<option value=\"J\">Java</option>" +
 "</select>")
 
@@ -405,7 +405,7 @@ QUnit.test("Forms with choices", 9, function() {
   f = new FrameworkForm({data: {name: "Django", language: "P"}, autoId: false})
   reactHTMLEqual(f.boundField("language").render(),
 "<select class=\"foo\" name=\"language\">" +
-"<option value=\"P\" selected=\"selected\">Python</option>" +
+"<option value=\"P\" selected>Python</option>" +
 "<option value=\"J\">Java</option>" +
 "</select>")
 
@@ -519,7 +519,7 @@ QUnit.test("Forms with multiple choice", 4, function() {
   })
   var f = new SongForm({autoId: false})
   reactHTMLEqual(f.boundField("composers").render(),
-"<select name=\"composers\" multiple=\"multiple\">" +
+"<select name=\"composers\" multiple>" +
 "</select>")
   SongForm = forms.Form.extend({
     name: forms.CharField(),
@@ -527,7 +527,7 @@ QUnit.test("Forms with multiple choice", 4, function() {
   })
   f = new SongForm({autoId: false})
   reactHTMLEqual(f.boundField("composers").render(),
-"<select name=\"composers\" multiple=\"multiple\">" +
+"<select name=\"composers\" multiple>" +
 "<option value=\"J\">John Lennon</option>" +
 "<option value=\"P\">Paul McCartney</option>" +
 "</select>")
@@ -535,9 +535,9 @@ QUnit.test("Forms with multiple choice", 4, function() {
   reactHTMLEqual(f.boundField("name").render(),
 "<input type=\"text\" name=\"name\" value=\"Yesterday\">")
   reactHTMLEqual(f.boundField("composers").render(),
-"<select name=\"composers\" multiple=\"multiple\">" +
+"<select name=\"composers\" multiple>" +
 "<option value=\"J\">John Lennon</option>" +
-"<option value=\"P\" selected=\"selected\">Paul McCartney</option>" +
+"<option value=\"P\" selected>Paul McCartney</option>" +
 "</select>")
 })
 
@@ -588,14 +588,14 @@ QUnit.test("Mutiple choice checkbox", 3, function() {
   f = new SongForm({data: {composers: ["J"]}, autoId: false})
   reactHTMLEqual(f.boundField("composers").render(),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"><span> </span><span>John Lennon</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked><span> </span><span>John Lennon</span></label></li>" +
 "<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\"><span> </span><span>Paul McCartney</span></label></li>" +
 "</ul>")
   f = new SongForm({data: {composers: ["J", "P"]}, autoId: false})
   reactHTMLEqual(f.boundField("composers").render(),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked=\"checked\"><span> </span><span>John Lennon</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\" checked=\"checked\"><span> </span><span>Paul McCartney</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"J\" checked><span> </span><span>John Lennon</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"composers\" value=\"P\" checked><span> </span><span>Paul McCartney</span></label></li>" +
 "</ul>")
 })
 
@@ -1352,9 +1352,9 @@ QUnit.test("Callable initial data", 8, function() {
   reactHTMLEqual(p.asUL(),
 "<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>" +
 "<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
-"<li><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
-"<option value=\"f\" selected=\"selected\">foo</option>" +
-"<option value=\"b\" selected=\"selected\">bar</option>" +
+"<li><span>Options:</span><span> </span><select name=\"options\" multiple>" +
+"<option value=\"f\" selected>foo</option>" +
+"<option value=\"b\" selected>bar</option>" +
 "<option value=\"w\">whiz</option>" +
 "</select></li>")
 
@@ -1363,7 +1363,7 @@ QUnit.test("Callable initial data", 8, function() {
   reactHTMLEqual(p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Options:</span><span> </span><select name=\"options\" multiple>" +
 "<option value=\"f\">foo</option>" +
 "<option value=\"b\">bar</option>" +
 "<option value=\"w\">whiz</option>" +
@@ -1372,7 +1372,7 @@ QUnit.test("Callable initial data", 8, function() {
   reactHTMLEqual(p.asUL(),
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"></li>" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Options:</span><span> </span><select name=\"options\" multiple>" +
 "<option value=\"f\">foo</option>" +
 "<option value=\"b\">bar</option>" +
 "<option value=\"w\">whiz</option>" +
@@ -1381,9 +1381,9 @@ QUnit.test("Callable initial data", 8, function() {
   reactHTMLEqual(p.asUL(),
 "<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"></li>" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
-"<li><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
-"<option value=\"f\" selected=\"selected\">foo</option>" +
-"<option value=\"b\" selected=\"selected\">bar</option>" +
+"<li><span>Options:</span><span> </span><select name=\"options\" multiple>" +
+"<option value=\"f\" selected>foo</option>" +
+"<option value=\"b\" selected>bar</option>" +
 "<option value=\"w\">whiz</option>" +
 "</select></li>")
 
@@ -1406,18 +1406,18 @@ QUnit.test("Callable initial data", 8, function() {
   reactHTMLEqual(p.asUL(),
 "<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"django\"></li>" +
 "<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
-"<li><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
+"<li><span>Options:</span><span> </span><select name=\"options\" multiple>" +
 "<option value=\"f\">foo</option>" +
-"<option value=\"b\" selected=\"selected\">bar</option>" +
-"<option value=\"w\" selected=\"selected\">whiz</option>" +
+"<option value=\"b\" selected>bar</option>" +
+"<option value=\"w\" selected>whiz</option>" +
 "</select></li>")
   p = new UserRegistration({initial: {username: initialStephane, options: initialOptions}, autoId: false})
   reactHTMLEqual(p.asUL(),
 "<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"stephane\"></li>" +
 "<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"></li>" +
-"<li><span>Options:</span><span> </span><select name=\"options\" multiple=\"multiple\">" +
-"<option value=\"f\" selected=\"selected\">foo</option>" +
-"<option value=\"b\" selected=\"selected\">bar</option>" +
+"<li><span>Options:</span><span> </span><select name=\"options\" multiple>" +
+"<option value=\"f\" selected>foo</option>" +
+"<option value=\"b\" selected>bar</option>" +
 "<option value=\"w\">whiz</option>" +
 "</select></li>")
 })
@@ -1728,14 +1728,14 @@ QUnit.test("Forms with null boolean", 6, function() {
   var p = new Person({data: {name: "Joe"}, autoId: false})
   reactHTMLEqual(p.boundField("is_cool").render(),
 "<select name=\"is_cool\">" +
-"<option value=\"1\" selected=\"selected\">Unknown</option>" +
+"<option value=\"1\" selected>Unknown</option>" +
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select>")
   p = new Person({data: {name: "Joe", is_cool: "1"}, autoId: false})
   reactHTMLEqual(p.boundField("is_cool").render(),
 "<select name=\"is_cool\">" +
-"<option value=\"1\" selected=\"selected\">Unknown</option>" +
+"<option value=\"1\" selected>Unknown</option>" +
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select>")
@@ -1743,7 +1743,7 @@ QUnit.test("Forms with null boolean", 6, function() {
   reactHTMLEqual(p.boundField("is_cool").render(),
 "<select name=\"is_cool\">" +
 "<option value=\"1\">Unknown</option>" +
-"<option value=\"2\" selected=\"selected\">Yes</option>" +
+"<option value=\"2\" selected>Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select>")
   p = new Person({data: {name: "Joe", is_cool: "3"}, autoId: false})
@@ -1751,13 +1751,13 @@ QUnit.test("Forms with null boolean", 6, function() {
 "<select name=\"is_cool\">" +
 "<option value=\"1\">Unknown</option>" +
 "<option value=\"2\">Yes</option>" +
-"<option value=\"3\" selected=\"selected\">No</option>" +
+"<option value=\"3\" selected>No</option>" +
 "</select>")
   p = new Person({data: {name: "Joe", is_cool: true}, autoId: false})
   reactHTMLEqual(p.boundField("is_cool").render(),
 "<select name=\"is_cool\">" +
 "<option value=\"1\">Unknown</option>" +
-"<option value=\"2\" selected=\"selected\">Yes</option>" +
+"<option value=\"2\" selected>Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select>")
   p = new Person({data: {name: "Joe", is_cool: false}, autoId: false})
@@ -1765,7 +1765,7 @@ QUnit.test("Forms with null boolean", 6, function() {
 "<select name=\"is_cool\">" +
 "<option value=\"1\">Unknown</option>" +
 "<option value=\"2\">Yes</option>" +
-"<option value=\"3\" selected=\"selected\">No</option>" +
+"<option value=\"3\" selected>No</option>" +
 "</select>")
 })
 
@@ -1935,7 +1935,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
   reactHTMLEqual(p.asUL.bind(p),
 "<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></li>" +
 "<li class=\"row required\"><label for=\"id_is_cool\">Is cool:</label><span> </span><select name=\"is_cool\" id=\"id_is_cool\">" +
-"<option value=\"1\" selected=\"selected\">Unknown</option>" +
+"<option value=\"1\" selected>Unknown</option>" +
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select></li>" +
@@ -1945,7 +1945,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
 "<p class=\"row error required\"><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></p>" +
 "<p class=\"row required\"><label for=\"id_is_cool\">Is cool:</label><span> </span><select name=\"is_cool\" id=\"id_is_cool\">" +
-"<option value=\"1\" selected=\"selected\">Unknown</option>" +
+"<option value=\"1\" selected>Unknown</option>" +
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select></p>" +
@@ -1955,7 +1955,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
   reactHTMLEqual(p.asTable.bind(p),
 "<tr class=\"row error required\"><th><label for=\"id_name\">Name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>" +
 "<tr class=\"row required\"><th><label for=\"id_is_cool\">Is cool:</label></th><td><select name=\"is_cool\" id=\"id_is_cool\">" +
-"<option value=\"1\" selected=\"selected\">Unknown</option>" +
+"<option value=\"1\" selected>Unknown</option>" +
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select></td></tr>" +

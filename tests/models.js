@@ -65,7 +65,7 @@ QUnit.test('ModelChoiceField', 16, function() {
   var form = new ModelTestForm()
   reactHTMLEqual(function() { return form.boundField('thing').render() },
 '<select name="thing" id="id_thing">' +
-'<option value="" selected="selected">---------</option>' +
+'<option value="" selected>---------</option>' +
 '<option value="1">Thing 1</option>' +
 '<option value="2">Thing 2</option>' +
 '<option value="3">Thing 3</option>' +

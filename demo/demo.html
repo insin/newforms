@@ -12,7 +12,7 @@
   ul.errorlist li { margin-bottom: 5px; padding-left: 5px; border-radius: 1em; -moz-border-radius: 1em; background-color: #f33; color: #fff; }
   ul.errorlist li:before { content: "\2622"; font-size: 18px; color: #ff0; margin-right: 3px; }
   </style>
-  <script src="../vendor/react-0.8.0.js"></script>
+  <script src="../vendor/react-0.9.0.js"></script>
   <script src="../newforms.js"></script>
   <script>
   var FakeFile = function() { this.url = "#something"; }
@@ -197,7 +197,7 @@
     }
 
   , render: function() {
-      var forms = this.state.formset.forms.map(function(form, i) {
+      var forms = this.state.formset.forms().map(function(form, i) {
         return [
           React.DOM.h2(null, 'Contact Form #' + (i+1))
         , React.DOM.table(null
@@ -216,12 +216,6 @@
       )
     }
   })
-
-  function renderToString() {
-    React.renderComponentToString(DemoForm(), function(html) {
-      document.getElementById('htmlVersion').value = html.replace(/ data-react[-\w]+="[^"]+"/g, '')
-    })
-  }
   </script>
 </head>
 <body>
@@ -238,12 +232,6 @@
   about with server-side style validation, using a data object which represents
   POST data, creating a new Form/FormSet for each validation and refreshing
   display of the form.
-</p>
-
-<p>
-  <input type="button" value="Render to HTML string" onClick="renderToString()">
-  <br>
-  <textarea id="htmlVersion" rows="6" cols="60"></textarea>
 </p>
 
 <div id="demo">
