@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "Concur": "0.2.x",
-    "isomorph": "0.2.x",
+    "isomorph": "~0.2.1",
     "validators": "0.2.x"
   },
   "devDependencies": {
