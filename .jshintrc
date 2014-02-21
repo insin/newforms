@@ -20,5 +20,6 @@
   "globalstrict": true,
   "laxbreak": true,
   "laxcomma": true,
+  "loopfunc": true,
   "sub": true
 }

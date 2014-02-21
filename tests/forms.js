@@ -1990,7 +1990,75 @@ QUnit.test('MultiValueField validation', 6, function() {
 
 // TODO test_multivalue_deep_copy
 
-// TODO test_multivalue_optional_subfields
+QUnit.test("MultiValueField optional subfields", function() {
+  var PhoneField = forms.MultiValueField.extend({
+    constructor: function(kwargs) {
+      kwargs = kwargs || {}
+      kwargs.fields = [
+        forms.CharField({label: 'Country Code', validators: [
+          forms.RegexValidator({regex: /^\+\d{1,2}$/, message: 'Enter a valid country code.'})
+        ]})
+      , forms.CharField({label: 'Phone Number'})
+      , forms.CharField({label: 'Extension', errorMessages: {incomplete: 'Enter an extension.'}})
+      , forms.CharField({label: 'Label', required: false, helpText: 'E.g. home, work.'})
+      ]
+      forms.MultiValueField.call(this, kwargs)
+    }
+  , compress: function(d) {
+      if (d && d.length) {
+        return [d[0] || '', '.', d[1] || '', ' ext. ', d[2] || '',' (label: ',
+                d[3] || '', ')'].join('')
+      }
+      return null
+    }
+  })
+
+  // An empty value for any field will throw a 'required' error on a required
+  // MultiValueField.
+  var f = new PhoneField()
+  cleanErrorEqual(f, 'This field is required.', '')
+  cleanErrorEqual(f, 'This field is required.', null)
+  cleanErrorEqual(f, 'This field is required.', [])
+  cleanErrorEqual(f, 'This field is required.', ['+61'])
+  cleanErrorEqual(f, 'This field is required.', ['+61', '287654321', '123'])
+  equal(f.clean(['+61', '287654321', '123', 'Home']), '+61.287654321 ext. 123 (label: Home)')
+  cleanErrorEqual(f, 'Enter a valid country code.', ['61', '287654321', '123', 'Home'])
+
+  // Empty values for fields will NOT raise a 'required' error on an optional
+  // MultiValueField.
+  var f = new PhoneField({required: false})
+  equal(f.clean(''), null)
+  equal(f.clean(null), null)
+  equal(f.clean([]), null)
+  equal(f.clean(['+61']), '+61. ext.  (label: )')
+  equal(f.clean(['+61', '287654321', '123']), '+61.287654321 ext. 123 (label: )')
+  equal(f.clean(['+61', '287654321', '123', 'Home']), '+61.287654321 ext. 123 (label: Home)')
+  cleanErrorEqual(f, 'Enter a valid country code.', ['61', '287654321', '123', 'Home'])
+
+  // For a required MultiValueField with requireAllFields=false`, a 'required'
+  // error will only be thrown if all fields are empty. Fields can individually
+  // be required or optional. An empty value for any required field will raise
+  // an 'incomplete' error.
+  var f = new PhoneField({requireAllFields: false})
+  cleanErrorEqual(f, 'This field is required.', '')
+  cleanErrorEqual(f, 'This field is required.', null)
+  cleanErrorEqual(f, 'This field is required.', [])
+  cleanErrorEqual(f, ['Enter a complete value.', 'Enter an extension.'], ['+61'])
+  equal(f.clean(['+61', '287654321', '123']), '+61.287654321 ext. 123 (label: )')
+  cleanErrorEqual(f, ['Enter a complete value.', 'Enter an extension.'], ['', '', '', 'Home'])
+  cleanErrorEqual(f, 'Enter a valid country code.', ['61', '287654321', '123', 'Home'])
+
+  //For an optional MultiValueField with requireAllFields=false, we don't get
+  // any 'required' error but we still get 'incomplete' errors.
+  var f = new PhoneField({required: false, requireAllFields: false})
+  equal(f.clean(''), null)
+  equal(f.clean(null), null)
+  equal(f.clean([]), null)
+  cleanErrorEqual(f, ['Enter a complete value.', 'Enter an extension.'], ['+61'])
+  equal(f.clean(['+61', '287654321', '123']), '+61.287654321 ext. 123 (label: )')
+  cleanErrorEqual(f, ['Enter a complete value.', 'Enter an extension.'], ['', '', '', 'Home'])
+  cleanErrorEqual(f, 'Enter a valid country code.', ['61', '287654321', '123', 'Home'])
+})
 
 // TODO test_custom_empty_values
 

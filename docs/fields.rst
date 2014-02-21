@@ -361,6 +361,13 @@ API
 
       :type: Array
 
+   .. js:attribute:: kwargs.requireAllFields
+
+      when set to ``false``, allows optional subfields. The required attribute
+      for each individual field will be respected, and a new ``'incomplete'``
+      validation error will be raised when any required fields are empty.
+      Defaults to ``true``.
+
 .. js:class:: SplitDateTimeField([kwargs])
 
    A MultiValueField consisting of a DateField and a TimeField.
