@@ -80,7 +80,7 @@ QUnit.test("Formset validation", 2, function() {
   }
   var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), false)
-  deepEqual(formset.errors()[0].get("votes").errors, ["This field is required."])
+  deepEqual(formset.errors()[0].get("votes").messages(), ["This field is required."])
 })
 
 QUnit.test('Formset hasChanged', 5, function() {
@@ -153,7 +153,7 @@ QUnit.test("Second form partially filled", 2, function() {
   }
   var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), false)
-  deepEqual([formset.errors()[0].isPopulated(), formset.errors()[1].get("votes").errors],
+  deepEqual([formset.errors()[0].isPopulated(), formset.errors()[1].get("votes").messages()],
       [false, ["This field is required."]])
 })
 
@@ -172,7 +172,7 @@ QUnit.test("Delete prefilled data", 2, function() {
   }
   var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), false)
-  deepEqual([formset.errors()[0].get("choice").errors, formset.errors()[0].get("votes").errors],
+  deepEqual([formset.errors()[0].get("choice").messages(), formset.errors()[0].get("votes").messages()],
       [["This field is required."], ["This field is required."]])
 })
 
@@ -243,7 +243,7 @@ QUnit.test("Second form partially filled", 2, function() {
   }
   var formset = new MoreChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), false)
-  deepEqual([formset.errors()[0].isPopulated(), formset.errors()[1].get("votes").errors, formset.errors()[2].isPopulated()],
+  deepEqual([formset.errors()[0].isPopulated(), formset.errors()[1].get("votes").messages(), formset.errors()[2].isPopulated()],
        [false, ["This field is required."], false])
 })
 
@@ -546,7 +546,7 @@ QUnit.test("Clean hook", 10, function() {
 
     // Any errors raised by formset.clean() are available via the
     // formset.nonFormErrors() method.
-    deepEqual(formset.nonFormErrors().errors, ["You may only specify a drink once."])
+    deepEqual(formset.nonFormErrors().messages(), ["You may only specify a drink once."])
 
     // Make sure we didn't break the valid case
     data = {
@@ -717,7 +717,7 @@ QUnit.test("Formset clean errors", 2, function() {
   }
   var formset = new FavouriteDrinksFormSet({data: data, prefix: "drinks"})
   strictEqual(formset.isValid(), false)
-  deepEqual(formset.nonFormErrors().errors, ["You may only specify a drink once."])
+  deepEqual(formset.nonFormErrors().messages(), ["You may only specify a drink once."])
 })
 
 QUnit.test("Formset with SplitDateTimeField", 1, function() {
@@ -852,7 +852,7 @@ QUnit.test("Form errors are caught by FormSet", 4, function() {
   strictEqual(formset.isValid(), false)
   strictEqual(formset.errors()[0].isPopulated(), false)
   strictEqual(formset.errors()[1].isPopulated(), true)
-  deepEqual(formset.errors()[1].get("pub_date").errors, ["This field is required."])
+  deepEqual(formset.errors()[1].get("pub_date").messages(), ["This field is required."])
 })
 
 QUnit.test("Empty forms are unbound", 3, function() {

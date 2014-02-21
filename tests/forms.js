@@ -54,9 +54,9 @@ QUnit.test("Empty data object", 10, function() {
   // Empty objects are valid, too
   var p = new Person({data: {}})
   strictEqual(p.isBound, true)
-  deepEqual(p.errors("first_name").errors, ["This field is required."])
-  deepEqual(p.errors("last_name").errors, ["This field is required."])
-  deepEqual(p.errors("birthday").errors, ["This field is required."])
+  deepEqual(p.errors("first_name").messages(), ["This field is required."])
+  deepEqual(p.errors("last_name").messages(), ["This field is required."])
+  deepEqual(p.errors("birthday").messages(), ["This field is required."])
   deepEqual(p.isValid(), false)
   deepEqual(p.cleanedData, {})
   reactHTMLEqual(p.render.bind(p),
@@ -109,8 +109,8 @@ QUnit.test("Unbound form", 8, function() {
 
 QUnit.test("Validation errors", 11, function() {
   var p = new Person({data: {last_name: "Lennon"}})
-  deepEqual(p.errors("first_name").errors, ["This field is required."])
-  deepEqual(p.errors("birthday").errors, ["This field is required."])
+  deepEqual(p.errors("first_name").messages(), ["This field is required."])
+  deepEqual(p.errors("birthday").messages(), ["This field is required."])
   deepEqual(p.isValid(), false)
   reactHTMLEqual(function() { return p.errors().asUL() },
 "<ul class=\"errorlist\"><li><span>first_name</span><ul class=\"errorlist\"><li>This field is required.</li></ul></li><li><span>birthday</span><ul class=\"errorlist\"><li>This field is required.</li></ul></li></ul>")
@@ -119,7 +119,7 @@ QUnit.test("Validation errors", 11, function() {
 "  * This field is required.\n" +
 "* birthday\n" +
 "  * This field is required.")
-  deepEqual(p.boundField("first_name").errors().errors, ["This field is required."])
+  deepEqual(p.boundField("first_name").errors().messages(), ["This field is required."])
   reactHTMLEqual(function() { return p.boundField("first_name").errors().asUL() },
         "<ul class=\"errorlist\"><li>This field is required.</li></ul>")
   equal(""+p.boundField("first_name").errors().asText(),
@@ -663,7 +663,7 @@ QUnit.test("Multiple hidden", 8, function() {
   // When using MultipleChoiceField, the framework expects a list of input and
   // returns a list of input.
   f = new SongForm({data: {name: "Yesterday"}, autoId: false})
-  deepEqual(f.errors("composers").errors, ["This field is required."])
+  deepEqual(f.errors("composers").messages(), ["This field is required."])
   f = new SongForm({data: {name: "Yesterday", composers: ["J"]}, autoId: false})
   strictEqual(f.errors().isPopulated(), false)
   deepEqual(f.cleanedData["composers"], ["J"])
@@ -731,11 +731,11 @@ QUnit.test("Validating multiple fields", 20, function() {
   var f = new UserRegistration({autoId: false})
   strictEqual(f.errors().isPopulated(), false)
   f = new UserRegistration({data: {}, autoId: false})
-  deepEqual(f.errors("username").errors, ["This field is required."])
-  deepEqual(f.errors("password1").errors, ["This field is required."])
-  deepEqual(f.errors("password2").errors, ["This field is required."])
+  deepEqual(f.errors("username").messages(), ["This field is required."])
+  deepEqual(f.errors("password1").messages(), ["This field is required."])
+  deepEqual(f.errors("password2").messages(), ["This field is required."])
   f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false})
-  deepEqual(f.errors("password2").errors, ["Please make sure your passwords match."])
+  deepEqual(f.errors("password2").messages(), ["Please make sure your passwords match."])
   f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false})
   strictEqual(f.errors().isPopulated(), false)
   equal(f.cleanedData.username, "adrian")
@@ -774,12 +774,12 @@ QUnit.test("Validating multiple fields", 20, function() {
 "<tr><th>Username:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input maxlength=\"10\" type=\"text\" name=\"username\"></td></tr>" +
 "<tr><th>Password1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password1\"></td></tr>" +
 "<tr><th>Password2:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"password\" name=\"password2\"></td></tr>")
-  deepEqual(f.errors("username").errors, ["This field is required."])
-  deepEqual(f.errors("password1").errors, ["This field is required."])
-  deepEqual(f.errors("password2").errors, ["This field is required."])
+  deepEqual(f.errors("username").messages(), ["This field is required."])
+  deepEqual(f.errors("password1").messages(), ["This field is required."])
+  deepEqual(f.errors("password2").messages(), ["This field is required."])
 
   f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "bar"}, autoId: false})
-  deepEqual(f.errors("__all__").errors, ["Please make sure your passwords match."])
+  deepEqual(f.errors("__all__").messages(), ["Please make sure your passwords match."])
   reactHTMLEqual(f.asTable(),
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></td></tr>" +
 "<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></td></tr>" +
@@ -1238,7 +1238,7 @@ QUnit.test("Initial data", 6, function() {
   // raises a validation error rather than using the initial value for
   // "username".
   p = new UserRegistration({data: {password: "secret"}})
-  deepEqual(p.errors("username").errors, ["This field is required."])
+  deepEqual(p.errors("username").messages(), ["This field is required."])
   strictEqual(p.isValid(), false)
 })
 
@@ -1282,7 +1282,7 @@ QUnit.test("Dynamic initial data", 8, function() {
   // the form raises a validation error rather than using the initial value
   // for "username".
   p = new UserRegistration({data: {password: "secret"}, initial: {username: "django"}})
-  deepEqual(p.errors("username").errors, ["This field is required."])
+  deepEqual(p.errors("username").messages(), ["This field is required."])
   strictEqual(p.isValid(), false)
 
   // If a Form defines "initial" *and* "initial" is passed as a parameter
@@ -1358,7 +1358,7 @@ QUnit.test("Callable initial data", 8, function() {
   // the form raises a validation error rather than using the initial value
   // for 'username'.
   p = new UserRegistration({data: {password: "secret"}, initial: {username: initialDjango, options: initialOptions}})
-  deepEqual(p.errors("username").errors, ["This field is required."])
+  deepEqual(p.errors("username").messages(), ["This field is required."])
   strictEqual(p.isValid(), false)
 
   // If a Form defines "initial" *and* "initial" is passed as a parameter
@@ -1540,9 +1540,9 @@ QUnit.test("Subclassing forms", 10, function() {
 "<li><span>Haircut type:</span><span> </span><input type=\"text\" name=\"haircut_type\"></li>")
 
   var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}})
-  deepEqual(b.errors("first_name").errors, ["Method from Person."])
-  deepEqual(b.errors("birthday").errors, ["Method from Instrument."])
-  deepEqual(b.errors("last_name").errors, ["Method from Beatle."])
+  deepEqual(b.errors("first_name").messages(), ["Method from Person."])
+  deepEqual(b.errors("birthday").messages(), ["Method from Instrument."])
+  deepEqual(b.errors("last_name").messages(), ["Method from Beatle."])
 
   // You can also mix and match by extending one form and mixing in another.
   var Beatle = Person.extend({
@@ -1563,9 +1563,9 @@ QUnit.test("Subclassing forms", 10, function() {
 "<li><span>Haircut type:</span><span> </span><input type=\"text\" name=\"haircut_type\"></li>")
 
   var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}})
-  deepEqual(b.errors("first_name").errors, ["Method from Person."])
-  deepEqual(b.errors("birthday").errors, ["Method from Instrument."])
-  deepEqual(b.errors("last_name").errors, ["Method from Beatle."])
+  deepEqual(b.errors("first_name").messages(), ["Method from Person."])
+  deepEqual(b.errors("birthday").messages(), ["Method from Instrument."])
+  deepEqual(b.errors("last_name").messages(), ["Method from Beatle."])
 })
 
 QUnit.test("Forms with prefixes", 30, function() {
@@ -1611,10 +1611,10 @@ QUnit.test("Forms with prefixes", 30, function() {
   , "person1-birthday": ""
   }
   p = new Person({data: data, prefix: "person1"})
-  deepEqual(p.errors("first_name").errors, ["This field is required."])
-  deepEqual(p.errors("last_name").errors, ["This field is required."])
-  deepEqual(p.errors("birthday").errors, ["This field is required."])
-  deepEqual(p.boundField("first_name").errors().errors, ["This field is required."])
+  deepEqual(p.errors("first_name").messages(), ["This field is required."])
+  deepEqual(p.errors("last_name").messages(), ["This field is required."])
+  deepEqual(p.errors("birthday").messages(), ["This field is required."])
+  deepEqual(p.boundField("first_name").errors().messages(), ["This field is required."])
   try { p.boundField("person1-first_name"); } catch(e) { equal(e.message, "Form does not have a 'person1-first_name' field."); }
 
   // In this example, the data doesn't have a prefix, but the form requires
@@ -1625,9 +1625,9 @@ QUnit.test("Forms with prefixes", 30, function() {
   , "birthday": "1940-10-9"
   }
   p = new Person({data: data, prefix: "person1"})
-  deepEqual(p.errors("first_name").errors, ["This field is required."])
-  deepEqual(p.errors("last_name").errors, ["This field is required."])
-  deepEqual(p.errors("birthday").errors, ["This field is required."])
+  deepEqual(p.errors("first_name").messages(), ["This field is required."])
+  deepEqual(p.errors("last_name").messages(), ["This field is required."])
+  deepEqual(p.errors("birthday").messages(), ["This field is required."])
 
   // With prefixes, a single data object can hold data for multiple instances
   // of the same form.
@@ -1826,8 +1826,8 @@ QUnit.test("emptyPermitted", 12, function() {
   var data = {artist: "", name: ""}
   var form = new SongForm({data: data, emptyPermitted: false})
   strictEqual(form.isValid(), false)
-  deepEqual(form.errors("artist").errors, ["This field is required."])
-  deepEqual(form.errors("name").errors, ["This field is required."])
+  deepEqual(form.errors("artist").messages(), ["This field is required."])
+  deepEqual(form.errors("name").messages(), ["This field is required."])
   deepEqual(form.cleanedData, {})
 
   // Now let's show what happens when emptyPermitted == true and the form is
@@ -1842,7 +1842,7 @@ QUnit.test("emptyPermitted", 12, function() {
   data = {artist: "The Doors", name: ""}
   form = new SongForm({data: data, emptyPermitted: true})
   strictEqual(form.isValid(), false)
-  deepEqual(form.errors("name").errors, ["This field is required."])
+  deepEqual(form.errors("name").messages(), ["This field is required."])
   deepEqual(form.cleanedData, {artist: "The Doors"})
 
   // If a field is not given in the data then null is returned for its data.
@@ -1976,12 +1976,12 @@ QUnit.test('MultiValueField validation', 6, function() {
   var form = new NameForm({data: {name: ['bad', 'value']}})
   form.fullClean()
   ok(!form.isValid())
-  deepEqual(form.errors('name').errors, ['bad value not allowed'])
+  deepEqual(form.errors('name').messages(), ['bad value not allowed'])
 
   form = new NameForm({data: {name: [ 'should be overly', 'long for the field names']}})
   ok(!form.isValid())
-  deepEqual(form.errors('name').errors, ['Ensure this value has at most 10 characters (it has 16).',
-                                         'Ensure this value has at most 10 characters (it has 24).'])
+  deepEqual(form.errors('name').messages(), ['Ensure this value has at most 10 characters (it has 16).',
+                                             'Ensure this value has at most 10 characters (it has 24).'])
 
   form = new NameForm({data: {name : ['fname', 'lname']}})
   ok(form.isValid())
