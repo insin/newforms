@@ -138,8 +138,8 @@ API
    .. js:attribute:: form.cleanedData
 
       After a form has been validated, it will have a ``cleanedData`` property.
-      If your data does *not* validate, the ``cleanedData`` Object will contain
-      only the valid fields.
+      If your data does *not* validate, the ``cleanedData`` The object will
+      contain only the valid fields.
 
       :type:
          Object with field names as property names and valid, cleaned values
@@ -149,6 +149,22 @@ API
 
    Prototype functions for validating and getting information about the results
    of validation.
+
+   .. js:function:: BaseForm#addError(field, error)
+
+      This function allows adding errors to specific fields from within the
+      ``form.clean()`` method, or from outside the form altogether. This is a
+      better alternative to fiddling directly with ``form._errors``.
+
+      The ``field`` argument is the name of the field to which the errors should
+      be added. If its value is ``null`` the error will be treated as a
+      non-field error as returned by ``form.nonFieldErrors()``.
+
+      The ``error`` argument can be a simple string, or preferably an instance
+      of :js:class:`ValidationError`.
+
+      Note that ``form.addError()`` automatically removes the relevant field
+      from :js:attr:`form.cleanedData`.
 
    .. js:function:: BaseForm#fullClean()
 
