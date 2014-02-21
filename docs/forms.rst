@@ -205,8 +205,6 @@ API
       thrown by this method will not be associated with a particular field; it
       will have a special-case association with the field named ``'__all__'``.
 
-      :returns: validated, cleaned data.
-
    .. js:function:: BaseForm#changedData()
 
       :returns:

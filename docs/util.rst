@@ -57,8 +57,9 @@ components are exposed on the ``forms`` namespace object.
       a form DOM node or a String specifying a form's ``name`` or ``id``
       attribute.
 
-      If a String is given, ``name`` is tried before ``id`` when attempting to
-      find the form in the DOM.
+      If a String is given,  ``id`` is tried before ``name`` when attempting to
+      find the form in the DOM. An error will be thrown if the form can't be
+      found.
 
    :returns:
       an object representing the data present in the form. If the form could not
