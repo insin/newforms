@@ -66,10 +66,10 @@ Here's a quick guide to getting started with using a newforms Form.
 
      if (form.isValid()) {
        // form.cleanedData now contains validated input data, coerced to the
-       // appropraite JavaScript type if necessary.
+       // appropriate JavaScript type by its Field.
      }
      else {
-       // If the form wasn't valid, its error object will now be populated
+       // If the data wasn't valid, the forms's error object will be populated
        // with field validation errors.
        this.setState({form: form})
      }
