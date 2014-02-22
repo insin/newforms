@@ -3,9 +3,8 @@ newforms
 
 .. Note::
 
-   Unless specified otherwise, API items documented herein live under the
-   ``forms`` namespace object in the browser, or whatever namespace you care
-   to use when requiring newforms in Node.js.
+   Unless specified otherwise, documented API items live under the ``forms``
+   namespace object in the browser, or the result of ``require()``-ing newforms.
 
 Contents:
 
