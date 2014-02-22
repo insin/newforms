@@ -6,7 +6,7 @@ newforms |travis_status|
    :target: http://travis-ci.org/insin/newforms
 
 A JavaScript port of `Django`_'s `form-handling library`_, usable in browsers
-and on the server with `Node.js`_, which makes use of `React`_ on both sides.
+and on the server with `Node.js`_, making use of `React`_ on both sides.
 
 .. _`Django`: http://www.djangoproject.com
 .. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/
@@ -30,17 +30,17 @@ find a global ``React`` variable to work with.
 .. _`newforms.js`: https://github.com/insin/newforms/raw/react/newforms.js
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/react/newforms.min.js
 
-`Newforms Documentation @ ReadTheDocs`_
-=======================================
+`Documentation @ ReadTheDocs`_
+==============================
 
-.. _`Newforms Documentation @ ReadTheDocs`: http://newforms.readthedocs.org
+.. _`Documentation @ ReadTheDocs`: http://newforms.readthedocs.org
 
 Quick Guide
 ===========
 
 Here's a quick guide to getting started with using a newforms' Form.
 
-* Form constructors are created using ``forms.Form.estend()``.
+* Form constructors are created using ``forms.Form.extend()``.
 
   This takes an ``Object`` argument defining form fields and any other
   properties for the form's prototype (custom validation methods etc.),
