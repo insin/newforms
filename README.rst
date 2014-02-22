@@ -27,8 +27,8 @@ Browser bundles (all dependencies except React included):
 Browser bundles currently expose newforms as a ``forms`` variable and expect to
 find a global ``React`` variable to work with.
 
--.. _`newforms.js`: https://github.com/insin/newforms/raw/react/newforms.js
--.. _`newforms.min.js`: https://github.com/insin/newforms/raw/react/newforms.min.js
+.. _`newforms.js`: https://github.com/insin/newforms/raw/react/newforms.js
+.. _`newforms.min.js`: https://github.com/insin/newforms/raw/react/newforms.min.js
 
 `Newforms Documentation @ ReadTheDocs`_
 =======================================
