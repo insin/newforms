@@ -725,12 +725,12 @@ QUnit.test("ChoiceField", 19, function() {
   cleanErrorEqual(f, "Select a valid choice. 6 is not one of the available choices.", "6")
 })
 
-QUnit.test("TypedChoiceField", 9, function() {
+QUnit.test("TypedChoiceField", 14, function() {
   // TypedChoiceField is just like ChoiceField, except that coerced types wil
   // be returned.
   var f = forms.TypedChoiceField({
-      choices: [[1, "+1"], [-1, "-1"]],
-      coerce: function(val) { return parseInt(val, 10); }
+    choices: [[1, "+1"], [-1, "-1"]]
+  , coerce: function(val) { return parseInt(val, 10) }
   })
   strictEqual(f.clean("1"), 1)
   strictEqual(f.clean("-1"), -1)
@@ -746,7 +746,7 @@ QUnit.test("TypedChoiceField", 9, function() {
 
   // Even more weirdness: if you have a valid choice but your coercion
   // function can't coerce, you'll still get a validation error. Don't do this!
-  f.coerce = function(val) { return val.toFixed(2); }
+  f.coerce = function(val) { return val.toFixed(2) }
   cleanErrorEqual(f, "Select a valid choice. 1 is not one of the available choices.", "1")
 
   // Required fields require values
@@ -754,25 +754,38 @@ QUnit.test("TypedChoiceField", 9, function() {
 
   // Non-required fields aren't required
   f = forms.TypedChoiceField({
-      choices: [[1, "+1"], [-1, "-1"]],
-      coerce: function(val) { return parseInt(val, 10); },
-      required: false
+    choices: [[1, "+1"], [-1, "-1"]]
+  , coerce: function(val) { return parseInt(val, 10) }
+  , required: false
   })
   strictEqual(f.clean(""), "")
 
   // If you want cleaning an empty value to return a different type, tell the
   // field.
   f = forms.TypedChoiceField({
-      choices: [[1, "+1"], [-1, "-1"]],
-      coerce: function(val) { return parseInt(val, 10); },
-      required: false,
-      emptyValue: null
+    choices: [[1, "+1"], [-1, "-1"]]
+  , coerce: function(val) { return parseInt(val, 10) }
+  , required: false
+  , emptyValue: null
   })
   strictEqual(f.clean(""), null)
 
-  // TODO test_typedchoicefield_has_changed
+  // _hasChanged should not trigger required validation
+  f = forms.TypedChoiceField({
+    choices: [[1, "+1"], [-1, "-1"]], coerce: Number, required: true
+  })
+  strictEqual(f._hasChanged(null, ""), false)
+  strictEqual(f._hasChanged(1, "1"), false)
 
-  // TODO test_typedchoicefield_special_coerce
+  // Tests a coerce function which results in a value not present in choices
+  f = forms.TypedChoiceField({
+    choices: [[1, "1"], [2, "2"]]
+  , coerce: function(value) { return Number("1." + value) }
+  , required: true
+  })
+  equal(f.clean("2"), Number("1.2"))
+  cleanErrorEqual(f, "This field is required.", "")
+  cleanErrorEqual(f, "Select a valid choice. 3 is not one of the available choices.", "3")
 })
 
 QUnit.test("NullBooleanField", 21, function() {
