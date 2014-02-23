@@ -18,7 +18,6 @@ var tests = [ 'util.js'
             , 'errormessages.js'
             , 'widgets.js'
             , 'extra.js'
-            , 'models.js'
             , 'regressions.js'
             ].map(function(t) { return path.join(__dirname, t) })
 

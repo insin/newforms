@@ -145,7 +145,6 @@ Contents:
    fields
    widgets
    formsets
-   models
    util
 
 .. _`Django`: http://www.djangoproject.com
