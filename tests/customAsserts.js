@@ -96,7 +96,7 @@ var reactHTMLEqual = (function() {
       component = reactClass()
     }
 
-    html = React.renderComponentToString(component)
+    var html = React.renderComponentToString(component)
     html = html.replace(reactAttrs, '')
     // Remove HTML for any wrapper element which was added
     if (wrapped) {

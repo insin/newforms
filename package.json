@@ -15,9 +15,9 @@
     "url": "http://github.com/insin/newforms.git"
   },
   "dependencies": {
-    "Concur": "0.2.x",
+    "Concur": "~0.2.4",
     "isomorph": "~0.2.1",
-    "validators": "0.2.x"
+    "validators": "~0.2.3"
   },
   "devDependencies": {
     "browserify": "~3.20.0",
