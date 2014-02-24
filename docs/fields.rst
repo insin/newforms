@@ -69,6 +69,13 @@ API
 
       :type: Array
 
+   .. js:attribute:: kwargs.cssClass
+
+      space-separated CSS classes to be applied to the field's container when
+      default rendering fuctions are used.
+
+      :type: String
+
    **Prototype Functions**
 
    .. js:function:: Field#prepareValue(value)
