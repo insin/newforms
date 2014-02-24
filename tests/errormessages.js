@@ -237,9 +237,9 @@ QUnit.test("Overriding forms.ErrorList", 4, function() {
   }
   CustomErrorList.prototype = new forms.ErrorList()
   CustomErrorList.prototype.render = function() {
-    return this.asDIV()
+    return this.asTest()
   }
-  CustomErrorList.prototype.asDIV = function() {
+  CustomErrorList.prototype.asTest = function() {
     return React.DOM.div({"className": "error"}, this.messages().map(function(error) {
       return React.DOM.p(null, error)
     }))

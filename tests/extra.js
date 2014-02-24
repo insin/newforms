@@ -108,9 +108,9 @@ QUnit.test("Extra attrs", 1, function() {
   , f2: forms.CharField({widget: forms.TextInput({attrs: extraAttrs})})
   })
 
-  reactHTMLEqual(new TestForm({autoId: false}).asP(),
-"<p><span>F1:</span><span> </span><input class=\"special\" maxlength=\"10\" type=\"text\" name=\"f1\"></p>" +
-"<p><span>F2:</span><span> </span><input class=\"special\" type=\"text\" name=\"f2\"></p>")
+  reactHTMLEqual(new TestForm({autoId: false}).asDiv(),
+"<div><span>F1:</span><span> </span><input class=\"special\" maxlength=\"10\" type=\"text\" name=\"f1\"></div>" +
+"<div><span>F2:</span><span> </span><input class=\"special\" type=\"text\" name=\"f2\"></div>")
 })
 
 QUnit.test("Data field", 2, function() {
@@ -130,7 +130,7 @@ QUnit.test("Forms with *only* hidden fields", 4, function() {
     data: forms.IntegerField({widget: forms.HiddenInput})
   })
   var f = new HiddenForm({data: {}})
-  reactHTMLEqual(f.asP.bind(f),
+  reactHTMLEqual(f.asDiv.bind(f),
 "<div><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>")
   reactHTMLEqual(f.asTable.bind(f),
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>")
@@ -143,7 +143,7 @@ QUnit.test("Forms with *only* hidden fields", 4, function() {
   , hiddenFieldRowCssClass: "hiddenFields"
   })
   f = new HiddenForm()
-  reactHTMLEqual(f.asP.bind(f),
+  reactHTMLEqual(f.asDiv.bind(f),
 "<div class=\"hiddenFields\"><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>")
   reactHTMLEqual(f.asTable.bind(f),
 "<tr class=\"hiddenFields\"><td colspan=\"2\"><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>")

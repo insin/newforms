@@ -783,10 +783,10 @@ QUnit.test("FormSet asTable", 1, function() {
 })
 
 QUnit.test("FormSet asP", 1, function() {
-  reactHTMLEqual(new ChoiceFormSet({data: renderTestData, autoId: false, prefix: "choices"}).asP(),
+  reactHTMLEqual(new ChoiceFormSet({data: renderTestData, autoId: false, prefix: "choices"}).asDiv(),
 "<div><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></div>" +
-"<p><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></p>" +
-"<p><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></p>")
+"<div><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></div>" +
+"<div><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></div>")
 })
 
 QUnit.test("FormSet asUL", 1, function() {
@@ -802,10 +802,10 @@ QUnit.test("Management form CSS class", 3, function() {
 "<tr class=\"managementForm\"><td colspan=\"2\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></td></tr>" +
 "<tr><th>Choice:</th><td><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></td></tr>" +
 "<tr><th>Votes:</th><td><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></td></tr>")
-  reactHTMLEqual(formset.asP(),
+  reactHTMLEqual(formset.asDiv(),
 "<div class=\"managementForm\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></div>" +
-"<p><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></p>" +
-"<p><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></p>")
+"<div><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></div>" +
+"<div><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></div>")
   reactHTMLEqual(formset.asUL(),
 "<li class=\"managementForm\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
@@ -869,7 +869,7 @@ QUnit.test("Empty forms are unbound", 3, function() {
   strictEqual(emptyForms[0].isBound, false)
   strictEqual(emptyForms[1].isBound, false)
   // The empty forms should be equal
-  equal(""+emptyForms[0].asP(), ""+emptyForms[1].asP())
+  equal(""+emptyForms[0].asDiv(), ""+emptyForms[1].asDiv())
 })
 
 QUnit.test("Empty formset is valid", 2, function() {

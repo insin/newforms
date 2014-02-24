@@ -146,6 +146,7 @@ Contents:
    widgets
    formsets
    util
+   differences_omissions
 
 .. _`Django`: http://www.djangoproject.com
 .. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/

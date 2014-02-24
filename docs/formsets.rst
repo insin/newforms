@@ -195,10 +195,10 @@ API
       Renders the formset's forms as a series of ``<li>`` tags, with each
       ``<li>`` containing one field.
 
-   .. js:function:: BaseFormSet#asP()
+   .. js:function:: BaseFormSet#asDiv()
 
-      Renders the formset's forms as a series of ``<p>`` tags, with each ``<p>``
-      containing one field.
+      Renders the formset's forms as a series of ``<div>`` tags, with each
+      ``<div>`` containing one field.
 
    Prototype functions for use in rendering forms.
 

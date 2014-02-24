@@ -71,13 +71,13 @@ QUnit.test("Empty data object", 10, function() {
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>" +
 "<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></li>")
-  reactHTMLEqual(p.asP.bind(p),
+  reactHTMLEqual(p.asDiv.bind(p),
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
-"<p><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>" +
+"<div><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></div>" +
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
-"<p><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>" +
+"<div><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></div>" +
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
-"<p><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></p>")
+"<div><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></div>")
 })
 
 QUnit.test("Unbound form", 8, function() {
@@ -101,10 +101,10 @@ QUnit.test("Unbound form", 8, function() {
 "<li><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>" +
 "<li><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>" +
 "<li><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></li>")
-  reactHTMLEqual(p.asP.bind(p),
-"<p><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>" +
-"<p><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>" +
-"<p><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></p>")
+  reactHTMLEqual(p.asDiv.bind(p),
+"<div><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></div>" +
+"<div><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></div>" +
+"<div><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"></div>")
 })
 
 QUnit.test("Validation errors", 11, function() {
@@ -195,10 +195,10 @@ QUnit.test("autoId", 3, function() {
 "<li><label for=\"first_name_id\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"first_name_id\"></li>" +
 "<li><label for=\"last_name_id\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"last_name_id\"></li>" +
 "<li><label for=\"birthday_id\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"birthday_id\"></li>")
-  reactHTMLEqual(p.asP.bind(p),
-"<p><label for=\"first_name_id\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"first_name_id\"></p>" +
-"<p><label for=\"last_name_id\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"last_name_id\"></p>" +
-"<p><label for=\"birthday_id\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"birthday_id\"></p>")
+  reactHTMLEqual(p.asDiv.bind(p),
+"<div><label for=\"first_name_id\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"first_name_id\"></div>" +
+"<div><label for=\"last_name_id\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"last_name_id\"></div>" +
+"<div><label for=\"birthday_id\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"birthday_id\"></div>")
 })
 
 QUnit.test("autoId true", 1, function() {
@@ -476,12 +476,12 @@ QUnit.test("Forms with radio", 7, function() {
 "<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
 "<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
 "</ul></li>")
-  reactHTMLEqual(f.asP.bind(f),
-"<p><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></p>" +
-"<p><label for=\"id_language_0\">Language:</label><span> </span><ul id=\"id_language\">" +
+  reactHTMLEqual(f.asDiv.bind(f),
+"<div><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></div>" +
+"<div><label for=\"id_language_0\">Language:</label><span> </span><ul id=\"id_language\">" +
 "<li><label for=\"id_language_0\"><input id=\"id_language_0\" type=\"radio\" name=\"language\" value=\"P\"><span> </span><span>Python</span></label></li>" +
 "<li><label for=\"id_language_1\"><input id=\"id_language_1\" type=\"radio\" name=\"language\" value=\"J\"><span> </span><span>Java</span></label></li>" +
-"</ul></p>")
+"</ul></div>")
 })
 
 QUnit.test("Forms with iterable BoundFields", 1, function() {
@@ -993,7 +993,7 @@ QUnit.test("Independent validators", 3, function() {
 
 QUnit.test("Hidden widget", 12, function() {
   // HiddenInput widgets are displayed differently in the asTable(), asUL()
-  // and asP() output of a Form - their verbose names are not displayed, and a
+  // and asDiv() output of a Form - their verbose names are not displayed, and a
   // separate row is not displayed. They're displayed in the last row of the
   // form, directly after that row's form element.
   var Person = forms.Form.extend({
@@ -1011,10 +1011,10 @@ QUnit.test("Hidden widget", 12, function() {
 "<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>" +
 "<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>" +
 "<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></li>")
-  reactHTMLEqual(p.asP(),
-"<p><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></p>" +
-"<p><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></p>" +
-"<p><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></p>")
+  reactHTMLEqual(p.asDiv(),
+"<div><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></div>" +
+"<div><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></div>" +
+"<div><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></div>")
 
   // With autoId set, a HiddenInput still gets an id, but it doesn't get a label.
   p = new Person({autoId: "id_{name}"})
@@ -1026,12 +1026,12 @@ QUnit.test("Hidden widget", 12, function() {
 "<li><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>" +
 "<li><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>" +
 "<li><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></li>")
-  reactHTMLEqual(p.asP.bind(p),
-"<p><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></p>" +
-"<p><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></p>" +
-"<p><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></p>")
+  reactHTMLEqual(p.asDiv.bind(p),
+"<div><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></div>" +
+"<div><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></div>" +
+"<div><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></div>")
 
-  // If a field with a HiddenInput has errors, the asTable(), asUl() and asP()
+  // If a field with a HiddenInput has errors, the asTable(), asUl() and asDiv()
   // output will include the error message(s) with the text
   // "(Hidden field [fieldname]) " prepended. This message is displayed at the
   // top of the output, regardless of its field's order in the form.
@@ -1046,17 +1046,17 @@ QUnit.test("Hidden widget", 12, function() {
 "<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\" value=\"John\"></li>" +
 "<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\" value=\"Lennon\"></li>" +
 "<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></li>")
-  reactHTMLEqual(p.asP(),
+  reactHTMLEqual(p.asDiv(),
 "<ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul>" +
-"<p><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\" value=\"John\"></p>" +
-"<p><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\" value=\"Lennon\"></p>" +
-"<p><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></p>")
+"<div><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\" value=\"John\"></div>" +
+"<div><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\" value=\"Lennon\"></div>" +
+"<div><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></div>")
 
   // A corner case: It's possible for a form to have only HiddenInputs. Since
   // we expect that the content of asTable() and asUL() will be held in
   // appropriate HTML elements within the document and we don't want to end up
   // with invalid HTML, a row will be created to contain the hidden fields. In
-  // the case of asP(), form inputs must reside inside a block-level container
+  // the case of asDiv(), form inputs must reside inside a block-level container
   // to qualify as valid HTML, so the inputs will be wrapped in a <div> in
   // this scenario.
   var TestForm = forms.Form.extend({
@@ -1068,7 +1068,7 @@ QUnit.test("Hidden widget", 12, function() {
 "<tr><td colspan=\"2\"><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></td></tr>")
   reactHTMLEqual(p.asUL(),
 "<li><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></li>")
-  reactHTMLEqual(p.asP(),
+  reactHTMLEqual(p.asDiv(),
 "<div><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></div>")
 })
 
@@ -1165,12 +1165,12 @@ QUnit.test("Specifying labels", 6, function() {
   , q5: forms.CharField({label: "The last question. Period."})
   })
   p = new Questions({autoId: false})
-  reactHTMLEqual(p.asP(),
-"<p><span>The first question:</span><span> </span><input type=\"text\" name=\"q1\"></p>" +
-"<p><span>What is your name?</span><span> </span><input type=\"text\" name=\"q2\"></p>" +
-"<p><span>The answer to life is:</span><span> </span><input type=\"text\" name=\"q3\"></p>" +
-"<p><span>Answer this question!</span><span> </span><input type=\"text\" name=\"q4\"></p>" +
-"<p><span>The last question. Period.</span><span> </span><input type=\"text\" name=\"q5\"></p>")
+  reactHTMLEqual(p.asDiv(),
+"<div><span>The first question:</span><span> </span><input type=\"text\" name=\"q1\"></div>" +
+"<div><span>What is your name?</span><span> </span><input type=\"text\" name=\"q2\"></div>" +
+"<div><span>The answer to life is:</span><span> </span><input type=\"text\" name=\"q3\"></div>" +
+"<div><span>Answer this question!</span><span> </span><input type=\"text\" name=\"q4\"></div>" +
+"<div><span>The last question. Period.</span><span> </span><input type=\"text\" name=\"q5\"></div>")
 
   // If a label is set to the empty string for a field, that field won't get a
   // label.
@@ -1484,9 +1484,9 @@ QUnit.test("Help text", 5, function() {
   reactHTMLEqual(p.asUL(),
 "<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span>e.g., user@example.com</span></li>" +
 "<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span>Choose wisely.</span></li>")
-  reactHTMLEqual(p.asP(),
-"<p><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span>e.g., user@example.com</span></p>" +
-"<p><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span>Choose wisely.</span></p>")
+  reactHTMLEqual(p.asDiv(),
+"<div><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span>e.g., user@example.com</span></div>" +
+"<div><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span>Choose wisely.</span></div>")
   reactHTMLEqual(p.asTable(),
 "<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"><br><span>e.g., user@example.com</span></td></tr>" +
 "<tr><th>Password:</th><td><input type=\"password\" name=\"password\"><br><span>Choose wisely.</span></td></tr>")
@@ -1941,17 +1941,17 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
 "</select></li>" +
 "<li class=\"row\"><label for=\"id_email\">Email:</label><span> </span><input type=\"email\" name=\"email\" id=\"id_email\"></li>" +
 "<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_age\">Age:</label><span> </span><input type=\"number\" name=\"age\" id=\"id_age\"></li>")
-  reactHTMLEqual(p.asP.bind(p),
+  reactHTMLEqual(p.asDiv.bind(p),
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
-"<p class=\"row error required\"><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></p>" +
-"<p class=\"row required\"><label for=\"id_is_cool\">Is cool:</label><span> </span><select name=\"is_cool\" id=\"id_is_cool\">" +
+"<div class=\"row error required\"><label for=\"id_name\">Name:</label><span> </span><input type=\"text\" name=\"name\" id=\"id_name\"></div>" +
+"<div class=\"row required\"><label for=\"id_is_cool\">Is cool:</label><span> </span><select name=\"is_cool\" id=\"id_is_cool\">" +
 "<option value=\"1\" selected>Unknown</option>" +
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
-"</select></p>" +
-"<p class=\"row\"><label for=\"id_email\">Email:</label><span> </span><input type=\"email\" name=\"email\" id=\"id_email\"></p>" +
+"</select></div>" +
+"<div class=\"row\"><label for=\"id_email\">Email:</label><span> </span><input type=\"email\" name=\"email\" id=\"id_email\"></div>" +
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>" +
-"<p class=\"row error required\"><label for=\"id_age\">Age:</label><span> </span><input type=\"number\" name=\"age\" id=\"id_age\"></p>")
+"<div class=\"row error required\"><label for=\"id_age\">Age:</label><span> </span><input type=\"number\" name=\"age\" id=\"id_age\"></div>")
   reactHTMLEqual(p.asTable.bind(p),
 "<tr class=\"row error required\"><th><label for=\"id_name\">Name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>" +
 "<tr class=\"row required\"><th><label for=\"id_is_cool\">Is cool:</label></th><td><select name=\"is_cool\" id=\"id_is_cool\">" +

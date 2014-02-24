@@ -241,10 +241,10 @@ API
       containing one field. It does not include the ``<ul>`` so that you can
       specify any HTML attributes on the ``<ul>`` for flexibility.
 
-   .. js:function:: BaseForm#asP()
+   .. js:function:: BaseForm#asDiv()
 
-      Renders the form as a series of ``<p>`` tags, with each ``<p>`` containing
-      one field.
+      Renders the form as a series of ``<div>`` tags, with each ``<div>``
+      containing one field.
 
    Prototype functions for use in rendering form fields.
 
