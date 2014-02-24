@@ -921,9 +921,21 @@ QUnit.test("TypedMultipleChoiceField", function() {
   })
   strictEqual(f.clean([]), null)
 
-  // TODO test_typedmultiplechoicefield_has_changed
+  // _hasChanged should not trigger required validation
+  f = forms.TypedMultipleChoiceField({
+    choices: [[1, "+1"], [-1, "-1"]], coerce: Number, required: true
+  })
+  strictEqual(f._hasChanged(null, ""), false)
 
-  // TODO test_typedmultiplechoicefield_special_coerce
+  // Tests a coerce function which results in a value not present in choices
+  f = forms.TypedMultipleChoiceField({
+    choices: [[1, "1"], [2, "2"]]
+  , coerce: function(value) { return Number("1." + value) }
+  , required: true
+  })
+  deepEqual(f.clean(["2"]), [Number("1.2")])
+  cleanErrorEqual(f, "This field is required.", [])
+  cleanErrorEqual(f, "Select a valid choice. 3 is not one of the available choices.", ["3"])
 })
 
 QUnit.test("ComboField", 10, function() {
