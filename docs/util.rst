@@ -1,3 +1,4 @@
+=========
 Utilities
 =========
 
@@ -87,7 +88,7 @@ API
 
       Returns ``true`` if errors have been set for the given field.
 
-   .. js:function:: ErrorObject#isPopulated()
+   .. js:function:: ErrorObject#length()
 
       Returns the number of fields errors have been set for.
 
