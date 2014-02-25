@@ -2096,7 +2096,7 @@ QUnit.test("MultiValueField optional subfields", function() {
 
 // TODO test_custom_empty_values
 
-QUnit.test('Boundfield label tag', 3, function() {
+QUnit.test('Boundfield labels', 9, function() {
   var SomeForm = forms.Form.extend({
     field: forms.CharField()
   })
@@ -2104,23 +2104,42 @@ QUnit.test('Boundfield label tag', 3, function() {
   reactHTMLEqual(boundField.labelTag(), "<label for=\"id_field\">Field:</label>")
   reactHTMLEqual(boundField.labelTag({contents: 'custom'}), "<label for=\"id_field\">custom:</label>")
   reactHTMLEqual(boundField.labelTag({attrs: {className: 'pretty'}}), "<label class=\"pretty\" for=\"id_field\">Field:</label>")
-})
 
-QUnit.test('Boundfield label tag no id', 2, function() {
-  var SomeForm = forms.Form.extend({
-    field: forms.CharField()
-  })
-
-  var boundField = new SomeForm({autoId: ''}).boundField('field')
+  // If a widget has no id, labelTag just returns the text with no surrounding
+  // <label>.
+  boundField = new SomeForm({autoId: ''}).boundField('field')
   equal(boundField.labelTag(), "Field:")
   equal(boundField.labelTag({contents: 'custom'}), "custom:")
+
+  // Empty label behaviour
+  var f = new SomeForm()
+  f.fields.field.label = ''
+  reactHTMLEqual(f.boundField('field').labelTag(), "<label for=\"id_field\"></label>")
+
+  // BoundField labelSuffix overrides form labelSuffix when provided
+  boundField = new SomeForm({labelSuffix: '!'}).boundField('field')
+  reactHTMLEqual(boundField.labelTag({labelSuffix: '$'}), "<label for=\"id_field\">Field$</label>")
+
+  var CustomIdForLabelTextInput = forms.TextInput.extend({
+    idForLabel: function(id) {
+      return 'custom_' + id
+    }
+  })
+
+  var EmptyIdForLabelTextInput = forms.TextInput.extend({
+    idForLabel: function(id) {
+      return null
+    }
+  })
+
+  var IdForLabelForm = forms.Form.extend({
+    custom: forms.CharField({widget: CustomIdForLabelTextInput})
+  , empty: forms.CharField({widget: EmptyIdForLabelTextInput})
+  })
+  f = new IdForLabelForm()
+  reactHTMLEqual(f.boundField('custom').labelTag(), "<label for=\"custom_id_custom\">Custom:</label>")
+  reactHTMLEqual(f.boundField('empty').labelTag(), "<label>Empty:</label>")
 })
-
-// TODO test_boundfield_label_tag_custom_widget_id_for_label
-
-// TODO test_boundfield_empty_label
-
-// TODO test_label_tag_override
 
 // TODO test_error_dict
 
