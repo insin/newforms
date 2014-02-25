@@ -5,7 +5,10 @@ Forms
 Guide
 =====
 
-TBD
+For a guide to the features of the Form API, please refer to the Django
+documentation:
+
+   * `Django documentation -- The Forms API <https://docs.djangoproject.com/en/dev/ref/forms/api/>`_
 
 API
 ===
@@ -17,19 +20,23 @@ API
 
    This is intended intended as the entry point for defining your own forms.
 
-   You can do this using its ``extend()`` function, which is provided by `Concur`_.
+   You can do this using its static ``extend()`` function, which is provided by
+   `Concur`_.
 
-   .. js:function:: Form.extend({prototypeProps, constructorProps})
+   .. js:function:: Form.extend(prototypeProps[, constructorProps])
 
       Creates a new constructor which inherits from Form.
 
       :param Object prototypeProps:
-         Form Fields and other prototype properties for the new form, such as a
+         form Fields and other prototype properties for the new form, such as a
          custom constructor and validation methods.
+
+      :param Object constructorProps:
+         properties to be set directly on the new constructor function.
 
    .. _`Concur`: https://github.com/insin/concur
 
-.. js:function:: DeclarativeFieldsMeta({prototypeProps, constructorProps})
+.. js:function:: DeclarativeFieldsMeta(prototypeProps[, constructorProps])
 
    This mixin function is responsible for setting up form fields when a new Form
    constructor is being created.

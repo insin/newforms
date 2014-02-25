@@ -1,11 +1,13 @@
 ========
-FormSets
+Formsets
 ========
 
 Guide
 =====
 
-TBD
+For a guide to formsets, please refer to the Django documentation:
+
+   * `Django documentation -- Formsetshttps://docs.djangoproject.com/en/dev/topics/forms/formsets/
 
 API
 ===

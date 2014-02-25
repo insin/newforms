@@ -2,11 +2,73 @@
 Differences & Omissions
 =======================
 
-There are some differences and omissions in features between ``django.forms``
-and newforms:
+JavaScript API Differences
+==========================
 
-Differences
-===========
+The newforms API is largely consistent with the ``django.forms`` API, but uses
+JavaScript naming conventions and some other conventions where there are feature
+differences between Python and JavaScript:
+
+* Function and variable names which use ``underscores_in_python`` become
+  ``camelCasedInJavaScript``.
+
+  A notable exception is custom field cleaning functions defined on forms, for
+  which newforms will detect and call either ``clean_fieldName`` or
+  ``cleanFieldName`` variants.
+
+* Where Django accepts keyword arguments, in Javascript a single ``Object``
+  argument is expected, with arguments expressed as its properties.
+
+  Note that this applies *anywhere* Django accepts a keyword argument, even if
+  the convention in Django is to pass certain keyword arguments positionally.
+
+  For example, when passing user-provided data to a :js:class:`Form`
+  constructor:
+
+  **Django (by convention)**::
+
+     f = MyForm(request.POST)
+
+  **JavaScript**::
+
+     var f = new MyForm({data: req.body})
+
+
+
+* Form and FormSet properties with side-effects in Django become function
+  calls in JavaScript. For example:
+
+  * ``form.errors`` (which forces a form to validate if it hasn't done so
+    already) becomes ``form.errors()``.
+
+  * ``formset.forms`` (which instantiates all a formset's forms the first
+    time it's accessed) becomes ``formset.forms()``.
+
+* For convenience and compactness, the ``new`` operator is **optional** when
+  using newforms' Fields, Widgets and other constructors which are commonly
+  used while defining a Form, such as ValidationError -- however ``new`` is
+  **not**  automatically optional for the Form and FormSet constructors you
+  create.
+
+  **Django**::
+
+     forms.CharField(max_length=100)
+
+  **JavaScript (the following lines are equivalent)**::
+
+     new forms.CharField({maxLength: 100})
+     forms.CharField({maxLength: 100})
+
+
+
+* Objects which would be coerced to a string for display in Django,
+  such as Forms, FormSets and ErrorLists, have a ``render()`` method to
+  generate their default representation as ``React.DOM`` components.
+
+Feature Differences
+===================
+
+Differences in features between ``django.forms`` and newforms:
 
 ``(form|formset).as_p()`` replaced with ``(form|formset).asDiv()``
 ------------------------------------------------------------------
@@ -44,8 +106,10 @@ default rendering functions:
   when given - will be set as the ``hiddenFieldRowCssClass`` property of the
   formset's management form (which contains only hidden fields).
 
-Omissions
-=========
+Feature Omissions
+=================
+
+``django.forms`` featurs which aren't implemented in newforms:
 
 Form Assets (``Media`` class)
 -----------------------------

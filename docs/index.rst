@@ -17,8 +17,19 @@ For the just-show-me-how-it-works-and-I'll-figure-out-the-rest developer, the
 `newforms unit tests`_ are peppered with guide comments -- lovingly copied and
 pasted from Django's own test suite -- which explain the features being tested.
 
+For an introduction to form-handling features and concepts, please refer to the
+Django intro documentation:
+
+   * `Django documentation -- Working with forms <https://docs.djangoproject.com/en/dev/topics/forms/>`_
+
 Contents
 ========
+
+.. Note::
+
+   Unless specified otherwise, documented API items live under the ``forms``
+   namespace object in the browser, or the result of ``require('newforms')`` in
+   Node.js.
 
 .. toctree::
    :maxdepth: 1
@@ -88,68 +99,6 @@ Here's a quick guide to getting started with using a newforms Form.
        // with field validation errors.
        this.setState({form: form})
      }
-
-JavaScript API Differences
-==========================
-
-The JavaScript API is largely consistent with Django's API, with the following
-rules of thumb for converting between the two:
-
-   * Where Django accepts keyword arguments, in Javascript a single
-     ``Object`` argument is expected, with arguments expressed as its
-     properties.
-
-     Note that this applies *anywhere* Django accepts a keyword argument,
-     even if the convention in Django is to pass certain keyword arguments
-     positionally.
-
-     For example, when passing user-provided data to a :js:class:`Form`
-     constructor:
-
-     *Django (by convention)*::
-
-        f = MyForm(request.POST)
-
-     *JavaScript*::
-
-        var f = new MyForm({data: req.body})
-
-   * Function and variable names which use ``underscores_in_python`` become
-     ``camelCasedInJavaScript``.
-
-   * For convenience and compactness, the ``new`` operator is **optional** when
-     using newforms' Fields, Widgets and other constructors which are commonly
-     used while defining a Form, such as ValidationError -- however ``new`` is
-     **not**  automatically optional for the Form and FormSet constructors you
-     create.
-
-      *Django*::
-
-         forms.CharField(max_length=100)
-
-      *JavaScript* (the following lines are equivalent)::
-
-         new forms.CharField({maxLength: 100})
-         forms.CharField({maxLength: 100})
-
-   * Form and FormSet properties with side-effects in Django become function
-     calls in JavaScript. For example:
-
-     * ``form.errors`` (which forces a form to validate if it hasn't done so
-       already) becomes ``form.errors()``
-
-     * ``formset.forms`` (which instantiates all the formsets forms the first
-       time it's accessed) becomes ``formset.forms()``.
-
-   * Objects which would be coerced to a string for display in Django,
-     such as Forms, FormSets and ErrorLists, have a ``render()`` method to
-     generate their default representation.
-
-.. Note::
-
-   Unless specified otherwise, documented API items live under the ``forms``
-   namespace object in the browser, or the result of ``require('newforms')`` in
-   Node.js.
 
 .. _`Django`: http://www.djangoproject.com
 .. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/

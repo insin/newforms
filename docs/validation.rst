@@ -5,24 +5,29 @@ Form and field validation
 Guide
 =====
 
-https://docs.djangoproject.com/en/dev/ref/forms/validation/
+For a guide to the various methods of customising validation and the order in
+which they run, please refer to the Django documentation:
+
+   * `Django documentation -- Form and field validation <https://docs.djangoproject.com/en/dev/ref/forms/validation/>`_
 
 API
 ===
 
-
 .. js:class:: ValidationError(message[, kwargs])
 
-   A validation error, containing a list of messages. Single messages (e.g.
-   those produced by validators) may have an associated error code and
-   parameters to allow customisation by fields.
+   A validation error, containing validation messages.
 
-   The message argument can be a single error, a list of errors, or an object
-   that maps field names to lists of errors. What we define as an "error" can
-   be either a simple string or an instance of ValidationError with its message
-   attribute set, and what we define as list or object can be an actual list or
-   object or an instance of ValidationError with its errorList or errorObj
-   property set.
+   Single messages (e.g. those produced by validators) may have an associated
+   error code and error message parameters to allow customisation by fields.
+
+   :param Object message:
+      the message argument can be a single error, a list of errors, or an object
+      that maps field names to lists of errors.
+
+      What we define as an "error" can be either a simple string or an instance
+      of ValidationError with its message attribute set, and what we define as
+      list or object can be an actual list or object, or an instance of
+      ValidationError with its errorList or errorObj property set.
 
    :param Object kwargs: validation error options.
 

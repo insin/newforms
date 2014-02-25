@@ -2,10 +2,9 @@
 Utilities
 =========
 
-Guide
-=====
-
-TBD
+Newforms exposes utilities you may want to make use of when working with forms
+and some implementation details which you may need to make use of for
+customisation purposes.
 
 API
 ===

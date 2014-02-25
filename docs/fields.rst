@@ -5,7 +5,10 @@ Fields
 Guide
 =====
 
-TBD
+For a guide to the features of the Fields API, please refer to the Django
+documentation:
+
+   * `Django documentation -- Form fields <https://docs.djangoproject.com/en/dev/ref/forms/fields/>`_
 
 API
 ===
