@@ -22,7 +22,7 @@ function allAsTable(forms) {
 }
 
 function allAsUL(forms) {
-  return forms.map(function(form) { return form.asUL() })
+  return forms.map(function(form) { return form.asUl() })
 }
 
 function allCleanedData(forms) {
@@ -264,7 +264,7 @@ QUnit.test("More initial data", 3, function() {
 
   // Make sure retrieving an empty form works, and it shows up in the form list.
   strictEqual(formset.emptyForm().emptyPermitted, true)
-  reactHTMLEqual(formset.emptyForm().asUL(),
+  reactHTMLEqual(formset.emptyForm().asUl(),
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-__prefix__-choice\"></li>" +
 "<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-__prefix__-votes\"></li>")
 })
@@ -789,8 +789,8 @@ QUnit.test("FormSet asP", 1, function() {
 "<div><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></div>")
 })
 
-QUnit.test("FormSet asUL", 1, function() {
-  reactHTMLEqual(new ChoiceFormSet({data: renderTestData, autoId: false, prefix: "choices"}).asUL(),
+QUnit.test("FormSet asUl", 1, function() {
+  reactHTMLEqual(new ChoiceFormSet({data: renderTestData, autoId: false, prefix: "choices"}).asUl(),
 "<li><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
 "<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></li>")
@@ -806,7 +806,7 @@ QUnit.test("Management form CSS class", 3, function() {
 "<div class=\"managementForm\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></div>" +
 "<div><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></div>" +
 "<div><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></div>")
-  reactHTMLEqual(formset.asUL(),
+  reactHTMLEqual(formset.asUl(),
 "<li class=\"managementForm\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></li>" +
 "<li><span>Choice:</span><span> </span><input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
 "<li><span>Votes:</span><span> </span><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></li>")
