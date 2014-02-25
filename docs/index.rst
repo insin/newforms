@@ -1,3 +1,4 @@
+========
 newforms
 ========
 
@@ -16,8 +17,22 @@ For the just-show-me-how-it-works-and-I'll-figure-out-the-rest developer, the
 `newforms unit tests`_ are peppered with guide comments -- lovingly copied and
 pasted from Django's own test suite -- which explain the features being tested.
 
+Contents
+========
+
+.. toctree::
+   :maxdepth: 1
+
+   forms
+   fields
+   validation
+   widgets
+   formsets
+   util
+   differences_omissions
+
 Quick Guide
------------
+===========
 
 Here's a quick guide to getting started with using a newforms Form.
 
@@ -75,7 +90,7 @@ Here's a quick guide to getting started with using a newforms Form.
      }
 
 JavaScript API Differences
---------------------------
+==========================
 
 The JavaScript API is largely consistent with Django's API, with the following
 rules of thumb for converting between the two:
@@ -135,18 +150,6 @@ rules of thumb for converting between the two:
    Unless specified otherwise, documented API items live under the ``forms``
    namespace object in the browser, or the result of ``require('newforms')`` in
    Node.js.
-
-Contents:
-
-.. toctree::
-   :maxdepth: 2
-
-   forms
-   fields
-   widgets
-   formsets
-   util
-   differences_omissions
 
 .. _`Django`: http://www.djangoproject.com
 .. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/
