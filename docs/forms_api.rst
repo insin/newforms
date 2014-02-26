@@ -3,7 +3,7 @@ Forms API
 =========
 
 ``Form``
-=======
+========
 
 .. js:class:: Form([kwargs])
 
@@ -253,7 +253,7 @@ Forms API
       Creates a :js:class:`BoundField` for each field in the form, in the order
       in which the fields were created.
 
-      :param Function(test,name) test:
+      :param Function(field,name) test:
 
          If provided, this function will be called with ``field`` and ``name``
          arguments - BoundFields will only be generated for fields for which
@@ -299,7 +299,7 @@ Forms API
       Adds an initial prefix for checking dynamic initial values.
 
 ``BoundField``
-=============
+==============
 
 .. js:class:: BoundField(form, field, name)
 
