@@ -7,7 +7,6 @@
 
 var Concur = require('Concur')
 var is = require('isomorph/is')
-var format = require('isomorph/format').formatObj
 var object = require('isomorph/object')
 var time = require('isomorph/time')
 var url = require('isomorph/url')
@@ -17,7 +16,6 @@ var util = require('./util')
 var widgets = require('./widgets')
 
 var ValidationError = validators.ValidationError
-var isEmptyValue = validators.isEmptyValue
 var Widget = widgets.Widget
 var cleanIPv6Address = validators.ipv6.cleanIPv6Address
 
@@ -30,18 +28,28 @@ var cleanIPv6Address = validators.ipv6.cleanIPv6Address
  * @param {Object=} kwargs
  */
 var Field = Concur.extend({
-  constructor: function Field(kwargs) {
+  widget: widgets.TextInput         // Default widget to use when rendering this type of Field
+, hiddenWidget: widgets.HiddenInput // Default widget to use when rendering this as "hidden"
+, defaultValidators: []             // Default list of validators
+  // Add an 'invalid' entry to defaultErrorMessages if you want a specific
+  // field error message not raised by the field validators.
+, defaultErrorMessages: {
+    required: 'This field is required.'
+  }
+, emptyValues: validators.EMPTY_VALUES.slice()
+
+, constructor: function Field(kwargs) {
     kwargs = object.extend({
       required: true, widget: null, label: null, initial: null,
       helpText: null, errorMessages: null, showHiddenInitial: false,
-      validators: [], extraClasses: null
+      validators: [], cssClass: null
     }, kwargs)
     this.required = kwargs.required
     this.label = kwargs.label
     this.initial = kwargs.initial
     this.showHiddenInitial = kwargs.showHiddenInitial
     this.helpText = kwargs.helpText || ''
-    this.extraClasses = kwargs.extraClasses
+    this.cssClass = kwargs.cssClass
 
     var widget = kwargs.widget || this.widget
     if (!(widget instanceof Widget)) {
@@ -59,21 +67,15 @@ var Field = Concur.extend({
 
     // Copy error messages for this instance into a new object and override
     // with any provided error messages.
-    this.errorMessages =
-        object.extend({}, this.defaultErrorMessages, kwargs.errorMessages || {})
+    var messages = [{}]
+    for (var i = this.constructor.__mro__.length - 1; i >=0; i--) {
+      messages.push(object.get(this.constructor.__mro__[i].prototype,
+                               'defaultErrorMessages', null))
+    }
+    messages.push(kwargs.errorMessages)
+    this.errorMessages = object.extend.apply(object, messages)
 
     this.validators = this.defaultValidators.concat(kwargs.validators)
-  }
-  /** Default widget to use when rendering this type of Field. */
-, widget: widgets.TextInput
-  /** Default widget to use when rendering this type of field as hidden. */
-, hiddenWidget: widgets.HiddenInput
-  /** Default set of validators. */
-, defaultValidators: []
-  /** Default error messages. */
-, defaultErrorMessages: {
-    required: 'This field is required.'
-  , invalid: 'Enter a valid value.'
   }
 })
 
@@ -91,37 +93,28 @@ Field.prototype.toJavaScript = function(value) {
 }
 
 Field.prototype.validate = function(value) {
-  if (this.required && isEmptyValue(value)) {
-    throw ValidationError(this.errorMessages.required)
+  if (this.required && this.emptyValues.indexOf(value) != -1) {
+    throw ValidationError(this.errorMessages.required, {code: 'required'})
   }
 }
 
 Field.prototype.runValidators = function(value) {
-  if (isEmptyValue(value)) {
+  if (this.emptyValues.indexOf(value) != -1) {
     return
   }
   var errors = []
   for (var i = 0, l = this.validators.length; i < l; i++) {
+    var validator = this.validators[i]
     try {
-      validators.callValidator(this.validators[i], value)
+      validator(value)
     }
     catch (e) {
-      if (!(e instanceof ValidationError)) {
-        throw e
+      if (!(e instanceof ValidationError)) { throw e }
+      if (object.hasOwn(e, 'code') &&
+          object.hasOwn(this.errorMessages, e.code)) {
+        e.message = this.errorMessages[e.code]
       }
-
-      if (typeof e.code != 'undefined' &&
-          typeof this.errorMessages[e.code] != 'undefined' &&
-          this.errorMessages[e.code] !== this.defaultErrorMessages[e.code]) {
-        var message = this.errorMessages[e.code]
-        if (typeof e.params != 'undefined') {
-          message = format(message, e.params)
-        }
-        errors.push(message)
-      }
-      else {
-        errors = errors.concat(e.messages())
-      }
+      errors.push.apply(errors, e.errorList)
     }
   }
   if (errors.length > 0) {
@@ -132,9 +125,7 @@ Field.prototype.runValidators = function(value) {
 /**
  * Validates the given value and returns its "cleaned" value as an appropriate
  * JavaScript object.
- *
- * Raises ValidationError for any errors.
- *
+ * Throws a ValidationError for any errors.
  * @param {String} value the value to be validated.
  */
 Field.prototype.clean = function(value) {
@@ -169,15 +160,25 @@ Field.prototype.widgetAttrs = function(widget) {
 }
 
 /**
- * Determines if data has changed from initial.
+ * Returns true if data differs from initial.
  */
 Field.prototype._hasChanged = function(initial, data) {
   // For purposes of seeing whether something has changed, null is the same
   // as an empty string, if the data or inital value we get is null, replace
   // it with ''.
-  var dataValue = (data === null ? '' : data)
   var initialValue = (initial === null ? '' : initial)
-  return (''+initialValue != ''+dataValue)
+  try {
+    data = this.toJavaScript(data)
+    if (typeof this._coerce == 'function') {
+      data = this._coerce(data)
+    }
+  }
+  catch (e) {
+    if (!(e instanceof ValidationError)) { throw e }
+    return true
+  }
+  var dataValue = (data === null ? '' : data)
+  return (''+initialValue != ''+dataValue) // TODO is forcing to string necessary?
 }
 
 /**
@@ -203,7 +204,7 @@ var CharField = Field.extend({
 })
 
 CharField.prototype.toJavaScript = function(value) {
-  if (isEmptyValue(value)) {
+  if (this.emptyValues.indexOf(value) != -1) {
     return ''
   }
   return ''+value
@@ -234,6 +235,10 @@ CharField.prototype.widgetAttrs = function(widget) {
  */
 var IntegerField = Field.extend({
   widget: widgets.NumberInput
+, defaultErrorMessages: {
+    invalid: 'Enter a whole number.'
+  }
+
 , constructor: function IntegerField(kwargs) {
     if (!(this instanceof Field)) { return new IntegerField(kwargs) }
     kwargs = object.extend({maxValue: null, minValue: null}, kwargs)
@@ -249,10 +254,6 @@ var IntegerField = Field.extend({
     }
   }
 })
-IntegerField.prototype.defaultErrorMessages =
-    object.extend({}, IntegerField.prototype.defaultErrorMessages, {
-      invalid: 'Enter a whole number.'
-    })
 
 /**
  * Validates that Number() can be called on the input with a result that isn't
@@ -263,12 +264,12 @@ IntegerField.prototype.defaultErrorMessages =
  */
 IntegerField.prototype.toJavaScript = function(value) {
   value = Field.prototype.toJavaScript.call(this, value)
-  if (isEmptyValue(value)) {
+  if (this.emptyValues.indexOf(value) != -1) {
     return null
   }
   value = Number(value)
   if (isNaN(value) || value.toString().indexOf('.') != -1) {
-    throw ValidationError(this.errorMessages.invalid)
+    throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
   }
   return value
 }
@@ -293,17 +294,18 @@ IntegerField.prototype.widgetAttrs = function(widget) {
  * @param {Object=} kwargs
  */
 var FloatField = IntegerField.extend({
-  constructor: function FloatField(kwargs) {
+  defaultErrorMessages: {
+    invalid: 'Enter a number.'
+  }
+
+, constructor: function FloatField(kwargs) {
     if (!(this instanceof Field)) { return new FloatField(kwargs) }
     IntegerField.call(this, kwargs)
   }
 })
+
 /** Float validation regular expression, as parseFloat() is too forgiving. */
 FloatField.FLOAT_REGEXP = /^[-+]?(?:\d+(?:\.\d+)?|(?:\d+)?\.\d+)$/
-FloatField.prototype.defaultErrorMessages =
-    object.extend({}, FloatField.prototype.defaultErrorMessages, {
-      invalid: 'Enter a number.'
-    })
 
 /**
  * Validates that the input looks like valid input for parseFloat() and the
@@ -315,16 +317,16 @@ FloatField.prototype.defaultErrorMessages =
  */
 FloatField.prototype.toJavaScript = function(value) {
   value = Field.prototype.toJavaScript.call(this, value)
-  if (isEmptyValue(value)) {
+  if (this.emptyValues.indexOf(value) != -1) {
     return null
   }
   value = util.strip(value)
   if (!FloatField.FLOAT_REGEXP.test(value)) {
-    throw ValidationError(this.errorMessages.invalid)
+    throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
   }
   value = parseFloat(value)
   if (isNaN(value)) {
-    throw ValidationError(this.errorMessages.invalid)
+    throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
   }
   return value
 }
@@ -367,7 +369,14 @@ FloatField.prototype.widgetAttrs = function(widget) {
  * @param {Object=} kwargs
  */
 var DecimalField = IntegerField.extend({
-  constructor: function DecimalField(kwargs) {
+  defaultErrorMessages: {
+    invalid: 'Enter a number.'
+  , maxDigits: 'Ensure that there are no more than {maxDigits} digits in total.'
+  , maxDecimalPlaces: 'Ensure that there are no more than {maxDecimalPlaces} decimal places.'
+  , maxWholeDigits: 'Ensure that there are no more than {maxWholeDigits} digits before the decimal point.'
+  }
+
+, constructor: function DecimalField(kwargs) {
     if (!(this instanceof Field)) { return new DecimalField(kwargs) }
     kwargs = object.extend({maxDigits: null, decimalPlaces: null}, kwargs)
     this.maxDigits = kwargs.maxDigits
@@ -375,15 +384,9 @@ var DecimalField = IntegerField.extend({
     IntegerField.call(this, kwargs)
   }
 })
+
 /** Decimal validation regular expression, in lieu of a Decimal type. */
 DecimalField.DECIMAL_REGEXP = /^[-+]?(?:\d+(?:\.\d+)?|(?:\d+)?\.\d+)$/
-DecimalField.prototype.defaultErrorMessages =
-    object.extend({}, DecimalField.prototype.defaultErrorMessages, {
-      invalid: 'Enter a number.'
-    , maxDigits: 'Ensure that there are no more than {maxDigits} digits in total.'
-    , maxDecimalPlaces: 'Ensure that there are no more than {maxDecimalPlaces} decimal places.'
-    , maxWholeDigits: 'Ensure that there are no more than {maxWholeDigits} digits before the decimal point.'
-    })
 
 /**
  * DecimalField overrides the clean() method as it performs its own validation
@@ -398,14 +401,14 @@ DecimalField.prototype.defaultErrorMessages =
 DecimalField.prototype.clean = function(value) {
   // Take care of empty, required validation
   Field.prototype.validate.call(this, value)
-  if (isEmptyValue(value)) {
+  if (this.emptyValues.indexOf(value) != -1) {
     return null
   }
 
   // Coerce to string and validate that it looks Decimal-like
   value = util.strip(''+value)
   if (!DecimalField.DECIMAL_REGEXP.test(value)) {
-    throw ValidationError(this.errorMessages.invalid)
+    throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
   }
 
   // In lieu of a Decimal type, DecimalField validates against a string
@@ -426,19 +429,24 @@ DecimalField.prototype.clean = function(value) {
   var decimals = (pieces.length == 2 ? pieces[1].length : 0)
   var digits = wholeDigits + decimals
   if (this.maxDigits !== null && digits > this.maxDigits) {
-    throw ValidationError(format(this.errorMessages.maxDigits,
-                                 {maxDigits: this.maxDigits}))
+    throw ValidationError(this.errorMessages.maxDigits, {
+      code: 'maxDigits'
+    , params: {maxDigits: this.maxDigits}
+    })
   }
   if (this.decimalPlaces !== null && decimals > this.decimalPlaces) {
-    throw ValidationError(format(this.errorMessages.maxDecimalPlaces,
-                                 {maxDecimalPlaces: this.decimalPlaces}))
+    throw ValidationError(this.errorMessages.maxDecimalPlaces, {
+      code: 'maxDecimalPlaces'
+    , params: {maxDecimalPlaces: this.decimalPlaces}
+    })
   }
   if (this.maxDigits !== null &&
       this.decimalPlaces !== null &&
       wholeDigits > (this.maxDigits - this.decimalPlaces)) {
-    throw ValidationError(format(this.errorMessages.maxWholeDigits,
-                                 {maxWholeDigits: (
-                                  this.maxDigits - this.decimalPlaces)}))
+    throw ValidationError(this.errorMessages.maxWholeDigits, {
+      code: 'maxWholeDigits'
+    , params: {maxWholeDigits: (this.maxDigits - this.decimalPlaces)}
+    })
   }
 
   // * Values which did not have a leading zero gain a single leading zero
@@ -515,7 +523,7 @@ BaseTemporalField.prototype.toJavaScript = function(value) {
       }
     }
   }
-  throw ValidationError(this.errorMessages.invalid)
+  throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
 }
 
 /**
@@ -552,17 +560,17 @@ BaseTemporalField.prototype._hasChanged = function(initial, data) {
  * @param {Object=} kwargs
  */
 var DateField = BaseTemporalField.extend({
-  constructor: function DateField(kwargs) {
+  widget: widgets.DateInput
+, inputFormats: util.DEFAULT_DATE_INPUT_FORMATS
+, defaultErrorMessages: {
+    invalid: 'Enter a valid date.'
+  }
+
+, constructor: function DateField(kwargs) {
     if (!(this instanceof Field)) { return new DateField(kwargs) }
     BaseTemporalField.call(this, kwargs)
   }
-, widget: widgets.DateInput
-, inputFormats: util.DEFAULT_DATE_INPUT_FORMATS
 })
-DateField.prototype.defaultErrorMessages =
-    object.extend({}, DateField.prototype.defaultErrorMessages, {
-      invalid: 'Enter a valid date.'
-    })
 
 /**
  * Validates that the input can be converted to a date.
@@ -571,7 +579,7 @@ DateField.prototype.defaultErrorMessages =
  *     empty values when they are allowed.
  */
 DateField.prototype.toJavaScript = function(value) {
-  if (isEmptyValue(value)) {
+  if (this.emptyValues.indexOf(value) != -1) {
     return null
   }
   if (value instanceof Date) {
@@ -587,17 +595,17 @@ DateField.prototype.toJavaScript = function(value) {
  * @param {Object=} kwargs
  */
 var TimeField = BaseTemporalField.extend({
-  constructor: function TimeField(kwargs) {
+  widget: widgets.TimeInput
+, inputFormats: util.DEFAULT_TIME_INPUT_FORMATS
+, defaultErrorMessages: {
+    invalid: 'Enter a valid time.'
+  }
+
+, constructor: function TimeField(kwargs) {
     if (!(this instanceof Field)) { return new TimeField(kwargs) }
     BaseTemporalField.call(this, kwargs)
   }
-, widget: widgets.TimeInput
-, inputFormats: util.DEFAULT_TIME_INPUT_FORMATS
 })
-TimeField.prototype.defaultErrorMessages =
-    object.extend({}, TimeField.prototype.defaultErrorMessages, {
-      invalid: 'Enter a valid time.'
-    })
 
 /**
  * Validates that the input can be converted to a time.
@@ -606,7 +614,7 @@ TimeField.prototype.defaultErrorMessages =
  *     null for empty values when they are allowed.
  */
 TimeField.prototype.toJavaScript = function(value) {
-  if (isEmptyValue(value)) {
+  if (this.emptyValues.indexOf(value) != -1) {
     return null
   }
   if (value instanceof Date) {
@@ -634,24 +642,24 @@ TimeField.prototype.strpdate = function(value, format) {
  * @param {Object=} kwargs
  */
 var DateTimeField = BaseTemporalField.extend({
-  constructor: function DateTimeField(kwargs) {
+  widget: widgets.DateTimeInput
+, inputFormats: util.DEFAULT_DATETIME_INPUT_FORMATS
+, defaultErrorMessages: {
+    invalid: 'Enter a valid date/time.'
+  }
+
+, constructor: function DateTimeField(kwargs) {
     if (!(this instanceof Field)) { return new DateTimeField(kwargs) }
     BaseTemporalField.call(this, kwargs)
   }
-, widget: widgets.DateTimeInput
-, inputFormats: util.DEFAULT_DATETIME_INPUT_FORMATS
 })
-DateTimeField.prototype.defaultErrorMessages =
-    object.extend({}, DateTimeField.prototype.defaultErrorMessages, {
-      invalid: 'Enter a valid date/time.'
-    })
 
 /**
  * @param {String|Date|Array.<Date>}
  * @return {?Date}
  */
 DateTimeField.prototype.toJavaScript = function(value) {
-  if (isEmptyValue(value)) {
+  if (this.emptyValues.indexOf(value) != -1) {
     return null
   }
   if (value instanceof Date) {
@@ -661,10 +669,10 @@ DateTimeField.prototype.toJavaScript = function(value) {
     // Input comes from a SplitDateTimeWidget, for example, so it's two
     // components: date and time.
     if (value.length != 2) {
-      throw ValidationError(this.errorMessages.invalid)
+      throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
     }
-    if (isEmptyValue(value[0]) &&
-        isEmptyValue(value[1])) {
+    if (this.emptyValues.indexOf(value[0]) != -1 &&
+        this.emptyValues.indexOf(value[1]) != -1) {
       return null
     }
     value = value.join(' ')
@@ -698,12 +706,13 @@ var RegexField = CharField.extend({
  * @param {Object=} kwargs
  */
 var EmailField = CharField.extend({
-  constructor: function EmailField(kwargs) {
+  widget: widgets.EmailInput
+, defaultValidators: [validators.validateEmail]
+
+, constructor: function EmailField(kwargs) {
     if (!(this instanceof Field)) { return new EmailField(kwargs) }
     CharField.call(this, kwargs)
   }
-, widget: widgets.EmailInput
-, defaultValidators: [validators.validateEmail]
 })
 
 EmailField.prototype.clean = function(value) {
@@ -718,7 +727,16 @@ EmailField.prototype.clean = function(value) {
  * @param {Object=} kwargs
  */
 var FileField = Field.extend({
-  constructor: function FileField(kwargs) {
+  widget: widgets.ClearableFileInput
+, defaultErrorMessages: {
+    invalid: 'No file was submitted. Check the encoding type on the form.'
+  , missing: 'No file was submitted.'
+  , empty: 'The submitted file is empty.'
+  , maxLength: 'Ensure this filename has at most {max} characters (it has {length}).'
+  , contradicton: 'Please either submit a file or check the clear checkbox, not both.'
+  }
+
+, constructor: function FileField(kwargs) {
     if (!(this instanceof Field)) { return new FileField(kwargs) }
     kwargs = object.extend({maxLength: null, allowEmptyFile: false}, kwargs)
     this.maxLength = kwargs.maxLength
@@ -726,40 +744,31 @@ var FileField = Field.extend({
     delete kwargs.maxLength
     Field.call(this, kwargs)
   }
-, widget: widgets.ClearableFileInput
 })
-FileField.prototype.defaultErrorMessages =
-    object.extend({}, FileField.prototype.defaultErrorMessages, {
-      invalid: 'No file was submitted. Check the encoding type on the form.'
-    , missing: 'No file was submitted.'
-    , empty: 'The submitted file is empty.'
-    , maxLength: 'Ensure this filename has at most {max} characters (it has {length}).'
-    , contradicton: 'Please either submit a file or check the clear checkbox, not both.'
-    })
 
 FileField.prototype.toJavaScript = function(data, initial) {
-  if (isEmptyValue(data)) {
+  if (this.emptyValues.indexOf(data) != -1) {
     return null
   }
   // UploadedFile objects should have name and size attributes
   if (typeof data.name == 'undefined' || typeof data.size == 'undefined') {
-    throw ValidationError(this.errorMessages.invalid)
+    throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
   }
 
   var fileName = data.name
   var fileSize = data.size
 
   if (this.maxLength !== null && fileName.length > this.maxLength) {
-    throw ValidationError(format(this.errorMessages.maxLength, {
-                            max: this.maxLength
-                          , length: fileName.length
-                          }))
+    throw ValidationError(this.errorMessages.maxLength, {
+      code: 'maxLength'
+    , params: {max: this.maxLength, length: fileName.length}
+    })
   }
   if (!fileName) {
-    throw ValidationError(this.errorMessages.invalid)
+    throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
   }
   if (!this.allowEmptyFile && !fileSize) {
-    throw ValidationError(this.errorMessages.empty)
+    throw ValidationError(this.errorMessages.empty, {code: 'empty'})
   }
   return data
 }
@@ -767,7 +776,8 @@ FileField.prototype.toJavaScript = function(data, initial) {
 FileField.prototype.clean = function(data, initial) {
   // If the widget got contradictory inputs, we raise a validation error
   if (data === widgets.FILE_INPUT_CONTRADICTION) {
-    throw ValidationError(this.errorMessages.contradiction)
+    throw ValidationError(this.errorMessages.contradiction,
+                          {code: 'contradiction'})
   }
   // false means the field value should be cleared; further validation is
   // not needed.
@@ -809,15 +819,15 @@ FileField.prototype._hasChanged = function(initial, data) {
  * @param {Object=} kwargs
  */
 var ImageField = FileField.extend({
-constructor: function ImageField(kwargs) {
+  defaultErrorMessages: {
+    invalidImage: 'Upload a valid image. The file you uploaded was either not an image or a corrupted image.'
+  }
+
+, constructor: function ImageField(kwargs) {
     if (!(this instanceof Field)) { return new ImageField(kwargs) }
     FileField.call(this, kwargs)
   }
 })
-ImageField.prototype.defaultErrorMessages =
-    object.extend({}, ImageField.prototype.defaultErrorMessages, {
-      invalidImage: 'Upload a valid image. The file you uploaded was either not an image or a corrupted image.'
-    })
 
 /**
  * Checks that the file-upload field data contains a valid image.
@@ -840,18 +850,17 @@ ImageField.prototype.toJavaScript = function(data, initial) {
  * @param {Object=} kwargs
  */
 var URLField = CharField.extend({
-  constructor: function URLField(kwargs) {
+  widget: widgets.URLInput
+, defaultErrorMessages: {
+    invalid: 'Enter a valid URL.'
+  }
+, defaultValidators: [validators.URLValidator()]
+
+, constructor: function URLField(kwargs) {
     if (!(this instanceof Field)) { return new URLField(kwargs) }
     CharField.call(this, kwargs)
-    this.validators.push(validators.URLValidator())
   }
-, widget: widgets.URLInput
 })
-URLField.prototype.defaultErrorMessages =
-    object.extend({}, URLField.prototype.defaultErrorMessages, {
-      invalid: 'Enter a valid URL.'
-    , invalidLink: 'This URL appears to be a broken link.'
-    })
 
 URLField.prototype.toJavaScript = function(value) {
   if (value) {
@@ -881,11 +890,12 @@ URLField.prototype.clean = function(value) {
  * @param {Object=} kwargs
  */
 var BooleanField = Field.extend({
-  constructor: function BooleanField(kwargs) {
+  widget: widgets.CheckboxInput
+
+, constructor: function BooleanField(kwargs) {
     if (!(this instanceof Field)) { return new BooleanField(kwargs) }
     Field.call(this, kwargs)
   }
-, widget: widgets.CheckboxInput
 })
 
 BooleanField.prototype.toJavaScript = function(value) {
@@ -901,7 +911,7 @@ BooleanField.prototype.toJavaScript = function(value) {
   }
   value = Field.prototype.toJavaScript.call(this, value)
   if (!value && this.required) {
-    throw ValidationError(this.errorMessages.required)
+    throw ValidationError(this.errorMessages.required, {code: 'required'})
   }
   return value
 }
@@ -924,11 +934,12 @@ BooleanField.prototype._hasChanged = function(initial, data) {
  * @param {Object=} kwargs
  */
 var NullBooleanField = BooleanField.extend({
-  constructor: function NullBooleanField(kwargs) {
+  widget: widgets.NullBooleanSelect
+
+, constructor: function NullBooleanField(kwargs) {
     if (!(this instanceof Field)) { return new NullBooleanField(kwargs) }
     BooleanField.call(this, kwargs)
   }
-, widget: widgets.NullBooleanSelect
 })
 
 NullBooleanField.prototype.toJavaScript = function(value) {
@@ -965,18 +976,20 @@ NullBooleanField.prototype._hasChanged = function(initial, data) {
  * @param {Object=} kwargs
  */
 var ChoiceField = Field.extend({
-  constructor: function ChoiceField(kwargs) {
+  widget: widgets.Select
+, defaultErrorMessages: {
+    invalidChoice: 'Select a valid choice. {value} is not one of the available choices.'
+  }
+
+, constructor: function ChoiceField(kwargs) {
+
     if (!(this instanceof Field)) { return new ChoiceField(kwargs) }
     kwargs = object.extend({choices: []}, kwargs)
     Field.call(this, kwargs)
     this.setChoices(kwargs.choices)
   }
-, widget: widgets.Select
 })
-ChoiceField.prototype.defaultErrorMessages =
-    object.extend({}, ChoiceField.prototype.defaultErrorMessages, {
-      invalidChoice: 'Select a valid choice. {value} is not one of the available choices.'
-    })
+
 ChoiceField.prototype.choices = function() { return this._choices }
 ChoiceField.prototype.setChoices = function(choices) {
   // Setting choices also sets the choices on the widget
@@ -984,7 +997,7 @@ ChoiceField.prototype.setChoices = function(choices) {
 }
 
 ChoiceField.prototype.toJavaScript = function(value) {
-  if (isEmptyValue(value)) {
+  if (this.emptyValues.indexOf(value) != -1) {
     return ''
   }
   return ''+value
@@ -996,8 +1009,10 @@ ChoiceField.prototype.toJavaScript = function(value) {
 ChoiceField.prototype.validate = function(value) {
   Field.prototype.validate.call(this, value)
   if (value && !this.validValue(value)) {
-    throw ValidationError(
-        format(this.errorMessages.invalidChoice, {value: value}))
+    throw ValidationError(this.errorMessages.invalidChoice, {
+      code: 'invalidChoice'
+    , params: {value: value}
+    })
   }
 }
 
@@ -1037,31 +1052,35 @@ var TypedChoiceField = ChoiceField.extend({
     kwargs = object.extend({
       coerce: function(val) { return val }, emptyValue: ''
     }, kwargs)
-    this.coerce = kwargs.coerce
-    this.emptyValue = kwargs.emptyValue
-    delete kwargs.coerce
-    delete kwargs.emptyValue
+    this.coerce = object.pop(kwargs, 'coerce')
+    this.emptyValue = object.pop(kwargs, 'emptyValue')
     ChoiceField.call(this, kwargs)
   }
 })
 
-TypedChoiceField.prototype.toJavaScript = function(value) {
-  value = ChoiceField.prototype.toJavaScript.call(this, value)
-  ChoiceField.prototype.validate.call(this, value)
-  if (value === this.emptyValue || isEmptyValue(value)) {
+/**
+ * Validate that the value can be coerced to the right type (if not empty).
+ */
+TypedChoiceField.prototype._coerce = function(value) {
+  if (value === this.emptyValue || this.emptyValues.indexOf(value) != -1) {
     return this.emptyValue
   }
   try {
     value = this.coerce(value)
   }
   catch (e) {
-    throw ValidationError(
-        format(this.errorMessages.invalidChoice, {value: value}))
+    throw ValidationError(this.errorMessages.invalidChoice, {
+      code: 'invalidChoice'
+    , params: {value: value}
+    })
   }
   return value
 }
 
-TypedChoiceField.prototype.validate = function(value) {}
+TypedChoiceField.prototype.clean = function(value) {
+  value = ChoiceField.prototype.clean.call(this, value)
+  return this._coerce(value)
+}
 
 /**
  * Validates that its input is one or more of a valid list of choices.
@@ -1070,25 +1089,25 @@ TypedChoiceField.prototype.validate = function(value) {}
  * @param {Object=} kwargs
  */
 var MultipleChoiceField = ChoiceField.extend({
-  constructor: function MultipleChoiceField(kwargs) {
+  hiddenWidget: widgets.MultipleHiddenInput
+, widget: widgets.SelectMultiple
+, defaultErrorMessages: {
+    invalidChoice: 'Select a valid choice. {value} is not one of the available choices.'
+  , invalidList: 'Enter a list of values.'
+  }
+
+, constructor: function MultipleChoiceField(kwargs) {
     if (!(this instanceof Field)) { return new MultipleChoiceField(kwargs) }
     ChoiceField.call(this, kwargs)
   }
-, widget: widgets.SelectMultiple
-, hiddenWidget: widgets.MultipleHiddenInput
 })
-MultipleChoiceField.prototype.defaultErrorMessages =
-    object.extend({}, MultipleChoiceField.prototype.defaultErrorMessages, {
-      invalidChoice: 'Select a valid choice. {value} is not one of the available choices.'
-    , invalidList: 'Enter a list of values.'
-    })
 
 MultipleChoiceField.prototype.toJavaScript = function(value) {
   if (!value) {
     return []
   }
   else if (!(is.Array(value))) {
-    throw ValidationError(this.errorMessages.invalidList)
+    throw ValidationError(this.errorMessages.invalidList, {code: 'invalidList'})
   }
   var stringValues = []
   for (var i = 0, l = value.length; i < l; i++) {
@@ -1103,12 +1122,14 @@ MultipleChoiceField.prototype.toJavaScript = function(value) {
  */
 MultipleChoiceField.prototype.validate = function(value) {
   if (this.required && !value.length) {
-    throw ValidationError(this.errorMessages.required)
+    throw ValidationError(this.errorMessages.required, {code: 'required'})
   }
   for (var i = 0, l = value.length; i < l; i++) {
     if (!this.validValue(value[i])) {
-      throw ValidationError(
-          format(this.errorMessages.invalidChoice, {value: value[i]}))
+      throw ValidationError(this.errorMessages.invalidChoice, {
+        code: 'invalidChoice'
+      , params: {value: value[i]}
+      })
     }
   }
 }
@@ -1144,18 +1165,14 @@ var TypedMultipleChoiceField = MultipleChoiceField.extend({
     kwargs = object.extend({
       coerce: function(val) { return val }, emptyValue: []
     }, kwargs)
-    this.coerce = kwargs.coerce
-    this.emptyValue = kwargs.emptyValue
-    delete kwargs.coerce
-    delete kwargs.emptyValue
+    this.coerce = object.pop(kwargs, 'coerce')
+    this.emptyValue = object.pop(kwargs, 'emptyValue')
     MultipleChoiceField.call(this, kwargs)
   }
 })
 
-TypedMultipleChoiceField.prototype.toJavaScript = function(value) {
-  value = MultipleChoiceField.prototype.toJavaScript.call(this, value)
-  MultipleChoiceField.prototype.validate.call(this, value)
-  if (value === this.emptyValue || isEmptyValue(value) ||
+TypedMultipleChoiceField.prototype._coerce = function(value) {
+  if (value === this.emptyValue || this.emptyValues.indexOf(value) != -1 ||
       (is.Array(value) && !value.length)) {
     return this.emptyValue
   }
@@ -1165,14 +1182,28 @@ TypedMultipleChoiceField.prototype.toJavaScript = function(value) {
       newValue.push(this.coerce(value[i]))
     }
     catch (e) {
-      throw ValidationError(
-          format(this.errorMessages.invalidChoice, {value: value[i]}))
+      throw ValidationError(this.errorMessages.invalidChoice, {
+        code: 'invalidChoice'
+      , params: {value: value[i]}
+      })
     }
   }
   return newValue
 }
 
-TypedMultipleChoiceField.prototype.validate = function(value) {}
+TypedMultipleChoiceField.prototype.clean = function(value) {
+  value = MultipleChoiceField.prototype.clean.call(this, value)
+  return this._coerce(value)
+}
+
+TypedMultipleChoiceField.prototype.validate = function(value) {
+  if (value !== this.emptyValue || (is.Array(value) && value.length)) {
+    MultipleChoiceField.prototype.validate.call(this, value)
+  }
+  else if (this.required) {
+    throw ValidationError(this.errorMessages.required, {code: 'required'})
+  }
+}
 
 /**
  * Allows choosing from files inside a certain directory.
@@ -1263,7 +1294,12 @@ ComboField.prototype.clean = function(value) {
  * @param {Object=} kwargs
  */
 var MultiValueField = Field.extend({
-  constructor: function MultiValueField(kwargs) {
+  defaultErrorMessages: {
+    invalid: 'Enter a list of values.'
+  , incomplete: 'Enter a complete value.'
+  }
+
+, constructor: function MultiValueField(kwargs) {
     if (!(this instanceof Field)) { return new MultiValueField(kwargs) }
     kwargs = object.extend({fields: []}, kwargs)
     this.requireAllFields = object.pop(kwargs, 'requireAllFields', true)
@@ -1283,11 +1319,6 @@ var MultiValueField = Field.extend({
     this.fields = kwargs.fields
   }
 })
-MultiValueField.prototype.defaultErrorMessages =
-    object.extend({}, MultiValueField.prototype.defaultErrorMessages, {
-      invalid: 'Enter a list of values.'
-    , incomplete: 'Enter a complete value.'
-    })
 
 MultiValueField.prototype.validate = function() {}
 
@@ -1320,7 +1351,7 @@ MultiValueField.prototype.clean = function(value) {
 
     if (!value || allValuesEmpty) {
       if (this.required) {
-        throw ValidationError(this.errorMessages.required)
+        throw ValidationError(this.errorMessages.required, {code: 'required'})
       }
       else {
         return this.compress([])
@@ -1328,7 +1359,7 @@ MultiValueField.prototype.clean = function(value) {
     }
   }
   else {
-    throw ValidationError(this.errorMessages.invalid)
+    throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
   }
 
   for (i = 0, l = this.fields.length; i < l; i++) {
@@ -1337,7 +1368,7 @@ MultiValueField.prototype.clean = function(value) {
     if (fieldValue === undefined) {
       fieldValue = null
     }
-    if (isEmptyValue(fieldValue)) {
+    if (this.emptyValues.indexOf(fieldValue) != -1) {
       if (this.requireAllFields) {
         // Throw a 'required' error if the MultiValueField is required and any
         // field is empty.
@@ -1419,7 +1450,14 @@ MultiValueField.prototype._hasChanged = function(initial, data) {
  * @param {Object=} kwargs
  */
 var SplitDateTimeField = MultiValueField.extend({
-  constructor: function SplitDateTimeField(kwargs) {
+  hiddenWidget: widgets.SplitHiddenDateTimeWidget
+, widget: widgets.SplitDateTimeWidget
+, defaultErrorMessages: {
+    invalidDate: 'Enter a valid date.'
+  , invalidTime: 'Enter a valid time.'
+  }
+
+, constructor: function SplitDateTimeField(kwargs) {
     if (!(this instanceof Field)) { return new SplitDateTimeField(kwargs) }
     kwargs = object.extend({
       inputDateFormats: null, inputTimeFormats: null
@@ -1436,14 +1474,7 @@ var SplitDateTimeField = MultiValueField.extend({
     ]
     MultiValueField.call(this, kwargs)
   }
-, widget: widgets.SplitDateTimeWidget
-, hiddenWidget: widgets.SplitHiddenDateTimeWidget
 })
-SplitDateTimeField.prototype.defaultErrorMessages =
-    object.extend({}, SplitDateTimeField.prototype.defaultErrorMessages, {
-      invalidDate: 'Enter a valid date.'
-    , invalidTime: 'Enter a valid time.'
-    })
 
 /**
  * Validates that, if given, its input does not contain empty values.
@@ -1457,14 +1488,15 @@ SplitDateTimeField.prototype.defaultErrorMessages =
  */
 SplitDateTimeField.prototype.compress = function(dataList) {
   if (is.Array(dataList) && dataList.length > 0) {
-    var d = dataList[0], t = dataList[1]
+    var d = dataList[0]
+    var t = dataList[1]
     // Raise a validation error if date or time is empty (possible if
     // SplitDateTimeField has required == false).
-    if (isEmptyValue(d)) {
-      throw ValidationError(this.errorMessages.invalidDate)
+    if (this.emptyValues.indexOf(d) != -1) {
+      throw ValidationError(this.errorMessages.invalidDate, {code: 'invalidDate'})
     }
-    if (isEmptyValue(t)) {
-      throw ValidationError(this.errorMessages.invalidTime)
+    if (this.emptyValues.indexOf(t) != -1) {
+      throw ValidationError(this.errorMessages.invalidTime, {code: 'invalidTime'})
     }
     return new Date(d.getFullYear(), d.getMonth(), d.getDate(),
                     t.getHours(), t.getMinutes(), t.getSeconds())
@@ -1480,30 +1512,21 @@ SplitDateTimeField.prototype.compress = function(dataList) {
  * @deprecated
  */
 var IPAddressField = CharField.extend({
-  constructor: function IPAddressField(kwargs) {
+  defaultValidators: [validators.validateIPv4Address]
+
+, constructor: function IPAddressField(kwargs) {
     if (!(this instanceof Field)) { return new IPAddressField(kwargs) }
     CharField.call(this, kwargs)
   }
 })
-IPAddressField.prototype.defaultValidators = [validators.validateIPv4Address]
-IPAddressField.prototype.defaultErrorMessages =
-    object.extend({}, IPAddressField.prototype.defaultErrorMessages, {
-      invalid: 'Enter a valid IPv4 address.'
-    })
 
 var GenericIPAddressField = CharField.extend({
   constructor: function GenericIPAddressField(kwargs) {
     if (!(this instanceof Field)) { return new GenericIPAddressField(kwargs) }
-    kwargs = object.extend({
-      protocol: 'both', unpackIPv4: false
-    }, kwargs)
+    kwargs = object.extend({protocol: 'both', unpackIPv4: false}, kwargs)
     this.unpackIPv4 = kwargs.unpackIPv4
-    var ipValidator = validators.ipAddressValidators(kwargs.protocol,
-                                                     kwargs.unpackIPv4)
-    this.defaultValidators = ipValidator.validators
-    this.defaultErrorMessages = object.extend(
-      {}, this.defaultErrorMessages, {invalid: ipValidator.message}
-    )
+    this.defaultValidators =
+      validators.ipAddressValidators(kwargs.protocol, kwargs.unpackIPv4).validators
     CharField.call(this, kwargs)
   }
 })
@@ -1513,10 +1536,7 @@ GenericIPAddressField.prototype.toJavaScript = function(value) {
     return ''
   }
   if (value && value.indexOf(':') != -1) {
-    return cleanIPv6Address(value, {
-      unpackIPv4: this.unpackIPv4
-    , errorMessage: this.errorMessages.invalid
-    })
+    return cleanIPv6Address(value, {unpackIPv4: this.unpackIPv4})
   }
   return value
 }
@@ -1528,16 +1548,12 @@ GenericIPAddressField.prototype.toJavaScript = function(value) {
  * @param {Object=} kwargs
  */
 var SlugField = CharField.extend({
-  constructor: function SlugField(kwargs) {
+  defaultValidators: [validators.validateSlug]
+, constructor: function SlugField(kwargs) {
     if (!(this instanceof Field)) { return new SlugField(kwargs) }
     CharField.call(this, kwargs)
   }
 })
-SlugField.prototype.defaultValidators = [validators.validateSlug]
-SlugField.prototype.defaultErrorMessages =
-    object.extend({}, SlugField.prototype.defaultErrorMessages, {
-      invalid: "Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."
-    })
 
 SlugField.prototype.clean = function(value) {
   value = util.strip(this.toJavaScript(value))
@@ -1574,7 +1590,7 @@ module.exports = {
 , SlugField: SlugField
 }
 
-},{"./util":6,"./widgets":7,"Concur":8,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13,"isomorph/time":14,"isomorph/url":15,"validators":18}],2:[function(require,module,exports){
+},{"./util":5,"./widgets":6,"Concur":7,"isomorph/is":11,"isomorph/object":12,"isomorph/time":13,"isomorph/url":14,"validators":17}],2:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -1753,19 +1769,10 @@ BoundField.prototype.value = function() {
   return this.field.prepareValue(data)
 }
 
-/**
- * Creates the label value to be displayed, adding the form suffix if there is
- * one and the label doesn't end in punctuation.
- */
-BoundField.prototype.getLabel = function() {
-  return this._addLabelSuffix(''+this.label)
-}
-
-BoundField.prototype._addLabelSuffix = function(label) {
+BoundField.prototype._addLabelSuffix = function(label, labelSuffix) {
   // Only add the suffix if the label does not end in punctuation
-  if (this.form.labelSuffix &&
-      ':?.!'.indexOf(label.charAt(label.length - 1)) == -1) {
-    label += this.form.labelSuffix
+  if (labelSuffix && ':?.!'.indexOf(label.charAt(label.length - 1)) == -1) {
+    return label + labelSuffix
   }
   return label
 }
@@ -1780,17 +1787,13 @@ BoundField.prototype._addLabelSuffix = function(label) {
  * @config {String} [contents] contents for the label - if not provided, label
  *                             contents will be generated from the field itself.
  * @config {Object} [attrs] additional attributes to be added to the label.
+ * @config {String} [labelSuffix] allows overriding the form's labelSuffix.
  */
 BoundField.prototype.labelTag = function(kwargs) {
-  kwargs = object.extend({contents: null, attrs: null}, kwargs)
-  var contents
-  if (kwargs.contents !== null) {
-    contents = this._addLabelSuffix(''+kwargs.contents)
-  }
-  else {
-    contents = this.getLabel()
-  }
-
+  kwargs = object.extend({
+    contents: this.label, attrs: null, labelSuffix: this.form.labelSuffix
+  }, kwargs)
+  var contents = this._addLabelSuffix(kwargs.contents, kwargs.labelSuffix)
   var widget = this.field.widget
   var id = object.get(widget.attrs, 'id', this.autoId())
   if (id) {
@@ -1801,25 +1804,28 @@ BoundField.prototype.labelTag = function(kwargs) {
 }
 
 /**
- * Returns a string of space-separated CSS classes for this field.
+ * Puts together additional CSS classes for this field based on the field, the
+ * form and whether or not the field has errors.
+ * @param {string=} extra CSS classes for the field.
+ * @return {string} space-separated CSS classes for this field.
  */
-BoundField.prototype.cssClasses = function(extraClasses) {
-  extraClasses = extraClasses || this.field.extraClasses
-  if (extraClasses !== null && is.Function(extraClasses.split)) {
-    extraClasses = extraClasses.split()
+BoundField.prototype.cssClasses = function(extraCssClasses) {
+  var cssClasses = extraCssClasses ? [extraCssClasses] : []
+  if (this.field.cssClass !== null) {
+    cssClasses.push(this.field.cssClass)
   }
-  extraClasses = extraClasses || []
   if (typeof this.form.rowCssClass != 'undefined') {
-    extraClasses.push(this.form.rowCssClass)
+    cssClasses.push(this.form.rowCssClass)
   }
   if (this.errors().isPopulated() &&
       typeof this.form.errorCssClass != 'undefined') {
-    extraClasses.push(this.form.errorCssClass)
+    cssClasses.push(this.form.errorCssClass)
   }
-  if (this.field.required && typeof this.form.requiredCssClass != 'undefined') {
-    extraClasses.push(this.form.requiredCssClass)
+  if (this.field.required &&
+     typeof this.form.requiredCssClass != 'undefined') {
+    cssClasses.push(this.form.requiredCssClass)
   }
-  return extraClasses.join(' ')
+  return cssClasses.join(' ')
 }
 
 /**
@@ -2010,25 +2016,18 @@ BaseForm.prototype.addInitialPrefix = function(fieldName) {
  * Helper function for outputting HTML.
  * @param {Function} normalRow a function which produces a normal row.
  * @param {Function} errorRow a function which produces an error row.
- * @param {Boolean} errorsOnSeparateRow determines if errors are placed in their
- *   own row, or in the row for the field they are related to.
- * @return a list of React.DOM elements representing rows.
+ * @return a list of React.DOM components representing rows.
  */
-BaseForm.prototype._htmlOutput = function(normalRow,
-                                          errorRow,
-                                          errorsOnSeparateRow) {
-  // Errors that should be displayed above all fields
-  var topErrors = this.nonFieldErrors()
-  var rows = []
-  var hiddenFields = []
-  var htmlClassAttr = null
-  var cssClasses = null
-  var hiddenBoundFields = this.hiddenFields()
-  var visibleBoundFields = this.visibleFields()
+BaseForm.prototype._htmlOutput = function(normalRow, errorRow) {
+  var bf
+  var bfErrors
+  var topErrors = this.nonFieldErrors() // Errors that should be displayed above all fields
 
+  var hiddenFields = []
+  var hiddenBoundFields = this.hiddenFields()
   for (var i = 0, l = hiddenBoundFields.length; i < l; i++) {
-    var bf = hiddenBoundFields[i]
-    var bfErrors = bf.errors()
+    bf = hiddenBoundFields[i]
+    bfErrors = bf.errors()
     if (bfErrors.isPopulated) {
       topErrors.extend(bfErrors.messages().map(function(error) {
         return '(Hidden field ' + bf.name + ') ' + error
@@ -2037,63 +2036,48 @@ BaseForm.prototype._htmlOutput = function(normalRow,
     hiddenFields.push(bf.render())
   }
 
+  var rows = []
+  var errors
+  var label
+  var extraContent
+  var visibleBoundFields = this.visibleFields()
   for (i = 0, l = visibleBoundFields.length; i < l; i++) {
     bf = visibleBoundFields[i]
-    htmlClassAttr = ''
-    cssClasses = bf.cssClasses()
-    if (cssClasses) {
-      htmlClassAttr = cssClasses
-    }
+    bfErrors = bf.errors()
 
     // Variables which can be optional in each row
-    var errors = null
-    var label = null
-    var helpText = null
-    var extraContent = null
-
-    bfErrors = bf.errors()
-    if (bfErrors.isPopulated()) {
-      errors = bfErrors
-      if (errorsOnSeparateRow === true) {
-        rows.push(errorRow(errors.render()))
-        errors = null
-      }
-    }
-
-    if (bf.label) {
-      label = bf.labelTag() || ''
-    }
-
-    if (bf.field.helpText) {
-      helpText = bf.field.helpText
-    }
-
+    errors = (bfErrors.isPopulated() ? bfErrors.render() : null)
+    label = (bf.label ? bf.labelTag() : null)
     // If this is the last row, it should include any hidden fields
-    if (i == l - 1 && hiddenFields.length > 0) {
-      extraContent = hiddenFields
-    }
-    if (errors !== null) {
-      errors = errors.render()
-    }
-    rows.push(normalRow(bf.htmlName, label, bf.render(), helpText, errors,
-                        htmlClassAttr, extraContent))
+    extraContent = (i == l - 1 && hiddenFields.length > 0 ? hiddenFields : null)
+
+    rows.push(normalRow(bf.htmlName,
+                        bf.cssClasses(),
+                        label,
+                        bf.render(),
+                        bf.field.helpText,
+                        errors,
+                        extraContent))
   }
 
   if (topErrors.isPopulated()) {
     // Add hidden fields to the top error row if it's being displayed and
     // there are no other rows.
-    extraContent = null
-    if (hiddenFields.length > 0 && rows.length === 0) {
-      extraContent = hiddenFields
-    }
-    rows.splice(0, 0, errorRow(topErrors.render(), extraContent))
+    extraContent = (hiddenFields.length > 0 && rows.length === 0 ? hiddenFields : null)
+    rows.unshift(errorRow(this.addPrefix(NON_FIELD_ERRORS),
+                          topErrors.render(),
+                          extraContent))
   }
 
   // Put hidden fields in their own error row if there were no rows to
   // display.
   if (hiddenFields.length > 0 && rows.length === 0) {
-    rows.push(errorRow('', hiddenFields, this.hiddenFieldRowCssClass))
+    rows.push(errorRow(this.addPrefix('__hiddenFields__'),
+                       null,
+                       hiddenFields,
+                       this.hiddenFieldRowCssClass))
   }
+
   return rows
 }
 
@@ -2101,153 +2085,79 @@ BaseForm.prototype._htmlOutput = function(normalRow,
  * Returns this form rendered as HTML <tr>s - excluding the <table>.
  */
 BaseForm.prototype.asTable = (function() {
-  var normalRow = function(key, label, field, helpText, errors, htmlClassAttr,
-                           extraContent) {
-    var contents = []
-    if (errors) {
-      contents.push(errors)
-    }
+  function normalRow(key, cssClasses, label, field, helpText, errors, extraContent) {
+    var contents = [null]
+    if (errors) { contents.push(errors) }
     contents.push(field)
     if (helpText) {
       contents.push(React.DOM.br(null))
       contents.push(helpText)
     }
-    if (extraContent) {
-      contents = contents.concat(extraContent)
-    }
-
+    if (extraContent) { contents.push.apply(contents, extraContent) }
     var rowAttrs = {key: key}
-    if (htmlClassAttr) {
-      rowAttrs['className'] = htmlClassAttr
-    }
+    if (cssClasses) { rowAttrs.className = cssClasses }
     return React.DOM.tr(rowAttrs
     , React.DOM.th(null, label)
-    , React.DOM.td(null, contents)
+    , React.DOM.td.apply(null, contents)
     )
   }
 
-  var errorRow = function(errors, extraContent, htmlClassAttr) {
-    var contents = []
-    if (errors) {
-      contents.push(errors)
-    }
-    if (extraContent) {
-      contents = contents.concat(extraContent)
-    }
-    var rowAttrs = {}
-    if (htmlClassAttr) {
-      rowAttrs.className = htmlClassAttr
-    }
+  function errorRow(key, errors, extraContent, cssClasses) {
+    var contents = [{colSpan: 2}]
+    if (errors) { contents.push(errors) }
+    if (extraContent) { contents.push.apply(contents, extraContent) }
+    var rowAttrs = {key: key}
+    if (cssClasses) { rowAttrs.className = cssClasses }
     return React.DOM.tr(rowAttrs
-    , React.DOM.td({colSpan: 2}, contents)
+    , React.DOM.td.apply(null, contents)
     )
   }
 
-  return function() {
-    return this._htmlOutput(normalRow, errorRow, false)
-  }
+  return function() { return this._htmlOutput(normalRow, errorRow) }
 })()
+
+function _normalRow(reactEl, key, cssClasses, label, field, helpText, errors, extraContent) {
+  var rowAttrs = {key: key}
+  if (cssClasses) { rowAttrs.className = cssClasses }
+  var contents = [rowAttrs]
+  if (errors) { contents.push(errors) }
+  if (label) { contents.push(label) }
+  contents.push(' ')
+  contents.push(field)
+  if (helpText) {
+    contents.push(' ')
+    contents.push(helpText)
+  }
+  if (extraContent) { contents.push.apply(contents, extraContent) }
+  return reactEl.apply(null, contents)
+}
+
+function _errorRow(reactEl, key, errors, extraContent, cssClasses) {
+  var rowAttrs = {key: key}
+  if (cssClasses) { rowAttrs.className = cssClasses }
+  var contents = [rowAttrs]
+  if (errors) { contents.push(errors) }
+  if (extraContent) { contents.push.apply(contents, extraContent) }
+  return reactEl.apply(null, contents)
+}
+
+function _singleElementRow(reactEl) {
+  var normalRow = _normalRow.bind(null, reactEl)
+  var errorRow = _errorRow.bind(null, reactEl)
+  return function() {
+    return this._htmlOutput(normalRow, errorRow)
+  }
+}
 
 /**
  * Returns this form rendered as HTML <li>s - excluding the <ul>.
  */
-BaseForm.prototype.asUL = (function() {
-  var normalRow = function(key, label, field, helpText, errors, htmlClassAttr,
-                           extraContent) {
-    var contents = []
-    if (errors) {
-      contents.push(errors)
-    }
-    if (label) {
-      contents.push(label)
-    }
-    contents.push(' ')
-    contents.push(field)
-    if (helpText) {
-      contents.push(' ')
-      contents.push(helpText)
-    }
-    if (extraContent) {
-      contents = contents.concat(extraContent)
-    }
-
-    var rowAttrs = {key: key}
-    if (htmlClassAttr) {
-      rowAttrs.className = htmlClassAttr
-    }
-    return React.DOM.li(rowAttrs, contents)
-  }
-
-  var errorRow = function(errors, extraContent, htmlClassAttr) {
-    var contents = []
-    if (errors) {
-      contents.push(errors)
-    }
-    if (extraContent) {
-      contents = contents.concat(extraContent)
-    }
-    var rowAttrs = {}
-    if (htmlClassAttr) {
-      rowAttrs.className= htmlClassAttr
-    }
-    return React.DOM.li(rowAttrs, contents)
-  }
-
-  return function() {
-    return this._htmlOutput(normalRow, errorRow, false)
-  }
-})()
+BaseForm.prototype.asUl = _singleElementRow(React.DOM.li)
 
 /**
- * Returns this form rendered as HTML <p>s.
+ * Returns this form rendered as HTML <div>s.
  */
-BaseForm.prototype.asP = (function() {
-  var normalRow = function(key, label, field, helpText, errors, htmlClassAttr,
-                           extraContent) {
-    var contents = []
-    if (label) {
-      contents.push(label)
-    }
-    contents.push(' ')
-    contents.push(field)
-    if (helpText) {
-      contents.push(' ')
-      contents.push(helpText)
-    }
-    if (extraContent) {
-      contents = contents.concat(extraContent)
-    }
-
-    var rowAttrs = {key: key}
-    if (htmlClassAttr) {
-      rowAttrs.className= htmlClassAttr
-    }
-    return React.DOM.p(rowAttrs, contents)
-  }
-
-  var errorRow = function(errors, extraContent, htmlClassAttr) {
-    if (extraContent) {
-      var contents = []
-      if (errors) {
-        contents.push(errors)
-      }
-      contents = contents.concat(extraContent)
-      var rowAttrs = {}
-      if (htmlClassAttr) {
-        rowAttrs['className'] = htmlClassAttr
-      }
-      // When provided extraContent is usually hidden fields, so we need
-      // to give it a block scope wrapper in this case for HTML validity.
-      return React.DOM.div(rowAttrs, contents)
-    }
-    // Otherwise, just display errors as they are
-    return errors
-  }
-
-  return function() {
-    return this._htmlOutput(normalRow, errorRow, true)
-  }
-})()
+BaseForm.prototype.asDiv = _singleElementRow(React.DOM.div)
 
 /**
  * Returns errors that aren't associated with a particular field.
@@ -2532,7 +2442,7 @@ module.exports = {
 , Form: Form
 }
 
-},{"./fields":1,"./util":6,"./widgets":7,"Concur":8,"isomorph/copy":10,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13,"validators":18}],3:[function(require,module,exports){
+},{"./fields":1,"./util":5,"./widgets":6,"Concur":7,"isomorph/copy":9,"isomorph/format":10,"isomorph/is":11,"isomorph/object":12,"validators":17}],3:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -3024,15 +2934,15 @@ BaseFormSet.prototype.asTable = function() {
   return rows
 }
 
-BaseFormSet.prototype.asP = function() {
-  var rows = this.managementForm().asP()
-  this.forms().forEach(function(form) { rows = rows.concat(form.asP()) })
+BaseFormSet.prototype.asDiv = function() {
+  var rows = this.managementForm().asDiv()
+  this.forms().forEach(function(form) { rows = rows.concat(form.asDiv()) })
   return rows
 }
 
-BaseFormSet.prototype.asUL = function() {
-  var rows = this.managementForm().asUL()
-  this.forms().forEach(function(form) { rows = rows.concat(form.asUL()) })
+BaseFormSet.prototype.asUl = function() {
+  var rows = this.managementForm().asUl()
+  this.forms().forEach(function(form) { rows = rows.concat(form.asUl()) })
   return rows
 }
 
@@ -3103,207 +3013,7 @@ module.exports = {
 , allValid: allValid
 }
 
-},{"./fields":1,"./forms":2,"./util":6,"./widgets":7,"Concur":8,"isomorph/object":13,"validators":18}],4:[function(require,module,exports){
-'use strict';
-
-var object = require('isomorph/object')
-  , validators = require('validators')
-
-var util = require('./util')
-  , fields = require('./fields')
-
-var Field = fields.Field
-  , ValidationError = validators.ValidationError
-
-/**
- * A means of hooking newforms up with information about your model layer.
- */
-var ModelInterface = {
-  /**
-   * Set to true if an exception is thrown when a model can't be found.
-   */
-  throwsIfNotFound: true
-
-  /**
-   * Constructor of error thrown when a model can't be found. Any exceptions
-   * which do not have this constructor will be rethrown.
-   */
-, notFoundErrorConstructor: Error
-
-  /**
-   * Value returned to indicate not found, instead of throwing an exception.
-   */
-, notFoundValue: null
-
-  /**
-   * Given a model instance, should return the id which will be used to search
-   * for valid choices on submission.
-   */
-, prepareValue: function(obj) {
-    throw new Error('You must implement the forms.ModelInterface methods to use Model fields')
-  }
-
-  /**
-   * Finds a model instance by id, given the model query which was passed to
-   * newforms and the id of the selected model.
-   */
-, findById: function(modelQuery, id) {
-    throw new Error('You must implement the forms.ModelInterface methods to use Model fields')
-  }
-}
-
-function ModelQueryIterator(field) {
-  this.field = field
-  this.modelQuery = field.modelQuery
-}
-
-ModelQueryIterator.prototype.__iter__ = function() {
-  var choices = []
-  if (this.field.emptyLabel !== null) {
-    choices.push(['', this.field.emptyLabel])
-  }
-  if (this.field.cacheChoices) {
-    if (this.field.choiceCache === null) {
-      this.field.choiceCache = choices.concat(this.modelChoices())
-    }
-    return this.field.choiceCache
-  }
-  else {
-    return choices.concat(this.modelChoices())
-  }
-}
-
-/**
- * Calls the model query function and creates choices from its results.
- */
-ModelQueryIterator.prototype.modelChoices = function() {
-  var instances = util.iterate(this.modelQuery)
-    , choices = []
-  for (var i = 0, l = instances.length; i < l; i++) {
-    choices.push(this.choice(instances[i]))
-  }
-  return choices
-}
-
-/**
- * Creates a choice from a single model instance.
- */
-ModelQueryIterator.prototype.choice = function(obj) {
-  return [this.field.prepareValue(obj), this.field.labelFromInstance(obj)]
-}
-
-/**
- * A ChoiceField which retrieves its choices as objects returned by a given
- * function.
- * @constructor
- * @extends {ChoiceField}
- * @param {function} modelQuery
- * @param {Object} kwargs
- */
-var ModelChoiceField = fields.ChoiceField.extend({
-  constructor: function ModelChoiceField(modelQuery, kwargs) {
-    if (!(this instanceof Field)) { return new ModelChoiceField(modelQuery, kwargs) }
-    kwargs = object.extend({
-      required: true, initial: null, cacheChoices: false, emptyLabel: '---------',
-      modelInterface: ModelInterface
-    }, kwargs)
-    if (kwargs.required === true && kwargs.initial !== null) {
-      this.emptyLabel = null
-    }
-    else {
-      this.emptyLabel = kwargs.emptyLabel
-    }
-    this.emptyLabel = kwargs.emptyLabel
-    this.cacheChoices = kwargs.cacheChoices
-    this.modelInterface = kwargs.modelInterface
-
-    // We don't need the ChoiceField constructor, as we've already handled setting
-    // of choices.
-    Field.call(this, kwargs)
-
-    this.setModelQuery(modelQuery)
-    this.choiceCache = null
-  }
-})
-ModelChoiceField.prototype.defaultErrorMessages =
-    object.extend({}, ModelChoiceField.prototype.defaultErrorMessages, {
-      invalidChoice: 'Select a valid choice. That choice is not one of the available choices.'
-    })
-
-ModelChoiceField.prototype.getModelQuery = function() {
-  return this.modelQuery
-}
-
-ModelChoiceField.prototype.setModelQuery = function(modelQuery) {
-  this.modelQuery = modelQuery
-  this.widget.choices = this.getChoices()
-}
-
-ModelChoiceField.prototype.getChoices = function() {
-  // If this._choices is set, then somebody must have manually set them with
-  // the inherited setChoices method.
-  if (typeof this._choices != 'undefined') {
-    return this._choices
-  }
-
-  // Otherwise, return an object which can be used with iterate() to get
-  // choices.
-  return new ModelQueryIterator(this)
-}
-
-ModelChoiceField.prototype.prepareValue = function(obj) {
-  var value = null
-  if (obj != null) {
-    value = this.modelInterface.prepareValue(obj)
-  }
-  if (value == null) {
-    value = Field.prototype.prepareValue.call(this, obj)
-  }
-  return value
-}
-
-/**
- * Creates a choice label from a model instance.
- */
-ModelChoiceField.prototype.labelFromInstance = function(obj) {
-  return ''+obj
-}
-
-ModelChoiceField.prototype.toJavaScript = function(value) {
-  if (validators.isEmptyValue(value)) {
-    return null
-  }
-  if (this.modelInterface.throwsIfNotFound) {
-    try {
-      value = this.modelInterface.findById(this.modelQuery, value)
-    }
-    catch (e) {
-      if (this.modelInterface.notFoundErrorConstructor !== null &&
-          !(e instanceof this.modelInterface.notFoundErrorConstructor)) {
-        throw e
-      }
-      throw new ValidationError(this.errorMessages.invalidChoice)
-    }
-  }
-  else {
-    value = this.modelInterface.findById(this.modelQuery, value)
-    if (value === this.modelInterface.notFoundValue) {
-      throw new ValidationError(this.errorMessages.invalidChoice)
-    }
-  }
-  return value
-}
-
-ModelChoiceField.prototype.validate = function(value) {
-  return Field.prototype.validate.call(this, value)
-}
-
-module.exports = {
-  ModelInterface: ModelInterface
-, ModelChoiceField: ModelChoiceField
-}
-
-},{"./fields":1,"./util":6,"isomorph/object":13,"validators":18}],5:[function(require,module,exports){
+},{"./fields":1,"./forms":2,"./util":5,"./widgets":6,"Concur":7,"isomorph/object":12,"validators":17}],4:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -3314,7 +3024,6 @@ var widgets = require('./widgets')
 var fields = require('./fields')
 var forms = require('./forms')
 var formsets = require('./formsets')
-var models = require('./models')
 
 object.extend(
   module.exports
@@ -3325,16 +3034,15 @@ object.extend(
   , util: {
       prettyName: util.prettyName
     }
+  , validators: validators
   }
-, validators
 , widgets
 , fields
 , forms
 , formsets
-, models
 )
 
-},{"./fields":1,"./forms":2,"./formsets":3,"./models":4,"./util":6,"./widgets":7,"isomorph/object":13,"validators":18}],6:[function(require,module,exports){
+},{"./fields":1,"./forms":2,"./formsets":3,"./util":5,"./widgets":6,"isomorph/object":12,"validators":17}],5:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -3536,15 +3244,15 @@ ErrorObject.prototype.isPopulated = function() {
  * Default display is as a list.
  */
 ErrorObject.prototype.render = function() {
-  return this.asUL()
+  return this.asUl()
 }
 
 /**
  * Displays error details as a list.
  */
-ErrorObject.prototype.asUL = function() {
+ErrorObject.prototype.asUl = function() {
   var items = Object.keys(this.errors).map(function(field) {
-    return React.DOM.li(null, field, this.errors[field].asUL())
+    return React.DOM.li(null, field, this.errors[field].asUl())
   }.bind(this))
   if (items.length === 0) { return '' }
   return React.DOM.ul({className: 'errorlist'}, items)
@@ -3612,13 +3320,16 @@ ErrorList.prototype.messages = function() {
  *  Default display is as a list.
  */
 ErrorList.prototype.render = function() {
-  return this.asUL()
+  return this.asUl()
 }
 
 /**
  * Displays errors as a list.
  */
-ErrorList.prototype.asUL = function() {
+ErrorList.prototype.asUl = function() {
+  if (!this.isPopulated()) {
+    return ''
+  }
   return React.DOM.ul({className: 'errorlist'}
   , this.messages().map(function(error) {
       return React.DOM.li(null, error)
@@ -3647,7 +3358,7 @@ module.exports = {
 , strip: strip
 }
 
-},{"Concur":8,"isomorph/is":12,"isomorph/object":13,"validators":18}],7:[function(require,module,exports){
+},{"Concur":7,"isomorph/is":11,"isomorph/object":12,"validators":17}],6:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -4811,9 +4522,11 @@ module.exports = {
 , SplitHiddenDateTimeWidget: SplitHiddenDateTimeWidget
 }
 
-},{"./util":6,"Concur":8,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13,"isomorph/time":14}],8:[function(require,module,exports){
+},{"./util":5,"Concur":7,"isomorph/format":10,"isomorph/is":11,"isomorph/object":12,"isomorph/time":13}],7:[function(require,module,exports){
+'use strict';
+
 var is = require('isomorph/is')
-  , object = require('isomorph/object')
+var object = require('isomorph/object')
 
 /**
  * Mixes in properties from one object to another. If the source object is a
@@ -4890,6 +4603,13 @@ function inheritFrom(parentConstructor, prototypeProps, constructorProps) {
 var Concur = module.exports = function() {}
 
 /**
+ * Details of a coonstructor's inheritance chain - Concur just facilitates sugar
+ * so we don't include it in the initial chain. Arguably, Object.prototype could
+ * go here, but it's just not that interesting.
+ */
+Concur.__mro__ = []
+
+/**
  * Creates or uses a child constructor to inherit from the the call
  * context, which is expected to be a constructor.
  */
@@ -4913,15 +4633,21 @@ Concur.extend = function(prototypeProps, constructorProps) {
     constructorProps = applyMixins(constructorProps)
   }
 
-  // Set up and return the new child constructor
+  // Set up the new child constructor and its prototype
   var childConstructor = inheritFrom(this,
                                      prototypeProps,
                                      constructorProps)
+
+  // Pass on the extend function for extension in turn
   childConstructor.extend = this.extend
+
+  // Expose the inheritance chain for programmatic access
+  childConstructor.__mro__ = [childConstructor].concat(this.__mro__)
+
   return childConstructor
 }
 
-},{"isomorph/is":12,"isomorph/object":13}],9:[function(require,module,exports){
+},{"isomorph/is":11,"isomorph/object":12}],8:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};/*! http://mths.be/punycode v1.2.4 by @mathias */
 ;(function(root) {
 
@@ -5430,7 +5156,7 @@ var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? 
 
 }(this));
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 var is = require('./is')
@@ -5733,7 +5459,7 @@ module.exports = {
 , deepCopy: deepCopy
 }
 
-},{"./is":12}],11:[function(require,module,exports){
+},{"./is":11}],10:[function(require,module,exports){
 'use strict';
 
 var slice = Array.prototype.slice
@@ -5790,7 +5516,7 @@ module.exports = {
 , fileSize: fileSize
 }
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var toString = Object.prototype.toString
@@ -5858,7 +5584,7 @@ module.exports = {
 , String: isString
 }
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 /**
@@ -5995,7 +5721,7 @@ module.exports = {
 , setDefault: setDefault
 }
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 var is = require('./is')
@@ -6348,7 +6074,7 @@ time.strftime = function(date, format, locale) {
 
 module.exports = time
 
-},{"./is":12}],15:[function(require,module,exports){
+},{"./is":11}],14:[function(require,module,exports){
 'use strict';
 
 // parseUri 1.2.2
@@ -6439,13 +6165,13 @@ module.exports = {
 , makeUri: makeUri
 }
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
-  , format = require('isomorph/format').formatObj
-  , is = require('isomorph/is')
-  , object = require('isomorph/object')
+var format = require('isomorph/format').formatObj
+var is = require('isomorph/is')
+var object = require('isomorph/object')
 
 var NON_FIELD_ERRORS = '__all__'
 
@@ -6602,7 +6328,7 @@ module.exports = {
   ValidationError: ValidationError
 }
 
-},{"Concur":8,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13}],17:[function(require,module,exports){
+},{"Concur":7,"isomorph/format":10,"isomorph/is":11,"isomorph/object":12}],16:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -6616,24 +6342,24 @@ var hexRE = /^[0-9a-f]+$/
 /**
  * Cleans a IPv6 address string.
  *
- *  Validity is checked by calling isValidIPv6Address() - if an invalid address
- *  is passed, a ValidationError is thrown.
+ * Validity is checked by calling isValidIPv6Address() - if an invalid address
+ * is passed, a ValidationError is thrown.
  *
  * Replaces the longest continious zero-sequence with '::' and removes leading
  * zeroes and makes sure all hextets are lowercase.
  */
 function cleanIPv6Address(ipStr, kwargs) {
   kwargs = object.extend({
-    unpackIPv4: false, errorMessage: 'This is not a valid IPv6 address'
+    unpackIPv4: false, errorMessage: 'This is not a valid IPv6 address.'
   }, kwargs)
 
   var bestDoublecolonStart = -1
-    , bestDoublecolonLen = 0
-    , doublecolonStart = -1
-    , doublecolonLen = 0
+  var bestDoublecolonLen = 0
+  var doublecolonStart = -1
+  var doublecolonLen = 0
 
   if (!isValidIPv6Address(ipStr)) {
-    throw ValidationError(kwargs.errorMessage)
+    throw ValidationError(kwargs.errorMessage, {code: 'invalid'})
   }
 
   // This algorithm can only handle fully exploded IP strings
@@ -6792,7 +6518,7 @@ function isValidIPv6Address(ipStr) {
         return false
       }
       try {
-        validateIPv4Address.__call__(hextet)
+        validateIPv4Address(hextet)
       }
       catch (e) {
         if (!(e instanceof ValidationError)) {
@@ -6825,7 +6551,7 @@ function _explodeShorthandIPstring(ipStr) {
   }
 
   var newIp = []
-    , hextets = ipStr.split('::')
+  var hextets = ipStr.split('::')
 
   // If there is a ::, we need to expand it with zeroes to get to 8 hextets -
   // unless there is a dot in the last hextet, meaning we're doing v4-mapping
@@ -6886,48 +6612,22 @@ module.exports = {
 , isValidIPv6Address: isValidIPv6Address
 }
 
-},{"./errors":16,"./validators":18,"isomorph/object":13}],18:[function(require,module,exports){
+},{"./errors":15,"./validators":17,"isomorph/object":12}],17:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
-  , is = require('isomorph/is')
-  , object = require('isomorph/object')
-  , punycode = require('punycode')
-  , url = require('isomorph/url')
+var is = require('isomorph/is')
+var object = require('isomorph/object')
+var punycode = require('punycode')
+var url = require('isomorph/url')
 
 var errors = require('./errors')
-  , ipv6 = require('./ipv6')
+var ipv6 = require('./ipv6')
 
 var ValidationError = errors.ValidationError
-  , isValidIPv6Address = ipv6.isValidIPv6Address
+var isValidIPv6Address = ipv6.isValidIPv6Address
 
 var EMPTY_VALUES = [null, undefined, '']
-
-var isEmptyValue = function(value) {
-  for (var i = 0, l = EMPTY_VALUES.length; i < l; i++) {
-    if (value === EMPTY_VALUES[i]) {
-      return true
-    }
-  }
-  return false
-}
-
-function isCallable(o) {
-  return (is.Function(o) || is.Function(o.__call__))
-}
-
-/**
- * Calls a validator, which may be a function or an objects with a
- * __call__ method, with the given value.
- */
-function callValidator(v, value) {
-  if (is.Function(v)) {
-    v(value)
-  }
-  else if (is.Function(v.__call__)) {
-    v.__call__(value)
-  }
-}
 
 function String_rsplit(str, sep, maxsplit) {
   var split = str.split(sep)
@@ -6947,7 +6647,7 @@ var RegexValidator = Concur.extend({
       this.regex = kwargs.regex
     }
     if (kwargs.message) {
-      this.message =kwargs.message
+      this.message = kwargs.message
     }
     if (kwargs.code) {
       this.code = kwargs.code
@@ -6959,6 +6659,7 @@ var RegexValidator = Concur.extend({
     if (is.String(this.regex)) {
       this.regex = new RegExp(this.regex)
     }
+    return this.__call__.bind(this)
   }
 , regex: ''
 , message: 'Enter a valid value.'
@@ -6995,6 +6696,7 @@ var URLValidator = RegexValidator.extend({
     if (kwargs.schemes !== null) {
       this.schemes = kwargs.schemes
     }
+    return this.__call__.bind(this)
   }
 
 , __call__: function(value) {
@@ -7052,6 +6754,7 @@ var EmailValidator = Concur.extend({
     if (kwargs.whitelist !== null) {
       this.domainWhitelist = kwargs.whitelist
     }
+    return this.__call__.bind(this)
   }
 
 , __call__ : function(value) {
@@ -7114,15 +6817,17 @@ function validateIPv6Address(value) {
 /** Validates that input is a valid IPv4 or IPv6 address. */
 function validateIPv46Address(value) {
   try {
-    validateIPv4Address.__call__(value)
+    validateIPv4Address(value)
   }
   catch (e) {
-    if (!(e instanceof ValidationError)) {
-      throw e
+    if (!(e instanceof ValidationError)) { throw e }
+    try {
+      validateIPv6Address(value)
     }
-
-    if (!isValidIPv6Address(value)) {
-      throw ValidationError('Enter a valid IPv4 or IPv6 address.', {code: 'invalid'})
+    catch (e) {
+      if (!(e instanceof ValidationError)) { throw e }
+      throw ValidationError('Enter a valid IPv4 or IPv6 address.',
+                            {code: 'invalid'})
     }
   }
 }
@@ -7163,6 +6868,7 @@ var BaseValidator = Concur.extend({
   constructor: function(limitValue) {
     if (!(this instanceof BaseValidator)) { return new BaseValidator(limitValue) }
     this.limitValue = limitValue
+    return this.__call__.bind(this)
   }
 , compare: function(a, b) { return a !== b }
 , clean: function(x) { return x }
@@ -7183,7 +6889,7 @@ var BaseValidator = Concur.extend({
 var MaxValueValidator = BaseValidator.extend({
   constructor: function(limitValue) {
     if (!(this instanceof MaxValueValidator)) { return new MaxValueValidator(limitValue) }
-    BaseValidator.call(this, limitValue)
+    return BaseValidator.call(this, limitValue)
   }
 , compare: function(a, b) { return a > b }
 , message: 'Ensure this value is less than or equal to {limitValue}.'
@@ -7196,7 +6902,7 @@ var MaxValueValidator = BaseValidator.extend({
 var MinValueValidator = BaseValidator.extend({
   constructor: function(limitValue) {
     if (!(this instanceof MinValueValidator)) { return new MinValueValidator(limitValue) }
-    BaseValidator.call(this, limitValue)
+    return BaseValidator.call(this, limitValue)
   }
 , compare: function(a, b) { return a < b }
 , message: 'Ensure this value is greater than or equal to {limitValue}.'
@@ -7209,7 +6915,7 @@ var MinValueValidator = BaseValidator.extend({
 var MinLengthValidator = BaseValidator.extend({
   constructor: function(limitValue) {
     if (!(this instanceof MinLengthValidator)) { return new MinLengthValidator(limitValue) }
-    BaseValidator.call(this, limitValue)
+    return BaseValidator.call(this, limitValue)
   }
 , compare: function(a, b) { return a < b }
 , clean: function(x) { return x.length }
@@ -7223,7 +6929,7 @@ var MinLengthValidator = BaseValidator.extend({
 var MaxLengthValidator = BaseValidator.extend({
   constructor: function(limitValue) {
     if (!(this instanceof MaxLengthValidator)) { return new MaxLengthValidator(limitValue) }
-    BaseValidator.call(this, limitValue)
+    return BaseValidator.call(this, limitValue)
   }
 , compare: function(a, b) { return a > b }
 , clean: function(x) { return x.length }
@@ -7233,9 +6939,6 @@ var MaxLengthValidator = BaseValidator.extend({
 
 module.exports = {
   EMPTY_VALUES: EMPTY_VALUES
-, isEmptyValue: isEmptyValue
-, isCallable: isCallable
-, callValidator: callValidator
 , RegexValidator: RegexValidator
 , URLValidator: URLValidator
 , EmailValidator: EmailValidator
@@ -7255,6 +6958,6 @@ module.exports = {
 , ipv6: ipv6
 }
 
-},{"./errors":16,"./ipv6":17,"Concur":8,"isomorph/is":12,"isomorph/object":13,"isomorph/url":15,"punycode":9}]},{},[5])
-(5)
+},{"./errors":15,"./ipv6":16,"Concur":7,"isomorph/is":11,"isomorph/object":12,"isomorph/url":14,"punycode":8}]},{},[4])
+(4)
 });
