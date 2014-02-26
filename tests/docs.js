@@ -15,6 +15,11 @@ var CommentForm = forms.Form.extend({
 , comment: forms.CharField()
 })
 
+var PersonForm = forms.Form.extend({
+  first_name: forms.CharField()
+, last_name: forms.CharField()
+})
+
 function repr(o) {
   if (o instanceof forms.Field) {
     return '[object ' + o.constructor.name + ']'
@@ -254,7 +259,7 @@ QUnit.test('Forms - BoundFields', function() {
 <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\">",
   "form.boundFields()")
 
-  // BoundField respedted autoId
+  // BoundField respects autoId
   var f = new ContactForm({autoId: false})
   reactHTMLEqual(function() { return f.boundField('message').render() },
 "<input type=\"text\" name=\"message\">",
@@ -277,6 +282,62 @@ QUnit.test('Forms - BoundFields', function() {
   bf = f.boundField('subject')
   deepEqual(bf.errors().messages(), [])
   reactHTMLEqual(bf.errors().render(), '')
+
+  f = new ContactForm()
+  // labelTag()
+  reactHTMLEqual(f.boundField('message').labelTag(),
+"<label for=\"id_message\">Message:</label>",
+  "labelTag()")
+  // cssClasses()
+  f.requiredCssClass = 'required'
+  equal(f.boundField('message').cssClasses(), "required", "cssClasses()")
+  equal(f.boundField('message').cssClasses('foo bar'), "foo bar required", "cssClasses() argument")
+
+  var initial = {subject: 'welcome'}
+  data = {subject: 'hi'}
+  var unboundForm = new ContactForm({initial: initial})
+  var boundForm = new ContactForm({data: data, initial: initial})
+  equal(unboundForm.boundField('subject').value(), "welcome", "Unbound value()")
+  equal(boundForm.boundField('subject').value(), "hi", "Bound value()")
+})
+
+QUnit.test("Forms - Subclassing forms", function() {
+  var ContactFormWithPrority = ContactForm.extend({
+    priority: forms.CharField()
+  })
+  var f = new ContactFormWithPrority({autoId: false})
+  reactHTMLEqual(f.render(),
+"<tr><th>Subject:</th><td><input maxlength=\"100\" type=\"text\" name=\"subject\"></td></tr>\
+<tr><th>Message:</th><td><input type=\"text\" name=\"message\"></td></tr>\
+<tr><th>Sender:</th><td><input type=\"email\" name=\"sender\"></td></tr>\
+<tr><th>Cc myself:</th><td><input type=\"checkbox\" name=\"ccMyself\"></td></tr>\
+<tr><th>Priority:</th><td><input type=\"text\" name=\"priority\"></td></tr>")
+
+  var InstrumentForm = forms.Form.extend({
+    instrument: forms.CharField()
+  })
+  var BeatleForm = forms.Form.extend({
+    __mixin__: [PersonForm, InstrumentForm]
+  , haircut_type: forms.CharField()
+  })
+  var b = new BeatleForm({autoId: false})
+  reactHTMLEqual(b.asUl(),
+"<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>\
+<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>\
+<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>\
+<li><span>Haircut type:</span><span> </span><input type=\"text\" name=\"haircut_type\"></li>",
+  "Using forms as mixins")
+})
+
+QUnit.test('Forms - Prefixes for forms', function() {
+  var mother = new PersonForm({prefix: 'mother'})
+  var father = new PersonForm({prefix: 'father'})
+  reactHTMLEqual(mother.asUl.bind(mother),
+"<li><label for=\"id_mother-first_name\">First name:</label><span> </span><input type=\"text\" name=\"mother-first_name\" id=\"id_mother-first_name\"></li>\
+<li><label for=\"id_mother-last_name\">Last name:</label><span> </span><input type=\"text\" name=\"mother-last_name\" id=\"id_mother-last_name\"></li>" )
+  reactHTMLEqual(father.asUl.bind(father),
+"<li><label for=\"id_father-first_name\">First name:</label><span> </span><input type=\"text\" name=\"father-first_name\" id=\"id_father-first_name\"></li>\
+<li><label for=\"id_father-last_name\">Last name:</label><span> </span><input type=\"text\" name=\"father-last_name\" id=\"id_father-last_name\"></li>")
 })
 
 }()
