@@ -12,18 +12,6 @@ For a guide to widgets, please refer to the Django documentation:
 API
 ===
 
-.. js:class:: SubWidget(parentWidget, name, value[, kwargs])
-
-   Some widgets are made of multiple HTML elements -- namely,
-   :js:class:`RadioSelect`. This represents the "inner" HTML element of a
-   widget.
-
-   **Prototype Functions**
-
-   .. js:function:: SubWidget#render()
-
-      Calls the parent widget's render function with this Subwidget's details.
-
 .. js:class:: Widget([kwargs])
 
    An HTML form widget.
@@ -106,6 +94,18 @@ API
       This hook is necessary because some widgets have multiple HTML elements
       and, thus, multiple ids. In that case, this method should return an id
       value that corresponds to the first id in the widget's tags.
+
+.. js:class:: SubWidget(parentWidget, name, value[, kwargs])
+
+   Some widgets are made of multiple HTML elements -- namely,
+   :js:class:`RadioSelect`. This represents the "inner" HTML element of a
+   widget.
+
+   **Prototype Functions**
+
+   .. js:function:: SubWidget#render()
+
+      Calls the parent widget's render function with this Subwidget's details.
 
 .. js:class:: Input([kwargs])
 
