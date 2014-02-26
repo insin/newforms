@@ -7,7 +7,7 @@ Guide
 
 For a guide to formsets, please refer to the Django documentation:
 
-   * `Django documentation -- Formsetshttps://docs.djangoproject.com/en/dev/topics/forms/formsets/
+   * `Django documentation -- Formsets <https://docs.djangoproject.com/en/dev/topics/forms/formsets/>`_
 
 API
 ===
@@ -192,7 +192,7 @@ API
       Renders the formset's forms as a series of ``<tr>`` tags, with ``<th>``
       and ``<td>`` tags containing field labels and inputs, respectively.
 
-   .. js:function:: BaseFormSet#asUL()
+   .. js:function:: BaseFormSet#asUl()
 
       Renders the formset's forms as a series of ``<li>`` tags, with each
       ``<li>`` containing one field.

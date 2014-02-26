@@ -6,21 +6,25 @@ Newforms is a JavaScript port of `Django`_'s ``django.forms``
 `form-handling library`_ library, usable in browsers and on the server with
 `Node.js`_.
 
-As of (the in-development) version 0.5, newforms will use `React`_ for rendering
-forms in both environments and for implementation of client-side interactivity.
+As of (the in-development) version 0.5:
+
+* newforms will use `React`_ for rendering forms in all environments and for
+  implementation of client-side interactivity.
+* newforms will track ``django.forms`` changes for the upcoming Django 1.7
+  release.
 
 Since this is a port and ``django.forms`` is well-documented, guide
 documentation will initially point to Django documentation and offer some
 equivalent examples in JavaScript.
 
-For the just-show-me-how-it-works-and-I'll-figure-out-the-rest developer, the
-`newforms unit tests`_ are peppered with guide comments -- lovingly copied and
-pasted from Django's own test suite -- which explain the features being tested.
-
 For an introduction to form-handling features and concepts, please refer to the
 Django intro documentation:
 
    * `Django documentation -- Working with forms <https://docs.djangoproject.com/en/dev/topics/forms/>`_
+
+For the just-show-me-how-it-works-and-I'll-figure-out-the-rest developer, the
+`newforms unit tests`_ are peppered with guide comments -- lovingly copied and
+pasted from Django's own test suite -- which explain the features being tested.
 
 Contents
 ========
@@ -34,13 +38,13 @@ Contents
 .. toctree::
    :maxdepth: 1
 
+   differences_omissions
    forms
    fields
    validation
    widgets
    formsets
    util
-   differences_omissions
 
 Quick Guide
 ===========

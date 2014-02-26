@@ -2,12 +2,9 @@
 Utilities
 =========
 
-Newforms exposes utilities you may want to make use of when working with forms
-and some implementation details which you may need to make use of for
-customisation purposes.
-
-API
-===
+Newforms exposes miscellaneous utilities you may want to make use of when
+working with forms as well as some implementation details which you may need to
+make use of for customisation purposes.
 
 .. js:function:: formData(form)
 
@@ -57,7 +54,7 @@ API
 
       Default rendering is as a list.
 
-   .. js:function:: ErrorObject#asUL()
+   .. js:function:: ErrorObject#asUl()
 
       Displays error details as a list.
 
@@ -92,7 +89,7 @@ API
 
       Default rendering is as a list.
 
-   .. js:function:: ErrorList#asUL()
+   .. js:function:: ErrorList#asUl()
 
       Displays errors as a list.
 

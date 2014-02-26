@@ -19,6 +19,7 @@ var tests = [ 'util.js'
             , 'widgets.js'
             , 'extra.js'
             , 'regressions.js'
+            , 'docs.js'
             ].map(function(t) { return path.join(__dirname, t) })
 
 qqunit.Runner.run(tests, function(stats) {
