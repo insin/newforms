@@ -17,7 +17,7 @@
   "dependencies": {
     "Concur": "~0.2.4",
     "isomorph": "~0.2.1",
-    "validators": "~0.2.3"
+    "validators": "~0.3.0"
   },
   "devDependencies": {
     "browserify": "~3.20.0",

@@ -982,7 +982,7 @@ QUnit.test("Independent validators", 3, function() {
 
   var f1 = new MyForm()
     , f2 = new MyForm()
-  f1.fields['myfield'].validators[0] = forms.MaxLengthValidator(12)
+  f1.fields['myfield'].validators[0] = forms.validators.MaxLengthValidator(12)
   ok(f1.fields['myfield'].validators[0] !== f2.fields['myfield'].validators[0])
   cleanErrorEqual(f1.fields['myfield'], 'Ensure this value has at most 12 characters (it has 13).', '1234567890abc')
   cleanErrorEqual(f2.fields['myfield'], 'Ensure this value has at most 25 characters (it has 26).', 'abcdefghijklmnopqrstuvwxyz')
@@ -2025,7 +2025,7 @@ QUnit.test("MultiValueField optional subfields", function() {
       kwargs = kwargs || {}
       kwargs.fields = [
         forms.CharField({label: 'Country Code', validators: [
-          forms.RegexValidator({regex: /^\+\d{1,2}$/, message: 'Enter a valid country code.'})
+          forms.validators.RegexValidator({regex: /^\+\d{1,2}$/, message: 'Enter a valid country code.'})
         ]})
       , forms.CharField({label: 'Phone Number'})
       , forms.CharField({label: 'Extension', errorMessages: {incomplete: 'Enter an extension.'}})

@@ -45,7 +45,7 @@ function validationErrorEqual(validator, message, value) {
     message = [message]
   }
   try {
-    forms.callValidator(validator, value)
+    validator(value)
   }
   catch (e) {
     if (!(e instanceof forms.ValidationError)) {
