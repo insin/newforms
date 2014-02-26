@@ -2,7 +2,7 @@
 Differences & Omissions
 =======================
 
-JavaScript API Differences
+JavaScript API differences
 ==========================
 
 The newforms API is largely consistent with the ``django.forms`` API, but uses
@@ -19,38 +19,71 @@ A notable exception is custom field cleaning functions defined on forms, for
 which newforms will detect and call either ``clean_fieldName`` or
 ``cleanFieldName`` variants.
 
-Keyword arguments
------------------
+``Object`` instead of keyword arguments
+---------------------------------------
 
-Where Django accepts keyword arguments, in Javascript a single ``Object``
+Where Python accepts keyword arguments, in Javascript a single ``Object``
 argument is expected, with arguments expressed as its properties.
 
-Note that this applies *anywhere* Django accepts a keyword argument, even if
-the convention in Django is to pass certain keyword arguments positionally.
+Note that this applies *anywhere* ``django.forms`` accepts a keyword argument,
+even if the convention is to pass certain keyword arguments positionally.
 
 For example, when passing user-provided data to a :js:class:`Form` constructor:
 
-   **Django (by convention)**::
+   Python (by convention)
+      ``f = MyForm(request.POST)``
 
-      f = MyForm(request.POST)
+   JavaScript
+      ``var f = new MyForm({data: req.body})``
 
-   **JavaScript**::
+Function calls instead of Python properties
+--------------------------------------------
 
-      var f = new MyForm({data: req.body})
+Where Python properties are used in ``django.forms``, newforms instead uses
+regular functions. These are:
 
-Properties
-----------
+* :js:func:`BaseForm#errors`
+* :js:func:`BaseForm#changedData`
+* :js:func:`BoundField#errors`
+* :js:func:`BoundField#data`
+* :js:func:`BoundField#isHidden`
+* :js:func:`BoundField#autoId`
+* :js:func:`BoundField#idForLabel`
+* :js:func:`BaseFormSet#managementForm`
+* :js:func:`BaseFormSet#forms`
+* :js:func:`BaseFormSet#initialForms`
+* :js:func:`BaseFormSet#extraForms`
+* :js:func:`BaseFormSet#emptyForm`
+* :js:func:`BaseFormSet#cleanedData`
+* :js:func:`BaseFormSet#deletedForms`
+* :js:func:`BaseFormSet#orderedForms`
+* :js:func:`BaseFormSet#errors`
 
-Form and FormSet properties with side-effects in Django become function calls in
-JavaScript.
+Function calls instead of Python Protocols
+------------------------------------------
 
-For example:
+JavaScript doesn't have equivalents to Python's protocols, which are informally
+implemented using so-called "magic" dunder-methods like ``__iter__()`` and
+``__getitem__()``.
 
-   * ``form.errors`` (which forces a form to validate if it hasn't done so
-     already) becomes ``form.errors()``.
+``django.forms`` makes use of these as shortcuts for certain operations. In
+newforms, these are implemented as functions. These are:
 
-   * ``formset.forms`` (which instantiates all a formset's forms the first
-     time it's accessed) becomes ``formset.forms()``.
+:js:func:`BaseForm#boundFields`
+   gets all BoundFields for a form.
+:js:func:`BaseForm#boundField`
+   gets a BoundField for a named form field.
+:js:func:`BoundField#subWidgets`
+   gets all SubWidgets from a BoundField.
+:js:func:`BaseFormSet#forms`
+   gets all Forms in a FormSet
+:js:func:`ErrorList#messages`
+   gets all ValidationError message from an ErrorList (coercing ValidationError
+   to string and having it performing any required parameter replacements).
+:js:func:`ChoiceFieldRenderer#choiceInputs`
+   gets all inputs from a ChoiceFieldRenderer.
+:js:func:`ChoiceFieldRenderer#choiceInput`
+   gets the i-th input from a ChoiceFieldRenderer.
 
 Use of ``new`` in JavaScript
 ----------------------------
@@ -61,41 +94,36 @@ used while defining a Form, such as ValidationError -- however ``new`` is
 **not**  automatically optional for the Form and FormSet constructors you
 create.
 
-   **Django**::
-
-      forms.CharField(max_length=100)
-
-   **JavaScript (the following lines are equivalent)**::
-
-      new forms.CharField({maxLength: 100})
-      forms.CharField({maxLength: 100})
-
+   Python
+      ``forms.CharField(max_length=100)``
+   JavaScript (the following are equivalent)
+      ``forms.CharField({maxLength: 100})`` /
+      ``new forms.CharField({maxLength: 100})``
 
 Displaying objects
 ------------------
 
-Objects which would be coerced to a string for display in Django, such as Forms,
-FormSets and ErrorLists, have a ``render()`` method to generate their default
-representation as ``React.DOM`` components.
+Objects which would be coerced to a string for display in ``django.forms``, such
+as Forms, FormSets and ErrorLists, have a ``render()`` method to generate their
+default representation as ``React.DOM`` components.
 
 String placeholders
 -------------------
 
-Newforms only uses named placeholders in strings and surrounds them with ``{}``:
+Newforms always uses named placeholders in strings, surrounding the placeholder
+name with ``{}``:
 
-   **Django**::
+   **Python**::
 
       form = ContactForm(auto_id='id_%s')
-
       field = ChoiceField(error_messages={'invalid_choice': 'Anything but %(value)s!'})
 
    **JavaScript**::
 
       var form = new ContactForm({autoId: 'id_{name}'})
-
       var field = ChoiceField({errorMessages: {invalidChoice: 'Anything but {value}!'}})
 
-Feature Differences
+Feature differences
 ===================
 
 Differences in features between ``django.forms`` and newforms:
@@ -135,10 +163,10 @@ default rendering functions:
   when given - will be set as the ``hiddenFieldRowCssClass`` property of the
   formset's management form (which contains only hidden fields).
 
-Feature Omissions
-=================
+Missing features
+================
 
-``django.forms`` featurs which aren't implemented in newforms:
+``django.forms`` features which aren't implemented in newforms:
 
 Form Assets (``Media`` class)
 -----------------------------
