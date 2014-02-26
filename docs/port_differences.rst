@@ -1,6 +1,9 @@
-=======================
-Differences & Omissions
-=======================
+================
+Port Differences
+================
+
+Conventions used when porting from Python to JavaScipt, and some of the
+resulting API differences.
 
 JavaScript API differences
 ==========================
