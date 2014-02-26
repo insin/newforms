@@ -1479,20 +1479,20 @@ QUnit.test("Help text", 5, function() {
   })
   var p = new UserRegistration({autoId: false})
   reactHTMLEqual(p.asUl(),
-"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span>e.g., user@example.com</span></li>" +
-"<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span>Choose wisely.</span></li>")
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span class=\"helpText\">e.g., user@example.com</span></li>" +
+"<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span class=\"helpText\">Choose wisely.</span></li>")
   reactHTMLEqual(p.asDiv(),
-"<div><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span>e.g., user@example.com</span></div>" +
-"<div><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span>Choose wisely.</span></div>")
+"<div><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span class=\"helpText\">e.g., user@example.com</span></div>" +
+"<div><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span class=\"helpText\">Choose wisely.</span></div>")
   reactHTMLEqual(p.asTable(),
-"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"><br><span>e.g., user@example.com</span></td></tr>" +
-"<tr><th>Password:</th><td><input type=\"password\" name=\"password\"><br><span>Choose wisely.</span></td></tr>")
+"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"><br><span class=\"helpText\">e.g., user@example.com</span></td></tr>" +
+"<tr><th>Password:</th><td><input type=\"password\" name=\"password\"><br><span class=\"helpText\">Choose wisely.</span></td></tr>")
 
   // The help text is displayed whether or not data is provided for the form.
   p = new UserRegistration({data: {username: "foo"}, autoId: false})
   reactHTMLEqual(p.asUl(),
-"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"><span> </span><span>e.g., user@example.com</span></li>" +
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span>Choose wisely.</span></li>")
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\" value=\"foo\"><span> </span><span class=\"helpText\">e.g., user@example.com</span></li>" +
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><span> </span><span class=\"helpText\">Choose wisely.</span></li>")
 
   // Help text is not displayed for hidden fields. It can be used for
   // documentation purposes, though.
@@ -1503,7 +1503,7 @@ QUnit.test("Help text", 5, function() {
   })
   p  = new UserRegistration({autoId: false})
   reactHTMLEqual(p.asUl(),
-"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span>e.g., user@example.com</span></li>" +
+"<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span class=\"helpText\">e.g., user@example.com</span></li>" +
 "<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"next\" value=\"&#x2f;\"></li>")
 })
 
