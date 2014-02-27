@@ -5,8 +5,8 @@ newforms |travis_status|
 .. |travis_status| image:: https://secure.travis-ci.org/insin/newforms.png
    :target: http://travis-ci.org/insin/newforms
 
-A JavaScript port of `Django`_'s `form-handling library`_, usable in browsers
-and on the server with `Node.js`_, making use of `React`_ on both sides.
+JavaScript port of `Django`_'s `form-handling library`_, usable in browsers and
+`Node.js`_, making use of `React`_ on both sides.
 
 .. _`Django`: http://www.djangoproject.com
 .. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/

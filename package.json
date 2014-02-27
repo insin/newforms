@@ -1,13 +1,14 @@
 {
   "name": "newforms",
-  "description": "Form validation, display and type coercion for browsers and Node.js",
+  "description": "JavaScript port of Django's form-handling library, usable in browsers and Node.js, making use of React on both sides",
   "version": "0.5.0-dev",
   "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
   "tags": [
     "isomorphic",
     "forms",
     "validation",
-    "coercion"
+    "type-coercion",
+    "react"
   ],
   "main": "./lib/newforms",
   "repository": {
