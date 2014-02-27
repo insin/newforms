@@ -53,8 +53,8 @@ Cleaning a specific field attribute
 Suppose that in our ``ContactForm``, we want to make sure that the
 ``recipients`` field always contains the address ``"fred@example.com"``. This is
 validation that is specific to our form, so we don’t want to put it into the
-general ``MultiEmailField`` class. Instead, we write a cleaning method that
-operates on the ``recipients`` field, like so:::
+general ``MultiEmailField``. Instead, we write a cleaning method that operates
+on the ``recipients`` field, like so:::
 
    var ContactForm = forms.Form.extend({
      // Everything as before
@@ -121,8 +121,8 @@ rows in the form display::
      }
    }
 
-API
-===
+``ValidationError``
+===================
 
 ValidationError is part of the `validators`_ module, but is so commonly used
 when implementing custom validation that it's exposed as part of the top-level
