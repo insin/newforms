@@ -89,6 +89,20 @@ API
 
       Hook for coercing a value to an appropriate JavaScript object.
 
+   .. js:function:: Field#isEmptyValue(value)
+
+      Checks for the given value being ``===`` one of the configured empty values
+      for this field, plus any additional checks required due to JavaScript's
+      lack of a generic object equality checking mechanism.
+
+      This function will use the field's ``emptyValues`` property for the
+      ``===`` check -- this defaults to ``[null, undefined, '']`` via
+      ``Field.prototype``.
+
+      If the field has an ``emptyValueArray`` property which is ``true``, the
+      value's type and length will be checked to see if it's an empty Array --
+      this defaults to ``true`` via ``Field.prototype``.
+
    .. js:function:: Field#validate(value)
 
       Hook for validating a value.
