@@ -2174,8 +2174,55 @@ QUnit.test('Boundfield labels', 9, function() {
   reactHTMLEqual(f.boundField('empty').labelTag(), "<label>Empty:</label>")
 })
 
-// TODO test_error_dict
+QUnit.test('ErrorObject', 4, function() {
+  var MyForm = forms.Form.extend({
+    foo: forms.CharField()
+  , bar: forms.CharField()
+  , clean: function() {
+      throw forms.ValidationError('Non-field error.', {code: 'secret', params: {a: 1, b: 2}})
+    }
+  })
 
-// TODO test_error_list
+  var form = new MyForm({data: {}})
+  strictEqual(form.isValid(), false)
+  var errors = form.errors()
+  equal(errors.asText(),
+"* foo\n\
+  * This field is required.\n\
+* bar\n\
+  * This field is required.\n\
+* __all__\n\
+  * Non-field error.")
+  reactHTMLEqual(errors.asUl(),
+"<ul class=\"errorlist\">\
+<li><span>foo</span><ul class=\"errorlist\"><li>This field is required.</li></ul></li>\
+<li><span>bar</span><ul class=\"errorlist\"><li>This field is required.</li></ul></li>\
+<li><span>__all__</span><ul class=\"errorlist\"><li>Non-field error.</li></ul></li>\
+</ul>")
+  deepEqual(errors.toJSON(), {
+    foo: [{code: 'required', message: 'This field is required.'}]
+  , bar: [{code: 'required', message: 'This field is required.'}]
+  , __all__: [{code: 'secret', message: 'Non-field error.'}]
+  })
+})
+
+QUnit.test('ErrorList', function() {
+  var e = forms.ErrorList()
+  e.extend(['Foo',
+    forms.ValidationError('Foo{bar}', {code: 'foobar', params: {bar: 'bar'}})
+  ])
+  equal(e.asText(),
+"* Foo\n\
+* Foobar")
+  reactHTMLEqual(e.asUl(),
+"<ul class=\"errorlist\">\
+<li>Foo</li>\
+<li>Foobar</li>\
+</ul>")
+  deepEqual(e.toJSON(), [
+    {message: 'Foo', code: ''}
+  , {message: 'Foobar', code: 'foobar'}
+  ])
+})
 
 })()

@@ -62,6 +62,17 @@ make use of for customisation purposes.
 
       Displays error details as text.
 
+   .. js:function:: ErrorObject#asData()
+
+      Creates an "unwrapped" version of the data in the ErrorObject - a plain
+      Object with lists of ValidationErrors as its properties.
+
+   .. js:function:: ErrorObject#toJSON()
+
+      Creates a representation of all the contents of the ErrorObject for
+      serialisation, to be called by ``JSON.stringify()`` if this object is
+      passed to it.
+
 .. js:class:: ErrorList(list)
 
    A list of errors which knows how to display itself in various formats.
@@ -96,3 +107,14 @@ make use of for customisation purposes.
    .. js:function:: ErrorList#asText()
 
       Displays errors as text.
+
+   .. js:function:: ErrorList#asData()
+
+      Creates an "unwrapped" version of the data in the ErrorList - a plain
+      Array containing ValidationErrors.
+
+   .. js:function:: ErrorList#toJSON()
+
+      Creates a representation of all the contents of the ErrorList for
+      serialisation, to be called by ``JSON.stringify()`` if this object is
+      passed to it.
