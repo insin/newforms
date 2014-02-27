@@ -19,8 +19,8 @@ Function and variable names which use ``underscores_in_python`` become
 ``camelCasedInJavaScript``.
 
 A notable exception is custom field cleaning functions defined on forms, for
-which newforms will detect and call either ``clean_fieldName`` or
-``cleanFieldName`` variants.
+which newforms will detect and call either ``cleanFieldName`` or
+``clean_fieldName`` or variants, checking for the camelCase version first.
 
 ``Object`` instead of keyword arguments
 ---------------------------------------
@@ -162,6 +162,13 @@ it to be and can no longer operate on it.
 For this reason, newforms instead implements :js:func:`BaseForm#asDiv` and
 :js:func:`BaseFormSet#asDiv` to wrap fields in a block-level container which can
 include other block-level elements.
+
+Custom field cleaning functions don't have to return a value
+------------------------------------------------------------
+
+Custom field cleaning functions defined for Forms don't have to return a value
+in newforms, but if they do the returned value will be used to update
+``cleanedData`` for the field, as it is in ``django.forms``.
 
 Extra CSS class options for default rendering
 ---------------------------------------------

@@ -53,7 +53,7 @@ Cleaning a specific field attribute
 Suppose that in our ``ContactForm``, we want to make sure that the
 ``recipients`` field always contains the address ``"fred@example.com"``. This is
 validation that is specific to our form, so we don’t want to put it into the
-general ``MultiEmailField``. Instead, we write a cleaning method that operates
+general ``MultiEmailField``. Instead, we write a cleaning function that operates
 on the ``recipients`` field, like so:::
 
    var ContactForm = forms.Form.extend({
@@ -66,10 +66,14 @@ on the ``recipients`` field, like so:::
          throw forms.ValidationError('You have forgotten about Fred!')
        }
 
-       // Always return the cleaned data, whether you have changed it or not
-       return data
+       // Returning the cleaned data is optional - if anything is returned,
+       // cleanedData will be updated with the new value.
+       return recipients
      }
    }
+
+If you return anything from a custom field cleaning function, the form's
+``cleanedData`` for the field will be updated with the returned value.
 
 Cleaning and validating fields that depend on each other
 --------------------------------------------------------
