@@ -1507,10 +1507,10 @@ QUnit.test("Help text", 5, function() {
 "<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"next\" value=\"&#x2f;\"></li>")
 })
 
-QUnit.test("Subclassing forms", 10, function() {
-  // You can subclass a Form to add fields. The resulting form subclass will
-  // have all of the fields of the parent Form, plus whichever fields you
-  // define in the subclass.
+QUnit.test("Extending forms", 13, function() {
+  // You can extend a Form to add fields. The resulting form will have all of
+  // the fields of the parent Form, plus whichever fields you define in the
+  // subclass.
   var Person = forms.Form.extend({
     first_name: forms.CharField()
   , last_name: forms.CharField()
@@ -1564,10 +1564,10 @@ QUnit.test("Subclassing forms", 10, function() {
   })
   var b = new Beatle({autoId: false})
   reactHTMLEqual(b.asUl(),
+"<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>" +
 "<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>" +
 "<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>" +
 "<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"></li>" +
-"<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>" +
 "<li><span>Haircut type:</span><span> </span><input type=\"text\" name=\"haircut_type\"></li>")
 
   var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}})
@@ -1597,6 +1597,44 @@ QUnit.test("Subclassing forms", 10, function() {
   deepEqual(b.errors("first_name").messages(), ["Method from Person."])
   deepEqual(b.errors("birthday").messages(), ["Method from Instrument."])
   deepEqual(b.errors("last_name").messages(), ["Method from Beatle."])
+
+  // It's possible to opt-out from a Field inherited from a parent or mixed-in
+  // form by shadowing it.
+  var PersonNameForm = Person.extend({
+    birthday: null
+  })
+  var p = new PersonNameForm({autoId: null})
+  reactHTMLEqual(p.asUl(),
+"<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>\
+<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>",
+  "shadow a field from a parent to exclude it")
+
+  var MysteryBeatle = forms.Form.extend({
+    __mixin__: [Person, Instrument]
+  , haircut_type: forms.CharField()
+  , first_name: null
+  , last_name: null
+  })
+  var b = new MysteryBeatle({autoId: false})
+  reactHTMLEqual(b.asUl(),
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"></li>\
+<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>\
+<li><span>Haircut type:</span><span> </span><input type=\"text\" name=\"haircut_type\"></li>",
+  "shadow a field from a __mixin__ form to exclude it")
+
+  var FullNameMixin = forms.Form.extend({
+    full_name: forms.CharField()
+  , first_name: null
+  , last_name: null
+  })
+  var FullNameForm = Person.extend({
+    __mixin__: [FullNameMixin]
+  })
+  var b = new FullNameForm({autoId: false})
+  reactHTMLEqual(b.asUl(),
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"></li>\
+<li><span>Full name:</span><span> </span><input type=\"text\" name=\"full_name\"></li>",
+  "mixins can also shadow fields from forms being extended or mixed-in")
 })
 
 QUnit.test("Forms with prefixes", 30, function() {
