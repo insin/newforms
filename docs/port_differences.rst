@@ -126,6 +126,12 @@ name with ``{}``:
       var form = new ContactForm({autoId: 'id_{name}'})
       var field = ChoiceField({errorMessages: {invalidChoice: 'Anything but {value}!'}})
 
+Validators must be Functions
+----------------------------
+
+Field validators must be Functions in newforms, as there is no way to define
+custom callable objects in JavaScript.
+
 Feature differences
 ===================
 
