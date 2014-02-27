@@ -6,12 +6,10 @@ Newforms is a JavaScript port of `Django`_'s ``django.forms``
 `form-handling library`_ library, usable in browsers and on the server with
 `Node.js`_.
 
-As of (the in-development) version 0.5:
-
-* newforms will use `React`_ for rendering forms in all environments and for
-  implementation of client-side interactivity.
-* newforms will track ``django.forms`` changes for the upcoming Django 1.7
-  release.
+As of version 0.5, newforms depends on `React`_ for rendering content in all
+environments and for implementation of client-side interactivity. It's also
+is also tracking ``django.forms`` changes and new features up to and including
+the current development version of Django, 1.7.
 
 Since this is a port and ``django.forms`` is well-documented, guide
 documentation will initially point to Django documentation and offer some
@@ -76,7 +74,7 @@ Here's a quick guide to getting started with using a newforms Form.
 * Forms have default convenience rendering methods to get you started quickly,
   which display a label, input widget(s) and any validation errors for each
   field (however, JSX makes it convenient to write your own custom rendering
-  ater)::
+  later)::
 
      <form ref="contactForm">
        <table>
@@ -97,7 +95,7 @@ Here's a quick guide to getting started with using a newforms Form.
 
      if (form.isValid()) {
        // form.cleanedData now contains validated input data, coerced to the
-       // appropriate JavaScript type by its Field.
+       // appropriate JavaScript type by the form's Fields.
      }
      else {
        // If the data wasn't valid, the forms's error object will be populated

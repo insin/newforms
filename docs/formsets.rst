@@ -2,9 +2,6 @@
 Formsets
 ========
 
-Guide
-=====
-
 For a guide to formsets, please refer to the Django documentation:
 
    * `Django documentation -- Formsets <https://docs.djangoproject.com/en/dev/topics/forms/formsets/>`_

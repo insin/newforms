@@ -2,9 +2,6 @@
 Widgets
 =======
 
-Guide
-=====
-
 For a guide to widgets, please refer to the Django documentation:
 
    * `Django documentation -- Widgets <https://docs.djangoproject.com/en/dev/ref/forms/widgets/>`_

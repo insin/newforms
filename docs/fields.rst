@@ -2,9 +2,6 @@
 Fields
 ======
 
-Guide
-=====
-
 For a guide to the features of the Fields API, please refer to the Django
 documentation:
 
