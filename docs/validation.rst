@@ -2,13 +2,124 @@
 Form and field validation
 =========================
 
-Guide
-=====
-
 For a guide to the various methods of customising validation and the order in
 which they run, please refer to the Django documentation:
 
    * `Django documentation -- Form and field validation <https://docs.djangoproject.com/en/dev/ref/forms/validation/>`_
+
+Selected headings from the Django documentation are duplicated below with
+JavaScript equivalents of example code.
+
+Using validation in practice
+============================
+
+Form field default cleaning
+---------------------------
+
+Let’s firstly create a custom form field that validates its input is a string
+containing comma-separated email addresses.::
+
+   var MultiEmailField = forms.Field.extend({
+     /** Normalise data to a list of strings. */
+     toJavaScript: function(value) {
+       // Return an empty list if no input was given
+       if (this.isEmptyValue(value)) {
+         return []
+       }
+       return value.split(/, ?/g)
+     }
+
+     /** Check if value consists only of valid emails. */
+   , validate: function(value) {
+       // Use the parent's handling of required fields, etc.
+       MultiEmailField.__super__.validate.call(this, value)
+       value.map(forms.validators.validateEmail)
+     }
+   })
+
+Let’s create a simple ContactForm to demonstrate how you’d use this field::
+
+   var ContactForm = forms.Form.extend({
+     subject: forms.CharField({maxLength: 100})
+   , message: forms.CharField()
+   , sender: forms.EmailField()
+   , recipients: new MultiEmailField()
+   , ccMyself: forms.BooleanField({required: false})
+   })
+
+Cleaning a specific field attribute
+-----------------------------------
+
+Suppose that in our ``ContactForm``, we want to make sure that the
+``recipients`` field always contains the address ``"fred@example.com"``. This is
+validation that is specific to our form, so we don’t want to put it into the
+general ``MultiEmailField`` class. Instead, we write a cleaning method that
+operates on the ``recipients`` field, like so:::
+
+   var ContactForm = forms.Form.extend({
+     // Everything as before
+     // ...
+
+   , cleanRecipients: function() {
+       var recipients = this.cleanedData.recipients
+       if (recipients.indexOf('fred@example.com') == -1) {
+         throw forms.ValidationError('You have forgotten about Fred!')
+       }
+
+       // Always return the cleaned data, whether you have changed it or not
+       return data
+     }
+   }
+
+Cleaning and validating fields that depend on each other
+--------------------------------------------------------
+
+forms.Form.clean()
+~~~~~~~~~~~~~~~~~~
+
+There are two ways to report any errors from this step. Probably the most common
+method is to display the error at the top of the form. To create such an error,
+you can throw a ``ValidationError`` from the ``clean()`` method. For example::
+
+   var ContactForm = forms.Form.extend({
+     // Everything as before
+     // ...
+
+   , clean: function() {
+       var cleanedData = ContactForm.__super__.clean.call(this)
+       var ccMyself = cleanedData.ccMyself
+       var subject = cleanedData.subject
+
+       if (ccMyself && subject) {
+         // Only do something if both fields are valid so far
+         if (subject.indexOf('help') == -1) {
+           throw forms.ValidationError(
+             "Did not send for 'help' in the subject despite CC'ing yourself.")
+         }
+       }
+     }
+   }
+
+Another approach might involve assigning the error message to one of the fields.
+In this case, let’s assign an error message to both the "subject" and "ccMyself
+rows in the form display::
+
+   var ContactForm = forms.Form.extend({
+     // Everything as before
+     // ...
+
+   , clean: function() {
+       var cleanedData = ContactForm.__super__.clean.call(this)
+       var ccMyself = cleanedData.ccMyself
+       var subject = cleanedData.subject
+
+       if (ccMyself && subject && subject.indexOf('help') == -1) {
+         var message = "Must put 'help' in subject when cc'ing yourself."
+         this.addError('ccMyself', message)
+         this.addError('subject', message)
+       }
+     }
+   }
 
 API
 ===

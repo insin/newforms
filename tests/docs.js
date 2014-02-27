@@ -15,11 +15,6 @@ var CommentForm = forms.Form.extend({
 , comment: forms.CharField()
 })
 
-var PersonForm = forms.Form.extend({
-  first_name: forms.CharField()
-, last_name: forms.CharField()
-})
-
 function repr(o) {
   if (o instanceof forms.Field) {
     return '[object ' + o.constructor.name + ']'
@@ -301,6 +296,11 @@ QUnit.test('Forms - BoundFields', function() {
   equal(boundForm.boundField('subject').value(), "hi", "Bound value()")
 })
 
+var PersonForm = forms.Form.extend({
+  first_name: forms.CharField()
+, last_name: forms.CharField()
+})
+
 QUnit.test("Forms - Subclassing forms", function() {
   var ContactFormWithPrority = ContactForm.extend({
     priority: forms.CharField()
@@ -338,6 +338,133 @@ QUnit.test('Forms - Prefixes for forms', function() {
   reactHTMLEqual(father.asUl.bind(father),
 "<li><label for=\"id_father-first_name\">First name:</label><span> </span><input type=\"text\" name=\"father-first_name\" id=\"id_father-first_name\"></li>\
 <li><label for=\"id_father-last_name\">Last name:</label><span> </span><input type=\"text\" name=\"father-last_name\" id=\"id_father-last_name\"></li>")
+})
+
+var MultiEmailField = forms.Field.extend({
+  toJavaScript: function(value) {
+    if (this.isEmptyValue(value)) {
+      return []
+    }
+    return value.split(/, ?/g)
+  }
+, validate: function(value) {
+    MultiEmailField.__super__.validate.call(this, value)
+    value.map(forms.validators.validateEmail)
+  }
+})
+
+var MultiRecipientContactForm = forms.Form.extend({
+  subject: forms.CharField({maxLength: 100})
+, message: forms.CharField()
+, sender: forms.EmailField()
+, recipients: new MultiEmailField()
+, ccMyself: forms.BooleanField({required: false})
+})
+
+QUnit.test('Validation - Form field default cleaning', function() {
+  var f = new MultiEmailField({required: true})
+  // Check that an empty list is detected as an empty value
+  cleanErrorEqual(f, 'This field is required.', '')
+  cleanErrorEqual(f, 'This field is required.', [])
+  // Check email validation
+  cleanErrorEqual(f, 'Enter a valid email address.', 'invalid email address')
+  ok(f.clean('steve@test.com, alan@something.org'))
+})
+
+QUnit.test('Validation - Cleaning a specific field attribute', function() {
+  var CleanSpecificFieldForm = MultiRecipientContactForm.extend({
+    cleanRecipients: function() {
+      var recipients = this.cleanedData.recipients
+      if (recipients.indexOf('fred@example.com') == -1) {
+        throw forms.ValidationError('You have forgotten about Fred!')
+      }
+      return recipients
+    }
+  })
+
+  var f = new CleanSpecificFieldForm({data: {
+    subject: 'testing'
+  , message: 'testing'
+  , sender: 'me@localhost'
+  , recipients: 'steve@test.com, alan@something.org'
+  }})
+  ok(!f.isValid())
+  deepEqual(f.errors('recipients').messages(), ["You have forgotten about Fred!"])
+
+  f = new CleanSpecificFieldForm({data: {
+    subject: 'testing'
+  , message: 'testing'
+  , sender: 'me@localhost'
+  , recipients: 'steve@test.com, fred@example.com, alan@something.org'
+  }})
+  ok(f.isValid())
+})
+
+QUnit.test('Validation - Cleaning and validating fields that depend on each other', function() {
+  var Option1Form = MultiRecipientContactForm.extend({
+    clean: function() {
+      var cleanedData = Option1Form.__super__.clean.call(this)
+      var ccMyself = cleanedData.ccMyself
+      var subject = cleanedData.subject
+      if (ccMyself && subject) {
+        if (subject.indexOf('help') == -1) {
+          throw forms.ValidationError(
+            "Did not send for 'help' in the subject despite CC'ing yourself.")
+        }
+      }
+    }
+  })
+
+  var f = new Option1Form({data: {
+    subject: 'testing'
+  , message: 'testing'
+  , sender: 'me@localhost'
+  , recipients: 'steve@test.com, alan@something.org'
+  , ccMyself: true
+  }})
+  ok(!f.isValid())
+  deepEqual(f.nonFieldErrors().messages(), ["Did not send for 'help' in the subject despite CC'ing yourself."])
+
+  f = new Option1Form({data: {
+    subject: 'help with testing'
+  , message: 'testing'
+  , sender: 'me@localhost'
+  , recipients: 'steve@test.com, alan@something.org'
+  , ccMyself: true
+  }})
+  ok(f.isValid())
+
+  var Option2Form = MultiRecipientContactForm.extend({
+    clean: function() {
+      var cleanedData = Option2Form.__super__.clean.call(this)
+      var ccMyself = cleanedData.ccMyself
+      var subject = cleanedData.subject
+      if (ccMyself && subject && subject.indexOf('help') == -1) {
+        var message = "Must put 'help' in subject when cc'ing yourself."
+        this.addError('ccMyself', message)
+        this.addError('subject', message)
+      }
+    }
+  })
+  var f = new Option2Form({data: {
+    subject: 'testing'
+  , message: 'testing'
+  , sender: 'me@localhost'
+  , recipients: 'steve@test.com, alan@something.org'
+  , ccMyself: true
+  }})
+  ok(!f.isValid())
+  deepEqual(f.errors('subject').messages(), ["Must put 'help' in subject when cc'ing yourself."])
+  deepEqual(f.errors('ccMyself').messages(), ["Must put 'help' in subject when cc'ing yourself."])
+
+f = new Option2Form({data: {
+    subject: 'help testing'
+  , message: 'testing'
+  , sender: 'me@localhost'
+  , recipients: 'steve@test.com, alan@something.org'
+  , ccMyself: true
+  }})
+  ok(f.isValid())
 })
 
 }()
