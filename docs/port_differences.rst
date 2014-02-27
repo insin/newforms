@@ -45,6 +45,8 @@ Function calls instead of Python properties
 Where Python properties are used in ``django.forms``, newforms instead uses
 regular functions. These are:
 
+**Forms:**
+
 * :js:func:`BaseForm#errors`
 * :js:func:`BaseForm#changedData`
 * :js:func:`BoundField#errors`
@@ -52,6 +54,14 @@ regular functions. These are:
 * :js:func:`BoundField#isHidden`
 * :js:func:`BoundField#autoId`
 * :js:func:`BoundField#idForLabel`
+
+**Fields:**
+
+* :js:func:`ChoiceField#choices`
+* :js:func:`ChoiceField#setChoices`
+
+**FormSets:**
+
 * :js:func:`BaseFormSet#managementForm`
 * :js:func:`BaseFormSet#forms`
 * :js:func:`BaseFormSet#initialForms`
@@ -83,9 +93,9 @@ newforms, these are implemented as functions. These are:
 :js:func:`ErrorList#messages`
    gets all ValidationError message from an ErrorList (coercing ValidationError
    to string and having it performing any required parameter replacements).
-:js:func:`ChoiceFieldRenderer#choiceInputs`
+:js:func:`RadioFieldRenderer#choiceInputs` / :js:func:`CheckboxFieldRenderer#choiceInputs`
    gets all inputs from a ChoiceFieldRenderer.
-:js:func:`ChoiceFieldRenderer#choiceInput`
+:js:func:`RadioFieldRenderer#choiceInput` / :js:func:`CheckboxFieldRenderer#choiceInput`
    gets the i-th input from a ChoiceFieldRenderer.
 
 Use of ``new`` in JavaScript

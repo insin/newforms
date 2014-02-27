@@ -276,6 +276,14 @@ API
       choices to be used when rendering the widget, with each choice
       specified as an Array in ``[value, text]`` format.
 
+   .. js:function:: RadioFieldRenderer#choiceInputs()
+
+      gets all ``RadioChoiceInput`` inputs created by this renderer.
+
+   .. js:function:: RadioFieldRenderer#choiceInput(i)
+
+      gets the i-th ``RadioChoiceInput`` created by this renderer.
+
 .. js:class:: RadioChoiceInput(name, value, attrs, choice, index)
 
    An object used by :js:class:`RadioFieldRenderer` that represents a single
@@ -327,10 +335,18 @@ API
       choices to be used when rendering the widget, with each choice
       specified as an Array in ``[value, text]`` format.
 
+   .. js:function:: CheckboxFieldRenderer#choiceInputs()
+
+      gets all ``CheckboxChoiceInput`` inputs created by this renderer.
+
+   .. js:function:: CheckboxFieldRenderer#choiceInput(i)
+
+      gets the i-th ``CheckboxChoiceInput`` created by this renderer.
+
 .. js:class:: CheckboxChoiceInput(name, value, attrs, choice, index)
 
    An object used by :js:class:`CheckboxFieldRenderer` that represents a single
-   ``<input type="cgheckbox">``.
+   ``<input type="checkbox">``.
 
    :param String name: the field name.
    :param Array value: a list of selected values.

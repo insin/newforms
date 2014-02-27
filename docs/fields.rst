@@ -284,6 +284,14 @@ API
 
       :type: Array
 
+   .. js:function:: ChoiceField#choices()
+
+      Returns the current list of choices.
+
+   .. js:function:: ChoiceField#setChoices(choices)
+
+      Updates choices on this field and on its widget.
+
 .. js:class:: TypedChoiceField([kwargs])
 
    A ChoiceField which returns a value coerced by some provided function.
