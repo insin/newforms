@@ -23,6 +23,29 @@ make use of for customisation purposes.
       properties. Inputs with multiple values or duplicate names will have a
       list of values set.
 
+.. js:function:: formatToArray(str, obj[, options])
+
+   Replaces ``'{placeholders}'`` in a string with same-named properties from a
+   given Object, but interpolates into and returns an Array instead of a String.
+
+   By default, any resulting empty strings are stripped out of the Array before
+   it is returned. To disable this, pass an options object with a ``'strip'``
+   property which is ``false``.
+
+   This is useful for simple templating which needs to include ``React.DOM``
+   components.
+
+   :param String str:
+      a String containing placeholder names surrounded by ``{`` ``}``
+
+   :param Object obj:
+      an Object whose properties will provide replacements for placeholders
+
+   :param Object options:
+      an options Object which can be used to disable stripping of empty strings
+      from the resulting Array before it is returned by passing
+      ``{strip: false}``
+
 .. js:class:: ErrorObject(errors)
 
    A collection of field errors that knows how to display itself in various
