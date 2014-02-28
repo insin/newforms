@@ -7,7 +7,7 @@ which they run, please refer to the Django documentation:
 
    * `Django documentation -- Form and field validation <https://docs.djangoproject.com/en/dev/ref/forms/validation/>`_
 
-Selected headings from the Django documentation are duplicated below with
+Selected portions of the Django documentation are duplicated below with
 JavaScript equivalents of example code.
 
 Using validation in practice

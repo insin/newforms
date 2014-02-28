@@ -6,6 +6,105 @@ For a guide to formsets, please refer to the Django documentation:
 
    * `Django documentation -- Formsets <https://docs.djangoproject.com/en/dev/topics/forms/formsets/>`_
 
+Selected portions of the Django documentation are duplicated below with
+JavaScript equivalents of example code.
+
+A formset is a layer of abstraction to work with multiple forms on the same
+page. It can be best compared to a data grid. Let’s say you have the following
+form::
+
+   var ArticleForm = forms.Form.extend({
+     title: forms.CharField()
+   , pubDate: forms.DateField()
+   })
+
+You might want to allow the user to create several articles at once. To create
+a formset out of an ``ArticleForm`` you would do::
+
+   var ArticleFormSet = forms.formsetFactory(ArticleForm)
+
+You now have created a formset named ``ArticleFormSet``. The formset gives you
+the ability to iterate over the forms in the formset and display them as you
+would with a regular form::
+
+   var formset = new ArticleFormSet()
+   formset.forms().forEach(function(form) {
+     print(reactHTML(form.asTable()))
+   })
+   /* =>
+   <tr><th><label for="id_form-0-title">Title:</label></th><td><input type="text" name="form-0-title" id="id_form-0-title"></td></tr>
+   <tr><th><label for="id_form-0-pubDate">Pub date:</label></th><td><input type="text" name="form-0-pubDate" id="id_form-0-pubDate"></td></tr>
+   */
+
+As you can see it only displayed one empty form. The number of empty forms
+that is displayed is controlled by the ``extra`` parameter. By default,
+:js:func:`formsetFactory` defines one extra form; the following example will
+display two blank forms::
+
+   var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2})
+
+Using initial data with a formset
+=================================
+
+Initial data is what drives the main usability of a formset. As shown above
+you can define the number of extra forms. What this means is that you are
+telling the formset how many additional forms to show in addition to the
+number of forms it generates from the initial data. Let's take a look at an
+example::
+
+   var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2})
+   var formset = new ArticleFormSet({initial: [
+     {title: "Django's docs are open source!", pubDate: new Date()}
+   ]})
+   formset.forms().forEach(function(form) {
+     print(reactHTML(form.asTable()))
+   })
+   /* =>
+   <tr><th><label for="id_form-0-title">Title:</label></th><td><input type="text" name="form-0-title" id="id_form-0-title" value="Django's docs are open source!"></td></tr>
+   <tr><th><label for="id_form-0-pubDate">Pub date:</label></th><td><input type="text" name="form-0-pubDate" id="id_form-0-pubDate" value="2014-02-28"></td></tr>
+   <tr><th><label for="id_form-1-title">Title:</label></th><td><input type="text" name="form-1-title" id="id_form-1-title"></td></tr>
+   <tr><th><label for="id_form-1-pubDate">Pub date:</label></th><td><input type="text" name="form-1-pubDate" id="id_form-1-pubDate"></td></tr>
+   <tr><th><label for="id_form-2-title">Title:</label></th><td><input type="text" name="form-2-title" id="id_form-2-title"></td></tr>
+   <tr><th><label for="id_form-2-pubDate">Pub date:</label></th><td><input type="text" name="form-2-pubDate" id="id_form-2-pubDate"></td></tr>"
+   */
+
+There are now a total of three forms showing above. One for the initial data
+that was passed in and two extra forms. Also note that we are passing in a
+list of objects as the initial data.
+
+Limiting the maximum number of forms
+====================================
+
+The ``maxNum`` parameter to :js:func:`formsetFactory` gives you the ability to
+limit the maximum number of empty forms the formset will display::
+
+   var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2, maxNum: 1})
+   var formset = new ArticleFormSet()
+   formset.forms().forEach(function(form) {
+     print(reactHTML(form.asTable()))
+   })
+   /* =>
+   <tr><th><label for="id_form-0-title">Title:</label></th><td><input type="text" name="form-0-title" id="id_form-0-title"></td></tr>
+   <tr><th><label for="id_form-0-pubDate">Pub date:</label></th><td><input type="text" name="form-0-pubDate" id="id_form-0-pubDate"></td></tr>
+   */
+
+Formset validation
+==================
+
+Validation with a formset is almost identical to a regular ``Form``. There's an
+``isValid()`` method on the formset to provide a convenient way to validate
+all forms in the formset::
+
+   var ArticleFormSet = forms.formsetFactory(ArticleForm)
+   var data = {
+     'form-TOTAL_FORMS': '1'
+   , 'form-INITIAL_FORMS': '0'
+   , 'form-MAX_NUM_FORMS': ''
+   }
+   var formset = new ArticleFormSet({data: data})
+   print(formset.isValid()
+   // => true
+
 API
 ===
 

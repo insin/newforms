@@ -467,4 +467,55 @@ f = new Option2Form({data: {
   ok(f.isValid())
 })
 
+var ArticleForm = forms.Form.extend({
+  title: forms.CharField()
+, pubDate: forms.DateField()
+})
+
+QUnit.test('Formsets - intro', function() {
+  var ArticleFormSet = forms.formsetFactory(ArticleForm)
+  var formset = new ArticleFormSet()
+  reactHTMLEqual(function() {
+    return formset.forms().map(function(form) { return form.asTable() })
+  },
+"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></td></tr>\
+<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></td></tr>",
+  "<3 My first formset <3")
+
+  var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2})
+  var formset = new ArticleFormSet({initial: [
+    {title: "Django's docs are open source!", pubDate: new Date()}
+  ]})
+  reactHTMLEqual(function() {
+    return formset.forms().map(function(form) { return form.asTable() })
+  },
+"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\" value=\"Django&#x27;s docs are open source!\"></td></tr>\
+<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\" value=\"2014-02-28\"></td></tr>\
+<tr><th><label for=\"id_form-1-title\">Title:</label></th><td><input type=\"text\" name=\"form-1-title\" id=\"id_form-1-title\"></td></tr>\
+<tr><th><label for=\"id_form-1-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-1-pubDate\" id=\"id_form-1-pubDate\"></td></tr>\
+<tr><th><label for=\"id_form-2-title\">Title:</label></th><td><input type=\"text\" name=\"form-2-title\" id=\"id_form-2-title\"></td></tr>\
+<tr><th><label for=\"id_form-2-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-2-pubDate\" id=\"id_form-2-pubDate\"></td></tr>",
+  "Initial data display + 2 extras")
+
+  var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2, maxNum: 1})
+  var formset = new ArticleFormSet()
+  reactHTMLEqual(function() {
+    return formset.forms().map(function(form) { return form.asTable() })
+  },
+"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></td></tr>\
+<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></td></tr>",
+  "maxNum vs. extra")
+})
+
+QUnit.test('Formsets - validation', function() {
+  var ArticleFormSet = forms.formsetFactory(ArticleForm)
+  var data = {
+    'form-TOTAL_FORMS': '1'
+  , 'form-INITIAL_FORMS': '0'
+  , 'form-MAX_NUM_FORMS': ''
+  }
+  var formset = new ArticleFormSet({data: data})
+  strictEqual(formset.isValid(), true)
+})
+
 }()
