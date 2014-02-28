@@ -402,7 +402,7 @@ Forms API
 
          :type: Object
 
-   .. js:function:: BoundField#suWidgets()
+   .. js:function:: BoundField#subWidgets()
 
       :returns:
          a list of :js:class:`SubWidget` objects that comprise all widgets in
