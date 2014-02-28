@@ -142,6 +142,15 @@ Validators must be Functions
 Field validators must be Functions in newforms, as there is no way to define
 custom callable objects in JavaScript.
 
+Decimal data
+------------
+
+Since JavaScript doesn't have a standard Decimal data type,
+:js:class:`DecimalField` performs limited validation of input as a String,
+passes a Number version of input to validators which validate max/min value and
+returns a normalised version of the input as a String when the input is
+determined to be valid.
+
 Feature differences
 ===================
 
@@ -222,3 +231,13 @@ whichever one you're using, if you're even using one.
 It may be possible to provide a means of telling newforms how your model layer
 works and basing equivalent functionality on that, but for now newforms leaves
 creating Forms and FormSets for working with your model layer up to you.
+
+Localisation
+------------
+
+Newforms doesn't have a localisaton layer, so features which depend on Django's
+haven't been ported:
+
+* The core ``localize`` argument for Fields isn't present in newforms.
+* Separators for Fields which take numeric input aren't localised.
+* Default date and time formats in date/time Fields aren't localised.
