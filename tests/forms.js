@@ -1515,7 +1515,8 @@ QUnit.test("Help text", 6, function() {
   p = new UserRegistration({autoId: false})
   reactHTMLEqual(p.asTable(),
 "<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"><br><span class=\"helpText\">e.g., user@example.com</span></td></tr>" +
-"<tr><th>Password:</th><td><input type=\"password\" name=\"password\"><br><span class=\"helpText\">Choose <em>very</em> wisely.</span></td></tr>")
+"<tr><th>Password:</th><td><input type=\"password\" name=\"password\"><br><span class=\"helpText\">Choose <em>very</em> wisely.</span></td></tr>",
+  "HTML in helpText")
 })
 
 QUnit.test("Extending forms", 13, function() {
