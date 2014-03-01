@@ -139,7 +139,7 @@ QUnit.test("IntegerField", 55, function() {
   strictEqual(f.minValue, 10)
 })
 
-QUnit.test("FloatField", 38, function() {
+QUnit.test("FloatField", 39, function() {
   var f = forms.FloatField()
   widgetRendersTo(f, "<input step=\"any\" type=\"number\" name=\"f\" id=\"id_f\">" )
   cleanErrorEqual(f, "This field is required.", "")
@@ -150,6 +150,7 @@ QUnit.test("FloatField", 38, function() {
   strictEqual(f.clean(3.14), 3.1400000000000001)
   strictEqual(f.clean(42), 42.0)
   cleanErrorEqual(f, "Enter a number.", "a")
+  strictEqual(f.clean("1."), 1.0)
   strictEqual(f.clean("1.0 "), 1.0)
   strictEqual(f.clean(" 1.0"), 1.0)
   strictEqual(f.clean(" 1.0 "), 1.0)
@@ -196,12 +197,14 @@ QUnit.test("FloatField", 38, function() {
   strictEqual(f._hasChanged(n, '4.3500'), false)
 })
 
-QUnit.test("DecimalField", 65, function() {
+QUnit.test("DecimalField", 67, function() {
   var f = forms.DecimalField({maxDigits: 4, decimalPlaces: 2})
   widgetRendersTo(f, "<input step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\">")
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
   strictEqual(f.clean("1"), "1")
+  strictEqual(f.clean("1."), "1")
+  strictEqual(f.clean("001."), "1")
   strictEqual(Object.prototype.toString.call(f.clean("1")), '[object String]')
   strictEqual(f.clean("23"), "23")
   strictEqual(f.clean("3.14"), "3.14")
