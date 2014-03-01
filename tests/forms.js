@@ -1469,7 +1469,7 @@ QUnit.test("Boundfield values", 4, function() {
   strictEqual(unbound.boundField("password").value(), null)
 })
 
-QUnit.test("Help text", 5, function() {
+QUnit.test("Help text", 6, function() {
   // You can specify descriptive text for a field by using the "helpText"
   // argument to a Field class. This help text is displayed when a Form is
   // rendered.
@@ -1505,6 +1505,17 @@ QUnit.test("Help text", 5, function() {
   reactHTMLEqual(p.asUl(),
 "<li><span>Username:</span><span> </span><input maxlength=\"10\" type=\"text\" name=\"username\"><span> </span><span class=\"helpText\">e.g., user@example.com</span></li>" +
 "<li><span>Password:</span><span> </span><input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"next\" value=\"&#x2f;\"></li>")
+
+  // To include HTML in help text when using defaultrendering, pass an object
+  // with an __html property.
+  UserRegistration = forms.Form.extend({
+    username: forms.CharField({maxLength: 10, helpText: "e.g., user@example.com"})
+  , password: forms.CharField({widget: forms.PasswordInput, helpText: {__html: "Choose <em>very</em> wisely."}})
+  })
+  p = new UserRegistration({autoId: false})
+  reactHTMLEqual(p.asTable(),
+"<tr><th>Username:</th><td><input maxlength=\"10\" type=\"text\" name=\"username\"><br><span class=\"helpText\">e.g., user@example.com</span></td></tr>" +
+"<tr><th>Password:</th><td><input type=\"password\" name=\"password\"><br><span class=\"helpText\">Choose <em>very</em> wisely.</span></td></tr>")
 })
 
 QUnit.test("Extending forms", 13, function() {
