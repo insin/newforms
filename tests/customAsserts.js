@@ -106,11 +106,20 @@ var reactHTMLEqual = (function() {
   }
 })()
 
+/**
+ * Asserts that a Field's Widget renders to thw given HTML.
+ */
+function widgetRendersTo(field, expectedHTML) {
+  var _Form  = forms.Form.extend({f: field})
+  reactHTMLEqual(function() { return new _Form().boundField('f').render() }, expectedHTML)
+}
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     errorEqual: errorEqual
   , cleanErrorEqual: cleanErrorEqual
   , validationErrorEqual: validationErrorEqual
   , reactHTMLEqual: reactHTMLEqual
+  , widgetRendersTo: widgetRendersTo
   }
 }

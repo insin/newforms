@@ -31,6 +31,7 @@ gulp.task('build-js', ['lint'], function(){
     .pipe(browserify({
       debug: !gutil.env.production
     , standalone: 'forms'
+    , detectGlobals: false
     }))
     .on('error', function(e) {
       console.error(e)

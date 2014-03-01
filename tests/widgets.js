@@ -1041,7 +1041,7 @@ QUnit.test("SplitHiddenDateTimeWidget", 3, function() {
         "<div><input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:00\"></div>")
 })
 
-QUnit.test("ClearableFileInput", 6, function() {
+QUnit.test("ClearableFileInput", 5, function() {
   // Quacks like a FieldFile (has a .url and string representation), but
   // doesn't require us to care about anything else.
   var FakeFieldFile = function() { this.url = "something"; }
@@ -1077,14 +1077,4 @@ QUnit.test("ClearableFileInput", 6, function() {
   // checkbox.
   reactHTMLEqual(w.render("myfile", new FakeFieldFile()),
 "<div><span>Currently</span><span>: </span><a href=\"something\">something</a><span> </span><br><span>Change</span><span>: </span><input type=\"file\" name=\"myfile\"></div>")
-
-  // ClearableFileInput.valueFromData never returns False if the field
-  // is required.
-  function SimpleUploadedFile(name, content) {
-    this.name = name
-    this.content = content
-    this.size = (content !== null ? content.length : 0)
-  }
-  var f = new SimpleUploadedFile("something.txt", "content")
-  strictEqual(w.valueFromData({"myfile-clear": true}, {"myfile": f}, "myfile"), f)
 })
