@@ -9,6 +9,18 @@ For a guide to formsets, please refer to the Django documentation:
 Selected portions of the Django documentation are duplicated below with
 JavaScript equivalents of example code.
 
+----
+
+.. Note::
+
+   The FormSet API is built around its original server-side usage in Django.
+   Its methods of tracking how many forms there are, adding and removing forms,
+   ordering and deletion are designed with the expectation of round-tripping
+   with HTTP requests.
+
+   Future releases will deal with making FormSets a better fit for client-side
+   capabilities.
+
 A formset is a layer of abstraction to work with multiple forms on the same
 page. It can be best compared to a data grid. Let’s say you have the following
 form::
@@ -104,6 +116,84 @@ all forms in the formset::
    var formset = new ArticleFormSet({data: data})
    print(formset.isValid()
    // => true
+
+If we provide an invalid article::
+
+   var data = {
+     'form-TOTAL_FORMS': '2'
+   , 'form-INITIAL_FORMS': '0'
+   , 'form-MAX_NUM_FORMS': ''
+   , 'form-0-title': 'Test'
+   , 'form-0-pubDate': '1904-06-16'
+   , 'form-1-title': 'Test'
+   , 'form-1-pubDate': '' // <-- this date is missing but required
+   }
+   var formset = new ArticleFormSet({data: data})
+   print(formset.isValid())
+   // => false
+   print(formset.errors().map(function(e) { return e.toJSON() }))
+   // => [{}, {pubDate: [{message: 'This field is required.', code: 'required'}]}]
+
+To check how many errors there are in the formset, we can use the
+``totalErrorCount()`` method::
+
+   formset.totalErrorCount()
+   // => 1
+
+We can also check if form data differs from the initial data (i.e. the form was
+sent without any data)::
+
+   var data = {
+     'form-TOTAL_FORMS': '1'
+   , 'form-INITIAL_FORMS': '0'
+   , 'form-MAX_NUM_FORMS': ''
+   , 'form-0-title': ''
+   , 'form-0-pubDate': ''
+   }
+   var formset = new ArticleFormSet({data: data})
+   print(formset.hasChanged())
+   // => false
+
+Custom formset validation
+-------------------------
+
+A formset has a ``clean()`` method similar to the one on a ``Form`` class. This
+is where you define your own validation that works at the formset level::
+
+   var BaseArticleFormSet = forms.BaseFormSet.extend({
+     /** Checks that no two articles have the same title. */
+     clean: function() {
+       if (this.totalErrorCount() !== 0) {
+         // Don't bother validating the formset unless each form is valid on its own
+         return
+       }
+       var titles = {}
+       this.forms().forEach(function(form) {
+         var title = form.cleanedData.title
+         if (title in titles) {
+           throw forms.ValidationError('Articles in a set must have distinct titles.')
+         }
+         titles[title] = true
+       })
+     }
+   })
+   var ArticleFormSet = forms.formsetFactory(ArticleForm, {formset: BaseArticleFormSet})
+   var data = {
+     'form-TOTAL_FORMS': '2'
+   , 'form-INITIAL_FORMS': '0'
+   , 'form-MAX_NUM_FORMS': ''
+   , 'form-0-title': 'Test'
+   , 'form-0-pubDate': '1904-06-16'
+   , 'form-1-title': 'Test'
+   , 'form-1-pubDate': '1912-06-23'
+   }
+   var formset = new ArticleFormSet({data: data})
+   print(formset.isValid())
+   // => false
+   print(formset.errors().map(function(e) { return e.toJSON() }))
+   // => [{}, {}])
+   print(formset.nonFormErrors().messages())
+   // => ['Articles in a set must have distinct titles.']
 
 API
 ===
