@@ -2,25 +2,25 @@
  * newforms 0.5.0-dev - https://github.com/insin/newforms
  * MIT Licensed
  */
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.forms=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.forms=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
   browser: typeof process == 'undefined'
 }
-},{}],2:[function(require,module,exports){
+},{}],2:[function(_dereq_,module,exports){
 'use strict';
 
-var Concur = require('Concur')
-var is = require('isomorph/is')
-var object = require('isomorph/object')
-var time = require('isomorph/time')
-var url = require('isomorph/url')
-var validators = require('validators')
+var Concur = _dereq_('Concur')
+var is = _dereq_('isomorph/is')
+var object = _dereq_('isomorph/object')
+var time = _dereq_('isomorph/time')
+var url = _dereq_('isomorph/url')
+var validators = _dereq_('validators')
 
-var env = require('./env')
-var util = require('./util')
-var widgets = require('./widgets')
+var env = _dereq_('./env')
+var util = _dereq_('./util')
+var widgets = _dereq_('./widgets')
 
 var ValidationError = validators.ValidationError
 var Widget = widgets.Widget
@@ -1618,19 +1618,20 @@ module.exports = {
 , SlugField: SlugField
 }
 
-},{"./env":1,"./util":6,"./widgets":7,"Concur":8,"isomorph/is":12,"isomorph/object":13,"isomorph/time":14,"isomorph/url":15,"validators":18}],3:[function(require,module,exports){
+},{"./env":1,"./util":6,"./widgets":7,"Concur":8,"isomorph/is":12,"isomorph/object":13,"isomorph/time":14,"isomorph/url":15,"validators":18}],3:[function(_dereq_,module,exports){
 'use strict';
 
-var Concur = require('Concur')
-var is = require('isomorph/is')
-var format = require('isomorph/format').formatObj
-var object = require('isomorph/object')
-var copy = require('isomorph/copy')
-var validators = require('validators')
+var Concur = _dereq_('Concur')
+var is = _dereq_('isomorph/is')
+var format = _dereq_('isomorph/format').formatObj
+var object = _dereq_('isomorph/object')
+var copy = _dereq_('isomorph/copy')
+var validators = _dereq_('validators')
+var React = (window.React)
 
-var util = require('./util')
-var fields = require('./fields')
-var widgets = require('./widgets')
+var util = _dereq_('./util')
+var fields = _dereq_('./fields')
+var widgets = _dereq_('./widgets')
 
 var ErrorList = util.ErrorList
 var ErrorObject = util.ErrorObject
@@ -2504,17 +2505,17 @@ module.exports = {
 , Form: Form
 }
 
-},{"./fields":2,"./util":6,"./widgets":7,"Concur":8,"isomorph/copy":10,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13,"validators":18}],4:[function(require,module,exports){
+},{"./fields":2,"./util":6,"./widgets":7,"Concur":8,"isomorph/copy":10,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13,"validators":18}],4:[function(_dereq_,module,exports){
 'use strict';
 
-var Concur = require('Concur')
-var object = require('isomorph/object')
-var validators = require('validators')
+var Concur = _dereq_('Concur')
+var object = _dereq_('isomorph/object')
+var validators = _dereq_('validators')
 
-var util = require('./util')
-var widgets = require('./widgets')
-var fields = require('./fields')
-var forms = require('./forms')
+var util = _dereq_('./util')
+var widgets = _dereq_('./widgets')
+var fields = _dereq_('./fields')
+var forms = _dereq_('./forms')
 
 var ErrorList = util.ErrorList
 var ValidationError = validators.ValidationError
@@ -3075,18 +3076,18 @@ module.exports = {
 , allValid: allValid
 }
 
-},{"./fields":2,"./forms":3,"./util":6,"./widgets":7,"Concur":8,"isomorph/object":13,"validators":18}],5:[function(require,module,exports){
+},{"./fields":2,"./forms":3,"./util":6,"./widgets":7,"Concur":8,"isomorph/object":13,"validators":18}],5:[function(_dereq_,module,exports){
 'use strict';
 
-var object = require('isomorph/object')
-var validators = require('validators')
+var object = _dereq_('isomorph/object')
+var validators = _dereq_('validators')
 
-var env = require('./env')
-var util = require('./util')
-var widgets = require('./widgets')
-var fields = require('./fields')
-var forms = require('./forms')
-var formsets = require('./formsets')
+var env = _dereq_('./env')
+var util = _dereq_('./util')
+var widgets = _dereq_('./widgets')
+var fields = _dereq_('./fields')
+var forms = _dereq_('./forms')
+var formsets = _dereq_('./formsets')
 
 object.extend(
   module.exports
@@ -3107,13 +3108,14 @@ object.extend(
 , formsets
 )
 
-},{"./env":1,"./fields":2,"./forms":3,"./formsets":4,"./util":6,"./widgets":7,"isomorph/object":13,"validators":18}],6:[function(require,module,exports){
+},{"./env":1,"./fields":2,"./forms":3,"./formsets":4,"./util":6,"./widgets":7,"isomorph/object":13,"validators":18}],6:[function(_dereq_,module,exports){
 'use strict';
 
-var Concur = require('Concur')
-var is = require('isomorph/is')
-var object = require('isomorph/object')
-var validators = require('validators')
+var Concur = _dereq_('Concur')
+var is = _dereq_('isomorph/is')
+var object = _dereq_('isomorph/object')
+var validators = _dereq_('validators')
+var React = (window.React)
 
 var ValidationError = validators.ValidationError
 
@@ -3474,17 +3476,18 @@ module.exports = {
 , strip: strip
 }
 
-},{"Concur":8,"isomorph/is":12,"isomorph/object":13,"validators":18}],7:[function(require,module,exports){
+},{"Concur":8,"isomorph/is":12,"isomorph/object":13,"validators":18}],7:[function(_dereq_,module,exports){
 'use strict';
 
-var Concur = require('Concur')
-var is = require('isomorph/is')
-var format = require('isomorph/format').formatObj
-var object = require('isomorph/object')
-var time = require('isomorph/time')
+var Concur = _dereq_('Concur')
+var is = _dereq_('isomorph/is')
+var format = _dereq_('isomorph/format').formatObj
+var object = _dereq_('isomorph/object')
+var time = _dereq_('isomorph/time')
+var React = (window.React)
 
-var env = require('./env')
-var util = require('./util')
+var env = _dereq_('./env')
+var util = _dereq_('./util')
 
 /**
  * Some widgets are made of multiple HTML elements -- namely, RadioSelect.
@@ -4656,11 +4659,11 @@ module.exports = {
 , SplitHiddenDateTimeWidget: SplitHiddenDateTimeWidget
 }
 
-},{"./env":1,"./util":6,"Concur":8,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13,"isomorph/time":14}],8:[function(require,module,exports){
+},{"./env":1,"./util":6,"Concur":8,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13,"isomorph/time":14}],8:[function(_dereq_,module,exports){
 'use strict';
 
-var is = require('isomorph/is')
-var object = require('isomorph/object')
+var is = _dereq_('isomorph/is')
+var object = _dereq_('isomorph/object')
 
 /**
  * Mixes in properties from one object to another. If the source object is a
@@ -4781,7 +4784,7 @@ Concur.extend = function(prototypeProps, constructorProps) {
   return childConstructor
 }
 
-},{"isomorph/is":12,"isomorph/object":13}],9:[function(require,module,exports){
+},{"isomorph/is":12,"isomorph/object":13}],9:[function(_dereq_,module,exports){
 /*! http://mths.be/punycode v1.2.4 by @mathias */
 ;(function(root) {
 
@@ -5290,10 +5293,10 @@ Concur.extend = function(prototypeProps, constructorProps) {
 
 }(this));
 
-},{}],10:[function(require,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 'use strict';
 
-var is = require('./is')
+var is = _dereq_('./is')
 
 /* This file is part of OWL JavaScript Utilities.
 
@@ -5593,7 +5596,7 @@ module.exports = {
 , deepCopy: deepCopy
 }
 
-},{"./is":12}],11:[function(require,module,exports){
+},{"./is":12}],11:[function(_dereq_,module,exports){
 'use strict';
 
 var slice = Array.prototype.slice
@@ -5650,7 +5653,7 @@ module.exports = {
 , fileSize: fileSize
 }
 
-},{}],12:[function(require,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 'use strict';
 
 var toString = Object.prototype.toString
@@ -5718,7 +5721,7 @@ module.exports = {
 , String: isString
 }
 
-},{}],13:[function(require,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -5855,10 +5858,10 @@ module.exports = {
 , setDefault: setDefault
 }
 
-},{}],14:[function(require,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 'use strict';
 
-var is = require('./is')
+var is = _dereq_('./is')
 
 /**
  * Pads a number with a leading zero if necessary.
@@ -6208,7 +6211,7 @@ time.strftime = function(date, format, locale) {
 
 module.exports = time
 
-},{"./is":12}],15:[function(require,module,exports){
+},{"./is":12}],15:[function(_dereq_,module,exports){
 'use strict';
 
 // parseUri 1.2.2
@@ -6299,13 +6302,13 @@ module.exports = {
 , makeUri: makeUri
 }
 
-},{}],16:[function(require,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 'use strict';
 
-var Concur = require('Concur')
-var format = require('isomorph/format').formatObj
-var is = require('isomorph/is')
-var object = require('isomorph/object')
+var Concur = _dereq_('Concur')
+var format = _dereq_('isomorph/format').formatObj
+var is = _dereq_('isomorph/is')
+var object = _dereq_('isomorph/object')
 
 var NON_FIELD_ERRORS = '__all__'
 
@@ -6462,12 +6465,12 @@ module.exports = {
   ValidationError: ValidationError
 }
 
-},{"Concur":8,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13}],17:[function(require,module,exports){
+},{"Concur":8,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13}],17:[function(_dereq_,module,exports){
 'use strict';
 
-var object = require('isomorph/object')
+var object = _dereq_('isomorph/object')
 
-var errors = require('./errors')
+var errors = _dereq_('./errors')
 
 var ValidationError = errors.ValidationError
 
@@ -6601,7 +6604,7 @@ function _unpackIPv4(ipStr) {
  * Determines if we have a valid IPv6 address.
  */
 function isValidIPv6Address(ipStr) {
-  var validateIPv4Address = require('./validators').validateIPv4Address
+  var validateIPv4Address = _dereq_('./validators').validateIPv4Address
 
   // We need to have at least one ':'
   if (ipStr.indexOf(':') == -1) {
@@ -6746,17 +6749,17 @@ module.exports = {
 , isValidIPv6Address: isValidIPv6Address
 }
 
-},{"./errors":16,"./validators":18,"isomorph/object":13}],18:[function(require,module,exports){
+},{"./errors":16,"./validators":18,"isomorph/object":13}],18:[function(_dereq_,module,exports){
 'use strict';
 
-var Concur = require('Concur')
-var is = require('isomorph/is')
-var object = require('isomorph/object')
-var punycode = require('punycode')
-var url = require('isomorph/url')
+var Concur = _dereq_('Concur')
+var is = _dereq_('isomorph/is')
+var object = _dereq_('isomorph/object')
+var punycode = _dereq_('punycode')
+var url = _dereq_('isomorph/url')
 
-var errors = require('./errors')
-var ipv6 = require('./ipv6')
+var errors = _dereq_('./errors')
+var ipv6 = _dereq_('./ipv6')
 
 var ValidationError = errors.ValidationError
 var isValidIPv6Address = ipv6.isValidIPv6Address
