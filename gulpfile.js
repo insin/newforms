@@ -33,9 +33,6 @@ gulp.task('build-js', ['lint'], function(){
     , standalone: 'forms'
     , detectGlobals: false
     }))
-    .on('error', function(e) {
-      console.error(e)
-    })
     .pipe(concat('newforms.js'))
     .pipe(header(srcHeader, {pkg: pkg}))
     .pipe(gulp.dest('./'))
