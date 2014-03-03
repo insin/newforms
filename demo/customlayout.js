@@ -41,12 +41,11 @@ GridLayout.prototype.render = function(form) {
       <td colSpan={2 * this.maxCol}>{nonFieldErrors.render()}</td>
     </tr>)
   }
-  for (var i = 0, l = this.layout.length, row; i < l; i++) {
-    row = this.layout[i]
+  for (var i = 0, l = this.layout.length, rowFields; i < l; i++) {
+    rowFields = this.layout[i]
     var renderedCols = []
-    for (var j = 0, m = row.length, field; j < m; j++) {
-      field = row[j]
-      var bf = form.boundField(field)
+    for (var j = 0, m = rowFields.length; j < m; j++) {
+      var bf = form.boundField(rowFields[j])
       var errors = bf.errors()
       var cssClasses = bf.cssClasses()
       renderedCols.push(
@@ -58,13 +57,12 @@ GridLayout.prototype.render = function(form) {
       )
     }
     // Fill up any remaining columns
-    if (row.length < this.maxCol) {
-      renderedCols.push(<td colSpan={2 * (this.maxCol - row.length)}
+    if (rowFields.length < this.maxCol) {
+      renderedCols.push(<td colSpan={2 * (this.maxCol - rowFields.length)}
                             className={this.fillerCssClass}>
                         </td>)
     }
-    renderedCols.unshift(null)
-    renderedRows.push(React.DOM.tr.apply(React.DOM, renderedCols))
+    renderedRows.push(<tr>{renderedCols}</tr>)
   }
   return renderedRows
 }
