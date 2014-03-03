@@ -3,7 +3,7 @@ var path = require('path')
 var qqunit = require('qqunit')
 var object = require('isomorph/object')
 
-object.extend(global, require('./customAsserts'))
+object.extend(global, require('./customAsserts.js'))
 // This is a manually modified version of React 0.9.0 which hardcodes
 // ExecutionEnvironment.canUseDOM to false so React.renderComponentToString()
 // doesn't throw errors.
