@@ -79,7 +79,7 @@ GridLayout.prototype.render = function(form) {
 var LayoutForm = forms.Form.extend({
   constructor: function LayoutForm(kwargs) {
     if (!(this.layout instanceof FormLayout)) {
-      throw Error('A LayoutForm must have a layout property which is instanceof FormLayout')
+      throw new Error('A LayoutForm must have a layout property which is instanceof FormLayout')
     }
     LayoutForm.__super__.constructor.call(this, kwargs)
   }
