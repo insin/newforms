@@ -156,6 +156,17 @@ Feature differences
 
 Differences in features between ``django.forms`` and newforms:
 
+Mutability & form reuse
+-----------------------
+
+On the client side, a newforms form is expected to be created once and used to
+validate input data repeatedly as the user updates it.
+
+This requires additions to the API, as the ``django.forms`` API expects to be
+dealing with input data from a single HTTP request, whose value doesn't change:
+
+* :js:func:`BaseForm#setData`
+
 ``(form|formset).as_p()`` replaced with ``(form|formset).asDiv()``
 ------------------------------------------------------------------
 

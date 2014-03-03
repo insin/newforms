@@ -53,6 +53,19 @@ QUnit.test('Forms - Accessing the fields from the form', function() {
    'You can alter fields')
 })
 
+QUnit.test("Forms - Updating a form's input data", function() {
+  var f =new ContactForm()
+  var data = {
+    subject: 'hello'
+  , message: 'Hi there'
+  , sender: 'foo@example.com'
+  , ccMyself: true
+  }
+  var isValid = f.setData(data)
+  strictEqual(f.isBound, true, 'setData updates isBound')
+  strictEqual(isValid, true, 'setData returns result of isValid')
+})
+
 QUnit.test('Forms - Outputting forms as HTML', function() {
   var f = new ContactForm()
   reactHTMLEqual(f.render.bind(f),

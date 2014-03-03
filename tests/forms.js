@@ -50,6 +50,19 @@ QUnit.test("Form", 12, function() {
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\"></td></tr>")
 })
 
+QUnit.test('Setting form data', function() {
+  var p = new Person()
+  strictEqual(p.isBound, false, 'initial isBound value')
+  var isValid = p.setData({first_name: "John", last_name: "Lennon", birthday: "1940-10-9"})
+  strictEqual(isValid, true, 'setData calls and returns the result of isValid')
+  strictEqual(p.isBound, true, 'setData makes the form isBound if it was not already')
+  reactHTMLEqual(p.render.bind(p),
+"<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\"></td></tr>\
+<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\"></td></tr>\
+<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\"></td></tr>",
+  "data set with setData render as expected")
+})
+
 QUnit.test("Empty data object", 10, function() {
   // Empty objects are valid, too
   var p = new Person({data: {}})

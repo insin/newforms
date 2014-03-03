@@ -87,7 +87,7 @@ Invalid data::
    print(f.isValid())
    // => false
 
-Form.errors, which is an :js:class:`ErrorObject`::
+``Form.errors()`` returns an :js:class:`ErrorObject`::
 
    f.errors().asText()
    /* =>
@@ -223,6 +223,28 @@ fields::
    // => true
    print(f.cleanedData)
    // => {firstName: 'Alan', lastName: 'Partridge', nickName: false}
+
+Updating a form's input data
+=============================
+
+To update a Form's input data use ``form.setData()``.
+
+This will also trigger validation -- updating ``form.errors()`` and
+``form.cleanedData``, and returning the result of ``form.isValid()``::
+
+   var f = new ContactForm()
+   // ...user inputs data...
+   var data = {
+     subject: 'hello',
+   , message: 'Hi there'
+   , sender: 'foo@example.com'
+   , ccMyself: true
+   }
+   var isValid = f.setData(data)
+   print(f.isBound)
+   // => true
+   print(isValid)
+   // => true
 
 Outputting forms as HTML
 ========================

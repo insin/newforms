@@ -1878,7 +1878,7 @@ var BaseForm = Concur.extend({
     this.errorConstructor = kwargs.errorConstructor
     this.labelSuffix = kwargs.labelSuffix
     this.emptyPermitted = kwargs.emptyPermitted
-    this._errors = null; // Stores errors after clean() has been called
+    this._errors = null // Stores errors after clean() has been called
     this._changedData = null
 
     // The baseFields attribute is the *prototype-wide* definition of fields.
@@ -1888,6 +1888,22 @@ var BaseForm = Concur.extend({
     this.fields = copy.deepCopy(this.baseFields)
   }
 })
+
+/**
+ * Resets validation state, updates the form's input data (and bound status if
+ * necessary) and revalidates, returning the result of isValid().
+ * @param {Object.<string, *} data new input data for the form.
+ * @retun {boolean} true if the new data is valid.
+ */
+BaseForm.prototype.setData = function(data) {
+  this._errors = null
+  this._changedData = null
+  this.data = data
+  if (!this.isBound) {
+    this.isBound = true
+  }
+  return this.isValid()
+}
 
 /**
  * Getter for errors, which first cleans the form if there are no errors

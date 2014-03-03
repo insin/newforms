@@ -121,15 +121,8 @@ var AllFields = React.createClass({
 
 , onSubmit: function(e) {
     e.preventDefault()
-    var form = this.state.form
-    // We should add a setter which does all this
-    form.data = forms.formData(this.refs.form.getDOMNode())
-    if (!form.isBound) {
-      form.isBound = true
-    }
-    form.fullClean()
-    // Let React know we tinkered
-    this.setState({form: form})
+    this.state.form.setData(forms.formData(this.refs.form.getDOMNode()))
+    this.forceUpdate()
   }
 })
 

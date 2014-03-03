@@ -149,6 +149,17 @@ Forms API
    Prototype functions for validating and getting information about the results
    of validation.
 
+   .. js:function:: BaseForm#setData(data)
+
+      Updates the form's input data (and ``isBound`` status, if necessary) and
+      triggers validation, returning the result of ``form.isValid()``.
+
+      :param Object data: new input data for the form
+
+      :return:
+         ``true`` if the form has no errors after validating the updated data.
+
+
    .. js:function:: BaseForm#isValid()
 
       Determines whether or not the form has errors, triggering cleaning of the
