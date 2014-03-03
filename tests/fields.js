@@ -5,6 +5,12 @@ QUnit.test("Field sets widget isRequired", 2, function() {
   strictEqual(new forms.Field({required: false}).widget.isRequired, false)
 })
 
+QUnit.test("Field sets custom metadata", 2, function() {
+  var meta = {}
+  strictEqual(new forms.Field({custom: meta}).custom, meta)
+  strictEqual(new forms.Field().custom, null)
+})
+
 QUnit.test("CharField", 34, function() {
   var f = forms.CharField()
   strictEqual(f.clean(1), "1")

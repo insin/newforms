@@ -76,6 +76,13 @@ API
 
       :type: String
 
+   .. js:attribute:: kwargs.custom
+
+      this argument is provided to pass any custom metadata you require on the
+      field, e.g. extra per-field options for a custom layout you've
+      implemented. Newforms will set anything you pass as this argument on a
+      ``custom`` instance property on the field.
+
    **Prototype Functions**
 
    .. js:function:: Field#prepareValue(value)
