@@ -1,48 +1,48 @@
-  body { font-family: helvetica, arial, sans-serif; font-size: small; }
-  h2 { margin-top: 0; }
-  table {
-    border-spacing: 0;
-    border-color: #36f;
-    border-style: solid;
-    border-width: 3px 1px 1px;
-  }
-  tbody th { text-align: right; padding: 4px 6px; }
-  tbody th, td { vertical-align: top; }
-  tbody td { padding: 4px 6px; }
-  tbody th {
-    background-color: #F9F9FF;
-    border-bottom: 1px solid white;
-    border-right: 1px solid #CCDDFF;
-    font-weight: normal;
-    padding: 5px;
-    text-align: right;
-    vertical-align: top;
-  }
-  th.required {
-    background-color: #CCDDFF;
-  }
-  th.error {
-    background-color: red;
-    color: white;
-    font-weight: bold;
-  }
-  ul.errorlist {
-    list-style: none outside none;
-    margin: 0;
-    padding: 0;
-  }
-  ul.errorlist li {
-    color: red;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  tr.top-errors td { padding: 0; }
-  tr.top-errors li {
-    background-color: red;
-    color: white;
-    text-align: center;
-    font-size: larger;
-    padding: 4px 6px;
-  }
-  .inline-block { display: inline-block; vertical-align: top; }
-  .cleaned-data { margin-left: 1em; }
+body { font-family: helvetica, arial, sans-serif; font-size: small; }
+h2 { margin-top: 0; }
+table {
+  border-spacing: 0;
+  border-color: #36f;
+  border-style: solid;
+  border-width: 3px 1px 1px;
+}
+tbody th { text-align: right; padding: 4px 6px; }
+tbody th, td { vertical-align: top; }
+tbody td { padding: 4px 6px; }
+tbody th {
+  background-color: #F9F9FF;
+  border-bottom: 1px solid white;
+  border-right: 1px solid #CCDDFF;
+  font-weight: normal;
+  padding: 5px;
+  text-align: right;
+  vertical-align: top;
+}
+th.required {
+  background-color: #CCDDFF;
+}
+th.error {
+  background-color: red;
+  color: white;
+  font-weight: bold;
+}
+ul.errorlist {
+  list-style: none outside none;
+  margin: 0;
+  padding: 0;
+}
+ul.errorlist li {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+tr.top-errors td { padding: 0; }
+tr.top-errors li {
+  background-color: red;
+  color: white;
+  text-align: center;
+  font-size: larger;
+  padding: 4px 6px;
+}
+.inline-block { display: inline-block; vertical-align: top; }
+.cleaned-data { margin-left: 1em; }
