@@ -149,7 +149,7 @@ You can alter ``fields`` of a Form instance::
    <tr><th>Comment:</th><td><input type="text" name="comment"></td></tr>
    */
 
-Warning: don't alter ``baseFields`` or every subsequent form isntance will be
+Warning: don't alter ``baseFields`` or every subsequent form instance will be
 affected::
 
    f.baseFields.name.label = 'Username'
@@ -416,7 +416,7 @@ attributes based on the format string::
 
 By default, ``autoId`` is set to the string ``'id_{name}'``.
 
-It’s possible to customize the suffix character appended to generated labels
+It's possible to customise the suffix character appended to generated labels
 (default: ``':'``), or omit it entirely, using the ``labelSuffix`` parameter::
 
    var f = new ContactForm({autoId: 'id_for_{name}', labelSuffix: ''})
@@ -499,7 +499,7 @@ More granular output
 --------------------
 
 To retrieve a single :js:class:`BoundField`, use the :js:func:`BaseForm#boundField`
-method on your form, passing the field’s name::
+method on your form, passing the field's name::
 
    var form = new ContactForm()
    print(reactHTML(form.boundField('subject').render()))
@@ -518,7 +518,7 @@ To retrieve all ``BoundField`` objects, call :js:func:`BaseForm#boundFields`::
    <input type="checkbox" name="ccMyself" id="id_ccMyself">"
    */
 
-The field-specific output honours the form object’s ``autoId`` setting::
+The field-specific output honours the form object's ``autoId`` setting::
 
    var f = new ContactForm({autoId: false})
    print(reactHTML(f.boundField('message').render()))

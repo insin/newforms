@@ -6,13 +6,13 @@ Newforms is a JavaScript port of `Django`_'s ``django.forms``
 `form-handling library`_ library, usable in browsers and on the server with
 `Node.js`_.
 
-As of version 0.5, newforms depends on `React`_ for rendering content in all
+As of version 0.5.0, newforms depends on `React`_ for rendering content in all
 environments and for implementation of client-side interactivity. It's also
-is also tracking ``django.forms`` changes and new features up to and including
-the current development version of Django, 1.7.
+tracking ``django.forms`` changes and new features up to and including the
+current development version of Django, 1.7.
 
-Since this is a port and ``django.forms`` is well-documented, guide
-documentation will initially point to Django documentation and offer some
+Since newforms is initially a port and ``django.forms`` is well-documented,
+guide documentation will initially point to Django documentation and offer some
 equivalent examples in JavaScript.
 
 For an introduction to form-handling features and concepts, please refer to the

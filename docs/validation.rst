@@ -16,7 +16,7 @@ Using validation in practice
 Form field default cleaning
 ---------------------------
 
-Let’s firstly create a custom form field that validates its input is a string
+Let's firstly create a custom form field that validates its input is a string
 containing comma-separated email addresses.::
 
    var MultiEmailField = forms.Field.extend({
@@ -37,7 +37,7 @@ containing comma-separated email addresses.::
      }
    })
 
-Let’s create a simple ContactForm to demonstrate how you’d use this field::
+Let's create a simple ContactForm to demonstrate how you'd use this field::
 
    var ContactForm = forms.Form.extend({
      subject: forms.CharField({maxLength: 100})
@@ -52,7 +52,7 @@ Cleaning a specific field attribute
 
 Suppose that in our ``ContactForm``, we want to make sure that the
 ``recipients`` field always contains the address ``"fred@example.com"``. This is
-validation that is specific to our form, so we don’t want to put it into the
+validation that is specific to our form, so we don't want to put it into the
 general ``MultiEmailField``. Instead, we write a cleaning function that operates
 on the ``recipients`` field, like so:::
 
@@ -105,7 +105,7 @@ you can throw a ``ValidationError`` from the ``clean()`` method. For example::
    }
 
 Another approach might involve assigning the error message to one of the fields.
-In this case, let’s assign an error message to both the "subject" and "ccMyself
+In this case, let's assign an error message to both the "subject" and "ccMyself
 rows in the form display::
 
    var ContactForm = forms.Form.extend({

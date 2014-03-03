@@ -2,6 +2,16 @@
 Formsets
 ========
 
+.. Note::
+
+   The FormSet API is still built around its original server-side usage in
+   Django. Its methods of tracking how many forms there are, adding and removing
+   forms, ordering and deletion are designed with the expectation of
+   round-tripping with HTTP requests.
+
+   Future releases will deal with making FormSets a better fit for client-side
+   capabilities.
+
 For a guide to formsets, please refer to the Django documentation:
 
    * `Django documentation -- Formsets <https://docs.djangoproject.com/en/dev/topics/forms/formsets/>`_
@@ -11,18 +21,8 @@ JavaScript equivalents of example code.
 
 ----
 
-.. Note::
-
-   The FormSet API is built around its original server-side usage in Django.
-   Its methods of tracking how many forms there are, adding and removing forms,
-   ordering and deletion are designed with the expectation of round-tripping
-   with HTTP requests.
-
-   Future releases will deal with making FormSets a better fit for client-side
-   capabilities.
-
 A formset is a layer of abstraction to work with multiple forms on the same
-page. It can be best compared to a data grid. Let’s say you have the following
+page. It can be best compared to a data grid. Let's say you have the following
 form::
 
    var ArticleForm = forms.Form.extend({
