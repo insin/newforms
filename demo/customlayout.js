@@ -8,6 +8,7 @@ var FormLayout = Concur.extend({
   }
 })
 
+// TODO __meta__ which validates this on extension
 FormLayout.prototype.render = function(form) {
   throw new Error('Objects extending FormLayout must define a render() function')
 }
@@ -31,10 +32,6 @@ var GridLayout = FormLayout.extend({
     this.topErrorCssClass = kwargs.topErrorCssClass
   }
 })
-
-GridLayout.prototype.validate = function(form) {
-  // TODO Validate that each field name in this.layout corresponds to a field in he given form
-}
 
 GridLayout.prototype.render = function(form) {
   var renderedRows = []
@@ -72,6 +69,7 @@ GridLayout.prototype.render = function(form) {
   return renderedRows
 }
 
+// TODO __meta__ which validates presence of layout on extension
 /**
  * A Form which is configured with a Layout object which is responsible for
  * rendering -- overrides the default render() function.
@@ -82,7 +80,6 @@ var LayoutForm = forms.Form.extend({
       throw Error('A LayoutForm must have a layout property which is instanceof FormLayout')
     }
     LayoutForm.__super__.constructor.call(this, kwargs)
-    this.layout.validate(this)
   }
 
 , render: function() {
