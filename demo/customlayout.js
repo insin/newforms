@@ -1,5 +1,9 @@
 /** @jsx React.DOM */
 
+void function() {
+
+'use strict';
+
 /**
  * @interface
  */
@@ -176,3 +180,5 @@ var CustomLayout = React.createClass({
 })
 
 React.renderComponent(<CustomLayout/>, document.getElementById('app'))
+
+}()

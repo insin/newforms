@@ -2,6 +2,10 @@
  * @jsx React.DOM
  */
 
+void function() {
+
+'use strict';
+
 var choices = [
   [1, 'foo']
 , [2, 'bar']
@@ -127,3 +131,5 @@ var AllFields = React.createClass({
 })
 
 React.renderComponent(<AllFields/>, document.getElementById('app'))
+
+}()
