@@ -48,6 +48,18 @@ gulp.task('build-js', ['lint'], function(){
   return stream
 })
 
+// Copies browser build to ./dist, renaming to include a version number suffix
+gulp.task('dist', ['build-js'], function() {
+  return gulp.src('./newforms*.js')
+    .pipe(rename(function(path) {
+       // As of 1.0, gulp-rename doesn't include .min as part of the extension,
+       // so we need to use this custom rename function to insert the desired
+       // suffix into the basename.
+       path.basename = path.basename.replace(/(newforms)/, '$1-' + pkg.version)
+     }))
+    .pipe(gulp.dest('./dist'))
+})
+
 gulp.task('watch', function() {
   gulp.watch(jsPath, ['build-js'])
 })
