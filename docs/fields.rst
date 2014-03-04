@@ -248,6 +248,8 @@ API
          implemented yet -- ``ImageField`` performs the same validation as
          ``FileField``.
 
+   Adds an ``accept="image/*"`` attribute to its ``<input type="file">`` widget.
+
 .. js:class:: URLField([kwargs])
 
    Validates that its input appears to be a valid URL.

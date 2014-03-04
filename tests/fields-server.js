@@ -12,13 +12,13 @@ QUnit.module("fields (server)", {
   }
 })
 
-QUnit.test("FileField", 23, function() {
-  function SimpleUploadedFile(name, content) {
-    this.name = name
-    this.content = content
-    this.size = (content !== null ? content.length : 0)
-  }
+function SimpleUploadedFile(name, content) {
+  this.name = name
+  this.content = content
+  this.size = (content !== null ? content.length : 0)
+}
 
+QUnit.test("FileField", 23, function() {
   var f = forms.FileField()
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", "", "")
