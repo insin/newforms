@@ -73,7 +73,7 @@ make use of for customisation purposes.
 
       Returns true if any fields have error details set.
 
-   .. js:function:: ErrorObject#rendering()
+   .. js:function:: ErrorObject#render()
 
       Default rendering is as a list.
 
@@ -122,6 +122,8 @@ make use of for customisation purposes.
 
    .. js:function:: ErrorList#render()
 
+      .. versionadded:: 0.5
+
       Default rendering is as a list.
 
    .. js:function:: ErrorList#asUl()
@@ -135,10 +137,14 @@ make use of for customisation purposes.
 
    .. js:function:: ErrorList#asData()
 
+      .. versionadded:: 0.5
+
       Creates an "unwrapped" version of the data in the ErrorList - a plain
       Array containing ValidationErrors.
 
    .. js:function:: ErrorList#toJSON()
+
+      .. versionadded:: 0.5
 
       Creates a representation of all the contents of the ErrorList for
       serialisation, to be called by ``JSON.stringify()`` if this object is

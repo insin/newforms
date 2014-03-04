@@ -30,11 +30,15 @@ equivalents of example code.
 Bound and unbound forms
 =======================
 
-Creating a form::
+Creating a form:
+
+.. code-block:: javascript
 
    var f = new ContactForm()
 
-Creating a bound form::
+Creating a bound form:
+
+.. code-block:: javascript
 
    var data = {
      subject: 'hello',
@@ -44,14 +48,16 @@ Creating a bound form::
    }
    var f = new ContactForm({data: data})
 
-Binding data to an existing form::
+Binding data to an existing form:
+
+.. code-block:: javascript
 
    var isValid = f.setData(data)
 
 Form.isBound
 ------------
 
-::
+.. code-block:: javascript
 
    var f = mew ContactForm()
    print(f.isBound)
@@ -60,7 +66,9 @@ Form.isBound
    print(f.isBound)
    // => true
 
-A form given an empty object is still bound::
+A form given an empty object is still bound:
+
+.. code-block:: javascript
 
    var f = new ContactForm({data: {}})
    print(f.isBound)
@@ -69,7 +77,9 @@ A form given an empty object is still bound::
 Using forms to validate data
 ============================
 
-Valid data::
+Valid data:
+
+.. code-block:: javascript
 
    var data = {
      subject: 'hello',
@@ -81,7 +91,9 @@ Valid data::
    print(f.isValid())
    // => true
 
-Invalid data::
+Invalid data:
+
+.. code-block:: javascript
 
    var data = {
      subject: 'hello',
@@ -93,7 +105,9 @@ Invalid data::
    print(f.isValid())
    // => false
 
-``Form.errors()`` returns an :js:class:`ErrorObject`::
+``Form.errors()`` returns an :js:class:`ErrorObject`:
+
+.. code-block:: javascript
 
    f.errors().asText()
    /* =>
@@ -106,7 +120,7 @@ Invalid data::
 Behaviour of unbound forms
 --------------------------
 
-::
+.. code-block:: javascript
 
    var f = new ContactForm()
    print(f.isValid())
@@ -117,11 +131,15 @@ Behaviour of unbound forms
 Dynamic initial values
 ======================
 
-``Form.initial``::
+``Form.initial``:
+
+.. code-block:: javascript
 
    var f = new ContactForm({initial: {subject: 'Hi there!'}})
 
-Form-level ``initial`` gets precedence::
+Form-level ``initial`` gets precedence:
+
+.. code-block:: javascript
 
    var CommentForm = forms.Form.extend({
      name: forms.CharField({initial: 'prototype'})
@@ -140,12 +158,16 @@ Form-level ``initial`` gets precedence::
 Accessing the fields from the form
 ==================================
 
-Form.fields::
+Form.fields:
+
+.. code-block:: javascript
 
    print(f.fields)
    // => {name: [object CharField], url: [object URLField], comment: [object CharField]}
 
-You can alter ``fields`` of a Form instance::
+You can alter ``fields`` of a Form instance:
+
+.. code-block:: javascript
 
    f.fields.name.label = 'Username'
    print(reactHTML(f.render()))
@@ -156,7 +178,9 @@ You can alter ``fields`` of a Form instance::
    */
 
 Warning: don't alter ``baseFields`` or every subsequent form instance will be
-affected::
+affected:
+
+.. code-block:: javascript
 
    f.baseFields.name.label = 'Username'
    var anotherForm = new CommentForm({autoId: false})
@@ -170,7 +194,9 @@ affected::
 Accessing "clean" data
 ======================
 
-Form.cleanedData::
+Form.cleanedData:
+
+.. code-block:: javascript
 
    var data = {
      subject: 'hello',
@@ -184,7 +210,9 @@ Form.cleanedData::
    print(f.cleanedData)
    // => {subject: 'hello', message: 'Hi there', sender: 'foo@example.com', ccMyself: true}
 
-``cleanedData`` contains only valid fields::
+``cleanedData`` contains only valid fields:
+
+.. code-block:: javascript
 
    var data = {
      subject: '',
@@ -198,7 +226,9 @@ Form.cleanedData::
    print(f.cleanedData)
    // => {message: 'Hi there', sender: 'foo@example.com', ccMyself: true}
 
-``cleanedData`` will only contain properties for fields defined in the form::
+``cleanedData`` will only contain properties for fields defined in the form:
+
+.. code-block:: javascript
 
    var data = {
      subject: 'Hello',
@@ -216,7 +246,9 @@ Form.cleanedData::
    // => {subject: 'hello', message: 'Hi there', sender: 'foo@example.com', ccMyself: true}
 
 When the Form is valid, ``cleanedData`` will include properties for all its
-fields::
+fields:
+
+.. code-block:: javascript
 
    var OptionalPersonForm = forms.Form.extend({
      firstName: forms.CharField()
@@ -236,7 +268,9 @@ Updating a form's input data
 To update a Form's input data use ``form.setData()``.
 
 This will also trigger validation -- updating ``form.errors()`` and
-``form.cleanedData``, and returning the result of ``form.isValid()``::
+``form.cleanedData``, and returning the result of ``form.isValid()``:
+
+.. code-block:: javascript
 
    var f = new ContactForm()
    // ...user inputs data...
@@ -256,7 +290,9 @@ Outputting forms as HTML
 ========================
 
 Call ``render()`` -- forms have an ``asTable()`` method which is used as the
-default rendering, so calling ``render()`` is equivalent::
+default rendering, so calling ``render()`` is equivalent:
+
+.. code-block:: javascript
 
    var f = new ContactForm()
    print(reactHTML(f.render()))
@@ -276,7 +312,9 @@ Usage in JSX::
    </tbody>
 
 If the form is bound to data, the HTML output will include that data
-appropriately::
+appropriately:
+
+.. code-block:: javascript
 
    var data = {
      subject: 'hello'
@@ -297,7 +335,9 @@ appropriately::
 -----------
 
 ``asDiv()`` renders the form as a series of ``<div>`` tags, with each ``<div>``
-containing one field::
+containing one field:
+
+.. code-block:: javascript
 
    var f = new ContactForm()
    print(reactHTML(f.asDiv()))
@@ -312,7 +352,9 @@ containing one field::
 ----------
 
 ``asUl()`` renders the form as a series of ``<li>`` tags, with each ``<li>``
-containing one field::
+containing one field:
+
+.. code-block:: javascript
 
    var f = new ContactForm()
    print(reactHTML(f.asUl()))
@@ -334,7 +376,9 @@ attributes to form rows in the default rendering:
 * ``requiredCssClass`` -- applied to form rows for required fields
 
 To use these hooks, ensure your form has them as prototype or instance
-properties, e.g. to set them up as protoype properties::
+properties, e.g. to set them up as protoype properties:
+
+.. code-block:: javascript
 
    var ContactForm = forms.Form.extend({
      rowCssClass: 'row'
@@ -343,7 +387,9 @@ properties, e.g. to set them up as protoype properties::
    // ...and the rest of your fields here
    })
 
-Once you've done that, the generated markup will look something like::
+Once you've done that, the generated markup will look something like:
+
+.. code-block:: javascript
 
    var data = {
      subject: 'hello'
@@ -366,7 +412,9 @@ Configuring form elements' HTML ``id`` attributes and ``<label>`` tags
 ----------------------------------------------------------------------
 
 If ``autoId`` is ``false``, then the form output will include neither
-``<label>`` tags nor ``id`` attributes::
+``<label>`` tags nor ``id`` attributes:
+
+.. code-block:: javascript
 
    var f = new ContactForm({autoId: false})
    print(reactHTML(f.asTable()))
@@ -392,7 +440,9 @@ If ``autoId`` is ``false``, then the form output will include neither
    */
 
 If ``autoId`` is set to ``true``, then the form output will include ``<label>``
-tags and will simply use the field name as its ``id`` for each form field::
+tags and will simply use the field name as its ``id`` for each form field:
+
+.. code-block:: javascript
 
    var f = new ContactForm({autoId: false})
    print(reactHTML(f.asTable()))
@@ -419,7 +469,9 @@ tags and will simply use the field name as its ``id`` for each form field::
 
 If autoId is set to a string containing a ``'{name}'`` format placeholder, then
 the form output will include ``<label>`` tags, and will generate ``id``
-attributes based on the format string::
+attributes based on the format string:
+
+.. code-block:: javascript
 
    var f = new ContactForm({autoId: 'id_for_{name}'})
    print(reactHTML(f.asTable()))
@@ -447,7 +499,9 @@ attributes based on the format string::
 By default, ``autoId`` is set to the string ``'id_{name}'``.
 
 It's possible to customise the suffix character appended to generated labels
-(default: ``':'``), or omit it entirely, using the ``labelSuffix`` parameter::
+(default: ``':'``), or omit it entirely, using the ``labelSuffix`` parameter:
+
+.. code-block:: javascript
 
    var f = new ContactForm({autoId: 'id_for_{name}', labelSuffix: ''})
    print(reactHTML(f.asUl()))
@@ -470,7 +524,9 @@ How errors are displayed
 ------------------------
 
 Default HTML output will include  validation errors as a
-``<ul class="errorlist">`` near the field::
+``<ul class="errorlist">`` near the field:
+
+.. code-block:: javascript
 
    var data = {
      subject: ''
@@ -505,7 +561,9 @@ Customising the error list format
 ---------------------------------
 
 You can pass an alternate constructor for displaying errors at form construction
-time::
+time:
+
+.. code-block:: javascript
 
    var DivErrorList = forms.ErrorList.extend({
      render: function() {
@@ -529,13 +587,17 @@ More granular output
 --------------------
 
 To retrieve a single :js:class:`BoundField`, use the :js:func:`BaseForm#boundField`
-method on your form, passing the field's name::
+method on your form, passing the field's name:
+
+.. code-block:: javascript
 
    var form = new ContactForm()
    print(reactHTML(form.boundField('subject').render()))
    // => <input maxlength="100\ type="text" name="subject\" id="id_subject">
 
-To retrieve all ``BoundField`` objects, call :js:func:`BaseForm#boundFields`::
+To retrieve all ``BoundField`` objects, call :js:func:`BaseForm#boundFields`:
+
+.. code-block:: javascript
 
    var form = new ContactForm()
    form.boundFields().forEach(function(bf) {
@@ -548,7 +610,9 @@ To retrieve all ``BoundField`` objects, call :js:func:`BaseForm#boundFields`::
    <input type="checkbox" name="ccMyself" id="id_ccMyself">"
    */
 
-The field-specific output honours the form object's ``autoId`` setting::
+The field-specific output honours the form object's ``autoId`` setting:
+
+.. code-block:: javascript
 
    var f = new ContactForm({autoId: false})
    print(reactHTML(f.boundField('message').render()))
@@ -558,7 +622,9 @@ The field-specific output honours the form object's ``autoId`` setting::
    // => <input type="text" name="message" id="id_message">
 
 ``boundField.errors()`` returns an object which renders as a
-``<ul class="errorlist">``::
+``<ul class="errorlist">``:
+
+.. code-block:: javascript
 
    var data = {subject: 'hi', message: '', sender: '', ccMyself: ''}
    var f = new ContactForm({data: data, autoId: false})
@@ -576,27 +642,35 @@ The field-specific output honours the form object's ``autoId`` setting::
    // =>
 
 To separately render the label tag of a form field, you can call its
-:js:func:`BoundField#labelTag()` method::
+:js:func:`BoundField#labelTag()` method:
+
+.. code-block:: javascript
 
    var f = new ContactForm()
    print(reactHTML(f.boundField('message').labelTag()))
    // => <label for="id_message">Message:</label>
 
 If you're manually rendering a field, you can access configured CSS classes
-using the ``cssClasses`` method::
+using the ``cssClasses`` method:
+
+.. code-block:: javascript
 
    var f = new ContactForm()#
    f.requiredCssClass = 'required'
    print(f.boundField('message').cssClasses())
    // => required
 
-Additional classes can be provided as an argument::
+Additional classes can be provided as an argument:
+
+.. code-block:: javascript
 
    print(f.boundField('message').cssClasses('foo bar'))
    // => foo bar required
 
 ``boundField.value()`` returns the raw value of the field as it would be
-rendered by a :js:class:`Widget`::
+rendered by a :js:class:`Widget`:
+
+.. code-block:: javascript
 
   var initial = {subject: 'welcome'}
   var data = {subject: 'hi'}
@@ -608,7 +682,9 @@ rendered by a :js:class:`Widget`::
   // => hi
 
 ``boundField.idForLabel()`` returns the ``id`` of the field. For example, if you
-are manually constructing a ``label`` in JSX::
+are manually constructing a ``label`` in JSX:
+
+.. code-block:: javascript
 
   <label htmlFor={form.boundField('myField').idForLabel()}>...<label>
 
@@ -616,7 +692,9 @@ Extending forms
 ===============
 
 When you extend a custom ``Form``, the resulting form will include all fields of
-its parent form(s), followed by any new fields defined::
+its parent form(s), followed by any new fields defined:
+
+.. code-block:: javascript
 
    var ContactFormWithPrority = ContactForm.extend({
      priority: forms.CharField()
@@ -633,7 +711,9 @@ its parent form(s), followed by any new fields defined::
 
 Forms can be used as mixins (using `Concur`_'s ``__mixin__`` functionality). In
 this example, ``BeatleForm`` mixes in ``PersonForm`` and ``InstrumentForm``, and
-its field list includes their fields::
+its field list includes their fields:
+
+.. code-block:: javascript
 
    var PersonForm = forms.Form.extend({
      first_name: forms.CharField()
@@ -659,7 +739,9 @@ Prefixes for forms
 ==================
 
 You can put as many forms as you like inside one ``<form>`` tag. To give each
-form its own namespace, use the ``prefix`` argument::
+form its own namespace, use the ``prefix`` argument:
+
+.. code-block:: javascript
 
    var mother = new PersonForm({prefix: 'mother'})
    var father = new PersonForm({prefix: 'father'})

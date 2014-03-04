@@ -126,12 +126,16 @@ String placeholders
 Newforms always uses named placeholders in strings, surrounding the placeholder
 name with ``{}``:
 
-   **Python**::
+   **Python**:
+
+   .. code-block:: python
 
       form = ContactForm(auto_id='id_%s')
       field = ChoiceField(error_messages={'invalid_choice': 'Anything but %(value)s!'})
 
-   **JavaScript**::
+   **JavaScript**:
+
+   .. code-block:: javascript
 
       var form = new ContactForm({autoId: 'id_{name}'})
       var field = ChoiceField({errorMessages: {invalidChoice: 'Anything but {value}!'}})

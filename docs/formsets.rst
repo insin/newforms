@@ -23,7 +23,9 @@ JavaScript equivalents of example code.
 
 A formset is a layer of abstraction to work with multiple forms on the same
 page. It can be best compared to a data grid. Let's say you have the following
-form::
+form:
+
+.. code-block:: javascript
 
    var ArticleForm = forms.Form.extend({
      title: forms.CharField()
@@ -37,7 +39,9 @@ a formset out of an ``ArticleForm`` you would do::
 
 You now have created a formset named ``ArticleFormSet``. The formset gives you
 the ability to iterate over the forms in the formset and display them as you
-would with a regular form::
+would with a regular form:
+
+.. code-block:: javascript
 
    var formset = new ArticleFormSet()
    formset.forms().forEach(function(form) {
@@ -51,7 +55,9 @@ would with a regular form::
 As you can see it only displayed one empty form. The number of empty forms
 that is displayed is controlled by the ``extra`` parameter. By default,
 :js:func:`formsetFactory` defines one extra form; the following example will
-display two blank forms::
+display two blank forms:
+
+.. code-block:: javascript
 
    var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2})
 
@@ -62,7 +68,9 @@ Initial data is what drives the main usability of a formset. As shown above
 you can define the number of extra forms. What this means is that you are
 telling the formset how many additional forms to show in addition to the
 number of forms it generates from the initial data. Let's take a look at an
-example::
+example:
+
+.. code-block:: javascript
 
    var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2})
    var formset = new ArticleFormSet({initial: [
@@ -88,7 +96,9 @@ Limiting the maximum number of forms
 ====================================
 
 The ``maxNum`` parameter to :js:func:`formsetFactory` gives you the ability to
-limit the maximum number of empty forms the formset will display::
+limit the maximum number of empty forms the formset will display:
+
+.. code-block:: javascript
 
    var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2, maxNum: 1})
    var formset = new ArticleFormSet()
@@ -105,7 +115,9 @@ Formset validation
 
 Validation with a formset is almost identical to a regular ``Form``. There's an
 ``isValid()`` method on the formset to provide a convenient way to validate
-all forms in the formset::
+all forms in the formset:
+
+.. code-block:: javascript
 
    var ArticleFormSet = forms.formsetFactory(ArticleForm)
    var data = {
@@ -117,7 +129,9 @@ all forms in the formset::
    print(formset.isValid()
    // => true
 
-If we provide an invalid article::
+If we provide an invalid article:
+
+.. code-block:: javascript
 
    var data = {
      'form-TOTAL_FORMS': '2'
@@ -135,13 +149,17 @@ If we provide an invalid article::
    // => [{}, {pubDate: [{message: 'This field is required.', code: 'required'}]}]
 
 To check how many errors there are in the formset, we can use the
-``totalErrorCount()`` method::
+``totalErrorCount()`` method:
+
+.. code-block:: javascript
 
    formset.totalErrorCount()
    // => 1
 
 We can also check if form data differs from the initial data (i.e. the form was
-sent without any data)::
+sent without any data):
+
+.. code-block:: javascript
 
    var data = {
      'form-TOTAL_FORMS': '1'
@@ -158,7 +176,9 @@ Custom formset validation
 -------------------------
 
 A formset has a ``clean()`` method similar to the one on a ``Form`` class. This
-is where you define your own validation that works at the formset level::
+is where you define your own validation that works at the formset level:
+
+.. code-block:: javascript
 
    var BaseArticleFormSet = forms.BaseFormSet.extend({
      /** Checks that no two articles have the same title. */
@@ -204,47 +224,32 @@ API
 
    :param Object kwargs: configuration options.
 
-   .. js:attribute:: kwargs.data
-
+   :param Array.<Object> kwargs.data:
       list of input form data for each form, where property names are field
       names. A formset with data is considered to be "bound" and ready for use
       validating and coercing the given data.
 
-      :type: Array of Objects
-
-   .. js:attribute:: kwargs.files
-
+   :param Array.<Object> kwargs.files:
       list of input file data for each form.
 
-      :type: Array of Objects
-
-   .. js:attribute:: kwargs.autoId
-
+   :param String kwargs.autoId:
       a template for use when automatically generating ``id`` attributes for
       fields, which should contain a ``{name}`` placeholder for the field name.
       Defaults to ``id_{name}``.
 
-   .. js:attribute:: kwargs.prefix
-
+   :param String kwargs.prefix:
       a prefix to be applied to the name of each field in each form instance.
 
-   .. js:attribute:: kwargs.initial
-
+   :param Array.<Object> kwargs.initial:
       a list of initial form data objects, where property names are field names
       -- if a field's value is not specified in ``data``, these values will be
       used when rendering field widgets.
 
-      :type: Array of Objects
-
-   .. js:attribute:: kwargs.errorConstructor
-
+   :param Function kwargs.errorConstructor:
       the constructor function to be used when creating error details - defaults
       to :js:class:`ErrorList`.
 
-      :type: Function
-
-   .. js:attribute:: kwargs.managementFormCssClass
-
+   :param String kwargs.managementFormCssClass:
       a CSS class to be applied when rendering
       :js:func:`BaseFormSet#managementForm`, as default rendering methods place
       its hidden fields in an additonal form row just for hidden fields, to
@@ -371,6 +376,8 @@ API
 
    .. js:function:: BaseFormSet#render()
 
+      .. versionadded: newforms 0.5
+
       Default rendering method, which calls :js:func:`BaseFormSet#asTable`
 
    .. js:function:: BaseFormSet#asTable()
@@ -384,6 +391,8 @@ API
       ``<li>`` containing one field.
 
    .. js:function:: BaseFormSet#asDiv()
+
+      .. versionadded: newforms 0.5
 
       Renders the formset's forms as a series of ``<div>`` tags, with each
       ``<div>`` containing one field.
@@ -423,40 +432,32 @@ API
       constructor's ``prototype``, so this object can also be used to define new
       methods on the resulting formset, such as a custom ``clean`` method.
 
-   .. js:attribute:: kwargs.formset (Function)
-
+   :param Function kwargs.formset:
       the constructuer which will provide the prototype for the created FormSet
       constructor -- defaults to :js:class:`BaseFormSet`.
 
-   .. js:attribute:: kwargs.extra
-
+   :param Number kwargs.extra:
       the number of extra forms to be displayed -- defaults to ``1``.
 
-   .. js:attribute:: kwargs.canOrder
-
+   :param Boolean kwargs.canOrder:
       if ``true``, forms can be ordered -- defaults to ``false``.
 
-   .. js:attribute:: kwargs.canDelete
-
+   :param Boolean kwargs.canDelete:
       if ``true``, forms can be deleted -- defaults to ``false``.
 
-   .. js:attribute:: kwargs.maxNum
-
+   :param Number kwargs.maxNum:
       the maximum number of forms to be displayed -- defaults to
       :js:data:`DEFAULT_MAX_NUM`.
 
-   .. js:attribute:: kwargs.validateMax
-
+   :param Boolean kwargs.validateMax:
       if ``true``, validation will also check that the number of forms in the
       data set, minus those marked for deletion, is less than or equal to
       ``maxNum``.
 
-   .. js:attribute:: kwargs.minNum
-
+   :param Number kwargs.minNum:
       the minimum number of forms to be displayed -- defaults to ``0``.
 
-   .. js:attribute:: kwargs.validateMin
-
+   :param Boolean kwargs.validateMin:
       if ``true``, validation will also check that the number of forms in the
       data set, minus those marked for deletion, is greater than or equal to
       ``minNum``.

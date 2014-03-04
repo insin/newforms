@@ -2,7 +2,7 @@
 Widgets
 =======
 
-For a guide to widgets, please refer to the Django documentation:
+For a guide to Widgets, please refer to the Django documentation:
 
    * `Django documentation -- Widgets <https://docs.djangoproject.com/en/dev/ref/forms/widgets/>`_
 
@@ -16,13 +16,10 @@ API
    A widget handles the rendering of HTML, and the extraction of data from an
    object that corresponds to the widget.
 
-   :param Object kwargs: widget options.
+   :param Object kwargs: widget options, which are as follows:
 
-   .. js:attribute:: kwargs.attrs
-
+   :param Object kwargs.attrs:
       HTML attributes for the rendered widget.
-
-      :type: Object
 
    **Instance Properties**
 
@@ -114,13 +111,19 @@ API
 
 .. js:class:: NumberInput([kwargs])
 
+   .. versionadded:: 0.5
+
    An ``<input type="number">`` widget
 
 .. js:class:: EmailInput([kwargs])
 
+   .. versionadded:: 0.5
+
    An ``<input type="email">`` widget
 
 .. js:class:: URLInput([kwargs])
+
+   .. versionadded:: 0.5
 
    An ``<input type="url">`` widget
 
@@ -130,12 +133,9 @@ API
 
    :param Object kwargs: widget options
 
-   .. js:attribute:: kwargs.renderValue
-
+   :param Boolean kwargs.renderValue:
       if ``false`` a value will not be rendered for this field -- defaults to
       ``false``.
-
-      :type: Boolean
 
 .. js:class:: HiddenInput([kwargs])
 
@@ -169,11 +169,8 @@ API
 
    :param Object kwargs: widget options
 
-   .. js:attribute:: kwargs.format
-
+   :param String kwargs.format:
       a `time.strftime() format string`_ for a date.
-
-      :type: String
 
 .. js:class:: DateTimeInput([kwargs])
 
@@ -182,11 +179,8 @@ API
 
    :param Object kwargs: widget options
 
-   .. js:attribute:: kwargs.format
-
+   :param String kwargs.format:
       a `time.strftime() format string`_ for a datetime.
-
-      :type: String
 
 .. js:class:: TimeInput([kwargs])
 
@@ -195,11 +189,8 @@ API
 
    :param Object kwargs: widget options
 
-   .. js:attribute:: kwargs.format
-
+   :param String kwargs.format:
       a `time.strftime() format string`_ for a time.
-
-      :type: String
 
 .. js:class:: CheckboxInput([kwargs])
 
@@ -207,12 +198,9 @@ API
 
    :param Object kwargs: widget options
 
-   .. js:attribute:: kwargs.checkTest
-
+   :param Function kwargs.checkTest:
       a function which takes a value and returns ``true`` if the checkbox should
       be checked for that value.
-
-      :type: Function
 
 .. js:class:: Select([kwargs])
 
@@ -220,12 +208,9 @@ API
 
    :param Object kwargs: widget options
 
-   .. js:attribute:: kwargs.choices
-
+   :param Array kwargs.choices:
       choices to be used when rendering the widget, with each choice specified
-      as an Array in ``[value, text]`` format -- defaults to ``[]``.
-
-      :type: Array
+      as pair in ``[value, text]`` format -- defaults to ``[]``.
 
 .. js:class:: NullBooleanSelect([kwargs])
 
@@ -246,11 +231,8 @@ API
 
    :param Object kwargs: widget options
 
-   .. js:attribute:: kwargs.renderer
-
+   :param Function kwargs.renderer:
       a custom :js:class:`RadioFieldRenderer` constructor.
-
-      :type: Function
 
    **Prototype Functions**
 
@@ -305,11 +287,8 @@ API
 
    :param Object kwargs: widget options
 
-   .. js:attribute:: kwargs.renderer
-
+   :param Function kwargs.renderer:
       a custom :js:class:`CheckboxFieldRenderer` constructor.
-
-      :type: Function
 
    **Prototype Functions**
 
@@ -390,12 +369,10 @@ API
    :param Object kwargs:
       widget options additional to those specified in :js:class:`MultiWidget`.
 
-   .. js:attribute:: kwargs.dateFormat
-
+   :param String kwargs.dateFormat:
       a `time.strftime() format string`_ for a date.
 
-   .. js:attribute:: kwargs.timeFormat
-
+   :param String kwargs.timeFormat:
       a `time.strftime() format string`_ for a time.
 
 .. js:class:: SplitHiddenDateTimeWidget([kwargs])

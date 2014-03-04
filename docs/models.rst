@@ -16,25 +16,25 @@ API
 
    A means of hooking newforms up with information about your model layer.
 
-   .. js:attribute:: throwsIfNotFound
+   .. js:attribute:: ModelInterface.throwsIfNotFound
 
       Set to ``true`` if an exception is thrown when a model can't be found.
 
-   .. js:attribute:: notFoundErrorConstructor
+   .. js:attribute:: ModelInterface.notFoundErrorConstructor
 
       Constructor of error to ve thrown when a model can't be found. Any
       exceptions which do not have this constructor will be rethrown.
 
-   .. js:attribute:: notFoundValue
+   .. js:attribute:: ModelInterface.notFoundValue
 
       Value returned to indicate not found, instead of throwing an exception.
 
-   .. js:attribute:: prepareValue
+   .. js:attribute:: ModelInterface.prepareValue
 
       Given a model instance, should return the id which will be used to search
       for valid choices on submission.
 
-   .. js:attribute:: findById
+   .. js:attribute:: ModelInterface.findById
 
       Finds a model instance by id, given the model query which was passed to
       newforms and the id of the selected model.
@@ -50,8 +50,7 @@ API
 
    :param Object kwargs: field options
 
-   .. js:attribute:: kwargs.cacheChoice
-
+   :param Boolean kwargs.cacheChoice:
       if ``true``, the model query function will only be called the first
       time it is needed, otherwise it will be called every time the field is
       rendered.

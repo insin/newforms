@@ -17,7 +17,9 @@ Form field default cleaning
 ---------------------------
 
 Let's firstly create a custom form field that validates its input is a string
-containing comma-separated email addresses.::
+containing comma-separated email addresses:
+
+.. code-block:: javascript
 
    var MultiEmailField = forms.Field.extend({
      /** Normalise data to a list of strings. */
@@ -37,7 +39,9 @@ containing comma-separated email addresses.::
      }
    })
 
-Let's create a simple ContactForm to demonstrate how you'd use this field::
+Let's create a simple ContactForm to demonstrate how you'd use this field:
+
+.. code-block:: javascript
 
    var ContactForm = forms.Form.extend({
      subject: forms.CharField({maxLength: 100})
@@ -54,7 +58,9 @@ Suppose that in our ``ContactForm``, we want to make sure that the
 ``recipients`` field always contains the address ``"fred@example.com"``. This is
 validation that is specific to our form, so we don't want to put it into the
 general ``MultiEmailField``. Instead, we write a cleaning function that operates
-on the ``recipients`` field, like so:::
+on the ``recipients`` field, like so:
+
+.. code-block:: javascript
 
    var ContactForm = forms.Form.extend({
      // Everything as before
@@ -83,7 +89,9 @@ forms.Form.clean()
 
 There are two ways to report any errors from this step. Probably the most common
 method is to display the error at the top of the form. To create such an error,
-you can throw a ``ValidationError`` from the ``clean()`` method. For example::
+you can throw a ``ValidationError`` from the ``clean()`` method. For example:
+
+.. code-block:: javascript
 
    var ContactForm = forms.Form.extend({
      // Everything as before
@@ -106,7 +114,9 @@ you can throw a ``ValidationError`` from the ``clean()`` method. For example::
 
 Another approach might involve assigning the error message to one of the fields.
 In this case, let's assign an error message to both the "subject" and "ccMyself
-rows in the form display::
+rows in the form display:
+
+.. code-block:: javascript
 
    var ContactForm = forms.Form.extend({
      // Everything as before
@@ -139,7 +149,7 @@ newforms API.
    Single messages (e.g. those produced by validators) may have an associated
    error code and error message parameters to allow customisation by fields.
 
-   :param Object message:
+   :param message:
       the message argument can be a single error, a list of errors, or an object
       that maps field names to lists of errors.
 
@@ -150,16 +160,12 @@ newforms API.
 
    :param Object kwargs: validation error options.
 
-   .. js:attribute:: kwargs.code
-
+   :param String kwargs.code:
       a code identifying the type of single message this validation error is.
 
-   .. js:attribute:: kwargs.params
-
+   :param Object kwargs.params:
       parameters to be interpolated into the validation error message. where the
       message contains curly-bracketed {placeholders} for parameter properties.
-
-      :type: Object
 
    **Prototype Functions**
 
@@ -186,42 +192,54 @@ Constructors in the validators module are actually validation function factories
 -- they can be called with or without ``new`` and will return a Function which
 performs the configured validation when called.
 
-.. js:class:: RegexValidator(options)
+.. js:class:: RegexValidator(kwargs)
 
    Creates a validator which validates that input matches a regular expression.
 
-   Options which can be passed are:
+   :param Object kwargs: validator options, which are as follows:
 
-   * ``regex`` -- the regular expression pattern to search for the provided value,
-     or a pre-compiled ``RegExp``.  By default, matches any string (including an
-     empty string)
-   * ``message`` -- the error message used by ``ValidationError`` if validation
-     fails. Defaults to ``"Enter a valid value"``.
-   * ``code`` -- the error code used by ``ValidationError`` if validation fails.
-     Defaults to ``"invalid"``.
-   * ``inverseMatch`` -- the match mode for ``regex``. Defaults to ``false``.
+   :param kwargs.regex:
+      the regular expression pattern to search for the provided value, or a
+      pre-compiled ``RegExp``. By default, matches any string (including an
+      empty string)
+   :type kwargs.regex: RegExp or String
 
-.. js:class:: URLValidator(options)
+   :param String kwargs.message:
+      the error message used by ``ValidationError`` if validation fails.
+      Defaults to ``"Enter a valid value"``.
+
+   :param String kwargs.code:
+      the error code used by ``ValidationError`` if validation fails. Defaults
+      to ``"invalid"``.
+
+   :param Boolean kwargs.inverseMatch:
+      the match mode for ``regex``. Defaults to ``false``.
+
+.. js:class:: URLValidator(kwargs)
 
    Creates a validator which validates that input looks like a valid URL.
 
-   Options which can be passed are:
+   :param Object kwargs: validator options, which are as follows:
 
-   * ``schemes`` -- allowed URL schemes. Defaults to
-     ``['http', 'https', 'ftp', 'ftps']``.
+   :param Array.<String> kwargs.schemes:
+      allowed URL schemes. Defaults to ``['http', 'https', 'ftp', 'ftps']``.
 
-.. js:class:: EmailValidator(options)
+.. js:class:: EmailValidator(kwargs)
 
    Creates a validator which validates that input looks like a valid e-mail
    address.
 
-   Options which can be passed are:
+   :param Object kwargs: validator options, which are as follows:
 
-   * ``message`` -- error message to be used in any generated ``ValidationError``.
-   * ``code`` -- error code to be used in any generated ``ValidationError``.
-   * ``whitelist`` -- a whitelist of domains which are allowed to be the only thing
-     to the right of the ``@`` in a valid email address -- defaults to
-     ``['localhost']``.
+   :param String kwargs.message:
+      error message to be used in any generated ``ValidationError``.
+
+   :param String kwargs.code:
+      error code to be used in any generated ``ValidationError``.
+
+   :param  Array.<String> kwargs.whitelist:
+      a whitelist of domains which are allowed to be the only thing to the right
+      of the ``@`` in a valid email address -- defaults to ``['localhost']``.
 
 .. js:function:: validateEmail(value)
 

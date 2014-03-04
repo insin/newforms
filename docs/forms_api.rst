@@ -48,66 +48,42 @@ Forms API
 
    A collection of Fields that knows how to validate and display itself.
 
-   :param Object kwargs: form options.
+   :param Object kwargs: form options, which are as follows:
 
-   .. js:attribute:: kwargs.data
-
+   :param Object kwargs.data:
       input form data, where property names are field names. A form with data is
       considered to be "bound" and ready for use validating and coercing the
       given data.
 
-      :type: Object
-
-   .. js:attribute:: kwargs.files
-
+   :param Object kwargs.files:
       input file data.
 
-      :type: Object
-
-   .. js:attribute:: kwargs.autoId
-
+   :param String kwargs.autoId:
       a template for use when automatically generating ``id`` attributes for
       fields, which should contain a ``{name}`` placeholder for the field name
       -- defaults to ``id_{name}``.
 
-      :type: String
-
-   .. js:attribute:: kwargs.prefix
-
+   :param String kwargs.prefix:
       a prefix to be applied to the name of each field in this instance of the
       form - using a prefix allows you to easily work with multiple instances of
       the same Form object in the same HTML ``<form>``, or to safely mix Form
       objects which have fields with the same names.
 
-      :type: String
-
-   .. js:attribute:: kwargs.initial (Object)
-
+   :param Object kwargs.initial:
       initial form data, where property names are field names -- if a field's
       value is not specified in ``data``, these values will be used when
       rendering field widgets.
 
-      :type: Object
-
-   .. js:attribute:: kwargs.errorConstructor
-
+   :param Function kwargs.errorConstructor:
       the constructor function to be used when creating error details. Defaults
       to :js:class:`ErrorList`.
 
-      :type: Function
-
-   .. js:attribute:: kwargs.labelSuffix
-
+   :param String kwargs.labelSuffix:
       a suffix to be used when generating labels in one of the convenience
       methods which renders the entire Form -- defaults to ``':'``.
 
-      :type: String
-
-   .. js:attribute:: kwargs.emptyPermitted
-
+   :param Boolean kwargs.emptyPermitted:
       if ``true``, the form is allowed to be empty -- defaults to ``false``.
-
-      :type: Boolean
 
    **Instance Properties**
 
@@ -147,9 +123,11 @@ Forms API
    **Prototype Functions**
 
    Prototype functions for validating and getting information about the results
-   of validation.
+   of validation:
 
    .. js:function:: BaseForm#setData(data)
+
+      .. versionadded:: 0.5
 
       Updates the form's input data (and ``isBound`` status, if necessary) and
       triggers validation, returning the result of ``form.isValid()``.
@@ -211,6 +189,8 @@ Forms API
 
    .. js:function:: BaseForm#addError(field, error)
 
+      .. versionadded:: 0.5
+
       This function allows adding errors to specific fields from within the
       ``form.clean()`` method, or from outside the form altogether. This is a
       better alternative to fiddling directly with ``form._errors``.
@@ -236,6 +216,8 @@ Forms API
 
    .. js:function:: BaseForm#render()
 
+      .. versionadded: 0.5
+
       Default rendering method, which calls :js:func:`BaseForm#asTable`
 
    .. js:function:: BaseForm#asTable()
@@ -253,6 +235,8 @@ Forms API
       specify any HTML attributes on the ``<ul>`` for flexibility.
 
    .. js:function:: BaseForm#asDiv()
+
+      .. versionadded:: 0.5
 
       Renders the form as a series of ``<div>`` tags, with each ``<div>``
       containing one field.
@@ -367,6 +351,7 @@ Forms API
    .. js:function:: BoundField#errors()
 
       :returns: validation errors for the field.
+      :type: :js:class:`ErrorList` (by default, but configurable via :js:class:`BaseForm` ``kwargs.errorConstructor``)
 
    .. js:function:: BoundField#isHidden()
 
@@ -389,6 +374,8 @@ Forms API
 
    .. js:function:: BoundField#render([kwargs])
 
+      .. versionadded: newforms 0.5
+
       Default rendering method - if the field has ``showHiddenInitial`` set,
       renders the default widget and a hidden version, otherwise just renders
       the default widget for the field.
@@ -399,20 +386,14 @@ Forms API
 
       Renders a widget for the field.
 
-      :param Object kwargs: widget options.
+      :param Object kwargs: widget options, which are as follows:
 
-      .. js:attribute:: kwargs.widget
-
-         An override for the widget used to render the field - if not
+      :param Widget kwargs.widget:
+         an override for the widget used to render the field - if not
          provided, the field's configured widget will be used.
 
-         :type: Widget
-
-      .. js:attribute:: kwargs.attrs
-
-         Additional attributes to be added to the field's widget.
-
-         :type: Object
+      :param Object kwargs.attrs:
+         additional HTML attributes to be added to the field's widget.
 
    .. js:function:: BoundField#subWidgets()
 
@@ -425,35 +406,28 @@ Forms API
 
       Renders the field as a text input.
 
-      :param Object kwargs: widget options.
+      :param Object kwargs: widget options, which are as follows:
 
-      .. js:attribute:: kwargs.attrs
-
-         Additional attributes to be added to the field's widget.
-
-         :type: Object
+      :param Object kwargs.attrs:
+         additional HTML attributes to be added to the field's widget.
 
    .. js:function:: BoundField#asTextarea([kwargs])
 
       Renders the field as a textarea.
 
-      :param Object kwargs: widget options.
+      :param Object kwargs: widget options, which are as follows:
 
-      .. js:attribute:: kwargs.attrs
-
-         Additional attributes to be added to the field's widget.
+      :param Object kwargs.attrs:
+         additional HTML attributes to be added to the field's widget.
 
    .. js:function:: BoundField#asHidden([kwargs])
 
       Renders the field as a hidden field.
 
-      :param Object kwargs: widget options.
+      :param Object kwargs: widget options, which are as follows
 
-      .. js:attribute:: kwargs.attrs
-
-         Additional attributes to be added to the field's widget.
-
-         :type: Object
+      :param Object kwargs.attrs:
+         additional HTML attributes to be added to the field's widget.
 
    .. js:function:: BoundField#value()
 
@@ -465,26 +439,17 @@ Forms API
       Creates a ``<label>`` for the field if it has an ``id`` attribute,
       otherwise generates a text label.
 
-      :param Object kwargs: label customisation options.
+      :param Object kwargs: label customisation options, which are as follows:
 
-      .. js:attribute:: kwargs.contents
+      :param String kwargs.contents:
+         custom contents for the label -- if not provided, label contents will
+         be generated from the field itself.
 
-         Custom contents for the label - if not provided, label contents will be
-         generated from the field itself.
+      :param Object kwargs.attrs:
+         additional HTML attributes to be added to the label tag.
 
-         :type: String
-
-      .. js:attribute:: kwargs.attrs
-
-         Additional attributes to be added to the label.
-
-         :type: Object
-
-      .. js:attribute:: kwargs.labelSuffix
-
-         A custom suffix for the label.
-
-         :type: String
+      :param String kwargs.labelSuffix:
+         a custom suffix for the label.
 
    .. js:function:: BoundField#cssClasses([extraClasses])
 
