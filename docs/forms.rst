@@ -25,14 +25,16 @@ equivalents of example code.
    which would be created when running in a browser, with React managing
    keeping the real DOM in sync with the rendered state of forms.
 
+.. _ref-forms-bound-unbound:
+
 Bound and unbound forms
 =======================
 
 Creating a form::
 
-  var f = new ContactForm()
+   var f = new ContactForm()
 
-Binding data to a form::
+Creating a bound form::
 
    var data = {
      subject: 'hello',
@@ -41,6 +43,10 @@ Binding data to a form::
    , ccMyself: true
    }
    var f = new ContactForm({data: data})
+
+Binding data to an existing form::
+
+   var isValid = f.setData(data)
 
 Form.isBound
 ------------
@@ -353,6 +359,8 @@ Once you've done that, the generated markup will look something like::
    <tr class="row error required"><th><label for="id_sender">Sender:</label> ...
    <tr class="row"><th><label for="id_ccMyself">Cc myself:</label> ...
    */
+
+.. _ref-forms-configuring-label:
 
 Configuring form elements' HTML ``id`` attributes and ``<label>`` tags
 ----------------------------------------------------------------------

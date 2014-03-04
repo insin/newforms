@@ -79,7 +79,8 @@ make use of for customisation purposes.
 
    .. js:function:: ErrorObject#asUl()
 
-      Displays error details as a list.
+      Displays error details as a list. Returns ``undefined``if this object
+      isn't populated with any errors.
 
    .. js:function:: ErrorObject#asText()
 
@@ -125,7 +126,8 @@ make use of for customisation purposes.
 
    .. js:function:: ErrorList#asUl()
 
-      Displays errors as a list.
+      Displays errors as a list. Returns ``undefined``if this list isn't
+      populated with any errors.
 
    .. js:function:: ErrorList#asText()
 

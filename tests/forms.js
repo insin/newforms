@@ -22,7 +22,7 @@ QUnit.test("Form", 12, function() {
   strictEqual(p.isBound, true)
   strictEqual(p.errors().isPopulated(), false)
   strictEqual(p.isValid(), true)
-  reactHTMLEqual(p.errors().asUl(), "")
+  strictEqual(p.errors().asUl(), undefined)
   strictEqual(p.errors().asText(), "")
   deepEqual([p.cleanedData.first_name, p.cleanedData.last_name, p.cleanedData.birthday.valueOf()],
             ["John", "Lennon", new Date(1940, 9, 9).valueOf()])

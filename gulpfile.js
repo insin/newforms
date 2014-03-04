@@ -9,7 +9,7 @@ var rename = require('gulp-rename')
 var uglify = require('gulp-uglify')
 var gutil = require('gulp-util')
 
-var pkg = require('./package.json');
+var pkg = require('./package.json')
 var srcHeader = '/**\n\
  * newforms <%= pkg.version %> - https://github.com/insin/newforms\n\
  * MIT Licensed\n\
