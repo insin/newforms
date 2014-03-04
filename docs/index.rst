@@ -2,27 +2,10 @@
 newforms
 ========
 
-Newforms is a JavaScript port of `Django`_'s ``django.forms``
-`form-handling library`_ library, usable in browsers and on the server with
-`Node.js`_.
-
-As of version 0.5.0, newforms depends on `React`_ for rendering content in all
-environments and for implementation of client-side interactivity. It's also
-tracking ``django.forms`` changes and new features up to and including the
-current development version of Django, 1.7.
-
-Since newforms is initially a port and ``django.forms`` is well-documented,
-guide documentation will initially point to Django documentation and offer some
-equivalent examples in JavaScript.
-
-For an introduction to form-handling features and concepts, please refer to the
-Django intro documentation:
-
-   * `Django documentation -- Working with forms <https://docs.djangoproject.com/en/dev/topics/forms/>`_
-
-For the just-show-me-how-it-works-and-I'll-figure-out-the-rest developer, the
-`newforms unit tests`_ are peppered with guide comments -- lovingly copied and
-pasted from Django's own test suite -- which explain the features being tested.
+Newforms began as a JavaScript port of `Django`_'s form-handling library. It's
+usable in browsers and on `Node.js`_ and -- as of version 0.5 -- it uses
+`React`_ for form rendering in all environments and for client-side
+interactivity.
 
 Contents
 ========
@@ -36,7 +19,6 @@ Contents
 .. toctree::
    :maxdepth: 1
 
-   port_differences
    forms
    forms_api
    fields
@@ -44,67 +26,231 @@ Contents
    widgets
    formsets
    util
+   port_differences
 
-Quick Guide
-===========
+Overview
+========
 
-Here's a quick guide to getting started with using a newforms Form.
+The core concepts newforms deals with are:
 
-* Form constructors are created using :js:func:`Form.extend()`.
+Widgets
+   Widgets correspond to HTML form inputs -- they hold metadata required to
+   display an input (or inputs) and given a field's name and user input data,
+   will create ``React.DOM`` components which can be rendered to a browser's DOM
+   or to HTML strings.
 
-  This takes an ``Object`` argument defining form fields and any other
-  properties for the form's prototype (custom validation methods etc.),
-  returning a Form constructor which inherits from :js:class:`BaseForm`::
+   For example, a ``Select`` knows which ``<option>`` values and labels it
+   should generate and how to generate a ``<select>`` with the option
+   corresponding to given user input data marked as selected.
 
-     var ContactForm = forms.Form.extend({
-       subject  : forms.CharField({maxLength: 100})
-     , message  : forms.CharField()
-     , sender   : forms.EmailField()
-     , ccMyself : forms.BooleanField({required: false})
-     })
+Fields
+   A Field holds metadata about a piece of user input. This metadata is the
+   source for:
 
-* For convenience and compactness, the ``new`` operator is **optional** when
-  using a newforms Field, Widget and other constructors which are commonly
-  used while implementing a Form, such as ValidationError -- however ``new`` is
-  **not**  automatically optional for the Form and FormSet constructors you
-  create::
+   * Arranging display of suitable HTML form inputs for entering and editing
+     the expected input.
+   * Validating the user input and providing an appropriate error message when
+     it's invalid.
+   * Converting valid user input to an appropriate JavaScript datatype.
 
-     var form = new ContactForm({initial: initialData})
+   For example, an ``IntegerField`` makes sure that its user input data is a
+   valid integer, is valid according to any additional rules defined in its
+   metadata -- such as ``minValue`` -- and converts valid user input to a
+   JavaScript ``Number``.
 
-* Forms have default convenience rendering methods to get you started quickly,
-  which display a label, input widget(s) and any validation errors for each
-  field (however, JSX makes it convenient to write your own custom rendering
-  later)::
+Forms
+   Forms group related Fields together and are respinsible for giving them
+   unique names. They use their fields to validate a set of user input, and are
+   the entry point for displaying them as HTML.
 
-     <form ref="contactForm">
-       <table>
-         <tbody>
-           {this.state.form.asTable()}
-         </tbody>
-       </table>
-       <div className="controls">
-         <input type="button" value="Submit" onClick={this.onSubmit}/>
-       </div>
-     </form>
+   Forms drive the validation process, holding raw user input data, validation
+   error messages and "cleaned" data which has been validated and converted.
 
-* To bind a form to user data to be validated and cleaned, pass a ``data``
-  object::
+Form constructors
+=================
 
-     var formData = forms.formData(this.refs.contactForm.getDOMNode())
-     var form = new ContactForm({data: formData})
+Form constructors are created by extending ``forms.Form`` and declaratively
+specifying field names and metadata::
 
-     if (form.isValid()) {
-       // form.cleanedData now contains validated input data, coerced to the
-       // appropriate JavaScript type by the form's Fields.
+   var ContactForm = forms.Form.extend({
+     subject: forms.CharField({maxLength: 100})
+   , message: forms.CharField()
+   , sender: forms.EmailField()
+   , ccMyself: forms.BooleanField({required: false})
+   })
+
+A form is composed of ``Field`` objects. In this case, our form has four
+fields: ``subject``, ``message``, ``sender`` and ``ccMyself``. ``CharField``,
+``EmailField`` and ``BooleanField`` are just three of the available field types
+a full list can be found in Form fields.
+
+Using a form in a React component
+---------------------------------
+
+.. Note::
+
+   All form inputs generated by newforms 0.5 are `uncontrolled components`_
+   -- that is, React won't touch them after the initial render and you're
+   responsible for collecting user input from the underlying node in the real
+   DOM.
+
+   Newforms provides a helper for doing this -- :js:func:`formData` -- which
+   given a real DOM ``<form>``, will walk its elements and return their names
+   and values as a JavaScript Object.
+
+This is one way a form could be used in a React component::
+
+   var Contact = React.createClass({
+     getInitialState: function() {
+       return {form: new ContactForm()}
      }
-     else {
-       // If the data wasn't valid, the forms's error object will be populated
-       // with field validation errors.
-       this.setState({form: form})
+
+   , render: function() {
+       return <form ref="form" onSubmit={this.onSubmit} action="/contact" method="POST">
+         {this.state.form.asDiv()}
+         <div>
+           <input type="submit" value="Submit"/>
+           <input type="button" value="Cancel" onClick={this.props.onCancel}/>
+         </div>
+       </form>
      }
+
+   , onSubmit: function(e) {
+       e.preventDefault()
+       var data = forms.formData(this.refs.form.getDOMNode())
+       var isValid = this.state.form.setData(data)
+       if (isValid) {
+         this.props.processContactData(this.state.form.cleanedData)
+       }
+       else {
+         this.forceUpdate()
+       }
+     }
+   })
+
+Over the lifecycle of this component, state changes as follows:
+
++-----------------------------------------+---------------+--------+
+| Lifecycle stage                         | Data?         | Errors |
++=========================================+===============+========+
+| Initial render - an unbound instance of | None yet      | No     |
+| ContactForm is created as initial state |               |        |
++-----------------------------------------+---------------+--------+
+| Invalid data is submitted. Form         | Invalid data  | Yes    |
+| rendering generates error messages.     |               |        |
+| React updates the DOM with them         |               |        |
++-----------------------------------------+---------------+--------+
+| Valid data is submitted. Calls handler  | Valid data    | No     |
+| function passed fromparent component    |               |        |
+| via props                               |               |        |
++-----------------------------------------+---------------+--------+
+
+The distinction between :ref:`ref-forms-bound-unbound` is important:
+
+* An unbound form has no data associated with it. When rendered, it will be
+  empty or will contain default values.
+
+* A bound form has submitted data, and hence can be used to tell if that data
+  is valid. If an invalid bound form is rendered, it can include inline error
+  messages telling the user what data to correct.
+
+Processing the data from a form
+-------------------------------
+
+Once ``setData()`` or ``isValid()`` return ``true``, the successfully validated
+form data will be in the ``form.cleanedData`` object. This data will have been
+converted into JavaScript types for you.
+
+In the above example, ``ccMyself`` will be a boolean value. Likewise, fields
+such as ``IntegerField`` and ``DateField`` convert values to a JavaScript
+``Number`` and ``Date``, respectively.
+
+Displaying a form in a React component
+--------------------------------------
+
+Forms are designed to render directly into a React component instead of newforms
+providing its own component wrappers.
+
+A form only outputs its own fields; it's up to you to provide the surrounding
+``<form>`` elements, submit buttons etc.
+
+``form.asDiv()`` will output the form with each form field and accompanying
+label wrapped in a ``<div>``. Here's the output for our example component::
+
+   <form action="/contact" method="POST">
+     <div><label for="id_subject">Subject:</label><span> </span><input maxlength="100" type="text" name="subject" id="id_subject"></div>
+     <div><label for="id_message">Message:</label><span> </span><input type="text" name="message" id="id_message"></div>
+     <div><label for="id_sender">Sender:</label><span> </span><input type="email" name="sender" id="id_sender"></div>
+     <div><label for="id_ccMyself">Cc myself:</label><span> </span><input type="checkbox" name="ccMyself" id="id_ccMyself"></div>
+     <div><input type="submit" value="Submit"><input type="button" value="Cancel"></div>
+   </form>
+
+Note that each form field has an ID attribute set to ``id_<field-name>``, which
+is referenced by the accompanying label tag. You can :ref:`customise the way in which labels and ids are generated
+<ref-forms-configuring-label>`.
+
+You can also use ``form.asTable()`` to output table rows (you'll need to provide
+your own ``<table>`` tags) and ``form.asUl()`` to output list items. Forms also
+have a default ``form.render()`` method which calls ``form.asTable()``.
+
+Customising form display
+------------------------
+
+If the default generated HTML is not to your taste, you can completely customize
+the way a form is presented. Extending the above example::
+
+   var form = this.state.form
+   var fields = form.boundFieldsObj()
+
+   return <form ref="form" onSubmit={this.onSubmit} action="/contact" method="POST">
+     {form.nonFieldErrors().render()}
+     <div className="fieldWrapper">
+       {fields.subject.errors().render()}
+       <label htmlFor="id_subject">Email subject:</label>
+       {fields.subject.render()}
+     </div>
+     <div className="fieldWrapper">
+       {fields.message.errors().render()}
+       <label htmlFor="id_message">Your message:</label>
+       {fields.message.render()}
+     </div>
+     <div className="fieldWrapper">
+        {fields.sender.errors().render()}
+        <label htmlFor="id_sender">Your email address:</label>
+        {fields.sender.render()}
+     </div>
+     <div className="fieldWrapper">
+       {fields.ccMyself.errors().render()}
+       <label htmlFor="id_ccMyself">CC yourself?</label>
+       {fields.ccMyself.render()}
+     </div>
+     <div><input type="submit" value="Send message"/></div>
+   </form>
+
+To assist with rendering, we introduce another concept which ties together
+Widgets, Fields and Forms:
+
+BoundField
+   A BoundField is a helper for rendering a single field.
+
+   It ties together the Field itself, the fields's configured Widget, the name
+   the field is given by the Form, and the raw user input data and validation
+   errors held by a bound Form.
+
+   BouldFields provides functions for using these together to render the
+   different conponents required to display a field - its label, form inputs and
+   validation error messages.
+
+Forms provide a number of means of getting hold of BoundFields. The main ones
+are:
+
+* ``form.boundFieldsObj()`` returns an object whose properties are the form's
+  field names, pointing to the corresponding BoundField.
+* ``form.boundFields()`` returns a list of BoundFields in their form order.
+* ``form.boundField(fieldName)`` retunrs the Boundfields for a single field.
 
 .. _`Django`: http://www.djangoproject.com
-.. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/
 .. _`Node.js`: http://nodejs.org
 .. _`React`: http://facebook.github.io/react/
+.. _`uncontrolled components`: http://facebook.github.io/react/docs/forms.html#uncontrolled-components
 .. _`newforms unit tests`: https://github.com/insin/newforms/tree/react/tests

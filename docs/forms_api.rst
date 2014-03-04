@@ -319,7 +319,8 @@ Forms API
    This is the primary means of generating components such as labels and input
    fields in the default form rendering methods.
 
-   Its attributes and methods may be of use when implementing custom rendering.
+   Its attributes and methods will be of particular use when implementing custom
+   form layout and rndering.
 
    :param Form form:
       a form.
@@ -328,7 +329,7 @@ Forms API
       one of the form's fields.
 
    :param String name:
-      the name under which the field is held in the form
+      the name the field is given by the form.
 
    **Instance Attributes**
 

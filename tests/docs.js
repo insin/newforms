@@ -21,6 +21,89 @@ function repr(o) {
   }
 }
 
+QUnit.test('Overview - Using a form in a React component', function() {
+  var Contact = React.createClass({displayName: 'Contact',
+    getInitialState: function() {
+      return {form: new ContactForm()}
+    }
+
+  , render: function() {
+      return React.DOM.form({ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"},
+        this.state.form.asDiv(),
+        React.DOM.div(null,
+          React.DOM.input({type:"submit", value:"Submit"}),
+          React.DOM.input({type:"button", value:"Cancel", onClick:this.props.onCancel})
+        )
+      )
+    }
+
+  , onSubmit: function(e) {
+      e.preventDefault()
+      var data = forms.formData(this.refs.form.getDOMNode())
+      var isValid = this.state.form.setData(data)
+      if (isValid) {
+        this.props.processContactData(this.state.form.cleanedData)
+      }
+      else {
+        this.forceUpdate()
+      }
+    }
+  })
+  reactHTMLEqual(new Contact(),
+"<form action=\"&#x2f;contact\" method=\"POST\">\
+<div><label for=\"id_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
+<div><label for=\"id_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_message\"></div>\
+<div><label for=\"id_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
+<div><label for=\"id_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
+<div><input type=\"submit\" value=\"Submit\"><input type=\"button\" value=\"Cancel\"></div>\
+</form>")
+})
+
+QUnit.test('Overview - Customising form display', function() {
+  var Contact = React.createClass({displayName: 'Contact',
+    getInitialState: function() {
+      return {form: new ContactForm()}
+    }
+
+  , render: function() {
+      var form = this.state.form
+      var fields = form.boundFieldsObj()
+
+      return React.DOM.form({ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"}
+      , form.nonFieldErrors().render()
+      , React.DOM.div({className:"fieldWrapper"}
+        , fields.subject.errors().render()
+        , React.DOM.label( {htmlFor:"id_subject"}, "Email subject:")
+        , fields.subject.render()
+        )
+      , React.DOM.div({className:"fieldWrapper"}
+        , fields.message.errors().render()
+        , React.DOM.label( {htmlFor:"id_message"}, "Your message:")
+        , fields.message.render()
+        )
+      , React.DOM.div({className:"fieldWrapper"}
+        , fields.sender.errors().render()
+        , React.DOM.label( {htmlFor:"id_sender"}, "Your email address:")
+        , fields.sender.render()
+        )
+      , React.DOM.div({className:"fieldWrapper"}
+        , fields.ccMyself.errors().render()
+        , React.DOM.label( {htmlFor:"id_ccMyself"}, "CC yourself?")
+        , fields.ccMyself.render()
+        )
+      , React.DOM.div(null, React.DOM.input( {type:"submit", value:"Send message"}))
+      )
+    }
+  })
+  reactHTMLEqual(Contact(),
+"<form action=\"&#x2f;contact\" method=\"POST\">\
+<div class=\"fieldWrapper\"><label for=\"id_subject\">Email subject:</label><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
+<div class=\"fieldWrapper\"><label for=\"id_message\">Your message:</label><input type=\"text\" name=\"message\" id=\"id_message\"></div>\
+<div class=\"fieldWrapper\"><label for=\"id_sender\">Your email address:</label><input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
+<div class=\"fieldWrapper\"><label for=\"id_ccMyself\">CC yourself?</label><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
+<div><input type=\"submit\" value=\"Send message\"></div></form>")
+})
+
 QUnit.test('Forms - Dynamic initial values', function() {
   var CommentForm = forms.Form.extend({
     name: forms.CharField({initial: 'prototype'})
@@ -289,7 +372,7 @@ QUnit.test('Forms - BoundFields', function() {
 "<ul class=\"errorlist\"><li>This field is required.</li></ul>")
   bf = f.boundField('subject')
   deepEqual(bf.errors().messages(), [])
-  reactHTMLEqual(bf.errors().render(), '')
+  strictEqual(bf.errors().render(), undefined)
 
   f = new ContactForm()
   // labelTag()
