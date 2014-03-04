@@ -52,19 +52,20 @@ API
       default rendering fuctions are used.
 
    :param kwargs.custom:
-
-      .. versionadded:: 0.5
+      .. _ref-fields-field-custom:
 
       this argument is provided to pass any custom metadata you require on the
       field, e.g. extra per-field options for a custom layout you've
-      implemented. Newforms will set anything you pass as this argument on a
+      implemented. Newforms will set anything you pass for this argument in a
       ``custom`` instance property on the field.
+
+      .. versionadded:: 0.5
 
    **Prototype Functions**
 
    .. js:function:: Field#prepareValue(value)
 
-      Hook for any pre-preparation required before a value cane be used.
+      Hook for any pre-preparation required before a value can be used.
 
    .. js:function:: Field#toJavaScript(value)
 

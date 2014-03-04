@@ -194,6 +194,15 @@ Custom field cleaning functions defined for Forms don't have to return a value
 in newforms, but if they do the returned value will be used to update
 ``cleanedData`` for the field, as it is in ``django.forms``.
 
+Misc. new Field features
+------------------------
+
+``Field``
+   Accepts a ``custom`` argument to hold any custom metadata the user needs.
+
+``ImageField``
+   Adds an ``accept="image/*"`` attribute to its ``<input type="file">`` widget.
+
 Extra CSS class options for default rendering
 ---------------------------------------------
 
