@@ -55,7 +55,7 @@ Grouped lists of choice pairs
       , [7, 'Beer']
       ]
 
-As you can see from the ``''Beer'`` example above, grouped pairs can be mixed
+As you can see from the ``'Beer'`` example above, grouped pairs can be mixed
 with ungrouped pairs within the list of choices.
 
 Dynamic choices
@@ -87,7 +87,7 @@ make changes to ``form.fields`` as the form is being instantiated:
      }
    })
 
-   // Example - a user booking a time against a project and we need to display
+   // Example - a user booking time against a project and we need to display
    //           choices for the projects they're assigned to and validate that
    //           the submitted project id is one they've been assigned to.
 
