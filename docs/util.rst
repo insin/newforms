@@ -46,6 +46,24 @@ make use of for customisation purposes.
       from the resulting Array before it is returned by passing
       ``{strip: false}``
 
+.. js:function:: util.makeChoices(list, submitValueProp, displayValueProp)
+
+   Creates a list of [submitValue, displayValue] :ref:`choice pairs <ref-fields-choice-pairs>`
+   from a list of objects.
+
+   If any of the given property names correspond to a function in a given
+   objects the function will be called with the object as ``this`` context.
+
+   :param Array list: a list of objects
+
+   :param String submitValueProp:
+      the name of the property in each object holding the value to be
+      submitted/returned when it's a selected choice.
+
+   :param String displayValueProp:
+      the name of the property in each object holding the value to be
+      displayed for selection by the user.
+
 .. js:class:: ErrorObject(errors)
 
    A collection of field errors that knows how to display itself in various

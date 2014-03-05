@@ -13,6 +13,8 @@ Providing choices
 Fields which take ``choices`` expect to be given a list containing any mix of
 the following types of content:
 
+.. _ref-fields-choice-pairs:
+
 Choice pairs
    A choice pair is a list containing exactly 2 elements, which correspond to:
 

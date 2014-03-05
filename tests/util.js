@@ -17,7 +17,7 @@ QUnit.test("prettyName", 7, function() {
   equal(prettyName("butNOTThatClever"), "But nOTThat clever")
 })
 
-QUnit.test("formatToArray", function() {
+QUnit.test("formatToArray", 6, function() {
   var formatToArray = forms.util.formatToArray
   deepEqual(formatToArray('{test}', {}), ['{test}'])
   deepEqual(formatToArray('{test}', {test: 1}), [1])
@@ -26,4 +26,26 @@ QUnit.test("formatToArray", function() {
   deepEqual(formatToArray('{test}', {test: 1}, {strip: false}), ["", 1, ""])
   deepEqual(formatToArray('{test}{hi}{test}', {test: 1}, {strip: false}),
             ["", 1, "", "{hi}", "", 1, ""])
+})
+
+QUnit.test('makeChoices', 2, function() {
+  function Project(id, name) {
+    this.id = id
+    this.name = name
+  }
+  Project.prototype.toString = function() {
+    return this.name
+  }
+  var projects = [
+    new Project(1, 'Project 1')
+  , new Project(2, 'Project 2')
+  , new Project(3, 'Project 3')
+  ]
+  var expected = [
+    [1, 'Project 1']
+  , [2, 'Project 2']
+  , [3, 'Project 3']
+  ]
+  deepEqual(forms.util.makeChoices(projects, 'id', 'name'), expected)
+  deepEqual(forms.util.makeChoices(projects, 'id', 'toString'), expected)
 })
