@@ -12,6 +12,11 @@ var choices = [
 , [3, 'baz']
 , [4, 'ter']
 ]
+var choicesWithCategories = [
+  ['B Choices', [[2, 'bar'], [3, 'baz']]]
+, ['F Choices', [[1, 'foo']]]
+, ['T Choices', [[4, 'ter']]]
+]
 var choicesWithEmpty = [['', '----']].concat(choices)
 var dateFormats = [
   '%Y-%m-%d' // '2006-10-25'
@@ -38,10 +43,14 @@ var AllFieldsForm = forms.Form.extend({
 , BooleanField: forms.BooleanField()
 , NullBooleanField: forms.NullBooleanField()
 , ChoiceField: forms.ChoiceField({choices: choicesWithEmpty})
+, ChoiceFieldWithCategories: forms.ChoiceField({choices: choicesWithCategories})
 , ChoiceFieldWithRadioWidget: forms.ChoiceField({label: 'Choice field (radios)', choices: choices, initial: 4, widget: forms.RadioSelect})
+, ChoiceFieldWithRadioWidgetCategories: forms.ChoiceField({label: 'Choice field (radios + categories)', choices: choicesWithCategories, initial: 4, widget: forms.RadioSelect})
 , TypedChoiceField: forms.TypedChoiceField({choices: choicesWithEmpty, coerce: Number})
 , MultipleChoiceField: forms.MultipleChoiceField({choices: choices})
+, MultipleChoiceFieldWithCategories: forms.MultipleChoiceField({choices: choicesWithCategories})
 , MultipleChoiceFieldWithCheckboxWidget: forms.MultipleChoiceField({label: 'Multiple choice field (checkboxes)', choices: choices, initial: [1, 3], widget: forms.CheckboxSelectMultiple})
+, MultipleChoiceFieldWithCheckboxWidgetCategories: forms.MultipleChoiceField({label: 'Multiple choice field (checkboxes + categories)', choices: choicesWithCategories, initial: [1, 3], widget: forms.CheckboxSelectMultiple})
 , TypedMultipleChoiceField: forms.TypedMultipleChoiceField({choices: choices, coerce: Number})
 , ComboField: forms.ComboField({fields: [
     forms.EmailField()
