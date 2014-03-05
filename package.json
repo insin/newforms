@@ -5,12 +5,15 @@
   "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
   "tags": [
     "isomorphic",
+    "form-handling"
     "forms",
+    "input",
     "validation",
-    "type-coercion",
+    "conversion",
+    "coercion",
     "react"
   ],
-  "main": "./lib/newforms",
+  "main": "./lib/newforms.js",
   "repository": {
     "type": "git",
     "url": "http://github.com/insin/newforms.git"
@@ -18,6 +21,7 @@
   "dependencies": {
     "Concur": "~0.2.4",
     "isomorph": "~0.2.1",
+    "react": "~0.9.0",
     "validators": "~0.3.0"
   },
   "devDependencies": {
@@ -33,8 +37,7 @@
     "gulp-uglify": "~0.2.0",
     "gulp-util": "~2.2.13",
     "jshint-stylish": "~0.1.5",
-    "qqunit": "0.6.x",
-    "react": "0.9.0"
+    "qqunit": "0.6.x"
   },
   "scripts": {
     "test": "gulp build-js && node tests/tests.js",
