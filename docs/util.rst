@@ -51,8 +51,8 @@ make use of for customisation purposes.
    Creates a list of [submitValue, displayValue] :ref:`choice pairs <ref-fields-choice-pairs>`
    from a list of objects.
 
-   If any of the given property names correspond to a function in a given
-   objects the function will be called with the object as ``this`` context.
+   If any of the property names correspond to a function in an object, the
+   function will be called with the object as the ``this`` context.
 
    :param Array list: a list of objects
 
