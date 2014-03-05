@@ -2,12 +2,12 @@
 Form and field validation
 =========================
 
-For a guide to the various methods of customising validation and the order in
-which they run, please refer to the Django documentation:
+For a guide to the various methods of customising validation and the order
+stages of validation run in, please refer to the Django documentation for now:
 
    * `Django documentation -- Form and field validation <https://docs.djangoproject.com/en/dev/ref/forms/validation/>`_
 
-Selected portions of the Django documentation are duplicated below with
+Selected portions of the Django documentation are duplicated below, with
 JavaScript equivalents of example code.
 
 Using validation in practice

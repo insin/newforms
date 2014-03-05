@@ -89,7 +89,7 @@ fields: ``subject``, ``message``, ``sender`` and ``ccMyself``. ``CharField``,
 ``EmailField`` and ``BooleanField`` are just three of the available field types
 -- a full list can be found in :doc:`/fields`.
 
-Using a form in a React component
+Using a Form in a React component
 ---------------------------------
 
 .. Note::
@@ -161,7 +161,7 @@ The distinction between :ref:`ref-forms-bound-unbound` is important:
   is valid. If an invalid bound form is rendered, it can include inline error
   messages telling the user what data to correct.
 
-Processing the data from a form
+Processing the data from a Form
 -------------------------------
 
 Once ``setData()`` or ``isValid()`` return ``true``, the successfully validated
@@ -204,7 +204,7 @@ your own ``<table>`` and ``<tbody>``) and ``form.asUl()`` to output list items.
 Forms also have a default ``form.render()`` method which calls
 ``form.asTable()``.
 
-Customising form display
+Customising Form display
 ------------------------
 
 If the default generated HTML is not to your taste, you can completely customize
@@ -272,7 +272,7 @@ default ``render()`` method -- for BoundFields, the default rendering for
 non-hidden field is to call ``asWidget()``, which renders the Widget the Field
 is configured with.
 
-Reusing a layout for the form's fields
+Reusing a layout for the Form's Fields
 --------------------------------------
 
 The example above should have had your duplicated code sense tingling - if

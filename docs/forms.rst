@@ -2,14 +2,13 @@
 Forms
 =====
 
-For a guide to the features of the Form API, please refer to the Django
-documentation for an introduction to the concepts and prose descriptions of
-features:
+For an introduction to and prose descriptions of the features of the Form API,
+please refer to the Django documentation for now:
 
    * `Django documentation -- The Forms API <https://docs.djangoproject.com/en/dev/ref/forms/api/>`_
 
-Headings from the Django documentation are duplicated below with JavaScript
-equivalents of example code.
+Selected portions of the Django documentation are duplicated below, with
+JavaScript equivalents of example code.
 
 .. Note::
 

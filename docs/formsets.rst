@@ -12,11 +12,11 @@ Formsets
    Future releases will deal with making FormSets a better fit for client-side
    capabilities.
 
-For a guide to formsets, please refer to the Django documentation:
+For a guide to formsets, please refer to the Django documentation for now:
 
    * `Django documentation -- Formsets <https://docs.djangoproject.com/en/dev/topics/forms/formsets/>`_
 
-Selected portions of the Django documentation are duplicated below with
+Selected portions of the Django documentation are duplicated below, with
 JavaScript equivalents of example code.
 
 ----

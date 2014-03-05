@@ -2,7 +2,8 @@
 Widgets
 =======
 
-For a guide to Widgets, please refer to the Django documentation:
+For an introduction to the features of Widgets and the built-in Widgets, please
+refer to the Django documentation for now:
 
    * `Django documentation -- Widgets <https://docs.djangoproject.com/en/dev/ref/forms/widgets/>`_
 

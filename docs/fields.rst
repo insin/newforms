@@ -2,8 +2,8 @@
 Form fields
 ===========
 
-For a guide to the features of the Fields API, please refer to the Django
-documentation:
+For an introduction to the features of Fields and the built-in Fields, please
+refer to the Django documentation for now:
 
    * `Django documentation -- Form fields <https://docs.djangoproject.com/en/dev/ref/forms/fields/>`_
 

@@ -23,7 +23,7 @@ make use of for customisation purposes.
       properties. Inputs with multiple values or duplicate names will have a
       list of values set.
 
-.. js:function:: formatToArray(str, obj[, options])
+.. js:function:: util.formatToArray(str, obj[, options])
 
    Replaces ``'{placeholders}'`` in a string with same-named properties from a
    given Object, but interpolates into and returns an Array instead of a String.
