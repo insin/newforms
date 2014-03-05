@@ -3,7 +3,13 @@
  */
 function errorEqual(func, message) {
   throws(func,
-         function(e) { return e.message == message },
+         function(e) {
+            var ok = (e.message == message)
+            if (!ok) {
+              console.error('Expected\\nGot:\n' + message + '\n' + e.message)
+            }
+            return ok
+         },
          'Error message is: "' + message.replace(/"/g, '\\"') + '"')
 }
 

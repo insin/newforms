@@ -60,6 +60,24 @@ Grouped lists of choice pairs
 As you can see from the ``'Beer'`` example above, grouped pairs can be mixed
 with ungrouped pairs within the list of choices.
 
+Flat choices
+   .. versionadded:: 0.5
+
+   If a non-array value is provided where newforms expects to see a choice pair,
+   it will be normalised to a choice pair using the same value for submission
+   and display.
+
+   This allows you to pass a flat list of choices when that's all you need:
+
+   .. code-block:: javascript
+
+      var VOWEL_CHOICES = ['A', 'E', 'I', 'O', 'U']
+
+      var ARBITRARY_CHOICES = [
+        ['Numbers', [1, 2, 3, 4, 5]]
+      , ['Letters', ['A', 'B', 'C', 'D', 'E']]
+      ]
+
 Dynamic choices
 ===============
 

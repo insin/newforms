@@ -171,6 +171,13 @@ dealing with input data from a single HTTP request, whose value doesn't change:
 
 * :js:func:`BaseForm#setData`
 
+Flat ``choices``
+----------------
+
+When a value is given in a ``choices`` argument instead of a ``[value, label]``
+pair, it will be normalised to ``[value, value]``, allowing passing of flat
+lists of choices, or an individual choice as a value rather than a pair.
+
 ``(form|formset).as_p()`` replaced with ``(form|formset).asDiv()``
 ------------------------------------------------------------------
 

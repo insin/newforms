@@ -239,7 +239,7 @@ QUnit.test("CheckboxInput", 18, function() {
   strictEqual(value, true)
 })
 
-QUnit.test("Select", 13, function() {
+QUnit.test("Select", 16, function() {
   var w = forms.Select()
   reactHTMLEqual(w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<select name=\"beatle\">" +
@@ -247,6 +247,15 @@ QUnit.test("Select", 13, function() {
 "<option value=\"P\">Paul</option>" +
 "<option value=\"G\">George</option>" +
 "<option value=\"R\">Ringo</option>" +
+"</select>")
+
+  // Lazy additional choices are normalised to value, label pairs
+  reactHTMLEqual(w.render("beatle", "John", {choices: ['John', 'Paul', 'George', 'Ringo']}),
+"<select name=\"beatle\">" +
+"<option value=\"John\" selected>John</option>" +
+"<option value=\"Paul\">Paul</option>" +
+"<option value=\"George\">George</option>" +
+"<option value=\"Ringo\">Ringo</option>" +
 "</select>")
 
   // If the value is null, none of the options are selected
@@ -349,6 +358,26 @@ QUnit.test("Select", 13, function() {
 "<optgroup label=\"Group &quot;1&quot;\">" +
 "<option value=\"inner1\" selected>Inner 1</option>" +
 "<option value=\"inner2\">Inner 2</option>" +
+"</optgroup>" +
+"</select>")
+
+  // Lazy choices passed to the constructor are normalised
+  w = forms.Select({choices: [1, 2, 3]})
+  reactHTMLEqual(w.render("num", 2),
+"<select name=\"num\">" +
+"<option value=\"1\">1</option>" +
+"<option value=\"2\" selected>2</option>" +
+"<option value=\"3\">3</option>" +
+"</select>")
+  // Lazy optgroups are normalised too
+  reactHTMLEqual(w.render("num", 5, {choices: [['Big Numbers', [4, 5]]]}),
+"<select name=\"num\">" +
+"<option value=\"1\">1</option>" +
+"<option value=\"2\">2</option>" +
+"<option value=\"3\">3</option>" +
+"<optgroup label=\"Big Numbers\">" +
+"<option value=\"4\">4</option>" +
+"<option value=\"5\" selected>5</option>" +
 "</optgroup>" +
 "</select>")
 })

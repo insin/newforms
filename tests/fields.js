@@ -646,7 +646,7 @@ QUnit.test("BooleanField", 28, function() {
   strictEqual(f._hasChanged("false", "on"), true)
 })
 
-QUnit.test("ChoiceField", 19, function() {
+QUnit.test("ChoiceField", 26, function() {
   var f = forms.ChoiceField({choices: [["1", "One"], ["2", "Two"]]})
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
@@ -673,6 +673,23 @@ QUnit.test("ChoiceField", 19, function() {
   strictEqual(f.clean(5), "5")
   strictEqual(f.clean("5"), "5")
   cleanErrorEqual(f, "Select a valid choice. 6 is not one of the available choices.", "6")
+
+  // If a ChoiceField finds a non-Array choice where it expected to see a pair
+  // of values, it will turn that choice into a pair using the same value for
+  // submission and display.
+  f= forms.ChoiceField({choices: [1, 2, 3, 4, 5]})
+  strictEqual(f.clean(1), "1", 'Values from a flat list of choices are valid')
+  cleanErrorEqual(f, "Select a valid choice. 6 is not one of the available choices.", "6")
+
+  f = forms.ChoiceField({choices: [["Numbers", [1, 2]], ["Letters", ['A', 'B']], 5]})
+  strictEqual(f.clean(2), "2", 'Values from flat optgroup lists are valid')
+  strictEqual(f.clean("A"), "A", 'Values from flat optgroup lists are valid')
+  cleanErrorEqual(f, "Select a valid choice. 6 is not one of the available choices.", "6")
+
+  // If a ChoiceField finds an array of the incorrect length where it expected
+  // to see a pait of values, it will throw an Error.
+  errorEqual(f.setChoices.bind(f, [[1]]), "Choices in a choice list must contain exactly 2 values, but got [1]")
+  errorEqual(f.setChoices.bind(f, [["Numbers", [[1]]]]), "Choices in an optgroup choice list must contain exactly 2 values, but got [1]")
 })
 
 QUnit.test("TypedChoiceField", 14, function() {
