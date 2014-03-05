@@ -10,8 +10,8 @@ refer to the Django documentation for now:
 Providing choices
 =================
 
-Fields which take ``choices`` expect to be given a list containing any mix of
-the following types of content:
+Fields and Widgets which take ``choices`` expect to be given a list containing
+any mix of the following types of content:
 
 .. _ref-fields-choice-pairs:
 
