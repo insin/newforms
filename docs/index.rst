@@ -172,11 +172,12 @@ In the above example, ``ccMyself`` will be a boolean value. Likewise, fields
 such as ``IntegerField`` and ``DateField`` convert values to a JavaScript
 ``Number`` and ``Date``, respectively.
 
-Displaying a form in a React component
+Displaying a Form in a React component
 --------------------------------------
 
-Forms are designed to render directly into a React component instead of newforms
-providing its own React components.
+Rather than newforms providing its own custom React components, forms render
+contents to be included in the output of the``render()`` method of the React
+components they're used in.
 
 A form only outputs its own fields; it's up to you to provide the surrounding
 ``<form>`` element, submit buttons etc.
