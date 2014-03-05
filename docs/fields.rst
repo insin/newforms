@@ -7,6 +7,108 @@ refer to the Django documentation for now:
 
    * `Django documentation -- Form fields <https://docs.djangoproject.com/en/dev/ref/forms/fields/>`_
 
+Providing choices
+=================
+
+Fields which take ``choices`` expect to be given a list containing any mix of
+the following types of content:
+
+Choice pairs
+   A choice pair is a list containing exactly 2 elements, which correspond to:
+
+      1. the value to be submitted/returned when the choice is selected.
+      2. the value to be displayed to the user for selection.
+
+   For example:
+
+   .. code-block:: javascript
+
+      var STATE_CHOICES = [
+        ['S', 'Scoped']
+      , ['D', 'Defined']
+      , ['P', 'In-Progress']
+      , ['C', 'Completed']
+      , ['A', 'Accepted']
+      ]
+
+Grouped lists of choice pairs
+   A list containing exactly 2 elements, which correspond to:
+
+      1. A group label
+      2. A list of choice pairs, as described above
+
+   .. code-block:: javascript
+
+      var DRINK_CHOICES = [
+        ['Cheap', [
+            [1, 'White Lightning']
+          , [2, 'Buckfast']
+          , [3, 'Tesco Gin']
+          ]
+        ]
+      , ['Expensive', [
+            [4, 'Vieille Bon Secours Ale']
+          , [5, 'Château d’Yquem']
+          , [6, 'Armand de Brignac Midas']
+          ]
+        ]
+      , [7, 'Beer']
+      ]
+
+As you can see from the ``''Beer'`` example above, grouped pairs can be mixed
+with ungrouped pairs within the list of choices.
+
+Dynamic choices
+===============
+
+A common pattern for providing dynamic choices (or indeed, dynamic anything) is
+to provide your own form constructor and pass in whatever data is required to
+make changes to ``form.fields`` as the form is being instantiated:
+
+.. code-block:: javascript
+
+   var ProjectBookingForm = forms.Form.extend({
+     project: forms.Choicefield()
+   , hours: forms.DecimalField({minValue: 0, maxValue: 24, maxdigits: 4, decimalPlaces: 2})
+   , date: forms.DateField()
+
+   , constructor: function(projects, kwargs) {
+       // Call the constructor of whichever form you're extending so that the
+       // forms.Form constructor eventually gets called - this.fields doesn't
+       // exist until this happens.
+       ProjectBookingForm.__super__.constructor.call(this, kwargs)
+
+       // Now that this.fields is a thing, make whatever changes you need to -
+       // in this case, we're going to creata a list of pairs of project ids
+       // and names to set as the project field's choices.
+       this.fields.project.setChoices(projects.map(function(project) {
+         return [project.id, project.name]
+       }))
+     }
+   })
+
+   // Example - a user booking a time against a project and we need to display
+   //           choices for the projects they're assigned to and validate that
+   //           the submitted project id is one they've been assigned to.
+
+   req.user.getProjects(function(err, projects) {
+     if (err) return next(err)
+     var form
+     if (req.method == 'POST') {
+       form = new ProjectBookingForm(projects, {data: req.body})
+       if (form.isValid()) {
+         return ProjectService.saveHours(user, form.cleanedData, function(err) {
+           if (err) return next(err)
+           return redirect(user)
+         })
+       }
+     }
+     else {
+       form = new ProjectBookingForm(projects)
+     }
+     display(form)
+   })
+
 API
 ===
 
