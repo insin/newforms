@@ -175,12 +175,12 @@ such as ``IntegerField`` and ``DateField`` convert values to a JavaScript
 Displaying a Form in a React component
 --------------------------------------
 
-Rather than newforms providing its own custom React components, forms render
-contents to be included in the output of the``render()`` method of the React
-components they're used in.
+Rather than newforms providing its own custom React components, ``Form`` objects
+render to React HTML components, to be included in the output of the ``render()``
+method of whichever React component they're being used in.
 
-A form only outputs its own fields; it's up to you to provide the surrounding
-``<form>`` element, submit buttons etc.
+A form also only outputs its own fields; it's up to you to provide the
+surrounding ``<form>`` element, submit buttons etc.
 
 ``form.asDiv()`` will output the form with each form field and accompanying
 label wrapped in a ``<div>``. Here's the output for our example component:
@@ -268,8 +268,8 @@ for doing so are:
 * ``form.boundField(fieldName)`` -- returns the Boundfield for the named field.
 
 Every object which can generate ``React.DOM`` components in newforms has a
-default ``render()`` method -- for BoundFields, the default rendering for
-non-hidden field is to call ``asWidget()``, which renders the Widget the Field
+default ``render()`` method -- for BoundFields, the default ``render()`` for a
+non-hidden field calls ``asWidget()``, which renders the Widget the field
 is configured with.
 
 Reusing a layout for the Form's Fields
