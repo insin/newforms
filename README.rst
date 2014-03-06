@@ -94,21 +94,21 @@ Here's a quick guide to getting started with using a newforms Form:
   **not**  automatically optional for the Form and FormSet constructors you
   create::
 
-     var form = new ContactForm({initial: initialData})
+     var form = new ContactForm()
 
 * Forms have default convenience rendering methods to get you started quickly,
   which display a label, input widgets and any validation errors for each field
   (however, JSX and ``React.DOM`` make it convenient to write your own custom
   rendering later)::
 
-     <form ref="contactForm">
+     <form ref="contactForm" onSubmit={this.onSubmit}>
        <table>
          <tbody>
            {this.state.form.asTable()}
          </tbody>
        </table>
        <div className="controls">
-         <input type="button" value="Submit" onClick={this.onSubmit}/>
+         <input type="submit" value="Submit"/>
        </div>
      </form>
 
@@ -119,19 +119,23 @@ Here's a quick guide to getting started with using a newforms Form:
   For example, if the form was held as state in a React component which
   had the above JSX in its ``render()`` method::
 
-     var form = this.state.form
-     var formData = forms.formData(this.refs.contactForm.getDOMNode())
-     var isValid = form.setData(formData)
+     function onSubmit(e) {
+       e.preventDefault()
 
-     if (isValid) {
-       // form.cleanedData now contains validated input data, coerced to the
-       // appropriate JavaScript data types by its Fields.
-     }
-     else {
-       // If the data was invalid, the forms's error object will be populated
-       // with field validation errors, which will be displayed the next time
-       // it's rendered.
-       this.forceUpdate()
+       var form = this.state.form
+       var formData = forms.formData(this.refs.contactForm.getDOMNode())
+       var isValid = form.setData(formData)
+
+       if (isValid) {
+         // form.cleanedData now contains validated input data, coerced to the
+         // appropriate JavaScript data types by its Fields.
+       }
+       else {
+         // If the data was invalid, the forms's error object will be populated
+         // with field validation errors, which will be displayed the next time
+         // it's rendered.
+         this.forceUpdate()
+       }
      }
 
 MIT License
