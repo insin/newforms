@@ -141,8 +141,11 @@ In a hurry? Here's a quick guide to getting started with using a newforms Form:
      </form>
 
 * To bind a form to user data to be validated and cleaned, pass a ``data``
-  object. For example, if the form was held as state in a React component which
-  had the above JSX in its ``render()`` method:
+  object when creating it, or call the ``setData()`` method of an existing
+  form to bind new data to it.
+
+  For example, if the form was held as state in a React component which had the
+  above JSX in its ``render()`` method:
 
   .. code-block:: javascript
 
