@@ -82,7 +82,9 @@ In a hurry? Here's a quick guide to getting started with using a newforms Form:
   This takes an ``Object`` argument defining :doc:`fields` and any other
   properties for the form's prototype (:doc:`custom validation <validation>`
   functions etc.), returning a Form constructor which inherits from
-  :js:class:`BaseForm`::
+  :js:class:`BaseForm`:
+
+  .. code-block:: javascript
 
      var ContactForm = forms.Form.extend({
        subject  : forms.CharField({maxLength: 100})
@@ -116,7 +118,9 @@ In a hurry? Here's a quick guide to getting started with using a newforms Form:
 * For convenience and compactness, the ``new`` operator is **optional** when
   using newforms' Fields, :doc:`widgets` and other constructors which are commonly
   used while defining a Form, such as :js:class:`ValidationError` -- however
-  ``new`` is **not**  automatically optional for Form constructors::
+  ``new`` is **not**  automatically optional for Form constructors:
+
+  .. code-block:: javascript
 
      var form = new ContactForm({initial: initialData})
 
@@ -138,7 +142,9 @@ In a hurry? Here's a quick guide to getting started with using a newforms Form:
 
 * To bind a form to user data to be validated and cleaned, pass a ``data``
   object. For example, if the form was held as state in a React component which
-  had the above JSX in its ``render()`` method::
+  had the above JSX in its ``render()`` method:
+
+  .. code-block:: javascript
 
      var form = this.state.form
      var formData = forms.formData(this.refs.contactForm.getDOMNode())
@@ -149,7 +155,7 @@ In a hurry? Here's a quick guide to getting started with using a newforms Form:
        // appropriate JavaScript data types by its Fields.
      }
      else {
-       // If the data was ivalid, the forms's error object will be populated
+       // If the data was invalid, the forms's error object will be populated
        // with field validation errors, which will be displayed the next time
        // it's rendered.
        this.forceUpdate()

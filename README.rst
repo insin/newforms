@@ -125,7 +125,7 @@ Here's a quick guide to getting started with using a newforms Form:
        // appropriate JavaScript data types by its Fields.
      }
      else {
-       // If the data was ivalid, the forms's error object will be populated
+       // If the data was invalid, the forms's error object will be populated
        // with field validation errors, which will be displayed the next time
        // it's rendered.
        this.forceUpdate()
