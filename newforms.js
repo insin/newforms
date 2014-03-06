@@ -50,7 +50,7 @@ var Field = Concur.extend({
     kwargs = object.extend({
       required: true, widget: null, label: null, initial: null,
       helpText: null, errorMessages: null, showHiddenInitial: false,
-      validators: [], cssClass: null
+      validators: [], cssClass: null, custom: null
     }, kwargs)
     this.required = kwargs.required
     this.label = kwargs.label
@@ -58,6 +58,7 @@ var Field = Concur.extend({
     this.showHiddenInitial = kwargs.showHiddenInitial
     this.helpText = kwargs.helpText || ''
     this.cssClass = kwargs.cssClass
+    this.custom = kwargs.custom
 
     var widget = kwargs.widget || this.widget
     if (!(widget instanceof Widget)) {
@@ -872,6 +873,12 @@ ImageField.prototype.toJavaScript = function(data, initial) {
   return f
 }
 
+ImageField.prototype.widgetAttrs = function(widget) {
+  var attrs = FileField.prototype.widgetAttrs.call(this, widget)
+  attrs.accept = 'image/*'
+  return attrs
+}
+
 /**
  * Validates that its input appears to be a valid URL.
  * @constructor
@@ -1021,7 +1028,7 @@ var ChoiceField = Field.extend({
 ChoiceField.prototype.choices = function() { return this._choices }
 ChoiceField.prototype.setChoices = function(choices) {
   // Setting choices also sets the choices on the widget
-  this._choices = this.widget.choices = choices
+  this._choices = this.widget.choices = util.normaliseChoices(choices)
 }
 
 ChoiceField.prototype.toJavaScript = function(value) {
@@ -1055,7 +1062,7 @@ ChoiceField.prototype.validValue = function(value) {
     if (is.Array(choices[i][1])) {
       // This is an optgroup, so look inside the group for options
       var optgroupChoices = choices[i][1]
-      for (var j = 0, k = optgroupChoices.length; j < k; j++) {
+      for (var j = 0, m = optgroupChoices.length; j < m; j++) {
         if (value === ''+optgroupChoices[j][0]) {
           return true
         }
@@ -2138,7 +2145,7 @@ BaseForm.prototype._htmlOutput = function(normalRow, errorRow) {
  */
 BaseForm.prototype.asTable = (function() {
   function normalRow(key, cssClasses, label, field, helpText, errors, extraContent) {
-    var contents = [null]
+    var contents = []
     if (errors) { contents.push(errors) }
     contents.push(field)
     if (helpText) {
@@ -2150,18 +2157,18 @@ BaseForm.prototype.asTable = (function() {
     if (cssClasses) { rowAttrs.className = cssClasses }
     return React.DOM.tr(rowAttrs
     , React.DOM.th(null, label)
-    , React.DOM.td.apply(null, contents)
+    , React.DOM.td(null, contents)
     )
   }
 
   function errorRow(key, errors, extraContent, cssClasses) {
-    var contents = [{colSpan: 2}]
+    var contents = []
     if (errors) { contents.push(errors) }
     if (extraContent) { contents.push.apply(contents, extraContent) }
     var rowAttrs = {key: key}
     if (cssClasses) { rowAttrs.className = cssClasses }
     return React.DOM.tr(rowAttrs
-    , React.DOM.td.apply(null, contents)
+    , React.DOM.td({colSpan: 2}, contents)
     )
   }
 
@@ -3114,6 +3121,7 @@ object.extend(
   , formData: util.formData
   , util: {
       formatToArray: util.formatToArray
+    , makeChoices: util.makeChoices
     , prettyName: util.prettyName
     }
   , validators: validators
@@ -3195,6 +3203,70 @@ function formatToArray(str, obj, options) {
     parts = parts.filter(function(p) { return p !== ''})
   }
   return parts
+}
+
+function maybeCall(item, prop) {
+  var value = item[prop]
+  if (is.Function(value)) {
+    value = value.call(item)
+  }
+  return value
+}
+
+function makeChoices(list, valueProp, labelProp) {
+  return list.map(function(item) {
+    return [maybeCall(item, valueProp), maybeCall(item, labelProp)]
+  })
+}
+
+/**
+ * Validates choice input and normalises lazy, non-Array choices to be
+ * [value, label] pairs
+ * @returning {Array} a normalised version of the given choices.
+ * @throws if an Array with length != 2 was found where a choice pair was expected.
+ */
+function normaliseChoices(choices) {
+  if (!choices.length) { return choices }
+
+  var normalisedChoices = []
+  for (var i = 0, l = choices.length, choice; i < l; i++) {
+    choice = choices[i]
+    if (!is.Array(choice)) {
+      // TODO In the development build, emit a warning about a choice being
+      //      autmatically converted from 'blah' to ['blah', 'blah'] in case it
+      //      wasn't intentional
+      choice = [choice, choice]
+    }
+    if (choice.length != 2) {
+      throw new Error('Choices in a choice list must contain exactly 2 values, ' +
+                      'but got ' + JSON.stringify(choice))
+    }
+    if (is.Array(choice[1])) {
+      var normalisedOptgroupChoices = []
+      // This is an optgroup, so look inside the group for options
+      var optgroupChoices = choice[1]
+      for (var j = 0, m = optgroupChoices.length, optgroupChoice; j < m; j++) {
+        optgroupChoice = optgroupChoices[j]
+        if (!is.Array(optgroupChoice)) {
+          // TODO In the development build, emit a warning about an optgroup
+          //      choice being autmatically converted from 'blah' to
+          //      ['blah', 'blah'] in case it wasn't intentional.
+          optgroupChoice = [optgroupChoice, optgroupChoice]
+        }
+        if (optgroupChoice.length != 2) {
+          throw new Error('Choices in an optgroup choice list must contain ' +
+                          'exactly 2 values, but got ' +
+                          JSON.stringify(optgroupChoice))
+        }
+        normalisedOptgroupChoices.push(optgroupChoice)
+      }
+      normalisedChoices.push([choice[0], normalisedOptgroupChoices])
+    }
+    else {
+      normalisedChoices.push(choice)
+    }
+  }
+  return normalisedChoices
 }
 
 /**
@@ -3358,7 +3430,7 @@ ErrorObject.prototype.asUl = function() {
   var items = Object.keys(this.errors).map(function(field) {
     return React.DOM.li(null, field, this.errors[field].asUl())
   }.bind(this))
-  if (items.length === 0) { return '' }
+  if (items.length === 0) { return }
   return React.DOM.ul({className: 'errorlist'}, items)
 }
 
@@ -3448,7 +3520,7 @@ ErrorList.prototype.render = function() {
  */
 ErrorList.prototype.asUl = function() {
   if (!this.isPopulated()) {
-    return ''
+    return
   }
   return React.DOM.ul({className: 'errorlist'}
   , this.messages().map(function(error) {
@@ -3488,6 +3560,8 @@ module.exports = {
 , formData: formData
 , iterate: iterate
 , formatToArray: formatToArray
+, makeChoices: makeChoices
+, normaliseChoices: normaliseChoices
 , prettyName: prettyName
 , strip: strip
 }
@@ -3875,7 +3949,7 @@ ClearableFileInput.prototype.render = function(name, value, kwargs) {
     , inputText: this.inputText
     , input: input
     })
-    return React.DOM.div.apply(React.DOM, [null].concat(contents))
+    return React.DOM.div(null, contents)
   }
   else {
     return input
@@ -4052,7 +4126,7 @@ var Select = Widget.extend({
     if (!(this instanceof Widget)) { return new Select(kwargs) }
     kwargs = object.extend({choices: []}, kwargs)
     Widget.call(this, kwargs)
-    this.choices = kwargs.choices || []
+    this.choices = util.normaliseChoices(kwargs.choices)
   }
 , allowMultipleSelected: false
 })
@@ -4078,36 +4152,26 @@ Select.prototype.render = function(name, selectedValue, kwargs) {
   return React.DOM.select(finalAttrs, options)
 }
 
-Select.prototype.renderOptions = function(choices, selectedValues) {
-  // Normalise to strings
-  var selectedValuesLookup = {}
-  // We don't duck type passing of a String, as index access to characters isn't
-  // part of the spec.
-  var selectedValueString = (is.String(selectedValues))
-  var i, l
-  for (i = 0, l = selectedValues.length; i < l; i++) {
-    selectedValuesLookup[''+(selectedValueString ?
-                             selectedValues.charAt(i) :
-                             selectedValues[i])] = true
-  }
-
+Select.prototype.renderOptions = function(additionalChoices, selectedValues) {
+  var selectedValuesLookup = object.lookup(selectedValues)
   var options = []
-  var finalChoices = util.iterate(this.choices).concat(choices || [])
-  for (i = 0, l = finalChoices.length; i < l; i++) {
-    if (is.Array(finalChoices[i][1])) {
+  var choices = this.choices.concat(util.normaliseChoices(additionalChoices))
+  for (var i = 0, l = choices.length, choice; i < l; i++) {
+    choice = choices[i]
+    if (is.Array(choice[1])) {
       var optgroupOptions = []
-      var optgroupChoices = finalChoices[i][1]
-      for (var j = 0, k = optgroupChoices.length; j < k; j++) {
+      var optgroupChoices = choice[1]
+      for (var j = 0, m = optgroupChoices.length; j < m; j++) {
         optgroupOptions.push(this.renderOption(selectedValuesLookup,
                                                optgroupChoices[j][0],
                                                optgroupChoices[j][1]))
       }
-      options.push(React.DOM.optgroup({label: finalChoices[i][0]}, optgroupOptions))
+      options.push(React.DOM.optgroup({label: choice[0]}, optgroupOptions))
     }
     else {
       options.push(this.renderOption(selectedValuesLookup,
-                                     finalChoices[i][0],
-                                     finalChoices[i][1]))
+                                     choice[0],
+                                     choice[1]))
     }
   }
   return options
@@ -4332,10 +4396,6 @@ var ChoiceFieldRenderer = Concur.extend({
 , choiceInputConstructor: null
 })
 
-ChoiceFieldRenderer.prototype.__iter__ = function() {
-  return this.choiceInputs()
-}
-
 ChoiceFieldRenderer.prototype.choiceInputs = function() {
   var inputs = []
   for (var i = 0, l = this.choices.length; i < l; i++) {
@@ -4423,7 +4483,7 @@ var RendererMixin = Concur.extend({
 })
 
 RendererMixin.prototype.subWidgets = function(name, value, kwargs) {
-  return util.iterate(this.getRenderer(name, value, kwargs))
+  return this.getRenderer(name, value, kwargs).choiceInputs()
 }
 
 /**
@@ -4435,7 +4495,7 @@ RendererMixin.prototype.getRenderer = function(name, value, kwargs) {
     value = this._emptyValue
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs)
-  var choices = util.iterate(this.choices).concat(kwargs.choices || [])
+  var choices = this.choices.concat(kwargs.choices)
   return new this.renderer(name, value, finalAttrs, choices)
 }
 
