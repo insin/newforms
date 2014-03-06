@@ -156,8 +156,8 @@ Displaying a Form in a React component
 --------------------------------------
 
 Rather than newforms providing its own custom React components, ``Form`` objects
-render to React HTML components, to be included in the output of the ``render()``
-method of whichever React component they're being used in.
+render to ``React.DOM`` components, to be included in the ``render()`` output of
+the React component the form's being being displayed in.
 
 A form also only outputs its own fields; it's up to you to provide the
 surrounding ``<form>`` element, submit buttons etc.
@@ -252,11 +252,10 @@ default ``render()`` method -- for BoundFields, the default ``render()`` for a
 non-hidden field calls ``asWidget()``, which renders the Widget the field
 is configured with.
 
-Reusing a layout for the Form's Fields
---------------------------------------
+Looping over the Form's Fields
+------------------------------
 
-The example above should have had your duplicated code sense tingling - if
-you're using the same layout for each of your form fields, you can loop over
+If you're using the same layout for each of your form fields, you can loop over
 them using ``form.boundFields()``, or if you extract the layout logic into a
 function, you can ``.map()`` the list of BoundFields like so::
 

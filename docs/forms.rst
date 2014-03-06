@@ -13,7 +13,8 @@ Forms
 
 .. Note::
 
-   Newforms renders form by creating ``React.DOM`` components, not HTML strings.
+   Newforms Forms and Widgets "render" by creating ``React.DOM`` components,
+   rather than directly creating DOM elements or HTML strings.
 
    In code examples which display HTML string output, we use a ``reactHTML()``
    function to indicate there's another step between rendering a form and final

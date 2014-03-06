@@ -93,7 +93,7 @@ you want to override. For example, here is the default error message:
 
 .. code-block:: javascript
 
-   var generic = forms.Charfield()
+   var generic = forms.CharField()
    try {
      generic.clean('')
    }
@@ -106,7 +106,7 @@ And here is a custom error message:
 
 .. code-block:: javascript
 
-   var name = forms.Charfield({errorMessages: {required: 'Please enter your name.'}})
+   var name = forms.CharField({errorMessages: {required: 'Please enter your name.'}})
    try {
      name.clean('')
    }
@@ -148,6 +148,16 @@ Choice pairs
       , ['C', 'Completed']
       , ['A', 'Accepted']
       ]
+      print(reactHTML(forms.Select().render('state', null, {choices: STATE_CHOICES})))
+      /* =>
+      <select name="state">
+      <option value="S">Scoped</option>
+      <option value="D">Defined</option>
+      <option value="P">In-Progress</option>
+      <option value="C">Completed</option>
+      <option value="A">Accepted</option>
+      </select>
+      */
 
 Grouped lists of choice pairs
    A list containing exactly 2 elements, which correspond to:
@@ -172,6 +182,22 @@ Grouped lists of choice pairs
         ]
       , [7, 'Beer']
       ]
+      print(reactHTML(forms.Select().render('drink', null, {choices: DRINK_CHOICES})))
+      /* =>
+      <select name="drink">
+      <optgroup label="Cheap">
+      <option value="1">White Lightning</option>
+      <option value="2">Buckfast</option>
+      <option value="3">Tesco Gin</option>
+      </optgroup>
+      <optgroup label="Expensive">
+      <option value="4">Vieille Bon Secours Ale</option>
+      <option value="5">Château d’Yquem</option>
+      <option value="6">Armand de Brignac Midas</option>
+      </optgroup>
+      <option value="7">Beer</option>
+      </select>
+      */
 
 As you can see from the ``'Beer'`` example above, grouped pairs can be mixed
 with ungrouped pairs within the list of choices.
@@ -188,23 +214,32 @@ Flat choices
    .. code-block:: javascript
 
       var VOWEL_CHOICES = ['A', 'E', 'I', 'O', 'U']
+      var f = forms.ChoiceField({choices: VOWEL_CHOICES})
+      print(f.choices())
+      // => [['A', 'A'], ['E', 'E'], ['I', 'I'], ['O', 'O'], ['U', 'U']]
 
       var ARBITRARY_CHOICES = [
-        ['Numbers', [1, 2, 3, 4, 5]]
-      , ['Letters', ['A', 'B', 'C', 'D', 'E']]
+        ['Numbers', [1, 2,]]
+      , ['Letters', ['A', 'B']]
       ]
+      f.setChoices(ARBITRARY_CHOICES)
+      print(f.choices())
+      // => [['Numbers', [[1, 1], [2, 2]]], ['Letters', [['A', 'A'], ['B', 'B']]]]
 
 Dynamic choices
 ===============
 
 A common pattern for providing dynamic choices (or indeed, dynamic anything) is
 to provide your own form constructor and pass in whatever data is required to
-make changes to ``form.fields`` as the form is being instantiated:
+make changes to ``form.fields`` as the form is being instantiated.
+
+Newforms provides a :js:func:`util.makeChoices` helper function for creating
+choice pairs from a list of objects using named properties:
 
 .. code-block:: javascript
 
    var ProjectBookingForm = forms.Form.extend({
-     project: forms.Choicefield()
+     project: forms.ChoiceField()
    , hours: forms.DecimalField({minValue: 0, maxValue: 24, maxdigits: 4, decimalPlaces: 2})
    , date: forms.DateField()
 
@@ -217,25 +252,40 @@ make changes to ``form.fields`` as the form is being instantiated:
        // Now that this.fields is a thing, make whatever changes you need to -
        // in this case, we're going to creata a list of pairs of project ids
        // and names to set as the project field's choices.
-       this.fields.project.setChoices(projects.map(function(project) {
-         return [project.id, project.name]
-       }))
+       this.fields.project.setChoices(forms.util.makeChoices(projects, 'id', 'name'))
      }
    })
 
-   // Example - a user booking time against a project and we need to display
-   //           choices for the projects they're assigned to and validate that
-   //           the submitted project id is one they've been assigned to.
+   var projects = [
+     {id: 1, name: 'Project 1'}
+   , {id: 2, name: 'Project 2'}
+   , {id: 3, name: 'Project 3'}
+   ]
+   var form = new ProjectBookingForm(projects, {autoId: false})
+   print(reactHTML((form.boundField('project').render()))
+   /* =>
+   <select name=\"project\">
+   <option value=\"1\">Project 1</option>
+   <option value=\"2\">Project 2</option>
+   <option value=\"3\">Project 3</option>
+   </select>
+   */
 
+Server-side example of using a form with dynamic choices:
+
+   // Users are assigned to projects and they're booking time, so we need to:
+   // 1. Display choices for the projects they're assigned to
+   // 2. Validate that the submitted project id is one they've been assigned to
+   var form
+   var display = function() { res.render('book_time', {form: form}) }
    req.user.getProjects(function(err, projects) {
      if (err) return next(err)
-     var form
      if (req.method == 'POST') {
        form = new ProjectBookingForm(projects, {data: req.body})
        if (form.isValid()) {
          return ProjectService.saveHours(user, form.cleanedData, function(err) {
            if (err) return next(err)
-           return redirect(user)
+           return res.redirect('/time/book/')
          })
        }
      }

@@ -75,8 +75,6 @@ Contents
 Quick Guide
 ===========
 
-In a hurry? Here's a quick guide to getting started with using a newforms Form:
-
 * Form constructors are created using :js:func:`Form.extend`.
 
   This takes an ``Object`` argument defining :doc:`fields` and any other

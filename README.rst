@@ -51,8 +51,6 @@ Node.js
 Quick Guide
 ===========
 
-Here's a quick guide to getting started with using a newforms Form:
-
 * Form constructors are created using ``forms.Form.extend()``.
 
   This takes an ``Object`` argument defining form fields and any other

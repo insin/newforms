@@ -21,7 +21,7 @@ function repr(o) {
   }
 }
 
-QUnit.test('Overview - Using a form in a React component', function() {
+QUnit.test('Overview - Displaying a Form in a React component', function() {
   var Contact = React.createClass({displayName: 'Contact',
     getInitialState: function() {
       return {form: new ContactForm()}
@@ -71,22 +71,22 @@ QUnit.test('Overview - Customising form display', function() {
 
       return React.DOM.form({ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"}
       , form.nonFieldErrors().render()
-      , React.DOM.div({className:"fieldWrapper"}
+      , React.DOM.div({key: fields.subject.htmlName, className:"fieldWrapper"}
         , fields.subject.errors().render()
         , React.DOM.label( {htmlFor:"id_subject"}, "Email subject:")
         , fields.subject.render()
         )
-      , React.DOM.div({className:"fieldWrapper"}
+      , React.DOM.div({key: fields.message.htmlName, className:"fieldWrapper"}
         , fields.message.errors().render()
         , React.DOM.label( {htmlFor:"id_message"}, "Your message:")
         , fields.message.render()
         )
-      , React.DOM.div({className:"fieldWrapper"}
+      , React.DOM.div({key: fields.sender.htmlName, className:"fieldWrapper"}
         , fields.sender.errors().render()
         , React.DOM.label( {htmlFor:"id_sender"}, "Your email address:")
         , fields.sender.render()
         )
-      , React.DOM.div({className:"fieldWrapper"}
+      , React.DOM.div({key: fields.ccMyself.htmlName, className:"fieldWrapper"}
         , fields.ccMyself.errors().render()
         , React.DOM.label( {htmlFor:"id_ccMyself"}, "CC yourself?")
         , fields.ccMyself.render()
@@ -102,6 +102,38 @@ QUnit.test('Overview - Customising form display', function() {
 <div class=\"fieldWrapper\"><label for=\"id_sender\">Your email address:</label><input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
 <div class=\"fieldWrapper\"><label for=\"id_ccMyself\">CC yourself?</label><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
 <div><input type=\"submit\" value=\"Send message\"></div></form>")
+})
+
+QUnit.test("Overview - Looping over the Form's Fields", function() {
+  var Contact = React.createClass({displayName: 'Contact',
+    getInitialState: function() {
+      return {form: new ContactForm()}
+    }
+
+  , render: function() {
+      var form = this.state.form
+      return React.DOM.form({ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"}
+      , form.nonFieldErrors().render()
+      , form.boundFields().map(this.renderField)
+      , React.DOM.div(null, React.DOM.input( {type:"submit", value:"Send message"}))
+      )
+    }
+
+  , renderField: function(bf) {
+      return React.DOM.div({key: bf.htmlName, className:"fieldWrapper"}
+      , bf.errors().render()
+      , bf.labelTag(), ' ', bf.render()
+      )
+    }
+  })
+  reactHTMLEqual(Contact(),
+"<form action=\"&#x2f;contact\" method=\"POST\">\
+<div class=\"fieldWrapper\"><label for=\"id_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
+<div class=\"fieldWrapper\"><label for=\"id_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_message\"></div>\
+<div class=\"fieldWrapper\"><label for=\"id_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
+<div class=\"fieldWrapper\"><label for=\"id_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
+<div><input type=\"submit\" value=\"Send message\"></div>\
+</form>")
 })
 
 QUnit.test('Forms - Dynamic initial values', function() {
@@ -434,6 +466,114 @@ QUnit.test('Forms - Prefixes for forms', function() {
   reactHTMLEqual(father.asUl.bind(father),
 "<li><label for=\"id_father-first_name\">First name:</label><span> </span><input type=\"text\" name=\"father-first_name\" id=\"id_father-first_name\"></li>\
 <li><label for=\"id_father-last_name\">Last name:</label><span> </span><input type=\"text\" name=\"father-last_name\" id=\"id_father-last_name\"></li>")
+})
+
+QUnit.test('Fields - Field.clean()', function() {
+  var f = forms.EmailField()
+  equal(f.clean('foo@example.com'), 'foo@example.com')
+  cleanErrorEqual(f, ['Enter a valid email address.'], 'invalid email address')
+})
+
+QUnit.test('Fields - errorMessage', function() {
+  var generic = forms.CharField()
+  cleanErrorEqual(generic, ['This field is required.'], '')
+  var name = forms.CharField({errorMessages: {required: 'Please enter your name.'}})
+  cleanErrorEqual(name, ['Please enter your name.'], '')
+})
+
+QUnit.test('Fields - Providing choices', function() {
+  var STATE_CHOICES = [
+    ['S', 'Scoped']
+  , ['D', 'Defined']
+  , ['P', 'In-Progress']
+  , ['C', 'Completed']
+  , ['A', 'Accepted']
+  ]
+  reactHTMLEqual(forms.Select().render('state', null, {choices: STATE_CHOICES}),
+"<select name=\"state\">\
+<option value=\"S\">Scoped</option>\
+<option value=\"D\">Defined</option>\
+<option value=\"P\">In-Progress</option>\
+<option value=\"C\">Completed</option>\
+<option value=\"A\">Accepted</option>\
+</select>")
+
+  var DRINK_CHOICES = [
+    ['Cheap', [
+        [1, 'White Lightning']
+      , [2, 'Buckfast']
+      , [3, 'Tesco Gin']
+      ]
+    ]
+  , ['Expensive', [
+        [4, 'Vieille Bon Secours Ale']
+      , [5, 'Château d’Yquem']
+      , [6, 'Armand de Brignac Midas']
+      ]
+    ]
+  , [7, 'Beer']
+  ]
+  reactHTMLEqual(forms.Select().render('drink', null, {choices: DRINK_CHOICES}),
+"<select name=\"drink\">\
+<optgroup label=\"Cheap\">\
+<option value=\"1\">White Lightning</option>\
+<option value=\"2\">Buckfast</option>\
+<option value=\"3\">Tesco Gin</option>\
+</optgroup>\
+<optgroup label=\"Expensive\">\
+<option value=\"4\">Vieille Bon Secours Ale</option>\
+<option value=\"5\">Château d’Yquem</option>\
+<option value=\"6\">Armand de Brignac Midas</option>\
+</optgroup>\
+<option value=\"7\">Beer</option>\
+</select>")
+
+  var VOWEL_CHOICES = ['A', 'E', 'I', 'O', 'U']
+  var f = forms.ChoiceField({choices: VOWEL_CHOICES})
+  deepEqual(f.choices(), [['A', 'A'], ['E', 'E'], ['I', 'I'], ['O', 'O'], ['U', 'U']])
+
+  var ARBITRARY_CHOICES = [
+    ['Numbers', [1, 2]]
+  , ['Letters', ['A', 'B']]
+  ]
+  f.setChoices(ARBITRARY_CHOICES)
+  deepEqual(f.choices(), [
+    ['Numbers', [[1, 1], [2, 2]]]
+  , ['Letters', [['A', 'A'], ['B', 'B']]]
+  ])
+})
+
+QUnit.test('Fields - Dynamic choices', function() {
+  var ProjectBookingForm = forms.Form.extend({
+    project: forms.ChoiceField()
+  , hours: forms.DecimalField({minValue: 0, maxValue: 24, maxdigits: 4, decimalPlaces: 2})
+  , date: forms.DateField()
+
+  , constructor: function(projects, kwargs) {
+      // Call the constructor of whichever form you're extending so that the
+      // forms.Form constructor eventually gets called - this.fields doesn't
+      // exist until this happens.
+      ProjectBookingForm.__super__.constructor.call(this, kwargs)
+
+      // Now that this.fields is a thing, make whatever changes you need to -
+      // in this case, we're going to creata a list of pairs of project ids
+      // and names to set as the project field's choices.
+      this.fields.project.setChoices(forms.util.makeChoices(projects, 'id', 'name'))
+    }
+  })
+
+  var projects = [
+    {id: 1, name: 'Project 1'}
+  , {id: 2, name: 'Project 2'}
+  , {id: 3, name: 'Project 3'}
+  ]
+  var form = new ProjectBookingForm(projects, {autoId: false})
+  reactHTMLEqual(form.boundField('project').render(),
+"<select name=\"project\">\
+<option value=\"1\">Project 1</option>\
+<option value=\"2\">Project 2</option>\
+<option value=\"3\">Project 3</option>\
+</select>")
 })
 
 var MultiEmailField = forms.Field.extend({
