@@ -66,6 +66,7 @@ Contents
    forms_api
    fields_api
    widgets_api
+   validation_api
    port_differences
 
 .. _`Django`: http://www.djangoproject.com

@@ -273,18 +273,20 @@ choice pairs from a list of objects using named properties:
 
 Server-side example of using a form with dynamic choices:
 
+.. code-block:: javascript
+
    // Users are assigned to projects and they're booking time, so we need to:
    // 1. Display choices for the projects they're assigned to
    // 2. Validate that the submitted project id is one they've been assigned to
    var form
    var display = function() { res.render('book_time', {form: form}) }
    req.user.getProjects(function(err, projects) {
-     if (err) return next(err)
+     if (err) { return next(err) }
      if (req.method == 'POST') {
        form = new ProjectBookingForm(projects, {data: req.body})
        if (form.isValid()) {
          return ProjectService.saveHours(user, form.cleanedData, function(err) {
-           if (err) return next(err)
+           if (err) { return next(err) }
            return res.redirect('/time/book/')
          })
        }

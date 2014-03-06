@@ -13,8 +13,124 @@ Form and field validation
 
       * `Django documentation -- Form and field validation <https://docs.djangoproject.com/en/dev/ref/forms/validation/>`_
 
+Form validation happens when the data is cleaned. If you want to customise
+this process, there are various places you can change, each one serving a
+different purpose. Three types of cleaning methods are run during form
+processing. These are normally executed when you call the ``isValid()``
+method on a form or you bind new data to the form by calling ``setData()``.
+There are other things that can trigger cleaning and validation (calling the
+``errors()`` getter or calling ``fullClean()`` directly), but normally they
+won't be needed.
+
+In general, any cleaning method can throw a ``ValidationError`` if there is a
+problem with the data it is processing, passing the relevant information to
+the ``ValidationError`` constructor.
+
+Most validation can be done using `validators`_ - helpers
+that can be reused easily. Validators are functions that take a single argument
+and throw a ``ValidationError`` on invalid input. Validators are run after the
+field's ``toJavaScript`` and ``validate`` methods have been called.
+
+Validation of a Form is split into several steps, which can be customised or
+overridden:
+
+* The ``toJavaScript()`` method on a Field is the first step in every
+  validation. It coerces the value to the correct datatype and throws a
+  ``ValidationError`` if that is not possible. This method accepts the raw
+  value from the widget and returns the converted value. For example, a
+  ``FloatField`` will turn the data into a JavaScript ``Number`` or throw a
+  ``ValidationError``.
+
+* The ``validate()`` method on a Field handles field-specific validation
+  that is not suitable for a validator, It takes a value that has been
+  coerced to the correct datatype and throws a ``ValidationError`` on any error.
+  This method does not return anything and shouldn't alter the value. You
+  should override it to handle validation logic that you can't or don't
+  want to put in a validator.
+
+* The ``runValidators()`` method on a Field runs all of the field's validators
+  and aggregates all the errors into a single ``ValidationError``. You shouldn't
+  need to override this method.
+
+* The ``clean()`` method on a Field. This is responsible for running
+  ``toJavaScript``, ``validate`` and ``runValidators`` in the correct
+  order and propagating their errors. If, at any time, any of the methods
+  throws a ``ValidationError``, the validation stops and that error is thrown.
+  This method returns the clean data, which is then inserted into the
+  ``cleanedData`` object of the form.
+
+* Field-specific cleaning/validation hooks on the Form. If your form includes a
+  ``clean<FieldName>()`` (or ``clean_<fieldName>()``) method in its definition,
+  it will be called for the field its name matches. This method is not passed
+  any parameters. You will need to look up the value of the field in
+  ``this.cleanedData`` (it will be  in ``cleanedData`` because the general field
+  ``clean()`` method, above, has already cleaned the data once).
+
+  For example, if you wanted to validate that the content of a ``CharField``
+  called ``serialNumber`` was unique, implementing ``cleanSerialNumber()`` would
+  provide the right place to do this.
+
+  These hooks also offer another chance for custom cleaning/normalizing of data.
+  If one needs to make a change to the the cleaned value obtained from
+  ``cleanedData``, it should return a modifed value, which will be re-inserted
+  into ``cleanedData``.
+
+* The Form ``clean()`` method. This method can perform
+  any validation that requires access to multiple fields from the form at
+  once. This is where you might put in things to check that if field ``A``
+  is supplied, field ``B`` must contain a valid email address and the
+  like. This method can return a completely different object if it wishes,
+  which will be used as the ``cleanedData``.
+
+  Since the field validation methods have been run by the time ``clean()`` is
+  called, you also have access to the form's errors(), which contains all the
+  errors raised by cleaning of individual fields.
+
+  Note that any errors raised by your ``Form.clean()`` override will not
+  be associated with any field in particular. They go into a special
+  "field" (called ``__all__``), which you can access via the
+  ``nonFieldErrors()`` method if you need to. If you want to attach
+  errors to a specific field in the form, you need to call
+  :js:func:`BaseForm#addError`.
+
+These methods are run in the order given above, one field at a time. That is,
+for each field in the form (in the order they are declared in the form
+definition), the ``Field.clean()`` method (or its override) is run, then
+``clean<Fieldname>()`` (or ``clean_<fieldName>()``) if defined. Finally, the
+``Form.clean()`` method, or its override, is executed whether or not the
+previous methods have thrown errors.
+
+Examples of each of these methods are provided below.
+
+As mentioned, any of these methods can throw a ``ValidationError``. For any
+field, if the ``Field.clean()`` method throws a ``ValidationError``, any
+field-specific cleaning method is not called. However, the cleaning methods
+for all remaining fields are still executed.
+
+Throwing ``ValidationError``
+----------------------------
+
+...
+
+Throwing multiple errors
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+...
+
 Using validation in practice
 ============================
+
+The previous sections explained how validation works in general for forms.
+Since it can sometimes be easier to put things into place by seeing each
+feature in use, here are a series of small examples that use each of the
+previous features.
+
+.. _validators:
+
+Using validators
+----------------
+
+...
 
 Form field default cleaning
 ---------------------------
@@ -87,8 +203,8 @@ If you return anything from a custom field cleaning function, the form's
 Cleaning and validating fields that depend on each other
 --------------------------------------------------------
 
-forms.Form.clean()
-~~~~~~~~~~~~~~~~~~
+Form#clean()
+~~~~~~~~~~~~
 
 There are two ways to report any errors from this step. Probably the most common
 method is to display the error at the top of the form. To create such an error,
@@ -116,7 +232,7 @@ you can throw a ``ValidationError`` from the ``clean()`` method. For example:
    }
 
 Another approach might involve assigning the error message to one of the fields.
-In this case, let's assign an error message to both the "subject" and "ccMyself
+In this case, let's assign an error message to both the "subject" and "ccMyself"
 rows in the form display:
 
 .. code-block:: javascript
@@ -137,157 +253,3 @@ rows in the form display:
        }
      }
    }
-
-``ValidationError``
-===================
-
-ValidationError is part of the `validators`_ module, but is so commonly used
-when implementing custom validation that it's exposed as part of the top-level
-newforms API.
-
-.. js:class:: ValidationError(message[, kwargs])
-
-   A validation error, containing validation messages.
-
-   Single messages (e.g. those produced by validators) may have an associated
-   error code and error message parameters to allow customisation by fields.
-
-   :param message:
-      the message argument can be a single error, a list of errors, or an object
-      that maps field names to lists of errors.
-
-      What we define as an "error" can be either a simple string or an instance
-      of ValidationError with its message attribute set, and what we define as
-      list or object can be an actual list or object, or an instance of
-      ValidationError with its errorList or errorObj property set.
-
-   :param Object kwargs: validation error options.
-
-   :param String kwargs.code:
-      a code identifying the type of single message this validation error is.
-
-   :param Object kwargs.params:
-      parameters to be interpolated into the validation error message. where the
-      message contains curly-bracketed {placeholders} for parameter properties.
-
-   **Prototype Functions**
-
-   .. js:function:: ValidationError#messageObj()
-
-      Returns validation messages as an object with field names as properties.
-
-      Throws an error if this validation error was not created with a field
-      error object.
-
-   .. js:function:: ValidationError#messages()
-
-      Returns validation messages as a list. If the ValidationError was
-      constructed with an object, its error messages will be flattened into a
-      list.
-
-validators API
-==============
-
-Newforms depends on the `validators`_ module and exposes its version of it as
-``forms.validators``.
-
-Constructors in the validators module are actually validation function factories
--- they can be called with or without ``new`` and will return a Function which
-performs the configured validation when called.
-
-.. js:class:: RegexValidator(kwargs)
-
-   Creates a validator which validates that input matches a regular expression.
-
-   :param Object kwargs: validator options, which are as follows:
-
-   :param kwargs.regex:
-      the regular expression pattern to search for the provided value, or a
-      pre-compiled ``RegExp``. By default, matches any string (including an
-      empty string)
-   :type kwargs.regex: RegExp or String
-
-   :param String kwargs.message:
-      the error message used by ``ValidationError`` if validation fails.
-      Defaults to ``"Enter a valid value"``.
-
-   :param String kwargs.code:
-      the error code used by ``ValidationError`` if validation fails. Defaults
-      to ``"invalid"``.
-
-   :param Boolean kwargs.inverseMatch:
-      the match mode for ``regex``. Defaults to ``false``.
-
-.. js:class:: URLValidator(kwargs)
-
-   Creates a validator which validates that input looks like a valid URL.
-
-   :param Object kwargs: validator options, which are as follows:
-
-   :param Array.<String> kwargs.schemes:
-      allowed URL schemes. Defaults to ``['http', 'https', 'ftp', 'ftps']``.
-
-.. js:class:: EmailValidator(kwargs)
-
-   Creates a validator which validates that input looks like a valid e-mail
-   address.
-
-   :param Object kwargs: validator options, which are as follows:
-
-   :param String kwargs.message:
-      error message to be used in any generated ``ValidationError``.
-
-   :param String kwargs.code:
-      error code to be used in any generated ``ValidationError``.
-
-   :param  Array.<String> kwargs.whitelist:
-      a whitelist of domains which are allowed to be the only thing to the right
-      of the ``@`` in a valid email address -- defaults to ``['localhost']``.
-
-.. js:function:: validateEmail(value)
-
-   Validates that input looks like a valid e-mail address -- this is a
-   preconfigured instance of an :js:class:`EmailValidator`.
-
-.. js:function:: validateSlug(value)
-
-   Validates that input consists of only letters, numbers, underscores or
-   hyphens.
-
-.. js:function:: validateIPv4Address(value)
-
-   Validates that input looks like a valid IPv4 address.
-
-.. js:function:: validateIPv6Address(value)
-
-   Validates that input is a valid IPv6 address.
-
-.. js:function:: validateIPv46Address(value)
-
-   Validates that input is either a valid IPv4 or IPv6 address.
-
-.. js:function:: validateCommaSeparatedIntegerList(value)
-
-   Validates that input is a comma-separated list of integers.
-
-.. js:class:: MaxValueValidator(maxValue)
-
-   Throws a ValidationError with a code of ``'maxValue'`` if its input is
-   greater than ``maxValue``.
-
-.. js:class:: MinValueValidator(minValue)
-
-   Throws a ValidationError with a code of ``'minValue'`` if its input is
-   less than ``maxValue``.
-
-.. js:class:: MaxLengthValidator(maxLength)
-
-   Throws a ValidationError with a code of ``'maxLength'`` if its input's length
-   is greater than ``maxLength``.
-
-.. js:class:: MinLengthValidator(minLength)
-
-   Throws a ValidationError with a code of ``'minLength'`` if its input's length
-   is less than ``minLength``.
-
-.. _`validators`: https://github.com/insin/validators
