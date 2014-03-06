@@ -2,23 +2,24 @@
 Forms
 =====
 
-For an introduction to and prose descriptions of the features of the Form API,
-please refer to the Django documentation for now:
+.. Note::
 
-   * `Django documentation -- The Forms API <https://docs.djangoproject.com/en/dev/ref/forms/api/>`_
+   Guide documentation for Forms is currently incomplete.
 
-Selected portions of the Django documentation are duplicated below, with
-JavaScript equivalents of example code.
+   In the meantime, for a guide to the features of Forms, please refer to the
+   Django documentation:
+
+      * `Django documentation -- The Forms API <https://docs.djangoproject.com/en/dev/ref/forms/api/>`_
 
 .. Note::
 
    Newforms renders form by creating ``React.DOM`` components, not HTML strings.
 
-   In usage examples which display HTML string output, we use a ``reactHTML()``
+   In code examples which display HTML string output, we use a ``reactHTML()``
    function to indicate there's another step between rendering a form and final
    output. An actual implementation of this function would need to strip
    ``data-react-`` attributes from the generated HTML and pretty-print to get
-   the exact example output.
+   the exact example output shown.
 
    However, the example HTML output is representative of the DOM structure
    which would be created when running in a browser, with React managing
@@ -126,6 +127,8 @@ Behaviour of unbound forms
    // => false
    print(f.errors().errors)
    // => {}
+
+.. _ref-dynamic-initial-values:
 
 Dynamic initial values
 ======================
@@ -284,6 +287,8 @@ This will also trigger validation -- updating ``form.errors()`` and
    // => true
    print(isValid)
    // => true
+
+.. _ref-outputting-forms-as-html:
 
 Outputting forms as HTML
 ========================

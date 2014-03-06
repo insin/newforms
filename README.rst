@@ -13,19 +13,32 @@ JavaScript port of `Django`_'s `form-handling library`_, usable in browsers and
 .. _`Node.js`: http://nodejs.org
 .. _`React`: http://facebook.github.io/react/
 
-Install
-=======
+Getting newforms
+================
 
-Node.js::
+Browser bundles
+   Browser bundles include all dependencies except React.
 
-   npm install newforms
+   They expose newforms as a global ``forms`` variable and expect to find a
+   global ``React`` variable to work with.
 
-Browser bundles (all dependencies except React included):
+   Release bundles will be available from:
 
-* `newforms.js`_ / `newforms.min.js`_
+      * https://github.com/insin/newforms/tree/react/dist
 
-Browser bundles currently expose newforms as a ``forms`` variable and expect to
-find a global ``React`` variable to work with.
+   Development bundles (updated intermittently):
+
+      * `newforms.js`_
+      * `newforms.min.js`_
+
+Node.js
+   ::
+
+      npm install newforms
+
+   .. code-block:: javascript
+
+      var forms = require('newforms')
 
 .. _`newforms.js`: https://github.com/insin/newforms/raw/react/newforms.js
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/react/newforms.min.js
@@ -38,12 +51,12 @@ find a global ``React`` variable to work with.
 Quick Guide
 ===========
 
-Here's a quick guide to getting started with using a newforms' Form.
+Here's a quick guide to getting started with using a newforms Form:
 
 * Form constructors are created using ``forms.Form.extend()``.
 
   This takes an ``Object`` argument defining form fields and any other
-  properties for the form's prototype (custom validation methods etc.),
+  properties for the form's prototype (custom validation functions etc.),
   returning a Form constructor which inherits from ``BaseForm``::
 
      var ContactForm = forms.Form.extend({
@@ -51,6 +64,28 @@ Here's a quick guide to getting started with using a newforms' Form.
      , message  : forms.CharField()
      , sender   : forms.EmailField()
      , ccMyself : forms.BooleanField({required: false})
+
+     // Implement custom validation for a field by adding a clean<FieldName>()
+     // function to the form's prototype.
+     , cleanSender: function() {
+         if (this.cleanedData.sender == 'mymatesteve@gmail.com') {
+            throw forms.ValidationError("I know it's you, Steve. " +
+                                        "Stop messing with my example form.")
+         }
+       }
+
+     // Implement custom whole-form validation by adding a clean() function to
+     // the form's prototype
+     , clean: function() {
+         if (this.cleanedData.subject.indexOf('that tenner you owe me') != -1 &&
+             PEOPLE_I_OWE_A_TENNER_TO.indexOf(this.cleanedData.sender) != 1) {
+           // This error will be associated with the named field
+           this.addError('sender', "Your email address doesn't seem to be working.")
+           // This error will be associated with the form itself, to be
+           // displayed independently.
+           throw forms.ValidationError('*BZZZT!* SYSTEM ERROR. Beeepity-boop etc. etc.')
+         }
+       }
      })
 
 * For convenience and compactness, the ``new`` operator is **optional** when
@@ -63,7 +98,8 @@ Here's a quick guide to getting started with using a newforms' Form.
 
 * Forms have default convenience rendering methods to get you started quickly,
   which display a label, input widgets and any validation errors for each field
-  (however, JSX makes it convenient to write your own custom rendering later)::
+  (however, JSX and ``React.DOM`` make it convenient to write your own custom
+  rendering later)::
 
      <form ref="contactForm">
        <table>
@@ -77,19 +113,22 @@ Here's a quick guide to getting started with using a newforms' Form.
      </form>
 
 * To bind a form to user data to be validated and cleaned, pass a ``data``
-  object::
+  object. For example, if the form was held as state in a React component which
+  had the above JSX in its ``render()`` method::
 
+     var form = this.state.form
      var formData = forms.formData(this.refs.contactForm.getDOMNode())
-     var form = new ContactForm({data: formData})
+     var isValid = form.setData(formData)
 
-     if (form.isValid()) {
+     if (isValid) {
        // form.cleanedData now contains validated input data, coerced to the
-       // appropriate JavaScript type by its Field.
+       // appropriate JavaScript data types by its Fields.
      }
      else {
-       // If the data wasn't valid, the forms's error object will be populated
-       // with field validation errors.
-       this.setState({form: form})
+       // If the data was ivalid, the forms's error object will be populated
+       // with field validation errors, which will be displayed the next time
+       // it's rendered.
+       this.forceUpdate()
      }
 
 MIT License

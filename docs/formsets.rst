@@ -12,14 +12,14 @@ Formsets
    Future releases will deal with making FormSets a better fit for client-side
    capabilities.
 
-For a guide to formsets, please refer to the Django documentation for now:
+.. Note::
 
-   * `Django documentation -- Formsets <https://docs.djangoproject.com/en/dev/topics/forms/formsets/>`_
+   Guide documentation for Formsets is currently incomplete.
 
-Selected portions of the Django documentation are duplicated below, with
-JavaScript equivalents of example code.
+   In the meantime, for a guide to the features of Formsets, please refer to the
+   Django documentation:
 
-----
+      * `Django documentation -- Formsets <https://docs.djangoproject.com/en/dev/topics/forms/formsets/>`_
 
 A formset is a layer of abstraction to work with multiple forms on the same
 page. It can be best compared to a data grid. Let's say you have the following

@@ -2,9 +2,9 @@
 Utilities
 =========
 
-Newforms exposes miscellaneous utilities you may want to make use of when
-working with forms as well as some implementation details which you may need to
-make use of for customisation purposes.
+Newforms exposes various utilities you may want to make use of when working with
+forms, as well as some implementation details which you may need to make use of
+for customisation purposes.
 
 .. js:function:: formData(form)
 
