@@ -1589,10 +1589,10 @@ QUnit.test("Extending forms", 13, function() {
   })
   var b = new Beatle({autoId: false})
   reactHTMLEqual(b.asUl(),
-"<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>" +
 "<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>" +
 "<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>" +
 "<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"></li>" +
+"<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>" +
 "<li><span>Haircut type:</span><span> </span><input type=\"text\" name=\"haircut_type\"></li>")
 
   var b = new Beatle({data:{first_name: "Alan", last_name: "Partridge", birthday: "1960-04-01", instrument: "Voice", haircut_type: "Floppy"}})

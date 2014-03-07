@@ -2471,9 +2471,9 @@ function DeclarativeFieldsMeta(prototypeProps, constructorProps) {
   if (object.hasOwn(prototypeProps, '__mixin__')) {
     var mixins = prototypeProps.__mixin__
     if (!is.Array(mixins)) { mixins = [mixins] }
-    // Note that we loop over mixed in forms in *reverse* to preserve the
-    // correct order of fields.
-    for (var i = mixins.length - 1; i >= 0; i--) {
+    // Process mixins from left-to-right, the same precedence they'll get for
+    // having their prototype properties mixed in.
+    for (var i = 0, l = mixins.length; i < l; i++) {
       var mixin = mixins[i]
       if (is.Function(mixin) && object.hasOwn(mixin.prototype, 'declaredFields')) {
         // Extend mixed-in declaredFields over the top of what's already there,
@@ -2485,12 +2485,14 @@ function DeclarativeFieldsMeta(prototypeProps, constructorProps) {
             delete declaredFields[name]
           }
         })
-        // To avoid overwriting the new form's baseFields or declaredFields when
-        // the rest of the mixin's prototype is mixed-in by Concur, replace the
-        // mixin with an object containing only its other prototype properties.
+        // To avoid overwriting the new form's baseFields, declaredFields or
+        // constructor when the rest of the mixin's prototype is mixed-in by
+        // Concur, replace the mixin with an object containing only its other
+        // prototype properties.
         var mixinPrototype = object.extend({}, mixin.prototype)
         delete mixinPrototype.baseFields
         delete mixinPrototype.declaredFields
+        delete mixinPrototype.constructor
         mixins[i] = mixinPrototype
       }
     }
@@ -4778,17 +4780,16 @@ function applyMixins(properties) {
  * If a child constructor is not provided via prototypeProps.constructor,
  * a new constructor will be created.
  */
-function inheritFrom(parentConstructor, prototypeProps, constructorProps) {
-  // Get or create a child constructor
-  var childConstructor
-  if (prototypeProps && object.hasOwn(prototypeProps, 'constructor')) {
-    childConstructor = prototypeProps.constructor
-  }
-  else {
+function inheritFrom(parentConstructor, childConstructor, prototypeProps, constructorProps) {
+  // Create a child constructor if one wasn't given
+  if (childConstructor == null) {
     childConstructor = function() {
       parentConstructor.apply(this, arguments)
     }
   }
+
+  // Make sure the new prototype has the correct constructor set up
+  prototypeProps.constructor = childConstructor
 
   // Base constructors should only have the properties they're defined with
   if (parentConstructor !== Concur) {
@@ -4797,15 +4798,14 @@ function inheritFrom(parentConstructor, prototypeProps, constructorProps) {
     childConstructor.__super__ = parentConstructor.prototype
   }
 
-  // Add prototype properties, if given
-  if (prototypeProps) {
-    object.extend(childConstructor.prototype, prototypeProps)
-  }
+  // Add prototype properties - this is why we took a copy of the child
+  // constructor reference in extend() - if a .constructor had been passed as a
+  // __mixin__ and overitten prototypeProps.constructor, these properties would
+  // be getting set on the mixed-in constructor's prototype.
+  object.extend(childConstructor.prototype, prototypeProps)
 
-  // Add constructor properties, if given
-  if (constructorProps) {
-    object.extend(childConstructor, constructorProps)
-  }
+  // Add constructor properties
+  object.extend(childConstructor, constructorProps)
 
   return childConstructor
 }
@@ -4827,29 +4827,34 @@ Concur.__mro__ = []
  * context, which is expected to be a constructor.
  */
 Concur.extend = function(prototypeProps, constructorProps) {
+  // Ensure we have prop objects to work with
+  prototypeProps = prototypeProps || {}
+  constructorProps = constructorProps || {}
+
   // If the constructor being inherited from has a __meta__ function somewhere
   // in its prototype chain, call it to customise prototype and constructor
   // properties before they're used to set up the new constructor's prototype.
   if (typeof this.prototype.__meta__ != 'undefined') {
-    // Property objects must always exist so properties can be added to
-    // and removed from them.
-    prototypeProps = prototypeProps || {}
-    constructorProps = constructorProps || {}
     this.prototype.__meta__(prototypeProps, constructorProps)
   }
 
+  // Any child constructor passed in should take precedence - grab a reference
+  // to it befoer we apply any mixins.
+  var childConstructor = object.get(prototypeProps, 'constructor', null)
+
   // If any mixins are specified, mix them into the property objects
-  if (prototypeProps && object.hasOwn(prototypeProps, '__mixin__')) {
+  if (object.hasOwn(prototypeProps, '__mixin__')) {
     prototypeProps = applyMixins(prototypeProps)
   }
-  if (constructorProps && object.hasOwn(constructorProps, '__mixin__')) {
+  if (object.hasOwn(constructorProps, '__mixin__')) {
     constructorProps = applyMixins(constructorProps)
   }
 
   // Set up the new child constructor and its prototype
-  var childConstructor = inheritFrom(this,
-                                     prototypeProps,
-                                     constructorProps)
+  childConstructor = inheritFrom(this,
+                                 childConstructor,
+                                 prototypeProps,
+                                 constructorProps)
 
   // Pass on the extend function for extension in turn
   childConstructor.extend = this.extend

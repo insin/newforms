@@ -99,6 +99,8 @@ field, if the ``Field.clean()`` method throws a ``ValidationError``, any
 field-specific cleaning method is not called. However, the cleaning methods
 for all remaining fields are still executed.
 
+.. _throwing-validation-error:
+
 Throwing ``ValidationError``
 ============================
 
@@ -116,7 +118,7 @@ following guidelines:
 
   .. code-block:: javascript
 
-     forms.ValidationError('Invalid value: {value}',{params: {value: '42'}})
+     forms.ValidationError('Invalid value: {value}', {params: {value: '42'}})
 
 Putting it all together:
 
@@ -325,3 +327,8 @@ rows in the form display:
        }
      }
    }
+
+The second argument oto ``addError()`` can be a simple string, or preferably
+an instance of ``ValidationError``. See :ref:`throwing-validation-error` for
+more details. Note that ``addError()`` automatically removes the field
+from ``cleanedData``.

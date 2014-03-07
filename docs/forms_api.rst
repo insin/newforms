@@ -107,8 +107,7 @@ Forms API
 
       Determines if this form has been given input data which can be validated.
 
-      ``true`` if the form was instantiated with ``kwargs.data`` or
-      ``kwargs.files``.
+      ``true`` if the form has ``data`` or ``files`` set.
 
    .. js:attribute:: form.cleanedData
 

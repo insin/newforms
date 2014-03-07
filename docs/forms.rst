@@ -31,13 +31,22 @@ Forms
 Bound and unbound forms
 =======================
 
-Creating a form:
+A :js:class:`Form` instance is either **bound** to a set of data, or **unbound**.
+
+* If it's **bound** to a set of data, it's capable of validating that data
+  and rendering the form with the data displayed in form inputs.
+
+* If it's **unbound**, it cannot do validation (because there's no data to
+  validate!), but it can still render the blank form or display any default
+  initial values that have been configured.
+
+To create an unbound Form instance, simply instantiate it:
 
 .. code-block:: javascript
 
    var f = new ContactForm()
 
-Creating a bound form:
+To bind data to a form, pass the data as an object argument:
 
 .. code-block:: javascript
 
@@ -49,7 +58,14 @@ Creating a bound form:
    }
    var f = new ContactForm({data: data})
 
-Binding data to an existing form:
+In this object, the property names are the field names, which correspond to the
+names in your ``Form`` definition. The values are the data you're trying to
+validate. These will usually be strings, but there's no requirement that they be
+strings; the type of data you pass depends on the :js:class:`Field`, as we'll
+see in a moment.
+
+Data can also be bound to an existing form. Note that binding data this way
+triggers form cleaning and validation, returning the validation result:
 
 .. code-block:: javascript
 
@@ -57,6 +73,9 @@ Binding data to an existing form:
 
 Form.isBound
 ------------
+
+If you need to distinguish between bound and unbound form instances at runtime,
+check the value of the form's :js:attr:`form.isBound` property:
 
 .. code-block:: javascript
 
@@ -78,7 +97,9 @@ A form given an empty object is still bound:
 Using forms to validate data
 ============================
 
-Valid data:
+The primary task of a ``Form`` object is to validate data. With a bound
+``Form`` instance, call the :js:func:`BaseForm#isValid` method to run validation
+and return a boolean designating whether the data was valid:
 
 .. code-block:: javascript
 
@@ -92,7 +113,9 @@ Valid data:
    print(f.isValid())
    // => true
 
-Invalid data:
+Let's try with some invalid data. In this case, ``subject`` is blank (an error,
+because all fields are required by default) and ``sender`` is not a valid
+email address:
 
 .. code-block:: javascript
 
@@ -106,7 +129,7 @@ Invalid data:
    print(f.isValid())
    // => false
 
-``Form.errors()`` returns an :js:class:`ErrorObject`:
+``Form.errors()`` returns an :js:class:`ErrorObject` containing error messages:
 
 .. code-block:: javascript
 
@@ -118,8 +141,20 @@ Invalid data:
      * Enter a valid email address.
    */
 
+You can access ``Form.errors()`` without having to call ``Form.isValid()``
+first. The form's data will be validated the first time you either call
+``Form.isValid()` or ``Form.errors()``.
+
+The validation routines will only get called once for a particular set of bound
+data, regardless of how many times you call ``Form.isValid()` or
+``Form.errors()``. This means that if validation has side effects, those side
+effects will only be triggered once.
+
 Behaviour of unbound forms
 --------------------------
+
+It's meaningless to validate a form with no data, but, for the record, here's
+what happens with unbound forms:
 
 .. code-block:: javascript
 
@@ -134,12 +169,23 @@ Behaviour of unbound forms
 Dynamic initial values
 ======================
 
-``Form.initial``:
+Use ``Form.initial`` to declare the initial value of form fields at runtime. For
+example, you might want to fill in a ``username`` field with the username of the
+current session.
+
+To so this, pass an ``initial`` argument when constructing the form. This
+argument, if given, should be an object mapping field names to initial values.
+You only have to include the fields for which you're specifying an initial
+value, for example:
 
 .. code-block:: javascript
 
    var f = new ContactForm({initial: {subject: 'Hi there!'}})
 
+These values are only displayed for unbound forms, and they're not used as
+fallback values if a particular value isn't provided.
+
+Where both a Field and Form define an initial valu for the same field, the
 Form-level ``initial`` gets precedence:
 
 .. code-block:: javascript
@@ -161,7 +207,7 @@ Form-level ``initial`` gets precedence:
 Accessing the fields from the form
 ==================================
 
-Form.fields:
+You can access the fields of a ``Form`` instance from its ``fields`` attribute:
 
 .. code-block:: javascript
 
@@ -197,7 +243,13 @@ affected:
 Accessing "clean" data
 ======================
 
-Form.cleanedData:
+Each field in a ``Form`` is responsible not only for validating data, but also
+for "cleaning" it -- normalising it to a consistent format. This is a nice
+feature, because it allows data for a particular field to be input in a variety
+of ways, always resulting in consistent output.
+
+Once you've created a ``Form`` instance with a set of data and validated it, you
+can access the clean data via its ``cleanedData`` property:
 
 .. code-block:: javascript
 
@@ -213,7 +265,7 @@ Form.cleanedData:
    print(f.cleanedData)
    // => {subject: 'hello', message: 'Hi there', sender: 'foo@example.com', ccMyself: true}
 
-``cleanedData`` contains only valid fields:
+If your data does *not* validate, ``cleanedData`` contains only the valid fields:
 
 .. code-block:: javascript
 
@@ -229,7 +281,8 @@ Form.cleanedData:
    print(f.cleanedData)
    // => {message: 'Hi there', sender: 'foo@example.com', ccMyself: true}
 
-``cleanedData`` will only contain properties for fields defined in the form:
+``cleanedData`` will only contain properties for fields defined in the form,
+even if you pass extra data:
 
 .. code-block:: javascript
 
@@ -249,7 +302,9 @@ Form.cleanedData:
    // => {subject: 'hello', message: 'Hi there', sender: 'foo@example.com', ccMyself: true}
 
 When the Form is valid, ``cleanedData`` will include properties for all its
-fields:
+fields, even if the data didn't include a value for some optional
+fields. In this example, the data object doesn't include a value for the
+``nickName`` field, but ``cleanedData`` includes it, with an empty value:
 
 .. code-block:: javascript
 
@@ -263,7 +318,20 @@ fields:
    print(f.isValid())
    // => true
    print(f.cleanedData)
-   // => {firstName: 'Alan', lastName: 'Partridge', nickName: false}
+   // => {firstName: 'Alan', lastName: 'Partridge', nickName: ''}
+
+In this above example, the ``cleanedData`` value for ``nickName`` is set to an
+empty string, because ``nickName`` is a ``CharField``, and ``CharField``\s treat
+empty values as an empty string.
+
+Each field type knows what its "blank" value is -- e.g., for ``DateField``, it's
+``null`` instead of the empty string. For full details on each field's behaviour
+in this case, see the "Empty value" note for each field in the
+:ref:`ref-built-in-field-types` documentation.
+
+You can write code to perform validation for particular form fields (based on
+their name) or for the form as a whole (considering combinations of various
+fields). More information about this is in :doc:`validation`.
 
 Updating a form's input data
 =============================
@@ -294,8 +362,9 @@ This will also trigger validation -- updating ``form.errors()`` and
 Outputting forms as HTML
 ========================
 
-Call ``render()`` -- forms have an ``asTable()`` method which is used as the
-default rendering, so calling ``render()`` is equivalent:
+The second task of a ``Form`` object is to render itself. To do so, call
+``render()`` -- forms have an ``asTable()`` method which is used as the default
+rendering, so calling ``render()`` is equivalent:
 
 .. code-block:: javascript
 
@@ -308,7 +377,8 @@ default rendering, so calling ``render()`` is equivalent:
    <tr><th><label for="id_ccMyself">Cc myself:</label></th><td><input type="checkbox" name="ccMyself" id="id_ccMyself"></td></tr>
    */
 
-Usage in JSX::
+Some forms render themselves to ``React.DOM`` components, rendering in JSX is
+just a case of calling the appopriate render method::
 
    <table>
      <tbody>
@@ -335,6 +405,39 @@ appropriately:
    <tr><th><label for="id_sender">Sender:</label></th><td><input type="email" name="sender" id="id_sender" value="foo@example.com"></td></tr>\
    <tr><th><label for="id_ccMyself">Cc myself:</label></th><td><input type="checkbox" name="ccMyself" id="id_ccMyself" checked></td></tr>
    */
+
+This default output is a two-column HTML table, with a ``<tr>`` for each field.
+Notice the following:
+
+* For flexibility, the output does *not* include the ``<table>`` or ``<tbody>``
+  , nor does it include the ``<form>`` or an ``<input type="submit">``. It's
+  your job to do that.
+
+* Each field type has a default HTML representation. ``CharField`` is
+  represented by an ``<input type="text">`` and ``EmailField`` by an
+  ``<input type="email">``.
+  ``BooleanField`` is represented by an ``<input type="checkbox">``. Note
+  these are merely sensible defaults; you can specify which input to use for
+  a given field by using widgets, which we'll explain shortly.
+
+* The HTML ``name`` for each tag is taken directly from its property name
+  in ``ContactForm``.
+
+* The text label for each field -- e.g. ``'Subject:'``, ``'Message:'`` and
+  ``'Cc myself:'`` is generated from the field name by converting all
+  underscores to spaces and upper-casing the first letter. Again, note
+  these are merely sensible defaults; you can also specify labels manually.
+
+* Each text label is surrounded in an HTML ``<label>`` tag, which points
+  to the appropriate form field via its ``id``. Its ``id``, in turn, is
+  generated by prepending ``'id_'`` to the field name. The ``id``
+  attributes and ``<label>`` tags are included in the output by default, to
+  follow best practices, but you can change that behavior.
+
+Although ``<table>`` output is the default output style when you ``render()`` a
+form, other output styles are available. Each style is available as a method on
+a form object, and each rendering method returns a list of ``React.DOM``
+components.
 
 ``asDiv()``
 -----------
@@ -415,6 +518,23 @@ Once you've done that, the generated markup will look something like:
 
 Configuring form elements' HTML ``id`` attributes and ``<label>`` tags
 ----------------------------------------------------------------------
+
+By default, the form rendering methods include:
+
+* HTML ``id`` attributes on the form elements.
+
+* The corresponding ``<label>`` tags around the labels. An HTML ``<label>`` tag
+  designates which label text is associated with which form element. This small
+  enhancement makes forms more usable and more accessible to assistive devices.
+  It's always a good idea to use ``<label>`` tags.
+
+The ``id`` attribute values are generated by prepending ``id_`` to the form
+field names. This behavior is configurable, though, if you want to change the
+``id`` convention or remove HTML ``id`` attributes and ``<label>`` tags
+entirely.
+
+Use the ``autoId`` argument to the ``Form`` constructor to control the ``id``
+and label behavior. This argument must be ``true``, ``false`` or a string.
 
 If ``autoId`` is ``false``, then the form output will include neither
 ``<label>`` tags nor ``id`` attributes:
@@ -525,11 +645,28 @@ It's possible to customise the suffix character appended to generated labels
    <li><label for="id_for_ccMyself">Cc myself -&gt;</label><span> </span><input type="checkbox" name="ccMyself" id="id_for_ccMyself"></li>
    */
 
+Note that the label suffix is added only if the last character of the
+label isn't a punctuation character.
+
+You can also customise the ``labelSuffix`` on a per-field basis using the
+``labelSuffix`` argument to :js:func:`BoundField#labelTag`.
+
+Notes on field ordering
+-----------------------
+
+In the ``asDiv()``, ``asUl()`` and ``asTable()`` shortcuts, the fields are
+displayed in the order in which you define them in your form. For example, in
+the ``ContactForm`` example, the fields are defined in the order ``subject``,
+``message``, ``sender``, ``ccMyself``. To reorder the HTML output, just change
+the order in which those fields are listed in the class.
+
 How errors are displayed
 ------------------------
 
-Default HTML output will include  validation errors as a
-``<ul class="errorlist">`` near the field:
+If you render a bound ``Form`` object, the act of rendering will automatically
+run the form's validation if it hasn't already happened, and the HTML output
+will include the validation errors as a ``<ul class="errorlist">`` near the
+field:
 
 .. code-block:: javascript
 
@@ -565,8 +702,8 @@ Default HTML output will include  validation errors as a
 Customising the error list format
 ---------------------------------
 
-You can pass an alternate constructor for displaying errors at form construction
-time:
+By default, forms use :js:class:`ErrorList` to format validation errors. You can
+pass an alternate constructor for displaying errors at form construction time:
 
 .. code-block:: javascript
 
@@ -591,8 +728,11 @@ time:
 More granular output
 --------------------
 
-To retrieve a single :js:class:`BoundField`, use the :js:func:`BaseForm#boundField`
-method on your form, passing the field's name:
+The ``asDiv()``, ``asUl()`` and ``asTable()`` methods are simply shortcuts for
+lazy developers -- they're not the only way a form object can be displayed.
+
+To retrieve a single :js:class:`BoundField`, use the
+:js:func:`BaseForm#boundField` method on your form, passing the field's name:
 
 .. code-block:: javascript
 
@@ -693,6 +833,83 @@ are manually constructing a ``label`` in JSX:
 
   <label htmlFor={form.boundField('myField').idForLabel()}>...<label>
 
+Binding uploaded files to a form
+================================
+
+Dealing with forms that have ``FileField`` and ``ImageField`` fields
+is a little more complicated than a normal form.
+
+Firstly, in order to upload files, you'll need to make sure that your
+``<form>`` element correctly defines the ``enctype`` as
+``"multipart/form-data"``:
+
+.. code-block:: html
+
+   <form enctype="multipart/form-data" method="POST" action="/foo">
+
+Secondly, when you use the form, you need to bind the file data. File
+data is handled separately to normal form data, so when your form
+contains a ``FileField`` and ``ImageField``, you will need to specify
+a ``files`` argument when you bind your form. So if we extend our
+ContactForm to include an ``ImageField`` called ``mugshot``, we
+need to bind the file data containing the mugshot image:
+
+..  code-block:: javascript
+
+   // Bound form with an image field
+   var data = {
+     subject: 'hello'
+   , message: 'Hi there'
+   , sender: 'invalid email address'
+   , ccMyself: true
+   }
+   var fileData = {mugshot: {name: 'face.jpg', size: 123456}}
+   var f = new ContactFormWithMugshot({data: data, files: fileData})
+
+Assuming that you're using `Express`_ and its ``bodyParser()`` on the server
+side, you will usually specify ``req.files`` as the source of file data (just
+like you'd use ``req.body`` as the source of form data):
+
+..  code-block:: javascript
+
+   // Bound form with an image field, data from the request
+   var f = new ContactFormWithMugshot({data: req.body, files: req.files})
+
+.. Note::
+
+   Newforms doesn't really care how you're handling file uploads, just that the
+   object passed as a ``file`` argument has ``FileField`` names as its
+   properties and that the corresponding values have ``name`` and ``size``
+   properties.
+
+Constructing an unbound form is the same as always -- just omit both
+form data *and* file data:
+
+..  code-block:: javascript
+
+   // Unbound form with a image field
+   var f = new ContactFormWithMugshot()
+
+Testing for multipart forms
+---------------------------
+
+If you're writing reusable views or templates, you may not know ahead of time
+whether your form is a multipart form or not. The ``isMultipart()`` method
+tells you whether the form requires multipart encoding for submission:
+
+..  code-block:: javascript
+
+    var f = new ContactFormWithMugshot()
+    print(f.isMultipart())
+    // => true
+
+Here's an example of how you might use this in a React component ``render()``
+method with JSX::
+
+   <form enctype={form.isMultipart() && 'multipart/form-data'} method="POST" action="/foo">
+     {form.asDiv()}
+   </form>
+
 Extending forms
 ===============
 
@@ -734,9 +951,9 @@ its field list includes their fields:
    var b = new BeatleForm({autoId: false})
    print(reactHTML(b.asUl()))
    /* =>
-   <li><span>Instrument:</span><span> </span><input type="text" name="instrument"></li>
    <li><span>First name:</span><span> </span><input type="text" name="first_name"></li>
    <li><span>Last name:</span><span> </span><input type="text" name="last_name"></li>
+   <li><span>Instrument:</span><span> </span><input type="text" name="instrument"></li>
    <li><span>Haircut type:</span><span> </span><input type="text" name="haircut_type"></li>
    */
 
@@ -762,3 +979,4 @@ form its own namespace, use the ``prefix`` argument:
    */
 
 .. _`Concur`: https://github.com/insin/concur#api
+.. _`Express`: http://expressjs.com/

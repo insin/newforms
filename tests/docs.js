@@ -450,9 +450,9 @@ QUnit.test("Forms - Extending forms", function() {
   })
   var b = new BeatleForm({autoId: false})
   reactHTMLEqual(b.asUl(),
-"<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>\
-<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>\
+"<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>\
 <li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>\
+<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>\
 <li><span>Haircut type:</span><span> </span><input type=\"text\" name=\"haircut_type\"></li>",
   "Using forms as mixins")
 })

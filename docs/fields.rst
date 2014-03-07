@@ -297,5 +297,7 @@ Server-side example of using a form with dynamic choices:
      display(form)
    })
 
+.. _ref-built-in-field-types:
+
 Built-in Field types
 ====================
