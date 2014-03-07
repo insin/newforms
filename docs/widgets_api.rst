@@ -12,6 +12,10 @@ Widgets API
    A widget handles the rendering of HTML, and the extraction of data from an
    object that corresponds to the widget.
 
+   This base widget cannot be rendered, but provides the basic attribute
+   ``widget.attrs``.  You must implement the :js:func:`Widget#render`` method
+   when extending this base widget.
+
    :param Object kwargs: widget options, which are as follows:
 
    :param Object kwargs.attrs:
@@ -22,6 +26,8 @@ Widgets API
    .. js:attribute:: widget.attrs
 
       Base HTML attributes for the rendered widget.
+
+      :type: Object
 
    **Prototype Properties**
 
@@ -60,15 +66,38 @@ Widgets API
       Returns a rendered representation of this Widget as a ``React.DOM``
       component.
 
-      The default implementation throws an ``Error`` -- subclasses must provide
-      an implementation.
+      The default implementation throws an ``Error`` -- extending widgets must
+      provide an implementation.
 
-      The ``value`` given is not guaranteed to be valid input, so subclass
+      The ``value`` given is not guaranteed to be valid input, so inheriting
       implementations should program defensively.
+
+      :param String name:
+         the name to give to the rendered widget, or to be used as the basis for
+         other, unique names when the widget needs to render multiple inputs.
+
+      :param value:
+         the value to be disaplyed in the widget.
+
+      :param Object kwargs: rendering options, which are:
+
+      :param Object kwargs.attrs:
+         additonal HTML attributes for the rendered widget.
 
    .. js:function:: Widget#buildAttrs(extraAttrs[, kwargs])
 
-      Helper function for building an HTML attributes object.
+      Helper function for building an HTML attributes object using
+      ``widget.attrs`` and the given arguments.
+
+      :param Object extraAttrs:
+         extra HTML attributes to be included -- generally, these are any
+         ``attrs`` passed into the ``render()`` method.
+
+      :param Object kwargs:
+         any other attributes which should be incluuded in a Widget's HTML
+         attributes by default -- when given, these are usually provided by a
+         ``render()`` method for attributes related to the type of widget being
+         implemented.
 
    .. js:function:: Widget#valueFromData(data, files, name)
 
@@ -96,6 +125,60 @@ Widgets API
    .. js:function:: SubWidget#render()
 
       Calls the parent widget's render function with this Subwidget's details.
+
+``MultiWidget``
+===============
+
+.. js:class:: MultiWidget(widgets[, kwargs])
+
+   A widget that is composed of multiple widgets.
+
+   You'll probably want to use this class with :js:class:`MultiValueField`.
+
+   :param Array widgets: the list of widgets composing this widget.
+   :param Object kwargs: widget options.
+
+   **Prototype Functions**
+
+   .. js:function:: MultiWidget#render(name, value[, kwargs])
+
+      :param String name:
+         the name be used as the basis for unique names for the multiple inputs
+         this widget must render.
+
+      :param value:
+         the value to be disaplyed in the widget -- may be a list of values or
+         a single value which needs to be split for display.
+
+      :param Object kwargs: rendering options, which are:
+
+      :param Object kwargs.attrs:
+         additonal HTML attributes.
+
+   .. js:function:: MultiWidget#formatOutput(renderedWidgets)
+
+      Creates an element containing a given list of rendered widgets.
+
+      This hook allows you to format the HTML design of the widgets, if needed
+      -- by default, they are wrapped in a ``<div>``.
+
+      :param Array renderedWidgets: a list of rendered widgets.
+
+   .. js:function:: MultiWidget#decompress(value)
+
+      This method takes a single "compressed" value from the field and
+      returns a list of "decompressed" values. The input value can be
+      assumed valid, but not necessarily non-empty.
+
+      This method **must be implemented** when extending MultiWidget, and since
+      the value may be empty, the implementation must be defensive.
+
+      The rationale behind "decompression" is that it is necessary to "split"
+      the combined value of the form field into the values for each widget.
+
+      An example of this is how :js:class:`SplitDateTimeWidget` turns a
+      ``Date`` value into a list with date and time split into two separate
+      values.
 
 Text input widgets
 ===================
@@ -349,32 +432,6 @@ Choice widgets
 
 Slightly complex widgets
 ========================
-
-.. js:class:: MultiWidget(widgets[, kwargs])
-
-   A widget that is composed of multiple widgets.
-
-   You'll probably want to use this class with :js:class:`MultiValueField`.
-
-   :param Array widgets: the list of widgets composing this widget.
-   :param Object kwargs: widget options.
-
-   **Prototype Functions**
-
-   .. js:function:: MultiWidget#formatOutput(renderedWidgets)
-
-      Creates an element containing a given list of rendered widgets.
-
-      This hook allows you to format the HTML design of the widgets, if needed
-      -- by default, they are wrapped in a ``<div>``.
-
-      :param Array renderedWidgets: a list of rendered widgets.
-
-   .. js:function:: MultiWidget#decompress(value)
-
-      Creates a list of decompressed values for the given compressed value.
-
-      Subclasses must implement this function.
 
 .. js:class:: SplitDateTimeWidget([kwargs])
 

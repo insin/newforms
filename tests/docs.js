@@ -822,4 +822,106 @@ QUnit.test('Formsets - validation', function() {
   deepEqual(formset.nonFormErrors().messages(), ['Articles in a set must have distinct titles.'])
 })
 
+QUnit.test('Widgets - Widgets inheriting from the Select widget', function() {
+  var CHOICES = [['1', 'First'], ['2', 'Second']]
+  var field = forms.ChoiceField({choices: CHOICES, widget: forms.RadioSelect})
+  deepEqual(field.choices(), [['1', 'First'], ['2', 'Second']])
+  deepEqual(field.widget.choices, [['1', 'First'], ['2', 'Second']])
+  field.widget.choices = []
+  field.setChoices([['1', 'First and only']])
+  deepEqual(field.widget.choices, [['1', 'First and only']])
+})
+
+QUnit.test('Widgets - Styling widget instances', function() {
+  var CommentForm = forms.Form.extend({
+    name: forms.CharField()
+  , url: forms.URLField()
+  , comment: forms.CharField()
+  })
+  var f = new CommentForm({autoId: false})
+  reactHTMLEqual(f.asTable(),
+"<tr><th>Name:</th><td><input type=\"text\" name=\"name\"></td></tr>\
+<tr><th>Url:</th><td><input type=\"url\" name=\"url\"></td></tr>\
+<tr><th>Comment:</th><td><input type=\"text\" name=\"comment\"></td></tr>")
+
+  CommentForm = forms.Form.extend({
+    name: forms.CharField({
+      widget: forms.TextInput({attrs: {className: 'special'}})
+    })
+  , url: forms.URLField()
+  , comment: forms.CharField({widget: forms.TextInput({attrs: {size: '40'}})})
+  })
+  f = new CommentForm({autoId: false})
+  reactHTMLEqual(f.asTable(),
+"<tr><th>Name:</th><td><input class=\"special\" type=\"text\" name=\"name\"></td></tr>\
+<tr><th>Url:</th><td><input type=\"url\" name=\"url\"></td></tr>\
+<tr><th>Comment:</th><td><input size=\"40\" type=\"text\" name=\"comment\"></td></tr>")
+})
+
+QUnit.test('Widgets - widget.attrs', function() {
+  var name = forms.TextInput({attrs: {size:10, title: 'Your name'}})
+  reactHTMLEqual(name.render('name', 'A name'),
+"<input size=\"10\" title=\"Your name\" type=\"text\" name=\"name\" value=\"A name\">" )
+})
+
+QUnit.test('Widgets -MultiWidget', function() {
+  function range(start, end) {
+    var result = []
+    for (var i = start; i < end; i++) {
+      result.push(i)
+    }
+    return result
+  }
+  var extend = isomorph.object.extend
+  var strpdate = isomorph.time.strpdate
+
+  var DateSelectorWidget = forms.MultiWidget.extend({
+    constructor: function(kwargs) {
+      kwargs = extend({attrs: {}}, kwargs)
+      widgets = [
+        forms.Select({choices: range(1, 32), attrs: kwargs.attrs})
+      , forms.Select({choices: range(1, 13), attrs: kwargs.attrs})
+      , forms.Select({choices: range(2012, 2017), attrs: kwargs.attrs})
+      ]
+      forms.MultiWidget.call(this, widgets, kwargs)
+    }
+
+  , decompress: function(value) {
+      if (value instanceof Date) {
+        return [value.getDate(),
+                value.getMonth() + 1, // Make month 1-based for display
+                value.getFullYear()]
+      }
+      return [null, null, null]
+    }
+
+  , formatOutput: function(renderedWidgets) {
+      return React.DOM.div(null, renderedWidgets)
+    }
+
+  , valueFromData: function(data, files, name) {
+      var parts = this.widgets.map(function(widget, i) {
+        return widget.valueFromData(data, files, name + '_' + i)
+      })
+      parts.reverse() // [d, m, y] => [y, m, d]
+      return parts.join('-')
+    }
+  })
+
+  var w = new DateSelectorWidget()
+  reactHTMLEqual(w.render('date', new Date(2014, 2, 7)),
+"<div>\
+<select name=\"date_0\"><option value=\"1\">1</option><option value=\"2\">2</option><option value=\"3\">3</option><option value=\"4\">4</option><option value=\"5\">5</option><option value=\"6\">6</option><option value=\"7\" selected>7</option><option value=\"8\">8</option><option value=\"9\">9</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option><option value=\"13\">13</option><option value=\"14\">14</option><option value=\"15\">15</option><option value=\"16\">16</option><option value=\"17\">17</option><option value=\"18\">18</option><option value=\"19\">19</option><option value=\"20\">20</option><option value=\"21\">21</option><option value=\"22\">22</option><option value=\"23\">23</option><option value=\"24\">24</option><option value=\"25\">25</option><option value=\"26\">26</option><option value=\"27\">27</option><option value=\"28\">28</option><option value=\"29\">29</option><option value=\"30\">30</option><option value=\"31\">31</option></select>\
+<select name=\"date_1\"><option value=\"1\">1</option><option value=\"2\">2</option><option value=\"3\" selected>3</option><option value=\"4\">4</option><option value=\"5\">5</option><option value=\"6\">6</option><option value=\"7\">7</option><option value=\"8\">8</option><option value=\"9\">9</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option></select>\
+<select name=\"date_2\"><option value=\"2012\">2012</option><option value=\"2013\">2013</option><option value=\"2014\" selected>2014</option><option value=\"2015\">2015</option><option value=\"2016\">2016</option></select>\
+</div>")
+
+  var TestForm = forms.Form.extend({
+    date: forms.DateField({widget: DateSelectorWidget})
+  })
+  var form = new TestForm({data: {date_0: 1, date_1: 1, date_2: 2014}})
+  ok(form.isValid())
+  equal(form.cleanedData.date.getTime(), new Date(2014, 0, 1).getTime())
+})
+
 }()
