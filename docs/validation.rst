@@ -76,9 +76,9 @@ overridden:
 
   Since the field validation methods have been run by the time ``clean()`` is
   called, you also have access to the form's errors(), which contains all the
-  errors raised by cleaning of individual fields.
+  errors thrown by cleaning of individual fields.
 
-  Note that any errors raised by your ``Form.clean()`` override will not
+  Note that any errors thrown by your ``Form.clean()`` override will not
   be associated with any field in particular. They go into a special
   "field" (called ``__all__``), which you can access via the
   ``nonFieldErrors()`` method if you need to. If you want to attach
