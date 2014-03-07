@@ -418,7 +418,13 @@ Choice fields
 
    :param Boolean kwargs.recursive:
       if ``true``, the directory will be descended into recursively and all
-      descendants will be listed as choices -- defaults to ``false``.
+      allowed descendants will be listed as choices -- defaults to ``false``.
+
+   :param Boolean kwargs.allowFiles:
+      if ``true``, files will be listed as choices. Defaults to ``true``.
+
+   :param Boolean kwargs.allowFolders:
+      if ``true``, folders will be listed as choices. Defaults to ``false``.
 
 Slightly complex fields
 =======================

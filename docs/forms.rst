@@ -824,6 +824,8 @@ are manually constructing a ``label`` in JSX:
 
   <label htmlFor={form.boundField('myField').idForLabel()}>...<label>
 
+.. _binding-uploaded-files:
+
 Binding uploaded files to a form
 ================================
 

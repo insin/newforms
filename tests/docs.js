@@ -576,6 +576,15 @@ QUnit.test('Fields - Dynamic choices', function() {
 </select>")
 })
 
+QUnit.test('Fields - ComboField', function() {
+  var f = forms.ComboField({fields: [
+    forms.CharField({maxLength: 20})
+  , forms.EmailField()
+  ]})
+  equal(f.clean('test@example.com'), 'test@example.com')
+  cleanErrorEqual(f, ['Ensure this value has at most 20 characters (it has 28).'], 'longemailaddress@example.com')
+})
+
 var MultiEmailField = forms.Field.extend({
   toJavaScript: function(value) {
     if (this.isEmptyValue(value)) {

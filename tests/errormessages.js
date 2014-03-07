@@ -46,9 +46,9 @@ QUnit.test("DecimalField", 7, function() {
   , invalid: "INVALID"
   , minValue: "MIN VALUE IS {limitValue}"
   , maxValue: "MAX VALUE IS {limitValue}"
-  , maxDigits: "MAX DIGITS IS {maxDigits}"
-  , maxDecimalPlaces: "MAX DP IS {maxDecimalPlaces}"
-  , maxWholeDigits: "MAX DIGITS BEFORE DP IS {maxWholeDigits}"
+  , maxDigits: "MAX DIGITS IS {max}"
+  , maxDecimalPlaces: "MAX DP IS {max}"
+  , maxWholeDigits: "MAX DIGITS BEFORE DP IS {max}"
   }
   var f = forms.DecimalField({minValue: 5, maxValue: 10, errorMessages: e})
   var f2 = forms.DecimalField({maxDigits: 4, decimalPlaces: 2, errorMessages: e})
