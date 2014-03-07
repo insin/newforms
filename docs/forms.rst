@@ -4,15 +4,6 @@ Forms
 
 .. Note::
 
-   Guide documentation for Forms is currently incomplete.
-
-   In the meantime, for a guide to the features of Forms, please refer to the
-   Django documentation:
-
-      * `Django documentation -- The Forms API <https://docs.djangoproject.com/en/dev/ref/forms/api/>`_
-
-.. Note::
-
    Newforms Forms and Widgets "render" by creating ``React.DOM`` components,
    rather than directly creating DOM elements or HTML strings.
 
