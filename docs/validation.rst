@@ -2,17 +2,6 @@
 Form and field validation
 =========================
 
-.. Note::
-
-   Guide documentation for validation is currently incomplete.
-
-   In the meantime, for a guide the various methods of customising validation
-   and the order stages of validation run in, please refer to the Django
-   documentation:
-
-
-      * `Django documentation -- Form and field validation <https://docs.djangoproject.com/en/dev/ref/forms/validation/>`_
-
 Form validation happens when the data is cleaned. If you want to customise
 this process, there are various places you can change, each one serving a
 different purpose. Three types of cleaning methods are run during form
@@ -30,6 +19,9 @@ Most validation can be done using `validators`_ - helpers
 that can be reused easily. Validators are functions that take a single argument
 and throw a ``ValidationError`` on invalid input. Validators are run after the
 field's ``toJavaScript`` and ``validate`` methods have been called.
+
+Validation steps and order
+==========================
 
 Validation of a Form is split into several steps, which can be customised or
 overridden:
@@ -108,14 +100,63 @@ field-specific cleaning method is not called. However, the cleaning methods
 for all remaining fields are still executed.
 
 Throwing ``ValidationError``
-----------------------------
+============================
 
-...
+In order to make error messages flexible and easy to override, consider the
+following guidelines:
+
+* Provide a descriptive error ``code`` to the constructor when possible:
+
+  .. code-block:: javascript
+
+     forms.ValidationError('Invalid value', {code: 'invalid'})
+
+* Don't coerce variables into the message; use placeholders and the ``params``
+  argument of the constructor:
+
+  .. code-block:: javascript
+
+     forms.ValidationError('Invalid value: {value}',{params: {value: '42'}})
+
+Putting it all together:
+
+.. code-block:: javascript
+
+   throw forms.ValidationError('Invalid value: {value)', {
+     code: 'invalid'
+   , params: {value: '42'}
+   })
+
+Following these guidelines is particularly useful to others if you write
+reusable forms and form fields.
+
+If you're at the end of the validation chain (i.e. your form's ``clean()``) and
+you know you will *never* need to override your error message (or even just...
+`because <http://www.youtube.com/watch?v=pWdd6_ZxX8c>`_) you can still opt
+for the less verbose:
+
+.. code-block:: javascript
+
+   forns.ValidationError('Invalid value: ' + value)
 
 Throwing multiple errors
-~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------
 
-...
+If you detect multiple errors during a cleaning method and wish to signal all
+of them to the form submitter, it is possible to pass a list of errors to the
+``ValidationError`` constructor.
+
+It's recommended to pass a list of ``ValidationError`` instances with ``code``\s
+and ``params`` but a list of strings will also work:
+
+.. code-block:: javascript
+
+   throw forms.ValidationError([
+     forms.ValidationError('Error 1', {code: 'error1'})
+   , forms.ValidationError('Error 2', {code: 'error2'})
+   ])
+
+   throw forms.ValidationError(['Error 1', 'Error 2'])
 
 Using validation in practice
 ============================
@@ -130,7 +171,38 @@ previous features.
 Using validators
 ----------------
 
-...
+Fields support use of utility functions known as validators. A validator
+is a function that takes a value and returns nothing if the value is valid, or
+thriws a :js:class:`ValidationError` if not. These can be passed to a field's
+constructor, via the field's ``validators`` argument, or defined on the field's
+``prototype`` as a ``defaultValidators`` property.
+
+Let's have a look at a basic implementation of newforms' ``SlugField``:
+
+.. code-block:: javascript
+
+   var MySlugField = forms.CharField.extend({
+     defaultValidators: [forms.validators.validateSlug]
+   })
+
+As you can see, a basic ``SlugField`` is just a ``CharField`` with a customised
+validator that validates that submitted text obeys some character usage rules.
+This can also be done on field definition so:
+
+.. code-block:: javascript
+
+   var field = new MySlugField()
+
+is equivalent to:
+
+.. code-block:: javascript
+
+   var field = forms.CharField({validators: [forms.validators.validateSlug]})
+
+Common cases such as validating against an email or a regular expression can be
+handled using existing validators available in newforms. For example,
+:js:func:`validateSlug` is a function created by passing a slug-matching
+``RegExp`` to the :js:class:`RegexValidator` function factory.
 
 Form field default cleaning
 ---------------------------
