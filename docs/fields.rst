@@ -305,7 +305,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`CheckboxInput`
    * Empty value: ``false``
-   * Normalizes to: A JavaScript ``true`` or ``false`` value.
+   * Normalises to: A JavaScript ``true`` or ``false`` value.
    * Validates that the value is ``true`` (e.g. the check box is checked) if
      the field has ``required: true``.
    * Error message keys: ``required``
@@ -323,7 +323,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`TextInput`
    * Empty value: ``''`` (an empty string)
-   * Normalizes to: A string.
+   * Normalises to: A string.
    * Validates ``maxLength`` or ``minLength``, if they are provided.
      Otherwise, all inputs are valid.
    * Error message keys: ``required``, ``maxLength``, ``minLength``
@@ -341,7 +341,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`Select`
    * Empty value: ``''`` (an empty string)
-   * Normalizes to: A string.
+   * Normalises to: A string.
    * Validates that the given value exists in the list of choices.
    * Error message keys: ``required``, ``invalidChoice``
 
@@ -363,7 +363,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`Select`
    * Empty value: Whatever you've given as ``emptyValue``
-   * Normalizes to: A value of the type provided by the ``coerce`` argument.
+   * Normalises to: A value of the type provided by the ``coerce`` argument.
    * Validates that the given value exists in the list of choices and can be
      coerced.
    * Error message keys: ``required``, ``invalidChoice``
@@ -390,7 +390,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`DateInput`
    * Empty value: ``null``
-   * Normalizes to: A JavaScript ``Date`` object, with its time fields set to
+   * Normalises to: A JavaScript ``Date`` object, with its time fields set to
      zero.
    * Validates that the given value is either a ``Date``, or string formatted
      in a particular date format.
@@ -421,7 +421,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`DateTimeInput`
    * Empty value: ``null``
-   * Normalizes to: A JavaScript ``Date`` object.
+   * Normalises to: A JavaScript ``Date`` object.
    * Validates that the given value is either a ``Date`` or string formatted in
      a particular datetime format.
    * Error message keys: ``required``, ``invalid``
@@ -454,7 +454,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`NumberInput`.
    * Empty value: ``null``
-   * Normalizes to: A string (since JavaScript doesn't have built-in Decimal
+   * Normalises to: A string (since JavaScript doesn't have built-in Decimal
      type).
    * Validates that the given value is a decimal. Leading and trailing
      whitespace is ignored.
@@ -490,7 +490,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`EmailInput`
    * Empty value: ``''`` (an empty string)
-   * Normalizes to: A string.
+   * Normalises to: A string.
    * Validates that the given value is a valid email address, using a
      moderately complex regular expression.
    * Error message keys: ``required``, ``invalid``
@@ -504,7 +504,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`ClearableFileInput`
    * Empty value: ``null``
-   * Normalizes to: The given object in ``files`` - this field just validates
+   * Normalises to: The given object in ``files`` - this field just validates
      what's there and leaves the rest up to you.
    * Can validate that non-empty file data has been bound to the form.
    * Error message keys: ``required``, ``invalid``, ``missing``, ``empty``,
@@ -527,7 +527,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`Select`
    * Empty value: ``null``
-   * Normalizes to: A string
+   * Normalises to: A string
    * Validates that the selected choice exists in the list of choices.
    * Error message keys: ``required``, ``invalidChoice``
 
@@ -568,7 +568,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`NumberInput`.
    * Empty value: ``null``
-   * Normalizes to: A JavaScript ``Number``.
+   * Normalises to: A JavaScript ``Number``.
    * Validates that the given value is a float. Leading and trailing whitespace
      is allowed.
    * Error message keys: ``required``, ``invalid``, ``maxValue``,
@@ -582,7 +582,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`ClearableFileInput`
    * Empty value: ``null``
-   * Normalizes to: The given object in ``files`` - this field just validates
+   * Normalises to: The given object in ``files`` - this field just validates
      what's there and leaves the rest up to you.
    * Validates that file data has been bound to the form, and that the
      file is of an image format.
@@ -601,7 +601,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`NumberInput`.
    * Empty value: ``null``
-   * Normalizes to: A JavaScript ``Number``.
+   * Normalises to: A JavaScript ``Number``.
    * Validates that the given value is an integer. Leading and trailing
      whitespace is allowed.
    * Error message keys: ``required``, ``invalid``, ``maxValue``,
@@ -626,7 +626,7 @@ For each field, we describe the default widget used if you don't specify
 
     * Default widget: :js:class:`TextInput`
     * Empty value: ``''`` (an empty string)
-    * Normalizes to: A string.
+    * Normalises to: A string.
     * Validates that the given value is a valid IPv4 address, using a regular
       expression.
     * Error message keys: ``required``, ``invalid``
@@ -638,13 +638,13 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`TextInput`
    * Empty value: ``''`` (an empty string)
-   * Normalizes to: A string. IPv6 addresses are normalized as described below.
+   * Normalises to: A string. IPv6 addresses are normalised as described below.
    * Validates that the given value is a valid IP address.
    * Error message keys: ``required``, ``invalid``
 
-   The IPv6 address normalization follows :rfc:`4291#section-2.2` section 2.2,
+   The IPv6 address normalisation follows :rfc:`4291#section-2.2` section 2.2,
    including using the IPv4 format suggested in paragraph 3 of that section, like
-   ``::ffff:192.0.2.0``. For example, ``2001:0::0:01`` would be normalized to
+   ``::ffff:192.0.2.0``. For example, ``2001:0::0:01`` would be normalised to
    ``2001::1``, and ``::ffff:0a0a:0a0a`` to ``::ffff:10.10.10.10``. All characters
    are converted to lowercase.
 
@@ -667,7 +667,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`SelectMultiple`
    * Empty value: ``[]`` (an empty list)
-   * Normalizes to: A list of strings.
+   * Normalises to: A list of strings.
    * Validates that every value in the given list of values exists in the list
      of choices.
    * Error message keys: ``required``, ``invalidChoice``, ``invalidList``
@@ -686,7 +686,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`SelectMultiple`
    * Empty value: Whatever you've given as ``emptyValue``
-   * Normalizes to: A list of values of the type provided by the ``coerce``
+   * Normalises to: A list of values of the type provided by the ``coerce``
      argument.
    * Validates that the given values exists in the list of choices and can be
      coerced.
@@ -703,7 +703,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`NullBooleanSelect`
    * Empty value: ``null``
-   * Normalizes to: A JavaScript ``true``, ``false`` or ``null`` value.
+   * Normalises to: A JavaScript ``true``, ``false`` or ``null`` value.
    * Validates nothing (i.e., it never raises a ``ValidationError``).
 
 :js:class:`RegexField`
@@ -711,7 +711,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`TextInput`
    * Empty value: ``''`` (an empty string)
-   * Normalizes to: A string.
+   * Normalises to: A string.
    * Validates that the given value matches against a certain regular
      expression.
    * Error message keys: ``required``, ``invalid``
@@ -731,7 +731,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`TextInput`
    * Empty value: ``''`` (an empty string)
-   * Normalizes to: A string.
+   * Normalises to: A string.
    * Validates that the given value contains only letters, numbers,
      underscores, and hyphens.
    * Error messages: ``required``, ``invalid``
@@ -741,7 +741,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`TextInput`
    * Empty value: ``null``
-   * Normalizes to: A JavaScript ``Date`` object, with its date fields set to
+   * Normalises to: A JavaScript ``Date`` object, with its date fields set to
      1900-01-01.
    * Validates that the given value is either a ``Date`` or string
      formatted in a particular time format.
@@ -768,7 +768,7 @@ For each field, we describe the default widget used if you don't specify
 
    * Default widget: :js:class:`URLInput`
    * Empty value: ``''`` (an empty string)
-   * Normalizes to: A string.
+   * Normalises to: A string.
    * Validates that the given value is a valid URL.
    * Error message keys: ``required``, ``invalid``
 
@@ -788,7 +788,7 @@ Slightly complex built-in ``Field`` types
 
    * Default widget: :js:class:`TextInput`
    * Empty value: ``''`` (an empty string)
-   * Normalizes to: A string.
+   * Normalises to: A string.
    * Validates that the given value against each of the fields specified
      as an argument to the ``ComboField``.
    * Error message keys: ``required``, ``invalid``
@@ -821,7 +821,7 @@ Slightly complex built-in ``Field`` types
 
    * Default widget: :js:class:`TextInput`
    * Empty value: ``''`` (an empty string)
-   * Normalizes to: the type returned by the ``compress`` method of the subclass.
+   * Normalises to: the type returned by the ``compress`` method of the subclass.
    * Validates that the given value against each of the fields specified
      as an argument to the ``MultiValueField``.
    * Error message keys: ``required``, ``invalid``, ``incomplete``
@@ -908,7 +908,7 @@ Slightly complex built-in ``Field`` types
 
    * Default widget: :js:class:`SplitDateTimeWidget`
    * Empty value: ``null``
-   * Normalizes to: A JavaScript ``datetime.datetime`` object.
+   * Normalises to: A JavaScript ``datetime.datetime`` object.
    * Validates that the given value is a ``datetime.datetime`` or string
      formatted in a particular datetime format.
    * Error message keys: ``required``, ``invalid``, ``invalidDate``,

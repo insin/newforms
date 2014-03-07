@@ -160,6 +160,8 @@ Date/Time fields
 
    Validates that its input is a date.
 
+   Normalises to a ``Date`` with its time fields set to zero.
+
    :param Object kwargs:
       field options additional to those specified in :js:class:`Field`:
 
@@ -170,6 +172,8 @@ Date/Time fields
 
    Validates that its input is a time.
 
+   Normalises to a ``Date`` with its date fields set to 1900-01-01.
+
    :param Object kwargs:
       field options additional to those specified in :js:class:`Field`:
 
@@ -179,6 +183,8 @@ Date/Time fields
 .. js:class:: DateTimeField([kwargs])
 
    Validates that its input is a date/time.
+
+   Normalises to a ``Date``.
 
    :param Object kwargs:
       field options additional to those specified in :js:class:`Field`:
