@@ -1,3 +1,123 @@
+0.5.0
+=====
+
+Breaking Changes
+----------------
+
+* Now depends on React 0.9.0.
+* Newforms components now render by creating ``React.DOM`` components instead of
+  relying on context-specific output from ``DOMBuilder.createElement()``.
+* Components which can be rendered no longer have ``toString()`` methods --
+  creation of final output is now handled by calling ``React.renderComponent``
+  or ``React.renderComponentToString`` on a React component which includes
+  rendered output of a newforms Form -- this (temporarily) breaks usage of
+  newforms in String-based templating libraries such as Jade.
+* HTML output has changed -- this will break any tests which depended on the
+  specifics of how DOMBuilder generated HTML.
+  * React has no equivalent of a virtual DocumentFragment as yet - thre are new
+    wrapper elements in various places.
+  * React wraps free-standing text nodes with ``<span>``.
+  * Boolean attributes no longer have a value duplicating the attribute name.
+* HTML attribute names must now match what React expects -- no more
+  ``'maxlength'`` or quoted ``'class'`` and ``'for'`` attributes.
+* A String can no longer be used to specify multiple selected items in a
+  ``SelectMultiple`` -- this used to be an accident based on duck typing of
+  index access to both items in an Aray and characters in a String. If a
+  non-Array is given as the selected value, it will now be wtapped in an Array.
+* ``CheckboxInput`` no longer silenty swallows any errors thrown by the provided
+  ``checkTest`` function.
+* ``_hasChanged`` has moved from Widgets to Fields.
+* The default error message for an invalid email address has changed.
+* ``ValidationError`` API changed -- ``messages`` is now a function rather than
+  an array of Strings.
+* ``ErrorList`` API changed -- a ``messages()`` method must now be called to
+  get final error message strings out of it.
+* Replaced ``asP()`` with ``asDiv()``, as invalid markup nesting breaks React
+  when browsers perform error correction on the DOM.
+* Renamed ``Field.extraCLasses`` option to ``Field.cssClass``.
+* Renamed ``asUL()`` methods to ``asUl()``.
+* Order of mixing in fields from when multiple Forms are passed to ``__mixin__``
+  has changed from right-to-left to left-to-right.
+* Only one custom field cleaning functon will be called: ``clean<FieldName>``
+  or ``clean_<fieldName>`` in that order. The ability to define both and have
+  both run was unintentional.
+
+New Features
+------------
+
+* A ``type`` attribute can now be passed to Widgets to take advantage of new
+  HTML widget types.
+  * Added ``EmailInput`` -- now the default widget for ``EmailField``
+  * Added ``URLInput`` -- now the default widget for ``EmailField``
+  * Added ``NumberInput`` -- now the default widget for ``IntegerField``,
+  ``FloatField`` and ``DecimalField``
+    * `IntegerField``, ``FloatField`` and ``DecimalField`` now set HTML5 ``max``,
+      ``min`` and ``steo`` attributes on their widget, as applicable.
+  * ``formData`` now supports new input types: 'email', 'url', 'number' and 'file'
+* If a field throws a ``ValidationError`` while checking if it's changed, the
+  assumption is now that it's changed.
+* ``cleanedData`` is no longer deleted when a form is invalid.
+* ``CheckboxSelectMultiple`` now uses a similar renderer to ``RadioSelect`` --
+  individual checkbox subwidgets can now be accessed.
+* ``id`` attributes are now added to lists of radio and checkbox inputs.
+* Radio and checkbox input lists can now display with nested choices
+* ``SlugField`` and ``URLField`` now support whitespace stripping.
+* Changed data checking now supports calling initial values which are functions.
+* Added ``minNum``, ``validateMax`` and ``validateMin`` to ``formsetFactory`` and
+  ``BaseFormSet``.
+* Added a hard limit to the maximum number of forms in a ``FormSet`` -- ``maxNum``
+  + 1000.
+* FormSet deletion management data is no longer removd from ``cleanedData``.
+* ``MultiWidget`` now sets ``needsMultipartForm`` based on its child widgets.
+* Added ``requireAllfields`` option to ``MultiValueField`` -- this allows for
+  optional subfields when ``false`` and a new ``'incomplete'`` validation error
+  being thrown when required field are empty.
+* Added an ``addError()`` method to forms which can be used to set field or
+  non-field errors and automatically removes fields from ``cleanedData``,
+* ``cleanedData`` doesn't need to be returned from ``Form.clean()`` any more,
+  but if it is, it will still be set as ``form.cleanedData``.
+* Made ``emptyValues`` a property of ``Field.prototype`` so it can be overridden
+  by subclasses if necessary.
+* ``TypedChoiceField#coerce`` can now return an arbitrary value.
+* ``labelSuffix`` can now be customised when calling ``BoundField#labelTag``.
+* `validators`_ is now exposed as ``forms.validators``.
+* Added ``Field#isEmptyValue`` and ``Field#emptyValueArray`` to ensure empty
+  arrays are detected as empty values by default.
+* Added the ability to avoid inheriting a field from an extended or mixed-in
+  Form by shadowing its field name with a non-field property.
+* Added ``asData()`` and ``toJSON()`` to ``ErrorObject`` and ``ErrorList``.
+* Custom ``clean<FieldName>()`` methods no longer have to return a cleaned
+  value, but if they do, it will be inserted back into ``cleanedData``.
+* ``ClearableFileInput`` now uses overridable functions for templating, making
+  it easier to customise.
+* ``FileField`` now validates that a file is selected when ``required`` is
+  ``true`` in browsers.
+* Default rendering methods now allow arbitrary HTML in ``helpText`` if
+  ``{__html: ''}`` is passed instead of a string.
+* Added ``form.setData()`` to bind new data to a form and re-trigger cleaning.
+* Added a ``custom`` argument when constructing Fields, to store any metadata
+  you need for later.
+* ``ImageField`` now adds an ``accept="image/*"`` attribute to its widget.
+* Added ``form.util.makeChoices`` helper for creating [value, label] pairs from
+  a list of objects.
+* Flat lists of ``choices`` can now be passed into Fields and Widgets which take
+  choices.
+
+Bug Fixes
+---------
+
+* ``'0'`` should be treated as true by ``CheckboxInput``.
+* ``CheckboxInput._hasChanged`` now handles an initial ``'false'`` String.
+* ``FloatField`` and ``DecimalField`` now accept '1.' as a valid input.
+* Fixed form constructors used as __mixin__ mixins  having their own
+  ``baseFields`` overwritten and the prototype properties intended for the new
+  form applied to them.
+* Fixed ``Boundfield#subWidgets`` not passing ``id`` or ``autoId`` along, so
+  label htmlFors and input ids weren't getting generated.
+
+0.4.2 / 2012-07-15
+==================
+
 * Automatically-added deletion fields are no longer included in the list of
   cleanedData for a FormSet [`whardeman`_]
 * Data for forms marked for deletion is no longer present in a FormSet's
@@ -77,3 +197,4 @@
 .. _`isomorph`: https://github.com/insin/isomorph
 .. _`Concur`: https://github.com/insin/concur
 .. _`whardeman`: https://github.com/whardeman
+.. _`validators`: https://github.com/insin/validators
