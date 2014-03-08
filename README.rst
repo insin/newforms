@@ -26,6 +26,11 @@ Browser bundles
 
       * https://github.com/insin/newforms/tree/react/dist
 
+   Release Candidate: v0.5.0-rc1
+
+      * `newforms-0.5.0-rc1.js`_
+      * `newforms-0.5.0-rc1.min.js`_
+
    Development bundles (updated intermittently):
 
       * `newforms.js`_
@@ -40,6 +45,8 @@ Node.js
 
       var forms = require('newforms')
 
+.. _`newforms-0.5.0-rc1.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.0-rc1.js
+.. _`newforms-0.5.0-rc1.min.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.0-rc1.min.js
 .. _`newforms.js`: https://github.com/insin/newforms/raw/react/newforms.js
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/react/newforms.min.js
 
