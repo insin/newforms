@@ -34,7 +34,7 @@ overridden:
   ``ValidationError``.
 
 * The ``validate()`` method on a Field handles field-specific validation
-  that is not suitable for a validator, It takes a value that has been
+  that is not suitable for a validator. It takes a value that has been
   coerced to the correct datatype and throws a ``ValidationError`` on any error.
   This method does not return anything and shouldn't alter the value. You
   should override it to handle validation logic that you can't or don't
@@ -75,8 +75,8 @@ overridden:
   which will be used as the ``cleanedData``.
 
   Since the field validation methods have been run by the time ``clean()`` is
-  called, you also have access to the form's errors(), which contains all the
-  errors thrown by cleaning of individual fields.
+  called, you also have access to the form's ``errors()``, which contains all
+  the errors thrown by cleaning of individual fields.
 
   Note that any errors thrown by your ``Form.clean()`` override will not
   be associated with any field in particular. They go into a special
