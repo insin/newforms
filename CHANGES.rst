@@ -14,10 +14,12 @@ Breaking Changes
   newforms in String-based templating libraries such as Jade.
 * HTML output has changed -- this will break any tests which depended on the
   specifics of how DOMBuilder generated HTML.
-  * React has no equivalent of a virtual DocumentFragment as yet - thre are new
+
+  * React has no equivalent of a virtual DocumentFragment as yet - there are new
     wrapper elements in various places.
   * React wraps free-standing text nodes with ``<span>``.
   * Boolean attributes no longer have a value duplicating the attribute name.
+
 * HTML attribute names must now match what React expects -- no more
   ``'maxlength'`` or quoted ``'class'`` and ``'for'`` attributes.
 * A String can no longer be used to specify multiple selected items in a
@@ -47,12 +49,15 @@ New Features
 
 * A ``type`` attribute can now be passed to Widgets to take advantage of new
   HTML widget types.
+
   * Added ``EmailInput`` -- now the default widget for ``EmailField``
   * Added ``URLInput`` -- now the default widget for ``EmailField``
   * Added ``NumberInput`` -- now the default widget for ``IntegerField``,
-  ``FloatField`` and ``DecimalField``
-    * `IntegerField``, ``FloatField`` and ``DecimalField`` now set HTML5 ``max``,
+    ``FloatField`` and ``DecimalField``
+
+    * ``IntegerField``, ``FloatField`` and ``DecimalField`` now set HTML5 ``max``,
       ``min`` and ``steo`` attributes on their widget, as applicable.
+
   * ``formData`` now supports new input types: 'email', 'url', 'number' and 'file'
 * If a field throws a ``ValidationError`` while checking if it's changed, the
   assumption is now that it's changed.
