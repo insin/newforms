@@ -24,7 +24,7 @@ Breaking Changes
   ``'maxlength'`` or quoted ``'class'`` and ``'for'`` attributes.
 * A String can no longer be used to specify multiple selected items in a
   ``SelectMultiple`` -- this used to be an accident based on duck typing of
-  index access to both items in an Aray and characters in a String. If a
+  index access to both items in an Array and characters in a String. If a
   non-Array is given as the selected value, it will now be wtapped in an Array.
 * ``CheckboxInput`` no longer silenty swallows any errors thrown by the provided
   ``checkTest`` function.

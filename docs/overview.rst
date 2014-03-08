@@ -157,7 +157,7 @@ Displaying a Form in a React component
 
 Rather than newforms providing its own custom React components, ``Form`` objects
 render to ``React.DOM`` components, to be included in the ``render()`` output of
-the React component the form's being being displayed in.
+the React component the form is being used in.
 
 A form also only outputs its own fields; it's up to you to provide the
 surrounding ``<form>`` element, submit buttons etc.
@@ -187,7 +187,7 @@ Forms also have a default ``form.render()`` method which calls
 Customising Form display
 ========================
 
-If the default generated HTML is not to your taste, you can completely customize
+If the default generated HTML is not to your taste, you can completely customise
 the way a form is presented. Extending the above example::
 
    var form = this.state.form
@@ -234,7 +234,7 @@ BoundField
    errors held by a bound Form.
 
    BoundFields provide functions for using these together to render the
-   different conponents required to display a field -- its label, form inputs
+   different components required to display a field -- its label, form inputs
    and validation error messages -- as well as exposing the constituent parts of
    each of these should you wish to fully customise every aspect of form display.
 
@@ -245,7 +245,7 @@ for doing so are:
   field names, pointing to the corresponding BoundField.
 * ``form.boundFields()`` -- returns a list of BoundFields in their form-defined
   order.
-* ``form.boundField(fieldName)`` -- returns the Boundfield for the named field.
+* ``form.boundField(fieldName)`` -- returns the BoundField for the named field.
 
 Every object which can generate ``React.DOM`` components in newforms has a
 default ``render()`` method -- for BoundFields, the default ``render()`` for a
