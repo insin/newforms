@@ -26,7 +26,7 @@ Browser bundles
 
       * https://github.com/insin/newforms/tree/react/dist
 
-   **Release Candidate:** v0.5.0-rc1 / 2013-03-08 -- `View CHANGES`_
+   **Release Candidate:** v0.5.0-rc1 / 2014-03-08 -- `View CHANGES`_
 
       * `newforms-0.5.0-rc1.js`_
       * `newforms-0.5.0-rc1.min.js`_
