@@ -946,10 +946,36 @@ QUnit.test('Widgets - RadioSelect', function() {
 <label for=\"id_beatles_1\"><input id=\"id_beatles_1\" type=\"radio\" name=\"beatles\" value=\"paul\"><span> </span><span>Paul</span></label>\
 </div>\
 <div class=\"myRadio\">\
-<label for=\"id_beatles_2\"><input id=\"id_beatles_2\" type=\"radio\" name=\"beatles\" value=\"george\"><span> </span><span>George</span></label></div>\
+<label for=\"id_beatles_2\"><input id=\"id_beatles_2\" type=\"radio\" name=\"beatles\" value=\"george\"><span> </span><span>George</span></label>\
+</div>\
 <div class=\"myRadio\">\
 <label for=\"id_beatles_3\"><input id=\"id_beatles_3\" type=\"radio\" name=\"beatles\" value=\"ringo\"><span> </span><span>Ringo</span></label>\
 </div>")
+
+  reactHTMLEqual(function() {
+    return myForm.boundField('beatles').subWidgets().map(function(radio) {
+      return React.DOM.label({htmlFor: radio.idForLabel()}
+      , radio.choiceLabel
+      , React.DOM.span({className: 'radio'}, radio.tag())
+      )
+    })
+  },
+"<label for=\"id_beatles_0\">\
+<span>John</span>\
+<span class=\"radio\"><input id=\"id_beatles_0\" type=\"radio\" name=\"beatles\" value=\"john\"></span>\
+</label>\
+<label for=\"id_beatles_1\">\
+<span>Paul</span>\
+<span class=\"radio\"><input id=\"id_beatles_1\" type=\"radio\" name=\"beatles\" value=\"paul\"></span>\
+</label>\
+<label for=\"id_beatles_2\">\
+<span>George</span>\
+<span class=\"radio\"><input id=\"id_beatles_2\" type=\"radio\" name=\"beatles\" value=\"george\"></span>\
+</label>\
+<label for=\"id_beatles_3\">\
+<span>Ringo</span>\
+<span class=\"radio\"><input id=\"id_beatles_3\" type=\"radio\" name=\"beatles\" value=\"ringo\"></span>\
+</label>")
 })
 
 }()

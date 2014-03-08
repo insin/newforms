@@ -2,15 +2,6 @@
 Widgets
 =======
 
-.. Note::
-
-   Guide documentation for Widgets is currently incomplete.
-
-   In the meantime, for a guide to the features of Widgets and built-in Widgets,
-   please refer to the Django documentation:
-
-      * `Django documentation -- Widgets <https://docs.djangoproject.com/en/dev/ref/forms/widgets/>`_
-
 A widget is a representation of a HTML input element. The widget handles the
 rendering of the HTML, and the extraction of data from a data object that
 corresponds to how the widget's values(s) would be submitted by a form.
@@ -350,14 +341,290 @@ returns it for validation by the :js:class:`DateField`.
 Built-in widgets
 ================
 
+Newforms provides a representation of all the basic HTML widgets, plus some
+commonly used groups of widgets, including
+:ref:`the input of text <text-widgets>`,
+:ref:`various checkboxes and selectors <selector-widgets>`,
+:ref:`uploading files <file-upload-widgets>`,
+and :ref:`handling of multi-valued input <composite-widgets>`.
+
+.. _text-widgets:
+
 Widgets handling input of text
-------------------------------
+==============================
+
+These widgets make use of the HTML elements ``<input>`` and ``<textarea>``.
+
+:js:class:`TextInput`
+---------------------
+
+   Text input: ``<input type="text" ...>``
+
+:js:class:`NumberInput`
+-----------------------
+
+   Text input: ``<input type="number" ...>``
+
+:js:class:`EmailInput`
+----------------------
+
+   Text input: ``<input type="email" ...>``
+
+:js:class:`URLInput`
+--------------------
+
+   Text input: ``<input type="url" ...>``
+
+:js:class:`PasswordInput`
+-------------------------
+
+   Password input: ``<input type='password' ...>``
+
+   Takes one optional argument:
+
+   * ``PasswordInput.renderValue``
+
+        Determines whether the widget will have a value filled in when the
+        form is re-displayed after a validation error (default is ``false``).
+
+:js:class:`Textarea`
+--------------------
+
+   Text area: ``<textarea>...</textarea>``
+
+.. _selector-widgets:
+
+:js:class:`HiddenInput`
+-----------------------
+
+   Hidden input: ``<input type='hidden' ...>``
+
+   Note that there also is a :js:class:`MultipleHiddenInput` widget that
+   encapsulates a set of hidden input elements.
+
+:js:class:`DateInput`
+---------------------
+
+   Date input as a simple text box: ``<input type='text' ...>``
+
+   Takes same arguments as :js:class:`TextInput`, with one more optional argument:
+
+   * ``DateInput.format``
+
+        The format in which this field's initial value will be displayed.
+
+   If no ``format`` argument is provided, the default format is the first
+   format found in ``DATE_INPUT_FORMATS``.
+
+:js:class:`DateTimeInput`
+-------------------------
+
+   Date/time input as a simple text box: ``<input type='text' ...>``
+
+   Takes same arguments as :js:class:`TextInput`, with one more optional argument:
+
+   * ``DateTimeInput.format``
+
+        The format in which this field's initial value will be displayed.
+
+   If no ``format`` argument is provided, the default format is the first
+   format found in ``DATETIME_INPUT_FORMATS``.
+
+:js:class:`TimeInput`
+---------------------
+
+   Time input as a simple text box: ``<input type='text' ...>``
+
+   Takes same arguments as :js:class:`TextInput`, with one more optional argument:
+
+   * ``TimeInput.format``
+
+        The format in which this field's initial value will be displayed.
+
+   If no ``format`` argument is provided, the default format is the first
+   format found in ``TIME_INPUT_FORMATS``.
 
 Selector and checkbox widgets
+=============================
+
+:js:class:`CheckboxInput`
+-------------------------
+
+   Checkbox: ``<input type='checkbox' ...>``
+
+   Takes one optional argument:
+
+   * ``CheckboxInput.checkTest``
+
+        A function that takes the value of the CheckBoxInput and returns
+        ``true`` if the checkbox should be checked for that value.
+
+:js:class:`Select`
+------------------
+
+   Select widget: ``<select><option ...>...</select>``
+
+   * ``Select.choices``
+
+        This attribute is optional when the form field does not have a
+        ``choices`` attribute. If it does, it will override anything you set
+        here when the attribute is updated on the :js:class:`Field`.
+
+:js:class:`NullBooleanSelect`
 -----------------------------
 
+   Select widget with options 'Unknown', 'Yes' and 'No'
+
+:js:class:`SelectMultiple`
+--------------------------
+
+   Similar to :class:`Select`, but allows multiple selection:
+   ``<select multiple='multiple'>...</select>``
+
+:js:class:`RadioSelect`
+-----------------------
+
+   Similar to :class:`Select`, but rendered as a list of radio buttons within
+   ``<li>`` tags:
+
+   .. code-block:: html
+
+      <ul>
+        <li><input type='radio' ...></li>
+        ...
+      </ul>
+
+   For more granular control over the generated markup, you can loop over the
+   radio buttons. Assuming a form ``myform`` with a field ``beatles`` that uses
+   a ``RadioSelect`` as its widget::
+
+      myForm.boundField('beatles').subWidgets().map(function(radio) {
+        return <div className="myRadio">{radio.render()}</div>
+      })
+
+   This would generate the following HTML:
+
+   .. code-block:: html
+
+      <div class="myRadio">
+        <label for="id_beatles_0"><input id="id_beatles_0" type="radio" name="beatles" value="john"><span> </span><span>John</span></label>
+      </div>
+      <div class="myRadio">
+        <label for="id_beatles_1"><input id="id_beatles_1" type="radio" name="beatles" value="paul"><span> </span><span>Paul</span></label>
+      </div>
+      <div class="myRadio">
+        <label for="id_beatles_2"><input id="id_beatles_2" type="radio" name="beatles" value="george"><span> </span><span>George</span></label>
+      </div>
+      <div class="myRadio">
+        <label for="id_beatles_3"><input id="id_beatles_3" type="radio" name="beatles" value="ringo"><span> </span><span>Ringo</span></label>
+      </div>
+
+   That included the ``<label>`` tags. To get more granular, you can use each
+   radio button's ``tag``, ``choiceLabel`` and ``idForLabel`` attributes.
+   For example, this code...::
+
+      myForm.boundField('beatles').subWidgets().map(function(radio) {
+        return <label htmlFor={radio.idForLabel()}>
+          {radio.choiceLabel}
+          <span className="radio">{radio.tag()}</span>
+        </label>
+      })
+
+   ...will result in the following HTML:
+
+   .. code-block:: html
+
+      <label for="id_beatles_0">
+        <span>John</span>
+        <span class="radio"><input id="id_beatles_0" type="radio" name="beatles" value="john"></span>
+      </label>
+      <label for="id_beatles_1">
+        <span>Paul</span>
+        <span class="radio"><input id="id_beatles_1" type="radio" name="beatles" value="paul"></span>
+      </label>
+      <label for="id_beatles_2">
+        <span>George</span>
+        <span class="radio"><input id="id_beatles_2" type="radio" name="beatles" value="george"></span>
+      </label>
+      <label for="id_beatles_3">
+        <span>Ringo</span>
+        <span class="radio"><input id="id_beatles_3" type="radio" name="beatles" value="ringo"></span>
+      </label>
+
+   If you decide not to loop over the radio buttons -- e.g., if your layout
+   simply renders the ``beatles`` ``BoundField`` -- they'll be output in a
+   ``<ul>`` with ``<li>`` tags, as above.
+
+:js:class:`CheckboxSelectMultiple`
+----------------------------------
+
+   Similar to :js:class:`SelectMultiple`, but rendered as a list of check
+   buttons:
+
+   .. code-block:: html
+
+      <ul>
+        <li><input type='checkbox' ...></li>
+        ...
+      </ul>
+
+   Like :js:class:`RadioSelect`, you can  loop over the individual checkboxes
+   making up the lists.
+
+.. _file-upload-widgets:
+
 File upload widgets
--------------------
+===================
+
+:js:class:`FileInput`
+---------------------
+
+   File upload input: ``<input type='file' ...>``
+
+:js:class:`ClearableFileInput`
+------------------------------
+
+   File upload input: ``<input type='file' ...>``, with an additional checkbox
+   input to clear the field's value, if the field is not required and has
+   initial data.
+
+.. _composite-widgets:
 
 Composite widgets
------------------
+=================
+
+:js:class:`MultipleHiddenInput`
+-------------------------------
+
+   Multiple ``<input type='hidden' ...>`` widgets.
+
+   A widget that handles multiple hidden widgets for fields that have a list
+   of values.
+
+   * ``MultipleHiddenInput.choices``
+
+        This attribute is optional when the form field does not have a
+        ``choices`` attribute. If it does, it will override anything you set
+        here when the attribute is updated on the :js:class:`Field`.
+
+:js:class:`SplitDateTimeWidget`
+-------------------------------
+
+   Wrapper (using :js:class:`MultiWidget`) around two widgets:
+   :js:class:`DateInput` for the date, and :js:class:`TimeInput` for the time.
+
+   ``SplitDateTimeWidget`` has two optional attributes:
+
+   * ``SplitDateTimeWidget.dateFormat``
+
+        Similar to ``DateInput.format``
+
+   * ``SplitDateTimeWidget.timeFormat``
+
+        Similar to ``TimeInput.format``
+
+:js:class:`SplitHiddenDateTimeWidget`
+-------------------------------------
+
+   Similar to :js:class:`SplitDateTimeWidget`, but uses :js:class:`HiddenInput`
+   for both date and time.

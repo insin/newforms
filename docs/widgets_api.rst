@@ -219,6 +219,10 @@ Text input widgets
       if ``false`` a value will not be rendered for this field -- defaults to
       ``false``.
 
+.. js:class:: HiddenInput([kwargs])
+
+   An ``<input type="hidden">`` widget.
+
 .. js:class:: Textarea([kwargs])
 
    A ``<textarea>`` widget.
@@ -226,32 +230,8 @@ Text input widgets
    Default ``rows`` and ``cols`` HTML attributes will be used if not provided in
    ``kwargs.attrs``.
 
-Hidden input widgets
-====================
-
-.. js:class:: HiddenInput([kwargs])
-
-   An ``<input type="hidden">`` widget.
-
-.. js:class:: MultipleHiddenInput([kwargs])
-
-   A widget that handles ``<input type="hidden">`` for fields that have a list
-   of values.
-
-File input widgets
-==================
-
-.. js:class:: FileInput([kwargs])
-
-   An ``<input type="file">`` widget.
-
-.. js:class:: ClearableFileInput([kwargs])
-
-   A file widget which also has a checkbox to indicate that the field should be
-   cleared.
-
-Date-formatting widgets
-=======================
+Date-formatting text input widgets
+==================================
 
 .. js:class:: DateInput([kwargs])
 
@@ -283,8 +263,8 @@ Date-formatting widgets
    :param String kwargs.format:
       a `time.strftime() format string`_ for a time.
 
-Choice widgets
-==============
+Selector and checkbox widgets
+=============================
 
 .. js:class:: CheckboxInput([kwargs])
 
@@ -430,8 +410,25 @@ Choice widgets
    :param Number index:
       the index of the chckbox this widget represents.
 
-Slightly complex widgets
-========================
+File upload widgets
+===================
+
+.. js:class:: FileInput([kwargs])
+
+   An ``<input type="file">`` widget.
+
+.. js:class:: ClearableFileInput([kwargs])
+
+   A file widget which also has a checkbox to indicate that the field should be
+   cleared.
+
+Composite widgets
+=================
+
+.. js:class:: MultipleHiddenInput([kwargs])
+
+   A widget that handles ``<input type="hidden">`` for fields that have a list
+   of values.
 
 .. js:class:: SplitDateTimeWidget([kwargs])
 
