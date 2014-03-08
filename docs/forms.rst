@@ -42,7 +42,7 @@ To bind data to a form, pass the data as an object argument:
 .. code-block:: javascript
 
    var data = {
-     subject: 'hello',
+     subject: 'hello'
    , message: 'Hi there'
    , sender: 'foo@example.com'
    , ccMyself: true
@@ -95,7 +95,7 @@ and return a boolean designating whether the data was valid:
 .. code-block:: javascript
 
    var data = {
-     subject: 'hello',
+     subject: 'hello'
    , message: 'Hi there'
    , sender: 'foo@example.com'
    , ccMyself: true
@@ -164,7 +164,7 @@ Use ``Form.initial`` to declare the initial value of form fields at runtime. For
 example, you might want to fill in a ``username`` field with the username of the
 current session.
 
-To so this, pass an ``initial`` argument when constructing the form. This
+To do this, pass an ``initial`` argument when constructing the form. This
 argument, if given, should be an object mapping field names to initial values.
 You only have to include the fields for which you're specifying an initial
 value, for example:
@@ -176,7 +176,7 @@ value, for example:
 These values are only displayed for unbound forms, and they're not used as
 fallback values if a particular value isn't provided.
 
-Where both a Field and Form define an initial valu for the same field, the
+Where both a Field and Form define an initial value for the same field, the
 Form-level ``initial`` gets precedence:
 
 .. code-block:: javascript
@@ -245,7 +245,7 @@ can access the clean data via its ``cleanedData`` property:
 .. code-block:: javascript
 
    var data = {
-     subject: 'hello',
+     subject: 'hello'
    , message: 'Hi there'
    , sender: 'foo@example.com'
    , ccMyself: true
@@ -261,7 +261,7 @@ If your data does *not* validate, ``cleanedData`` contains only the valid fields
 .. code-block:: javascript
 
    var data = {
-     subject: '',
+     subject: ''
    , message: 'Hi there'
    , sender: 'foo@example.com'
    , ccMyself: true
@@ -278,7 +278,7 @@ even if you pass extra data:
 .. code-block:: javascript
 
    var data = {
-     subject: 'Hello',
+     subject: 'Hello'
    , message: 'Hi there'
    , sender: 'foo@example.com'
    , ccMyself: true
@@ -311,7 +311,7 @@ fields. In this example, the data object doesn't include a value for the
    print(f.cleanedData)
    // => {firstName: 'Alan', lastName: 'Partridge', nickName: ''}
 
-In this above example, the ``cleanedData`` value for ``nickName`` is set to an
+In the above example, the ``cleanedData`` value for ``nickName`` is set to an
 empty string, because ``nickName`` is a ``CharField``, and ``CharField``\s treat
 empty values as an empty string.
 
@@ -337,7 +337,7 @@ This will also trigger validation -- updating ``form.errors()`` and
    var f = new ContactForm()
    // ...user inputs data...
    var data = {
-     subject: 'hello',
+     subject: 'hello'
    , message: 'Hi there'
    , sender: 'foo@example.com'
    , ccMyself: true
@@ -368,7 +368,7 @@ rendering, so calling ``render()`` is equivalent:
    <tr><th><label for="id_ccMyself">Cc myself:</label></th><td><input type="checkbox" name="ccMyself" id="id_ccMyself"></td></tr>
    */
 
-Some forms render themselves to ``React.DOM`` components, rendering in JSX is
+Since forms render themselves to ``React.DOM`` components, rendering in JSX is
 just a case of calling the appopriate render method::
 
    <table>
@@ -415,9 +415,10 @@ Notice the following:
   in ``ContactForm``.
 
 * The text label for each field -- e.g. ``'Subject:'``, ``'Message:'`` and
-  ``'Cc myself:'`` is generated from the field name by converting all
-  underscores to spaces and upper-casing the first letter. Again, note
-  these are merely sensible defaults; you can also specify labels manually.
+  ``'Cc myself:'`` is generated from the field name by splitting on capital
+  letters and lowercasing first letters, converting all underscores to spaces
+  and upper-casing the first letter. Again, note these are merely sensible
+  defaults; you can also specify labels manually.
 
 * Each text label is surrounded in an HTML ``<label>`` tag, which points
   to the appropriate form field via its ``id``. Its ``id``, in turn, is
