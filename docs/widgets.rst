@@ -2,7 +2,7 @@
 Widgets
 =======
 
-A widget is a representation of a HTML input element. The widget handles the
+A widget is a representation of an HTML input element. The widget handles the
 rendering of the HTML, and the extraction of data from a data object that
 corresponds to how the widget's values(s) would be submitted by a form.
 
@@ -182,7 +182,7 @@ foundation for custom widgets.
 ------------------
 
  This abstract widget cannot be rendered, but provides the basic attribute
- ``Widget.attrs`.  You may also implement or override the ``render()``
+ ``Widget.attrs``.  You may also implement or override the ``render()``
  method on custom widgets.
 
    :js:attr:`widget.attrs`
@@ -198,12 +198,11 @@ foundation for custom widgets.
 Key Widget methods are:
 
    :js:func:`Widget#render`
-      Returns HTML for the widget, as a Unicode string. This method must be
-      implemented by the subclass, otherwise ``NotImplementedError`` will be
-      raised.
+      Returns a ``React.DOM`` representation of the widget. This method must be
+      implemented by extending widgets, or an ``Error`` will be thrown.
 
       The 'value' given is not guaranteed to be valid input, therefore
-      subclass implementations should program defensively.
+      extending widgets should program defensively.
 
    :js:func:`Widget#valueFromData`
       Given an object containing input data and this widget's name, returns
@@ -213,7 +212,7 @@ Key Widget methods are:
 -----------------------
 
 A widget that is composed of multiple widgets. :js:class:`MultiWidget` works
-hand in hand with the :js:class:`MultiWValueField`.
+hand in hand with the :js:class:`MultiValueField`.
 
 ``MultiWidget`` has one required argument:
 
@@ -266,12 +265,12 @@ Other methods that may be useful to implement include:
       corresponding widget -- the first value is  rendered in the first
       widget, the second value is rendered in the second widget, etc.
 
-      Unlike in the single value widgets, method :meth:`~MultiWidget.render`
-      doesn't have to be implemented by extending widgets.
+      Unlike in the single value widgets, ``render()`` doesn't have to be
+      implemented by extending widgets.
 
    :js:func:`MultiWidget#formatOutput`
       Given a list of rendered widgets (as ``React.DOM`` components), returns
-      the list or a ``React.DOM`` component containing the widges.
+      the list or a ``React.DOM`` component containing the widgets.
       This hook allows you to lay out the widgets any way you'd like.
 
 Here's an example widget which extends :js:class:`MultiWidget` to display
@@ -520,7 +519,7 @@ Selector and checkbox widgets
       </div>
 
    That included the ``<label>`` tags. To get more granular, you can use each
-   radio button's ``tag``, ``choiceLabel`` and ``idForLabel`` attributes.
+   radio button's ``tag()``, ``choiceLabel`` and ``idForLabel()``.
    For example, this code...::
 
       myForm.boundField('beatles').subWidgets().map(function(radio) {
