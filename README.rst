@@ -47,7 +47,7 @@ Node.js
 
 .. _`newforms-0.5.0-rc1.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.0-rc1.js
 .. _`newforms-0.5.0-rc1.min.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.0-rc1.min.js
-.. _`CHANGES`: https://github.com/insin/newforms/blob/react/CHANGES.rst#050-rc1--2014-03-08
+.. _`View CHANGES`: https://github.com/insin/newforms/blob/react/CHANGES.rst#050-rc1--2014-03-08
 .. _`newforms.js`: https://github.com/insin/newforms/raw/react/newforms.js
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/react/newforms.min.js
 
