@@ -1,9 +1,12 @@
 demo
+dist
 docs
-support
 tests
+vendor
 .gitignore
+.jshintrc
+.npmignore
 .travis.yml
-TODO.rst
+gulpfile.js
 /newforms.js
 /newforms.min.js
