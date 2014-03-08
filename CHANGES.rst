@@ -51,14 +51,14 @@ New Features
   HTML widget types.
 
   * Added ``EmailInput`` -- now the default widget for ``EmailField``
-  * Added ``URLInput`` -- now the default widget for ``EmailField``
+  * Added ``URLInput`` -- now the default widget for ``URLField``
   * Added ``NumberInput`` -- now the default widget for ``IntegerField``,
     ``FloatField`` and ``DecimalField``
 
     * ``IntegerField``, ``FloatField`` and ``DecimalField`` now set HTML5 ``max``,
       ``min`` and ``steo`` attributes on their widget, as applicable.
 
-  * ``formData`` now supports new input types: 'email', 'url', 'number' and 'file'
+* ``formData`` now supports new input types: 'email', 'url', 'number' and 'file'
 * If a field throws a ``ValidationError`` while checking if it's changed, the
   assumption is now that it's changed.
 * ``cleanedData`` is no longer deleted when a form is invalid.
