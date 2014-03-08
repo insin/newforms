@@ -2,7 +2,7 @@
 newforms
 ========
 
-Newforms is a JavaScript form-handling library which started out as a drect port
+Newforms is a JavaScript form-handling library which started out as a direct port
 of the `Django`_ framework's ``django.forms`` library.
 
 It's now usable in browsers and on `Node.js`_ and -- as of version 0.5 -- it
