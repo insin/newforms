@@ -878,7 +878,7 @@ QUnit.test('Widgets - MultiWidget', function() {
   var DateSelectorWidget = forms.MultiWidget.extend({
     constructor: function(kwargs) {
       kwargs = extend({attrs: {}}, kwargs)
-      widgets = [
+      var widgets = [
         forms.Select({choices: range(1, 32), attrs: kwargs.attrs})
       , forms.Select({choices: range(1, 13), attrs: kwargs.attrs})
       , forms.Select({choices: range(2012, 2017), attrs: kwargs.attrs})
