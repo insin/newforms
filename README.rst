@@ -46,7 +46,11 @@ Node.js
 `Documentation @ ReadTheDocs`_
 ==============================
 
+`Newforms Examples @ GitHub`_
+=============================
+
 .. _`Documentation @ ReadTheDocs`: http://newforms.readthedocs.org
+.. _`Newforms Examples @ GitHub`: https://github.com/insin/newforms-examples
 
 Quick Guide
 ===========
