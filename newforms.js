@@ -393,9 +393,9 @@ FloatField.prototype.widgetAttrs = function(widget) {
 var DecimalField = IntegerField.extend({
   defaultErrorMessages: {
     invalid: 'Enter a number.'
-  , maxDigits: 'Ensure that there are no more than {maxDigits} digits in total.'
-  , maxDecimalPlaces: 'Ensure that there are no more than {maxDecimalPlaces} decimal places.'
-  , maxWholeDigits: 'Ensure that there are no more than {maxWholeDigits} digits before the decimal point.'
+  , maxDigits: 'Ensure that there are no more than {max} digits in total.'
+  , maxDecimalPlaces: 'Ensure that there are no more than {max} decimal places.'
+  , maxWholeDigits: 'Ensure that there are no more than {max} digits before the decimal point.'
   }
 
 , constructor: function DecimalField(kwargs) {
@@ -457,13 +457,13 @@ DecimalField.prototype.clean = function(value) {
   if (this.maxDigits !== null && digits > this.maxDigits) {
     throw ValidationError(this.errorMessages.maxDigits, {
       code: 'maxDigits'
-    , params: {maxDigits: this.maxDigits}
+    , params: {max: this.maxDigits}
     })
   }
   if (this.decimalPlaces !== null && decimals > this.decimalPlaces) {
     throw ValidationError(this.errorMessages.maxDecimalPlaces, {
       code: 'maxDecimalPlaces'
-    , params: {maxDecimalPlaces: this.decimalPlaces}
+    , params: {max: this.decimalPlaces}
     })
   }
   if (this.maxDigits !== null &&
@@ -471,7 +471,7 @@ DecimalField.prototype.clean = function(value) {
       wholeDigits > (this.maxDigits - this.decimalPlaces)) {
     throw ValidationError(this.errorMessages.maxWholeDigits, {
       code: 'maxWholeDigits'
-    , params: {maxWholeDigits: (this.maxDigits - this.decimalPlaces)}
+    , params: {max: (this.maxDigits - this.decimalPlaces)}
     })
   }
 
@@ -1252,12 +1252,15 @@ var FilePathField = ChoiceField.extend({
     if (!(this instanceof Field)) { return new FilePathField(path, kwargs) }
     kwargs = object.extend({
       match: null, recursive: false, required: true, widget: null,
-      label: null, initial: null, helpText: null
+      label: null, initial: null, helpText: null,
+      allowFiles: true, allowFolders: false
     }, kwargs)
 
     this.path = path
-    this.match = kwargs.match
-    this.recursive = kwargs.recursive
+    this.match = object.pop(kwargs, 'match')
+    this.recursive = object.pop(kwargs, 'recursive')
+    this.allowFiles = object.pop(kwargs, 'allowFiles')
+    this.allowFolders = object.pop(kwargs, 'allowFolders')
     delete kwargs.match
     delete kwargs.recursive
 
@@ -1270,6 +1273,7 @@ var FilePathField = ChoiceField.extend({
     else {
       this.setChoices([['', '---------']])
     }
+
     if (this.match !== null) {
       this.matchRE = new RegExp(this.match)
     }
@@ -1726,11 +1730,16 @@ BoundField.prototype.render = function(kwargs) {
 
 /**
  * Returns a list of SubWidgets that comprise all widgets in this BoundField.
- * This really is only useful for RadioSelect widgets, so that you can iterate
- * over individual radio buttons when rendering.
+ * This really is only useful for RadioSelect and CheckboxSelectMultiple
+ * widgets, so that you can iterate over individual inputs when rendering.
  */
-BoundField.prototype.subWidgets = BoundField.prototype.__iter__ = function() {
-  return this.field.widget.subWidgets(this.htmlName, this.value())
+BoundField.prototype.subWidgets = function() {
+  var id = this.field.widget.attrs.id || this.autoId()
+  var kwargs = {attrs: {}}
+  if (id) {
+    kwargs.attrs.id = id
+  }
+  return this.field.widget.subWidgets(this.htmlName, this.value(), kwargs)
 }
 
 /**
@@ -2392,7 +2401,7 @@ BaseForm.prototype._postClean = function() {}
  * been called. Any ValidationError raised by this method will not be associated
  * with a particular field; it will have a special-case association with the
  * field named '__all__'.
- * @return validated, cleaned data.
+ * @return validated, cleaned data (optionally)
  */
 BaseForm.prototype.clean = function() {
   return this.cleanedData
@@ -3172,23 +3181,6 @@ var DEFAULT_DATETIME_INPUT_FORMATS = [
 ]
 
 /**
- * Allows an Array, an object with an __iter__ method or a function which
- * returns either be used when ultimately expecting an Array.
- */
-function iterate(o) {
-  if (is.Array(o)) {
-    return o
-  }
-  if (is.Function(o)) {
-    o = o()
-  }
-  if (o != null && is.Function(o.__iter__)) {
-    o = o.__iter__()
-  }
-  return o || []
-}
-
-/**
  * Replaces String {placeholders} with properties of a given object, but
  * interpolates into and returns an Array instead of a String.
  * By default, any resulting empty strings are stripped out of the Array. To
@@ -3560,7 +3552,6 @@ module.exports = {
 , ErrorObject: ErrorObject
 , ErrorList: ErrorList
 , formData: formData
-, iterate: iterate
 , formatToArray: formatToArray
 , makeChoices: makeChoices
 , normaliseChoices: normaliseChoices
