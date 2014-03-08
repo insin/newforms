@@ -30,7 +30,7 @@ required
 --------
 
 By default, each ``Field``  assumes the value is required, so if you pass
-an empty value -- ``undefined``, ``null`` or the empty string (``'``) -- then
+an empty value -- ``undefined``, ``null`` or the empty string (``''``) -- then
 ``clean()`` will throw a ``ValidationError``.
 
 To specify that a field is *not* required, pass ``required: false`` to the
@@ -43,8 +43,8 @@ To specify that a field is *not* required, pass ``required: false`` to the
 If a ``Field`` has ``required: false`` and you pass ``clean()`` an empty value,
 then ``clean()`` will return a *normalised* empty value rather than throwing a
 ``ValidationError``. For ``CharField``, this will be an empty string.
-For other ``Field`` type, it might be ``null``. (This varies from field to
-field.)
+For another ``Field`` type, it might be ``null`` (This varies from field to
+field.).
 
 label
 -----
@@ -293,7 +293,7 @@ Server-side example of using a form with dynamic choices:
 Built-in ``Field`` types (A-Z)
 ==============================
 
-Naturally, the ``forms`` library comes with a set of ``Field`` classes that
+Naturally, the ``forms`` library comes with a set of ``Field`` types that
 represent common validation needs. This section documents each built-in field.
 
 For each field, we describe the default widget used if you don't specify
@@ -400,7 +400,7 @@ For each field, we describe the default widget used if you don't specify
 
    * inputFormats
 
-        A list of formats used to attempt to convert a string to a valid
+        A list of `format strings`_ used to attempt to convert a string to a valid
         ``Date`` object.
 
    If no ``inputFormats`` argument is provided, the default input formats are:
@@ -430,7 +430,7 @@ For each field, we describe the default widget used if you don't specify
 
    * inputFormats
 
-      A list of formats used to attempt to convert a string to a valid
+      A list of `format strings`_ used to attempt to convert a string to a valid
       ``Date`` object.
 
    If no ``inputFormats`` argument is provided, the default input formats are:
@@ -751,7 +751,7 @@ For each field, we describe the default widget used if you don't specify
 
    * inputFormats
 
-        A list of formats used to attempt to convert a string to a valid
+        A list of `format strings`_ used to attempt to convert a string to a valid
         ``Date`` object.
 
    If no ``inputFormats`` argument is provided, the default input formats are:
@@ -918,7 +918,7 @@ Slightly complex built-in ``Field`` types
 
    * inputDateFormats
 
-        A list of formats used to attempt to convert a string to a valid
+        A list of `format strings`_ used to attempt to convert a string to a valid
         ``Date`` object with its time fields set to zero.
 
     If no ``inputDateFormats`` argument is provided, the default input formats
@@ -926,7 +926,7 @@ Slightly complex built-in ``Field`` types
 
    * inputTimeFormats
 
-        A list of formats used to attempt to convert a string to a valid
+        A list of `format strings`_ used to attempt to convert a string to a valid
         ``Date`` object with its date fields set to 1900-01-01.
 
     If no ``inputTimeFormats`` argument is provided, the default input formats
@@ -941,3 +941,5 @@ requirements are that it implement a ``clean()`` method and that its
 ``constructor()`` accepts the core arguments mentioned above
 (``required``, ``label``, ``initial``, ``widget``, ``helpText``) in an argument
 object.
+
+.. _`format strings`: https://github.com/insin/isomorph#formatting-directives
