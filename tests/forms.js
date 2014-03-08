@@ -502,7 +502,7 @@ QUnit.test("Forms with iterable BoundFields", 1, function() {
     })
   })
   var f = new BeatleForm({autoId: false})
-  reactHTMLEqual(f.boundField('name').__iter__().map(function(w) { return w.render() }),
+  reactHTMLEqual(f.boundField('name').subWidgets().map(function(w) { return w.render() }),
 '<label><input type="radio" name="name" value="john"><span> </span><span>John</span></label>' +
 '<label><input type="radio" name="name" value="paul"><span> </span><span>Paul</span></label>' +
 '<label><input type="radio" name="name" value="george"><span> </span><span>George</span></label>' +
@@ -516,7 +516,7 @@ QUnit.test("Forms with 'non-iterable' BoundFields", 1, function() {
     name: forms.CharField()
   })
   var f = new BeatleForm({autoId: false})
-  reactHTMLEqual(f.boundField('name').__iter__().map(function(w) { return w.render() }),
+  reactHTMLEqual(f.boundField('name').subWidgets().map(function(w) { return w.render() }),
         '<input type="text" name="name">')
 })
 

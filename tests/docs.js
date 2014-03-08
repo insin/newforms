@@ -864,7 +864,7 @@ QUnit.test('Widgets - widget.attrs', function() {
 "<input size=\"10\" title=\"Your name\" type=\"text\" name=\"name\" value=\"A name\">" )
 })
 
-QUnit.test('Widgets -MultiWidget', function() {
+QUnit.test('Widgets - MultiWidget', function() {
   function range(start, end) {
     var result = []
     for (var i = start; i < end; i++) {
@@ -922,6 +922,34 @@ QUnit.test('Widgets -MultiWidget', function() {
   var form = new TestForm({data: {date_0: 1, date_1: 1, date_2: 2014}})
   ok(form.isValid())
   equal(form.cleanedData.date.getTime(), new Date(2014, 0, 1).getTime())
+})
+
+QUnit.test('Widgets - RadioSelect', function() {
+  var MyForm = forms.Form.extend({
+    beatles: forms.ChoiceField({choices: [
+      ['john', 'John']
+    , ['paul', 'Paul']
+    , ['george', 'George']
+    , ['ringo', 'Ringo']
+    ], widget: forms.RadioSelect})
+  })
+  var myForm = new MyForm()
+  reactHTMLEqual(function() {
+    return myForm.boundField('beatles').subWidgets().map(function(radio) {
+      return React.DOM.div({className: 'myRadio'}, radio.render())
+    })
+  },
+"<div class=\"myRadio\">\
+<label for=\"id_beatles_0\"><input id=\"id_beatles_0\" type=\"radio\" name=\"beatles\" value=\"john\"><span> </span><span>John</span></label>\
+</div>\
+<div class=\"myRadio\">\
+<label for=\"id_beatles_1\"><input id=\"id_beatles_1\" type=\"radio\" name=\"beatles\" value=\"paul\"><span> </span><span>Paul</span></label>\
+</div>\
+<div class=\"myRadio\">\
+<label for=\"id_beatles_2\"><input id=\"id_beatles_2\" type=\"radio\" name=\"beatles\" value=\"george\"><span> </span><span>George</span></label></div>\
+<div class=\"myRadio\">\
+<label for=\"id_beatles_3\"><input id=\"id_beatles_3\" type=\"radio\" name=\"beatles\" value=\"ringo\"><span> </span><span>Ringo</span></label>\
+</div>")
 })
 
 }()
