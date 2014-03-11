@@ -45,8 +45,8 @@ Node.js
 
       var forms = require('newforms')
 
-.. _`newforms-0.5.0-rc1.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.0.js
-.. _`newforms-0.5.0-rc1.min.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.0.min.js
+.. _`newforms-0.5.0.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.0.js
+.. _`newforms-0.5.0.min.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.0.min.js
 .. _`View CHANGES`: https://github.com/insin/newforms/blob/react/CHANGES.rst
 .. _`newforms.js`: https://github.com/insin/newforms/raw/react/newforms.js
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/react/newforms.min.js
