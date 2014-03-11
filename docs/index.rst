@@ -59,6 +59,7 @@ Contents
    overview
    forms
    fields
+   react
    validation
    widgets
    formsets
