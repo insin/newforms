@@ -1,3 +1,6 @@
+0.5.0 / 2014-03-11
+==================
+
 Changes in addition to 0.5.0-rc1:
 
 * Made hidden fields controlled components which always reflect form state on

@@ -41,7 +41,7 @@
   },
   "scripts": {
     "test": "gulp build-js && node tests/tests.js",
-    "dist": "gulp dist --production"
+    "dist": "gulp dist --production --release"
   },
   "browserify": {
     "transform": [ "browserify-shim" ]
