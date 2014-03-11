@@ -1,3 +1,21 @@
+Changes in addition to 0.5.0-rc1:
+
+* Made hidden fields controlled components which always reflect form state on
+  each render, since there's no way for the user to interact with them.
+* Made FormSets more usable on the client-side:
+
+  * Form instances aren't cached, so adding and removing forms by tweaking form
+    count variables works without having to recreate the formset, or touching
+    undocumented state.
+  * ManagementForm isn't used for formset configuration details when the formset
+    is bound - as a result, you don't *have* to render its hidden fields for
+    browser-only usage.
+  * If rendered, the ManagementForm always reflects FormSet state, not bound
+    data, so doing things like bumping ``formset.extra`` to show another form
+    works regardless of whether or not the formset is bound.
+  * Added a ``setData()`` method to bind new ``formset.data`` and re-trigger
+    validation.
+
 0.5.0-rc1 / 2014-03-08
 ======================
 

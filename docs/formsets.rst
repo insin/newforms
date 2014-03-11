@@ -4,16 +4,6 @@ Formsets
 
 .. Note::
 
-   The FormSet API is still built around its original server-side usage in
-   Django. Its methods of tracking how many forms there are, adding and removing
-   forms, ordering and deletion are designed with the expectation of
-   round-tripping with HTTP requests.
-
-   Future releases will deal with making FormSets a better fit for client-side
-   capabilities.
-
-.. Note::
-
    Guide documentation for Formsets is currently incomplete.
 
    In the meantime, for a guide to the features of Formsets, please refer to the
@@ -33,7 +23,10 @@ form:
    })
 
 You might want to allow the user to create several articles at once. To create
-a formset out of an ``ArticleForm`` you would do::
+a formset out of an ``ArticleForm`` you would use the :js:func:`formsetFactory`
+function:
+
+.. code-block:: javascript
 
    var ArticleFormSet = forms.formsetFactory(ArticleForm)
 
@@ -66,9 +59,8 @@ Using initial data with a formset
 
 Initial data is what drives the main usability of a formset. As shown above
 you can define the number of extra forms. What this means is that you are
-telling the formset how many additional forms to show in addition to the
-number of forms it generates from the initial data. Let's take a look at an
-example:
+telling the formset how many forms to show in addition to the number of forms it
+generates from the initial data. Let's take a look at an example:
 
 .. code-block:: javascript
 
@@ -109,6 +101,10 @@ limit the maximum number of empty forms the formset will display:
    <tr><th><label for="id_form-0-title">Title:</label></th><td><input type="text" name="form-0-title" id="id_form-0-title"></td></tr>
    <tr><th><label for="id_form-0-pubDate">Pub date:</label></th><td><input type="text" name="form-0-pubDate" id="id_form-0-pubDate"></td></tr>
    */
+
+If the value of ``maxNum`` is greater than the number of existing objects, up to
+``extra`` additional blank forms will be added to the formset, so long as the
+total number of forms does not exceed ``maxNum``.
 
 Formset validation
 ==================
@@ -172,8 +168,76 @@ sent without any data):
    print(formset.hasChanged())
    // => false
 
-Custom formset validation
+Understanding the ManagementForm
+--------------------------------
+
+You may have noticed the additional data (``form-TOTAL_FORMS``,
+``form-INITIAL_FORMS`` and ``form-MAX_NUM_FORMS``) included in the formset's
+data above. This data is handled by the ``ManagementForm``. This form defines
+hidden fields which are used to submit information about the number of forms in
+the formset. It's primarily intended for use when a FormSet's inputs are being
+used for a regular form submission to be handled on the server-side. When using
+newforms on the server to handle formsets bound to data from an HTTP POST, if
+you don't provide this management data, an Error will be thrown:
+
+.. code-block:: javascript
+
+   var data = {
+     'form-0-title': ''
+   , 'form-0-pubDate': ''
+   }
+   try {
+     var formset = new ArticleFormSet({data: data})
+   }
+   catch (e) {
+     print(e.message)
+   }
+   // => ManagementForm data is missing or has been tampered with
+
+It is used to keep track of how many form instances are being displayed. If
+you are adding new forms via JavaScript, you should increment the count fields
+in this form as well. On the other hand, if you are using JavaScript to allow
+deletion of existing objects, then you need to ensure the ones being removed
+are properly marked for deletion by including ``form-#-DELETE`` in the ``POST``
+data. It is expected that all forms are present in the ``POST`` data regardless.
+
+``totalFormCount()`` and ``initialFormCount()``
+-----------------------------------------------
+
+``BaseFormSet`` has a couple of methods that are closely related to the
+``ManagementForm``, ``totalFormCount`` and ``initialFormCount``.
+
+``totalFormCount`` returns the total number of forms in this formset.
+``initialFormCount`` returns the number of forms in the formset that were
+pre-filled, and is also used to determine how many forms are required.
+
+Client-side FormSets
+====================
+
+When FormSets are used on the client-side, the ManagementForm isn't necessary.
+The formset's own form management configuration is used whether or not the
+formset is boound.
+
+Of particular interest is the formset's ``extra`` property, which can be used to
+implement "add another" functionality by incrementing its value and re-rendering
+to generate the resulting extra form.
+
+If you have a need to use FormSets on the client side *and* perform a regular
+HTTP POST request to process the form, you can still render
+``formset.managmentForm()`` -- its hidden fields will be kept in sync with any
+changes made to the forset's form management configuration.
+
+Updating a formset's data
 -------------------------
+
+Similar to Forms, a FormSet has a ``formset.setData()`` method which can be used
+to update the data bound to the formset and its forms.
+
+This will also trigger validation -- updating each form's ``form.errors()`` and
+``form.cleanedData``, and returning the result of ``formset.isValid()``.
+
+Custom formset validation
+=========================
 
 A formset has a ``clean()`` method similar to the one on a ``Form`` class. This
 is where you define your own validation that works at the formset level:
@@ -215,254 +279,45 @@ is where you define your own validation that works at the formset level:
    print(formset.nonFormErrors().messages())
    // => ['Articles in a set must have distinct titles.']
 
-API
-===
-
-.. js:class:: BaseFormSet([kwargs])
-
-   A collection of instances of the same Form.
-
-   :param Object kwargs: configuration options.
-
-   :param Array.<Object> kwargs.data:
-      list of input form data for each form, where property names are field
-      names. A formset with data is considered to be "bound" and ready for use
-      validating and coercing the given data.
-
-   :param Array.<Object> kwargs.files:
-      list of input file data for each form.
-
-   :param String kwargs.autoId:
-      a template for use when automatically generating ``id`` attributes for
-      fields, which should contain a ``{name}`` placeholder for the field name.
-      Defaults to ``id_{name}``.
-
-   :param String kwargs.prefix:
-      a prefix to be applied to the name of each field in each form instance.
-
-   :param Array.<Object> kwargs.initial:
-      a list of initial form data objects, where property names are field names
-      -- if a field's value is not specified in ``data``, these values will be
-      used when rendering field widgets.
-
-   :param Function kwargs.errorConstructor:
-      the constructor function to be used when creating error details - defaults
-      to :js:class:`ErrorList`.
-
-   :param String kwargs.managementFormCssClass:
-      a CSS class to be applied when rendering
-      :js:func:`BaseFormSet#managementForm`, as default rendering methods place
-      its hidden fields in an additonal form row just for hidden fields, to
-      ensure valid markup is generated.
-
-   **Instance Properties**
-
-   Formset options documented in ``kwargs`` above are set as instance properties.
-
-   The following instance properties are also available:
-
-   .. js:attribute:: formset.isBound
-
-      Determines if this formset has been given input data which can be
-      validated.
-
-      ``true`` if the formset was instantiated with ``kwargs.data`` or
-      ``kwargs.files``.
-
-   **Prototype Functions**
-
-   Prototype functions for retrieving forms and information about forms which
-   will be displayed.
-
-   .. js:function:: BaseFormSet#managementForm()
-
-      Creates and returns the ManagementForm instance for this formset.
-
-      A ManagementForm contains hidden fields which are used to keep track of
-      how many form instances are displayed on the page.
-
-   .. js:function:: BaseFormSet#totalFormCount()
-
-      Determines the number of form instances this formset contains, based on
-      either submitted management data or initial configuration, as appropriate.
-
-   .. js:function:: BaseFormSet#initialFormCount()
-
-      Determines the number of initial form instances this formset contains,
-      based on either submitted management data or initial configuration, as
-      appropriate.
-
-   .. js:function:: BaseFormSet#forms()
-
-      Returns a list of this formset's forms, instantiating them when first
-      called.
-
-   .. js:function:: BaseFormSet#initialForms()
-
-      Returns a list of all the initial forms in this formset.
-
-   .. js:function:: BaseFormSet#extraForms()
-
-      Returns a list of all the extra forms in this formset.
-
-   .. js:function:: BaseFormSet#emptyForm()
-
-      Creates an empty version of one of this formset's forms which uses a
-      placeholder ``'__prefix__'`` prefix -- this is intended for cloning on the
-      client to add more forms when newforms is only being used on the server.
-
-   Prototype functions for validating and getting information about the results
-   of validation, and for retrieving forms based on submitted data,
-
-   .. js:function:: BaseFormSet#cleanedData()
-
-      Returns a list of :js:attr:`form.cleanedData` objects for every form in
-      :js:func:`BaseFormSet#forms`.
-
-   .. js:function:: BaseFormSet#deletedForms()
-
-      Returns a list of forms that have been marked for deletion.
-
-   .. js:function:: BaseFormSet#orderedForms()
-
-      Returns a list of forms in the order specified by the incoming data.
-
-      Throws an Error if ordering is not allowed.
-
-   .. js:function:: BaseFormSet#nonFormErrors()
-
-      Returns an :js:class:`ErrorList` of errors that aren't associated with a
-      particular form -- i.e., from :js:func:`BaseFormSet#clean`.
-
-      Returns an empty :js:class:`ErrorList` if there are none.
-
-   .. js:function:: BaseFormSet#errors()
-
-      Returns a list of form error for every form in the formset.
-
-   .. js:function:: BaseFormSet#totalErrorCount()
-
-      Returns the number of errors across all forms in the formset.
-
-   .. js:function:: BaseFormSet#isValid()
-
-      Returns ``true`` if every form in the formset is valid.
-
-   .. js:function:: BaseFormSet#fullClean()
-
-      Cleans all of this.data and populates formset error objects.
-
-   .. js:function:: BaseFormSet#clean()
-
-      Hook for doing any extra formset-wide cleaning after
-      :js:func:`BaseForm.clean` has been called on every form.
-
-      Any :js:class:`ValidationError` raised by this method will not be
-      associated with a particular form; it will be accesible via
-      :js:func:BaseFormSet#nonFormErrors
-
-   .. js:function:: BaseFormSet#hasChanged()
-
-      Returns ``true`` if any form differs from initial.
-
-   A number of default rendering functions are provided to generate
-   ``React.DOM`` representations of a FormSet's fields.
-
-   These are general-purpose in that they attempt to handle all form rendering
-   scenarios and edge cases, ensuring that valid markup is always produced.
-
-   For flexibility, the output does not include a ``<form>`` or a submit
-   button, just field labels and inputs.
-
-   .. js:function:: BaseFormSet#render()
-
-      .. versionadded: newforms 0.5
-
-      Default rendering method, which calls :js:func:`BaseFormSet#asTable`
-
-   .. js:function:: BaseFormSet#asTable()
-
-      Renders the formset's forms as a series of ``<tr>`` tags, with ``<th>``
-      and ``<td>`` tags containing field labels and inputs, respectively.
-
-   .. js:function:: BaseFormSet#asUl()
-
-      Renders the formset's forms as a series of ``<li>`` tags, with each
-      ``<li>`` containing one field.
-
-   .. js:function:: BaseFormSet#asDiv()
-
-      .. versionadded: newforms 0.5
-
-      Renders the formset's forms as a series of ``<div>`` tags, with each
-      ``<div>`` containing one field.
-
-   Prototype functions for use in rendering forms.
-
-   .. js:function:: BaseFormSet#getDefaultPrefix()
-
-      Returns the default base prefix for each form: ``'form'``.
-
-   .. js:function:: BaseFormSet#addFields(form, index)
-
-      A hook for adding extra fields on to a form instance.
-
-      :param Form form: the form fields will be added to.
-      :param Number index: the index of the given form in the formset.
-
-   .. js:function:: BaseFormSet#addPrefix(index)
-
-      Returns a formset prefix with the given form index appended.
-
-      :param Number index: the index of a form in the formset.
-
-   .. js:function:: BaseFormSet#isMultipart()
-
-      Returns ``true`` if the formset needs to be multipart-encoded, i.e. it has
-      a :js:class:`FileInput`. Otherwise, ``false``.
-
-.. js:function:: formsetFactory(form, [kwargs])
-
-   Returns a FormSet constructor for the given Form constructor.
-
-   :param Function form: the constructor for the Form to be managed.
-   :param Object kwargs:
-      arguments defining options for the created FormSet constructor - all
-      arguments other than those defined below will be added to the new formset
-      constructor's ``prototype``, so this object can also be used to define new
-      methods on the resulting formset, such as a custom ``clean`` method.
-
-   :param Function kwargs.formset:
-      the constructuer which will provide the prototype for the created FormSet
-      constructor -- defaults to :js:class:`BaseFormSet`.
-
-   :param Number kwargs.extra:
-      the number of extra forms to be displayed -- defaults to ``1``.
-
-   :param Boolean kwargs.canOrder:
-      if ``true``, forms can be ordered -- defaults to ``false``.
-
-   :param Boolean kwargs.canDelete:
-      if ``true``, forms can be deleted -- defaults to ``false``.
-
-   :param Number kwargs.maxNum:
-      the maximum number of forms to be displayed -- defaults to
-      :js:data:`DEFAULT_MAX_NUM`.
-
-   :param Boolean kwargs.validateMax:
-      if ``true``, validation will also check that the number of forms in the
-      data set, minus those marked for deletion, is less than or equal to
-      ``maxNum``.
-
-   :param Number kwargs.minNum:
-      the minimum number of forms to be displayed -- defaults to ``0``.
-
-   :param Boolean kwargs.validateMin:
-      if ``true``, validation will also check that the number of forms in the
-      data set, minus those marked for deletion, is greater than or equal to
-      ``minNum``.
-
-.. js:data:: DEFAULT_MAX_NUM
-
-   The default maximum number of forms in a formet is ``1000``, to protect
-   against memory exhaustion.
+Using more than one formset in a ``<form>``
+===========================================
+
+Just like Forms, FormSets can be given a ``prefix`` to prefix form field names
+to allow more than one formset to be used in the same ``<form>`` without their
+input ``name`` attributes clashing.
+
+For example, if we had a ``Book`` form which also had a "title" field - this is
+how we could avoid field names for ``Article`` and ``Book`` forms clashing:
+
+.. code-block:: javascript
+
+   var ArticleFormSet = forms.formsetFactory(Article)
+   var BookFormSet = forms.formsetFactory(Book)
+
+   var PublicationManager = React.createClass({
+     getInitialState: function() {
+       articleFormset: new ArticleFormSet({prefix: 'articles'})
+     , bookFormset: new BookFormSet({prefix: 'books'})
+     }
+
+     // ...rendering implemented as normal...
+
+   , onSubmit: function(e) {
+       e.preventDefault()
+       var data = forms.formData(this.refs.form.getDOMNode())
+       var articlesValid = this.state.articleFormset.setData(data)
+       var booksValid = this.state.bookFormset.setData(data)
+       if (articlesValid && booksValid) {
+         // Do something with cleanedData() on the formsets
+       }
+       else {
+         // Re-render to display validation errors
+         this.forceUpdate()
+       }
+     }
+   })
+
+For server-side usage, it's important to point out that you need to pass
+``prefix`` every time you're creating a new formset instance -- on both POST and
+non-POST cases -- so expected input names match up when submitted data is being
+processed.

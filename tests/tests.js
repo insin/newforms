@@ -15,6 +15,7 @@ var tests = [ 'util.js'
             , 'forms.js'
             , 'forms-server.js'
             , 'formsets.js'
+            , 'formsets-server.js'
             , 'fields.js'
             , 'fields-browser.js'
             , 'fields-server.js'
@@ -25,6 +26,7 @@ var tests = [ 'util.js'
             , 'extra.js'
             , 'regressions.js'
             , 'docs.js'
+            , 'docs-server.js'
             ].map(function(t) { return path.join(__dirname, t) })
 
 qqunit.Runner.run(tests, function(stats) {
