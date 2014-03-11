@@ -10,8 +10,9 @@ var uglify = require('gulp-uglify')
 var gutil = require('gulp-util')
 
 var pkg = require('./package.json')
+var dev = gutil.env.release ? '' : ' (dev build at ' + (new Date()).toUTCString() + ')'
 var srcHeader = '/**\n\
- * newforms <%= pkg.version %> - https://github.com/insin/newforms\n\
+ * newforms <%= pkg.version %><%= dev %> - https://github.com/insin/newforms\n\
  * MIT Licensed\n\
  */\n'
 
@@ -34,14 +35,14 @@ gulp.task('build-js', ['lint'], function(){
     , detectGlobals: false
     }))
     .pipe(concat('newforms.js'))
-    .pipe(header(srcHeader, {pkg: pkg}))
+    .pipe(header(srcHeader, {pkg: pkg, dev: dev}))
     .pipe(gulp.dest('./'))
 
   if (gutil.env.production) {
     stream = stream
       .pipe(rename('newforms.min.js'))
       .pipe(uglify())
-      .pipe(header(srcHeader, {pkg: pkg}))
+      .pipe(header(srcHeader, {pkg: pkg, dev: dev}))
       .pipe(gulp.dest('./'))
   }
 

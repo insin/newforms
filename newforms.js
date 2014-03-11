@@ -1,5 +1,5 @@
 /**
- * newforms 0.5.0-rc1 - https://github.com/insin/newforms
+ * newforms 0.5.0 (dev build at Tue, 11 Mar 2014 01:46:00 GMT) - https://github.com/insin/newforms
  * MIT Licensed
  */
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.forms=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -2546,6 +2546,7 @@ var Concur = _dereq_('Concur')
 var object = _dereq_('isomorph/object')
 var validators = _dereq_('validators')
 
+var env = _dereq_('./env')
 var util = _dereq_('./util')
 var widgets = _dereq_('./widgets')
 var fields = _dereq_('./fields')
@@ -2615,11 +2616,28 @@ var BaseFormSet = Concur.extend({
 })
 
 /**
+ * Resets validation state, updates the formset's input data (and bound status
+ * if necessary) and revalidates, returning the result of isValid().
+ * @param {Object.<string, *} data new input data for the formset.
+ * @retun {boolean} true if the new data is valid.
+ */
+BaseFormSet.prototype.setData = function(data) {
+  this._errors = null
+  this.data = data
+  if (!this.isBound) {
+    this.isBound = true
+  }
+  return this.isValid()
+}
+
+/**
  * Returns the ManagementForm instance for this FormSet.
+ * @browser the form is unbound and uses initial data from this FormSet.
+ * @server the form is bound to submitted data.
  */
 BaseFormSet.prototype.managementForm = function() {
   var form
-  if (this.isBound) {
+  if (!env.browser && this.isBound) {
     form = new ManagementForm({data: this.data, autoId: this.autoId,
                                prefix: this.prefix})
     if (!form.isValid()) {
@@ -2648,7 +2666,7 @@ BaseFormSet.prototype.managementForm = function() {
  * either submitted management data or initial configuration, as appropriate.
  */
 BaseFormSet.prototype.totalFormCount = function() {
-  if (this.isBound) {
+  if (!env.browser && this.isBound) {
     // Return absoluteMax if it is lower than the actual total form count in
     // the data; this is DoS protection to prevent clients  from forcing the
     // server to instantiate arbitrary numbers of forms.
@@ -2678,7 +2696,7 @@ BaseFormSet.prototype.totalFormCount = function() {
  * on either submitted management data or initial configuration, as appropriate.
  */
 BaseFormSet.prototype.initialFormCount = function() {
-  if (this.isBound) {
+  if (!env.browser && this.isBound) {
     return this.managementForm().cleanedData[INITIAL_FORM_COUNT]
   }
   else {
@@ -2691,17 +2709,18 @@ BaseFormSet.prototype.initialFormCount = function() {
 }
 
 /**
- * Instantiates forms when first accessed.
+ * @browser Instantiates forms.
+ * @server Instantiates forms only when first accessed.
  */
 BaseFormSet.prototype.forms = function() {
-  if (this._forms === null) {
-    this._forms = []
-    var totalFormCount = this.totalFormCount()
-    for (var i = 0; i < totalFormCount; i++) {
-      this._forms.push(this._constructForm(i))
-    }
+  if (!env.browser && this._forms !== null) { return this._forms }
+  var forms = []
+  var totalFormCount = this.totalFormCount()
+  for (var i = 0; i < totalFormCount; i++) {
+    forms.push(this._constructForm(i))
   }
-  return this._forms
+  if (!env.browser) { this._forms = forms }
+  return forms
 }
 
 /**
@@ -2937,7 +2956,7 @@ BaseFormSet.prototype.fullClean = function() {
     var totalFormCount = this.totalFormCount()
     var deletedFormCount = this.deletedForms().length
     if ((this.validateMax && totalFormCount - deletedFormCount > this.maxNum) ||
-         this.managementForm().cleanedData[TOTAL_FORM_COUNT] > this.absoluteMax) {
+        (!env.browser && this.managementForm().cleanedData[TOTAL_FORM_COUNT] > this.absoluteMax)) {
       throw ValidationError('Please submit ' + this.maxNum + ' or fewer forms.',
                             {code: 'tooManyForms'})
     }
@@ -3110,7 +3129,7 @@ module.exports = {
 , allValid: allValid
 }
 
-},{"./fields":2,"./forms":3,"./util":6,"./widgets":7,"Concur":8,"isomorph/object":13,"validators":18}],5:[function(_dereq_,module,exports){
+},{"./env":1,"./fields":2,"./forms":3,"./util":6,"./widgets":7,"Concur":8,"isomorph/object":13,"validators":18}],5:[function(_dereq_,module,exports){
 'use strict';
 
 var object = _dereq_('isomorph/object')
@@ -3698,9 +3717,18 @@ Input.prototype.render = function(name, value, kwargs) {
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {type: this.inputType,
                                                   name: name})
+  // Only add the value attribute if value is non-empty
   if (value !== '') {
-    // Only add the value attribute if value is non-empty
-    finalAttrs.defaultValue = ''+this._formatValue(value)
+    // Hidden inputs can be made controlled inputs by default, as the user
+    // can't directly interact with them. This will allow them to reflect
+    // changes to the form's state without you having to manually go and update
+    // the DOM node, or manually flip a key property to force new state.
+    // For example, when using a FormSet client-side, if you want to display
+    // another form, you need to bump the formset's extra count - with
+    // controlled hidden components, the formset's management form will reflect
+    // the new value on the next render.
+    var valueAttr = (this.isHidden ? 'value' : 'defaultValue')
+    finalAttrs[valueAttr] = ''+this._formatValue(value)
   }
   return React.DOM.input(finalAttrs)
 }
