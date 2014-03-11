@@ -17,6 +17,8 @@ var ArticleForm = forms.Form.extend({
 , pubDate: forms.DateField()
 })
 
+// ================================================================ formsets ===
+
 QUnit.test('Formsets - validation', function() {
   var ArticleFormSet = forms.formsetFactory(ArticleForm)
   var data = {

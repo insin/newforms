@@ -21,43 +21,8 @@ function repr(o) {
   }
 }
 
-QUnit.test('Overview - Displaying a Form in a React component', function() {
-  var Contact = React.createClass({displayName: 'Contact',
-    getInitialState: function() {
-      return {form: new ContactForm()}
-    }
+// ================================================================ overview ===
 
-  , render: function() {
-      return React.DOM.form({ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"},
-        this.state.form.asDiv(),
-        React.DOM.div(null,
-          React.DOM.input({type:"submit", value:"Submit"}),
-          React.DOM.input({type:"button", value:"Cancel", onClick:this.props.onCancel})
-        )
-      )
-    }
-
-  , onSubmit: function(e) {
-      e.preventDefault()
-      var data = forms.formData(this.refs.form.getDOMNode())
-      var isValid = this.state.form.setData(data)
-      if (isValid) {
-        this.props.processContactData(this.state.form.cleanedData)
-      }
-      else {
-        this.forceUpdate()
-      }
-    }
-  })
-  reactHTMLEqual(new Contact(),
-"<form action=\"&#x2f;contact\" method=\"POST\">\
-<div><label for=\"id_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
-<div><label for=\"id_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_message\"></div>\
-<div><label for=\"id_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
-<div><label for=\"id_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
-<div><input type=\"submit\" value=\"Submit\"><input type=\"button\" value=\"Cancel\"></div>\
-</form>")
-})
 
 QUnit.test('Overview - Customising form display', function() {
   var Contact = React.createClass({displayName: 'Contact',
@@ -135,6 +100,8 @@ QUnit.test("Overview - Looping over the Form's Fields", function() {
 <div><input type=\"submit\" value=\"Send message\"></div>\
 </form>")
 })
+
+// =================================================================== forms ===
 
 QUnit.test('Forms - Dynamic initial values', function() {
   var CommentForm = forms.Form.extend({
@@ -543,6 +510,8 @@ QUnit.test('Fields - Providing choices', function() {
   ])
 })
 
+// =================================================================== fields ==
+
 QUnit.test('Fields - Dynamic choices', function() {
   var ProjectBookingForm = forms.Form.extend({
     project: forms.ChoiceField()
@@ -605,6 +574,49 @@ var MultiRecipientContactForm = forms.Form.extend({
 , recipients: new MultiEmailField()
 , ccMyself: forms.BooleanField({required: false})
 })
+
+// =================================================================== react ===
+
+
+QUnit.test('Forms and React - Using a Form in a React component', function() {
+  var Contact = React.createClass({displayName: 'Contact',
+    getInitialState: function() {
+      return {form: new ContactForm()}
+    }
+
+  , render: function() {
+      return React.DOM.form({ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"},
+        this.state.form.asDiv(),
+        React.DOM.div(null,
+          React.DOM.input({type:"submit", value:"Submit"}),
+          React.DOM.input({type:"button", value:"Cancel", onClick:this.props.onCancel})
+        )
+      )
+    }
+
+  , onSubmit: function(e) {
+      e.preventDefault()
+      var data = forms.formData(this.refs.form.getDOMNode())
+      var isValid = this.state.form.setData(data)
+      if (isValid) {
+        this.props.processContactData(this.state.form.cleanedData)
+      }
+      else {
+        this.forceUpdate()
+      }
+    }
+  })
+  reactHTMLEqual(new Contact(),
+"<form action=\"&#x2f;contact\" method=\"POST\">\
+<div><label for=\"id_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
+<div><label for=\"id_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_message\"></div>\
+<div><label for=\"id_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
+<div><label for=\"id_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
+<div><input type=\"submit\" value=\"Submit\"><input type=\"button\" value=\"Cancel\"></div>\
+</form>")
+})
+
+// ============================================================== validation ===
 
 QUnit.test('Validation - Form field default cleaning', function() {
   var f = new MultiEmailField({required: true})
@@ -717,40 +729,7 @@ var ArticleForm = forms.Form.extend({
 , pubDate: forms.DateField()
 })
 
-QUnit.test('Formsets - intro', function() {
-  var ArticleFormSet = forms.formsetFactory(ArticleForm)
-  var formset = new ArticleFormSet()
-  reactHTMLEqual(function() {
-    return formset.forms().map(function(form) { return form.asTable() })
-  },
-"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></td></tr>\
-<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></td></tr>",
-  "<3 My first formset <3")
-
-  var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2})
-  var formset = new ArticleFormSet({initial: [
-    {title: "Django's docs are open source!", pubDate: new Date(2014, 1, 28)}
-  ]})
-  reactHTMLEqual(function() {
-    return formset.forms().map(function(form) { return form.asTable() })
-  },
-"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\" value=\"Django&#x27;s docs are open source!\"></td></tr>\
-<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\" value=\"2014-02-28\"></td></tr>\
-<tr><th><label for=\"id_form-1-title\">Title:</label></th><td><input type=\"text\" name=\"form-1-title\" id=\"id_form-1-title\"></td></tr>\
-<tr><th><label for=\"id_form-1-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-1-pubDate\" id=\"id_form-1-pubDate\"></td></tr>\
-<tr><th><label for=\"id_form-2-title\">Title:</label></th><td><input type=\"text\" name=\"form-2-title\" id=\"id_form-2-title\"></td></tr>\
-<tr><th><label for=\"id_form-2-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-2-pubDate\" id=\"id_form-2-pubDate\"></td></tr>",
-  "Initial data display + 2 extras")
-
-  var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2, maxNum: 1})
-  var formset = new ArticleFormSet()
-  reactHTMLEqual(function() {
-    return formset.forms().map(function(form) { return form.asTable() })
-  },
-"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></td></tr>\
-<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></td></tr>",
-  "maxNum vs. extra")
-})
+// ================================================================= widgets ===
 
 QUnit.test('Widgets - Widgets inheriting from the Select widget', function() {
   var CHOICES = [['1', 'First'], ['2', 'Second']]
@@ -907,5 +886,44 @@ QUnit.test('Widgets - RadioSelect', function() {
 <span class=\"radio\"><input id=\"id_beatles_3\" type=\"radio\" name=\"beatles\" value=\"ringo\"></span>\
 </label>")
 })
+
+// ================================================================ formsets ===
+
+QUnit.test('Formsets - intro', function() {
+  var ArticleFormSet = forms.formsetFactory(ArticleForm)
+  var formset = new ArticleFormSet()
+  reactHTMLEqual(function() {
+    return formset.forms().map(function(form) { return form.asTable() })
+  },
+"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></td></tr>\
+<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></td></tr>",
+  "<3 My first formset <3")
+
+  var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2})
+  var formset = new ArticleFormSet({initial: [
+    {title: "Django's docs are open source!", pubDate: new Date(2014, 1, 28)}
+  ]})
+  reactHTMLEqual(function() {
+    return formset.forms().map(function(form) { return form.asTable() })
+  },
+"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\" value=\"Django&#x27;s docs are open source!\"></td></tr>\
+<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\" value=\"2014-02-28\"></td></tr>\
+<tr><th><label for=\"id_form-1-title\">Title:</label></th><td><input type=\"text\" name=\"form-1-title\" id=\"id_form-1-title\"></td></tr>\
+<tr><th><label for=\"id_form-1-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-1-pubDate\" id=\"id_form-1-pubDate\"></td></tr>\
+<tr><th><label for=\"id_form-2-title\">Title:</label></th><td><input type=\"text\" name=\"form-2-title\" id=\"id_form-2-title\"></td></tr>\
+<tr><th><label for=\"id_form-2-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-2-pubDate\" id=\"id_form-2-pubDate\"></td></tr>",
+  "Initial data display + 2 extras")
+
+  var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2, maxNum: 1})
+  var formset = new ArticleFormSet()
+  reactHTMLEqual(function() {
+    return formset.forms().map(function(form) { return form.asTable() })
+  },
+"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></td></tr>\
+<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></td></tr>",
+  "maxNum vs. extra")
+})
+
+// ==================================================================== util ===
 
 }()
