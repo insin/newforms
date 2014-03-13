@@ -67,7 +67,7 @@ QUnit.test('Setting form data', function() {
   "data set with setData render as expected")
 })
 
-QUnit.test('Updating form data', function() {
+QUnit.test('Updating form data', 28, function() {
   // Update input data with a field -> input object - this is typically
   // client-side usage where a user has interacticed with a field or fields
   // which should be revalidated immediately so feedback can be displayed before
@@ -123,6 +123,21 @@ QUnit.test('Updating form data', function() {
   equal(p.cleanedData.last_name, 'Lennon', 'New cleanedData added')
   equal(p.cleanedData.first_name, 'John', 'Existing cleanedData not touched')
   equal(p.cleanedData.birthday.valueOf(), new Date(1940, 9, 9).valueOf(), 'Existing cleanedData not touched')
+
+  // updateData() differs from the other means of setting data in that it's not
+  // looping over all the Fields in the Form to validate them - it's figuring
+  // out which fields it's been given input data for an only processing those.
+  // In order to do this, any prefix a field was displayed with needs to be
+  // stripped off.
+  var p = new Person({prefix: 'test'})
+  equal(p.addPrefix('field'), 'test-field')
+  equal(p.removePrefix('test-field'), 'field', 'removePrefix strips a prefix-sized chunk off a given string')
+  p.updateData({'test-first_name': 'John', 'test-last_name': 'Lennon', 'test-birthday': '1940-10-9'},
+              'No errors updating with prefixed data')
+  strictEqual(p.isValid(), true, 'isValid after setting prefixed data')
+  equal(p.cleanedData.last_name, 'Lennon')
+  equal(p.cleanedData.first_name, 'John')
+  equal(p.cleanedData.birthday.valueOf(), new Date(1940, 9, 9).valueOf())
 })
 
 QUnit.test("Empty data object", 10, function() {
