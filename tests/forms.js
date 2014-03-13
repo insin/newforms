@@ -17,7 +17,8 @@ var PersonNew = forms.Form.extend({
 })
 
 QUnit.test("Form", 12, function() {
-  // Pass a data object when initialising
+  // Pass a data object when initialising - this is typical of server-side usage
+  // where data is supplied only once via the HTTP request.
   var p = new Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}})
   strictEqual(p.isBound, true)
   strictEqual(p.errors().isPopulated(), false)
@@ -32,7 +33,7 @@ QUnit.test("Form", 12, function() {
         "<input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\">")
   reactHTMLEqual(function() { return p.boundField("birthday").render() },
         "<input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\">")
-  try { p.boundField("nonexistentfield"); } catch (e) { equal(e.message, "Form does not have a 'nonexistentfield' field."); }
+  try { p.boundField("nonexistentfield") } catch (e) { equal(e.message, "Form does not have a 'nonexistentfield' field.") }
 
   var formOutput = [], boundFields = p.boundFields()
   for (var i = 0, boundField; boundField = boundFields[i]; i++) {
@@ -51,16 +52,77 @@ QUnit.test("Form", 12, function() {
 })
 
 QUnit.test('Setting form data', function() {
+  // Set a data oject after initialising - this is typically client-side usage,
+  // where the form must first be crated and displayed to take user input. It
+  // should be, behaviour-wise, equivalent to instantiating with data.
   var p = new Person()
   strictEqual(p.isBound, false, 'initial isBound value')
   var isValid = p.setData({first_name: "John", last_name: "Lennon", birthday: "1940-10-9"})
   strictEqual(isValid, true, 'setData calls and returns the result of isValid')
-  strictEqual(p.isBound, true, 'setData makes the form isBound if it was not already')
+  strictEqual(p.isBound, true, 'setData makes the form bound if it was not already')
   reactHTMLEqual(p.render.bind(p),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\"></td></tr>\
 <tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\"></td></tr>\
 <tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\"></td></tr>",
   "data set with setData render as expected")
+})
+
+QUnit.test('Updating form data', function() {
+  // Update input data with a field -> input object - this is typically
+  // client-side usage where a user has interacticed with a field or fields
+  // which should be revalidated immediately so feedback can be displayed before
+  // they move off the field.
+  var p = new Person()
+  p.updateData({birthday: 'invalid'})
+  strictEqual(p.isBound, true, 'updateData makes the form bound if it was not already')
+  strictEqual(p.isValid(), false, 'isValid correctly reports the state of data validated so far')
+  deepEqual(p.errors('birthday').messages(), ["Enter a valid date."], 'Invalid updateData data generates an error message')
+  deepEqual(p.data, {birthday: 'invalid'}, 'form.data contains the updated data')
+  errorEqual(p.updateData.bind(p, {nonexistentfield: true}),
+             "Form has no field named 'nonexistentfield'",
+             'An Error is thrown if updateData contains invalid field names')
+
+  p.updateData({birthday: '1940-10-9'})
+  strictEqual(p.isValid(), true, 'isValid correctly reports the state of data validated so far')
+  strictEqual(p.errors().isPopulated(), false, 'Prior errors were cleared by updateData')
+  equal(p.cleanedData.birthday.valueOf(), new Date(1940, 9, 9).valueOf())
+
+  // Form-wide cleaning is called by updateData - this shouldn't be a problem
+  // for existing clean() functions, as they can never guarantee the existence
+  // of data so must be coded defensively.
+  p.clean = function() {
+    if (this.cleanedData.first_name && !this.cleanedData.last_name) {
+      this.addError('last_name', 'This field is required if first name is given.')
+      throw forms.ValidationError('Too familiar!')
+    }
+  }
+  p.updateData({first_name: 'John'})
+  strictEqual(p.isValid(), false, 'isValid correctly reports the state of data validated so far')
+  deepEqual(p.errors('last_name').messages(), ['This field is required if first name is given.'])
+  deepEqual(p.nonFieldErrors().messages(), ['Too familiar!'])
+  equal(p.cleanedData.first_name, 'John', 'New cleanedData added')
+  equal(p.cleanedData.birthday.valueOf(), new Date(1940, 9, 9).valueOf(), 'Existing cleanedData not touched as not updated')
+
+  // Field-specific cleaning functions are called by updateData. It also clears
+  // out any non-field errors present in case one of the updated fields is used
+  // for cross-field validation.
+  p.cleanLast_name = function() {
+    if (this.cleanedData.last_name == 'Cleese') {
+      throw forms.ValidationError('This is JavaScript, Python is over there.')
+    }
+  }
+  p.updateData({last_name: 'Cleese'})
+  strictEqual(p.isValid(), false, 'isValid correctly reports the state of data validated so far')
+  deepEqual(p.errors('last_name').messages(), ['This is JavaScript, Python is over there.', 'This field is required if first name is given.'])
+  deepEqual(p.nonFieldErrors().messages(), ['Too familiar!'], 'Non field errors should be cleared before updateData triggers form-wide cleaning.')
+  equal(p.cleanedData.first_name, 'John', 'Existing cleanedData not touched')
+  equal(p.cleanedData.birthday.valueOf(), new Date(1940, 9, 9).valueOf(), 'Existing cleanedData not touched')
+
+  p.updateData({last_name: 'Lennon'})
+  strictEqual(p.isValid(), true, 'isValid correctly reports the state of data validated so far')
+  equal(p.cleanedData.last_name, 'Lennon', 'New cleanedData added')
+  equal(p.cleanedData.first_name, 'John', 'Existing cleanedData not touched')
+  equal(p.cleanedData.birthday.valueOf(), new Date(1940, 9, 9).valueOf(), 'Existing cleanedData not touched')
 })
 
 QUnit.test("Empty data object", 10, function() {
