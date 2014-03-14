@@ -413,7 +413,7 @@ These widgets make use of the HTML elements ``<input>`` and ``<textarea>``.
         The format in which this field's initial value will be displayed.
 
    If no ``format`` argument is provided, the default format is the first
-   format found in ``DATE_INPUT_FORMATS``.
+   format found in ``forms.formats.DEFAULT_DATE_INPUT_FORMATS``.
 
 :js:class:`DateTimeInput`
 -------------------------
@@ -427,7 +427,7 @@ These widgets make use of the HTML elements ``<input>`` and ``<textarea>``.
         The format in which this field's initial value will be displayed.
 
    If no ``format`` argument is provided, the default format is the first
-   format found in ``DATETIME_INPUT_FORMATS``.
+   format found in ``forms.formats.DEFAULT_DATETIME_INPUT_FORMATS``.
 
 :js:class:`TimeInput`
 ---------------------
@@ -441,7 +441,7 @@ These widgets make use of the HTML elements ``<input>`` and ``<textarea>``.
         The format in which this field's initial value will be displayed.
 
    If no ``format`` argument is provided, the default format is the first
-   format found in ``TIME_INPUT_FORMATS``.
+   format found in ``forms.formats.DEFAULT_TIME_INPUT_FORMATS``.
 
 Selector and checkbox widgets
 =============================
