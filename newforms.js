@@ -1,5 +1,5 @@
 /**
- * newforms 0.5.0 - https://github.com/insin/newforms
+ * newforms 0.6.0-alpha (dev build at Fri, 14 Mar 2014 16:59:03 GMT) - https://github.com/insin/newforms
  * MIT Licensed
  */
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.forms=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -19,6 +19,7 @@ var url = _dereq_('isomorph/url')
 var validators = _dereq_('validators')
 
 var env = _dereq_('./env')
+var formats = _dereq_('./formats')
 var util = _dereq_('./util')
 var widgets = _dereq_('./widgets')
 
@@ -50,7 +51,7 @@ var Field = Concur.extend({
     kwargs = object.extend({
       required: true, widget: null, label: null, initial: null,
       helpText: null, errorMessages: null, showHiddenInitial: false,
-      validators: [], cssClass: null, custom: null
+      validators: [], cssClass: null, validation: null, custom: null
     }, kwargs)
     this.required = kwargs.required
     this.label = kwargs.label
@@ -58,6 +59,13 @@ var Field = Concur.extend({
     this.showHiddenInitial = kwargs.showHiddenInitial
     this.helpText = kwargs.helpText || ''
     this.cssClass = kwargs.cssClass
+    this.validation = kwargs.validation
+    // Normalise validation config to an object if it's not set to manual
+    if (is.String(this.validation) && this.validation != 'manual') {
+      this.validation = (this.validation == 'auto'
+                         ? {event: 'onChange', delay: 250}
+                         : {event: this.validation})
+    }
     this.custom = kwargs.custom
 
     var widget = kwargs.widget || this.widget
@@ -587,7 +595,7 @@ BaseTemporalField.prototype._hasChanged = function(initial, data) {
  */
 var DateField = BaseTemporalField.extend({
   widget: widgets.DateInput
-, inputFormats: util.DEFAULT_DATE_INPUT_FORMATS
+, inputFormats: formats.DEFAULT_DATE_INPUT_FORMATS
 , defaultErrorMessages: {
     invalid: 'Enter a valid date.'
   }
@@ -622,7 +630,7 @@ DateField.prototype.toJavaScript = function(value) {
  */
 var TimeField = BaseTemporalField.extend({
   widget: widgets.TimeInput
-, inputFormats: util.DEFAULT_TIME_INPUT_FORMATS
+, inputFormats: formats.DEFAULT_TIME_INPUT_FORMATS
 , defaultErrorMessages: {
     invalid: 'Enter a valid time.'
   }
@@ -669,7 +677,7 @@ TimeField.prototype.strpdate = function(value, format) {
  */
 var DateTimeField = BaseTemporalField.extend({
   widget: widgets.DateTimeInput
-, inputFormats: util.DEFAULT_DATETIME_INPUT_FORMATS
+, inputFormats: formats.DEFAULT_DATETIME_INPUT_FORMATS
 , defaultErrorMessages: {
     invalid: 'Enter a valid date/time.'
   }
@@ -1629,7 +1637,42 @@ module.exports = {
 , SlugField: SlugField
 }
 
-},{"./env":1,"./util":6,"./widgets":7,"Concur":8,"isomorph/is":12,"isomorph/object":13,"isomorph/time":14,"isomorph/url":15,"validators":18}],3:[function(_dereq_,module,exports){
+},{"./env":1,"./formats":3,"./util":7,"./widgets":8,"Concur":9,"isomorph/is":13,"isomorph/object":14,"isomorph/time":15,"isomorph/url":16,"validators":19}],3:[function(_dereq_,module,exports){
+'use strict';
+
+var DEFAULT_DATE_INPUT_FORMATS = [
+  '%Y-%m-%d'              // '2006-10-25'
+, '%m/%d/%Y', '%m/%d/%y'  // '10/25/2006', '10/25/06'
+, '%b %d %Y', '%b %d, %Y' // 'Oct 25 2006', 'Oct 25, 2006'
+, '%d %b %Y', '%d %b, %Y' // '25 Oct 2006', '25 Oct, 2006'
+, '%B %d %Y', '%B %d, %Y' // 'October 25 2006', 'October 25, 2006'
+, '%d %B %Y', '%d %B, %Y' // '25 October 2006', '25 October, 2006'
+]
+
+var DEFAULT_TIME_INPUT_FORMATS = [
+  '%H:%M:%S' // '14:30:59'
+, '%H:%M'    // '14:30'
+]
+
+var DEFAULT_DATETIME_INPUT_FORMATS = [
+  '%Y-%m-%d %H:%M:%S' // '2006-10-25 14:30:59'
+, '%Y-%m-%d %H:%M'    // '2006-10-25 14:30'
+, '%Y-%m-%d'          // '2006-10-25'
+, '%m/%d/%Y %H:%M:%S' // '10/25/2006 14:30:59'
+, '%m/%d/%Y %H:%M'    // '10/25/2006 14:30'
+, '%m/%d/%Y'          // '10/25/2006'
+, '%m/%d/%y %H:%M:%S' // '10/25/06 14:30:59'
+, '%m/%d/%y %H:%M'    // '10/25/06 14:30'
+, '%m/%d/%y'          // '10/25/06'
+]
+
+module.exports = {
+  DEFAULT_DATE_INPUT_FORMATS: DEFAULT_DATE_INPUT_FORMATS
+, DEFAULT_TIME_INPUT_FORMATS: DEFAULT_TIME_INPUT_FORMATS
+, DEFAULT_DATETIME_INPUT_FORMATS: DEFAULT_DATETIME_INPUT_FORMATS
+}
+
+},{}],4:[function(_dereq_,module,exports){
 'use strict';
 
 var Concur = _dereq_('Concur')
@@ -1762,8 +1805,22 @@ BoundField.prototype.asWidget = function(kwargs) {
       typeof widget.attrs.id == 'undefined') {
     attrs.id = (!kwargs.onlyInitial ? autoId : this.htmlInitialId)
   }
+  // If the field has any validation config set, it should take precedence,
+  // otherwise use the form's, as it has a default.
+  var validation = this.field.validation || this.form.validation
+  // Every controlled form input needs an onChange handler - add it to the
+  // validation config object if this input will be controlled.
+  if (validation != 'manual') {
+    validation = object.extend({}, validation)
+    validation.onChange =
+        util.bindRight(this.form._handleFieldChange, this.form, validation)
+    if (validation.event != 'onChange') {
+      validation.eventHandler =
+          util.bindRight(this.form._handleFieldValidation, this.form, validation)
+    }
+  }
 
-  return widget.render(name, this.value(), {attrs: attrs})
+  return widget.render(name, this.value(), {attrs: attrs}, validation)
 }
 
 /**
@@ -1883,7 +1940,7 @@ var BaseForm = Concur.extend({
     kwargs = object.extend({
       data: null, files: null, autoId: 'id_{name}', prefix: null,
       initial: null, errorConstructor: ErrorList, labelSuffix: ':',
-      emptyPermitted: false
+      emptyPermitted: false, validation: 'manual', onStateChange: null
     }, kwargs)
     this.isBound = kwargs.data !== null || kwargs.files !== null
     this.data = kwargs.data || {}
@@ -1894,20 +1951,112 @@ var BaseForm = Concur.extend({
     this.errorConstructor = kwargs.errorConstructor
     this.labelSuffix = kwargs.labelSuffix
     this.emptyPermitted = kwargs.emptyPermitted
+    this.validation = kwargs.validation
+    // Normalise validation config to an object if it's not set to manual
+    if (is.String(this.validation) && this.validation != 'manual') {
+      this.validation = (this.validation == 'auto'
+                         ? {event: 'onChange', delay: 250}
+                         : {event: this.validation})
+    }
+    this.onStateChange = kwargs.onStateChange
     this._errors = null // Stores errors after clean() has been called
     this._changedData = null
+    this._pendingFieldValidation = {} // Pending field validation functions
 
     // The baseFields attribute is the *prototype-wide* definition of fields.
     // Because a particular *instance* might want to alter this.fields, we
     // create this.fields here by deep copying baseFields. Instances should
     // always modify this.fields; they should not modify baseFields.
     this.fields = copy.deepCopy(this.baseFields)
+
+    // Now that fields exists, we can check if there's any active validation
+    // configured on the form or any of its fields.
+    if (this.hasActiveValidation()) {
+      // For active validation, we *must* have an onStateChange function to call
+      if (!is.Function(kwargs.onStateChange)) {
+        throw new Error(
+          'Forms must be given an onStateChange callback when their validation ' +
+          "- or any of their fields' validation - is not manual")
+      }
+      // isBound will flip to true as soon as the first field is validated. At
+      // that point, rendering will flip to using data as its source, so ensure
+      // data has a copy of any initial display data we were given.
+      if (kwargs.initial !== null && kwargs.data === null) {
+        object.extend(this.data, this.initial)
+      }
+    }
   }
 })
 
 /**
- * Resets validation state, updates the form's input data (and bound status if
- * necessary) and revalidates, returning the result of isValid().
+ * This will always be hooked up to a controlled component's onChange to ensure
+ * that the value it's being rendered with is kept up to date. Since we're here
+ * anyway, we can deal with onChange validation too.
+ */
+BaseForm.prototype._handleFieldChange = function(e, validation) {
+  // Get the data from the form element(s) in the DOM
+  var htmlName = e.target.name
+  var data = util.fieldData(e.target.form, htmlName)
+
+  // We always need to update the data immediately to keep React
+  // happy with its controlled input component.
+  if (!this.isBound) {
+    this.data = {}
+    this.isBound = true
+  }
+  this.data[htmlName] = data
+  this.onStateChange()
+
+  // If we should be validating now, do so
+  if (validation.event == 'onChange') {
+    this._handleFieldValidation(e, validation)
+  }
+}
+
+/**
+ * Handles validating the field which is the target of the given event based
+ * on its validation config. This will be hooked up to the appropriate event
+ * as per the field's validation config. React special cases onChange to ensure
+ * the controlled value is kept up to date, so we should be sure that the date
+ * we'll be validating against is current.
+ */
+BaseForm.prototype._handleFieldValidation = function(e, validation) {
+  var field = this.removePrefix(e.target.name)
+  if (validation.delay) {
+    this._delayedFieldValidation(field, validation.delay)
+  }
+  else {
+    this._immediateFieldValidation(field)
+  }
+}
+
+/**
+ * Validates a single field and notifies the React component that state has
+ * changed.
+ */
+BaseForm.prototype._immediateFieldValidation = function(field) {
+  this.partialClean([field])
+  this.onStateChange()
+}
+
+/**
+ * Sets up delayed validation of a single field with a debounced function and
+ * calls it, or just calls the function again if it already exists to reset the
+ * delay.
+ */
+BaseForm.prototype._delayedFieldValidation = function(field, delay) {
+  if (!is.Function(this._pendingFieldValidation[field])) {
+    this._pendingFieldValidation[field] = util.debounce(function() {
+      delete this._pendingFieldValidation[field]
+      this._immediateFieldValidation(field)
+    }.bind(this), delay)
+  }
+  this._pendingFieldValidation[field]()
+}
+
+/**
+ * Resets validation state, replaces the form's input data (and flips its bound
+ * flag if necessary) and revalidates, returning the result of isValid().
  * @param {Object.<string, *} data new input data for the form.
  * @retun {boolean} true if the new data is valid.
  */
@@ -1918,7 +2067,30 @@ BaseForm.prototype.setData = function(data) {
   if (!this.isBound) {
     this.isBound = true
   }
+  // This call ultimately triggers a fullClean() because _errors isn't set
   return this.isValid()
+}
+
+/**
+ * Updates some of the form's input data, then triggers validation of fields
+ * which had their input data updated as well as form-wide cleaning.
+ * @param {Object.<string, *} data updated input data for the form.
+ */
+BaseForm.prototype.updateData = function(data) {
+  if (!this.isBound) {
+    this.data = data
+    this.isBound = true
+  }
+  else {
+    object.extend(this.data, data)
+  }
+  var fields = Object.keys(data)
+  if (this.prefix !== null) {
+    for (var i = 0, l = fields.length; i < l; i++) {
+      fields[i] = this.removePrefix(fields[i])
+    }
+  }
+  this.partialClean(fields)
 }
 
 /**
@@ -2059,8 +2231,7 @@ BaseForm.prototype.isValid = function() {
  */
 BaseForm.prototype.addPrefix = function(fieldName) {
   if (this.prefix !== null) {
-      return format('{prefix}-{fieldName}',
-                    {prefix: this.prefix, fieldName: fieldName})
+      return this.prefix + '-' + fieldName
   }
   return fieldName
 }
@@ -2069,8 +2240,18 @@ BaseForm.prototype.addPrefix = function(fieldName) {
  * Adds an initial prefix for checking dynamic initial values.
  */
 BaseForm.prototype.addInitialPrefix = function(fieldName) {
-  return format('initial-{fieldName}',
-                {fieldName: this.addPrefix(fieldName)})
+  return 'initial-' + this.addPrefix(fieldName)
+}
+
+/**
+ * Returns the field with a prefix-size chunk chopped off the start if this
+ * Form has a prefix set.
+ */
+BaseForm.prototype.removePrefix = function(fieldName) {
+  if (this.prefix !== null) {
+      return fieldName.substring(this.prefix.length + 1)
+  }
+  return fieldName
 }
 
 /**
@@ -2288,10 +2469,7 @@ BaseForm.prototype.addError = function(field, error) {
     errorList = error[field]
     if (!this._errors.hasField(field)) {
       if (field !== NON_FIELD_ERRORS && !object.hasOwn(this.fields, field)) {
-        var formName = (this.constructor.name
-                        ? "'" + this.constructor.name + "'"
-                        : 'Form')
-        throw new Error(formName + " has no field named '" + field + "'")
+        throw new Error(this._formName() + " has no field named '" + field + "'")
       }
       this._errors.set(field, new this.errorConstructor())
     }
@@ -2302,13 +2480,17 @@ BaseForm.prototype.addError = function(field, error) {
   }
 }
 
+BaseForm.prototype._formName = function() {
+  return (this.constructor.name ? "'" + this.constructor.name + "'" : 'Form')
+}
+
 /**
- * Cleans all of data and populates _errors and cleanedData.
+ * Cleans data for all fields and triggers cross-form cleaning.
  */
 BaseForm.prototype.fullClean = function() {
   this._errors = ErrorObject()
   if (!this.isBound) {
-    return; // Stop further processing
+    return // Stop further processing
   }
 
   this.cleanedData = {}
@@ -2324,28 +2506,71 @@ BaseForm.prototype.fullClean = function() {
   this._postClean()
 }
 
+/**
+ * Cleans data for the given field names and triggers cross-form cleaning in
+ * case any cleanedData it uses has changed.
+ * @param {Array.<string>} fields field names.
+ */
+BaseForm.prototype.partialClean = function(fields) {
+  if (this._errors === null) {
+    this._errors = ErrorObject()
+  }
+  else {
+    this._errors.remove(NON_FIELD_ERRORS)
+    this._errors.removeAll(fields)
+  }
+
+  if (typeof this.cleanedData == 'undefined') {
+    this.cleanedData = {}
+  }
+
+  for (var i = 0, l = fields.length; i < l; i++) {
+    this._cleanField(fields[i])
+  }
+  this._cleanForm()
+}
+
 BaseForm.prototype._cleanFields = function() {
   for (var name in this.fields) {
-    if (!object.hasOwn(this.fields, name)) { continue }
+    if (object.hasOwn(this.fields, name)) {
+      this._cleanField(name)
+    }
+  }
+}
 
-    var field = this.fields[name]
-    // valueFromData() gets the data from the data objects.
-    // Each widget type knows how to retrieve its own data, because some widgets
-    // split data over several HTML fields.
-    var value = field.widget.valueFromData(this.data, this.files,
-                                           this.addPrefix(name))
-    try {
-      if (field instanceof FileField) {
-        var initial = object.get(this.initial, name, field.initial)
-        value = field.clean(value, initial)
-      }
-      else {
-        value = field.clean(value)
-      }
-      this.cleanedData[name] = value
+BaseForm.prototype._cleanField = function(name) {
+  if (!object.hasOwn(this.fields, name)) {
+    throw new Error(this._formName() + " has no field named '" + name + "'")
+  }
 
-      // Try cleanName
-      var customClean = 'clean' + name.charAt(0).toUpperCase() + name.substr(1)
+  var field = this.fields[name]
+  // valueFromData() gets the data from the data objects.
+  // Each widget type knows how to retrieve its own data, because some widgets
+  // split data over several HTML fields.
+  var value = field.widget.valueFromData(this.data, this.files,
+                                         this.addPrefix(name))
+  try {
+    if (field instanceof FileField) {
+      var initial = object.get(this.initial, name, field.initial)
+      value = field.clean(value, initial)
+    }
+    else {
+      value = field.clean(value)
+    }
+    this.cleanedData[name] = value
+
+    // Try cleanName
+    var customClean = 'clean' + name.charAt(0).toUpperCase() + name.substr(1)
+    if (typeof this[customClean] != 'undefined' &&
+        is.Function(this[customClean])) {
+      value = this[customClean]()
+      if (typeof value != 'undefined') {
+        this.cleanedData[name] = value
+      }
+    }
+    else {
+      // Otherwise, try clean_name
+      customClean = 'clean_' + name
       if (typeof this[customClean] != 'undefined' &&
           is.Function(this[customClean])) {
         value = this[customClean]()
@@ -2353,24 +2578,13 @@ BaseForm.prototype._cleanFields = function() {
           this.cleanedData[name] = value
         }
       }
-      else {
-        // Otherwise, try clean_name
-        customClean = 'clean_' + name
-        if (typeof this[customClean] != 'undefined' &&
-            is.Function(this[customClean])) {
-          value = this[customClean]()
-          if (typeof value != 'undefined') {
-            this.cleanedData[name] = value
-          }
-        }
-      }
     }
-    catch (e) {
-      if (!(e instanceof ValidationError)) {
-        throw e
-      }
-      this.addError(name, e)
+  }
+  catch (e) {
+    if (!(e instanceof ValidationError)) {
+      throw e
     }
+    this.addError(name, e)
   }
 }
 
@@ -2415,14 +2629,29 @@ BaseForm.prototype.hasChanged = function() {
 }
 
 /**
- * Determines if the form needs to be multipart-encoded in other words, if it
- * has a FileInput.
- * @return true if the form needs to be multipart-encoded.
+ * @return {boolean} true if the form needs to be multipart-encoded, in other
+ *   words, if it has a FileInput.
  */
 BaseForm.prototype.isMultipart = function() {
   for (var name in this.fields) {
     if (object.hasOwn(this.fields, name) &&
         this.fields[name].widget.needsMultipartForm) {
+      return true
+    }
+  }
+  return false
+}
+
+/**
+ * @return {boolean} true if the form or any of its fields have active
+ *   validation configured.
+ */
+BaseForm.prototype.hasActiveValidation = function() {
+  if (this.validation !== 'manual') { return true}
+  for (var name in this.fields) {
+    if (!object.hasOwn(this.fields, name)) { continue }
+    var fieldvalidation = this.fields[name].validation
+    if (fieldvalidation !== null && fieldvalidation !== 'manual') {
       return true
     }
   }
@@ -2539,7 +2768,7 @@ module.exports = {
 , Form: Form
 }
 
-},{"./fields":2,"./util":6,"./widgets":7,"Concur":8,"isomorph/copy":10,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13,"validators":18}],4:[function(_dereq_,module,exports){
+},{"./fields":2,"./util":7,"./widgets":8,"Concur":9,"isomorph/copy":11,"isomorph/format":12,"isomorph/is":13,"isomorph/object":14,"validators":19}],5:[function(_dereq_,module,exports){
 'use strict';
 
 var Concur = _dereq_('Concur')
@@ -3129,7 +3358,7 @@ module.exports = {
 , allValid: allValid
 }
 
-},{"./env":1,"./fields":2,"./forms":3,"./util":6,"./widgets":7,"Concur":8,"isomorph/object":13,"validators":18}],5:[function(_dereq_,module,exports){
+},{"./env":1,"./fields":2,"./forms":4,"./util":7,"./widgets":8,"Concur":9,"isomorph/object":14,"validators":19}],6:[function(_dereq_,module,exports){
 'use strict';
 
 var object = _dereq_('isomorph/object')
@@ -3137,6 +3366,7 @@ var validators = _dereq_('validators')
 
 var env = _dereq_('./env')
 var util = _dereq_('./util')
+var formats = _dereq_('./formats')
 var widgets = _dereq_('./widgets')
 var fields = _dereq_('./fields')
 var forms = _dereq_('./forms')
@@ -3154,6 +3384,7 @@ object.extend(
     , makeChoices: util.makeChoices
     , prettyName: util.prettyName
     }
+  , formats: formats
   , validators: validators
   }
 , widgets
@@ -3162,7 +3393,7 @@ object.extend(
 , formsets
 )
 
-},{"./env":1,"./fields":2,"./forms":3,"./formsets":4,"./util":6,"./widgets":7,"isomorph/object":13,"validators":18}],6:[function(_dereq_,module,exports){
+},{"./env":1,"./fields":2,"./formats":3,"./forms":4,"./formsets":5,"./util":7,"./widgets":8,"isomorph/object":14,"validators":19}],7:[function(_dereq_,module,exports){
 'use strict';
 
 var Concur = _dereq_('Concur')
@@ -3173,31 +3404,7 @@ var React = (window.React)
 
 var ValidationError = validators.ValidationError
 
-var DEFAULT_DATE_INPUT_FORMATS = [
-  '%Y-%m-%d'              // '2006-10-25'
-, '%m/%d/%Y', '%m/%d/%y'  // '10/25/2006', '10/25/06'
-, '%b %d %Y', '%b %d, %Y' // 'Oct 25 2006', 'Oct 25, 2006'
-, '%d %b %Y', '%d %b, %Y' // '25 Oct 2006', '25 Oct, 2006'
-, '%B %d %Y', '%B %d, %Y' // 'October 25 2006', 'October 25, 2006'
-, '%d %B %Y', '%d %B, %Y' // '25 October 2006', '25 October, 2006'
-]
-
-var DEFAULT_TIME_INPUT_FORMATS = [
-  '%H:%M:%S' // '14:30:59'
-, '%H:%M'    // '14:30'
-]
-
-var DEFAULT_DATETIME_INPUT_FORMATS = [
-  '%Y-%m-%d %H:%M:%S' // '2006-10-25 14:30:59'
-, '%Y-%m-%d %H:%M'    // '2006-10-25 14:30'
-, '%Y-%m-%d'          // '2006-10-25'
-, '%m/%d/%Y %H:%M:%S' // '10/25/2006 14:30:59'
-, '%m/%d/%Y %H:%M'    // '10/25/2006 14:30'
-, '%m/%d/%Y'          // '10/25/2006'
-, '%m/%d/%y %H:%M:%S' // '10/25/06 14:30:59'
-, '%m/%d/%y %H:%M'    // '10/25/06 14:30'
-, '%m/%d/%y'          // '10/25/06'
-]
+var slice = Array.prototype.slice
 
 /**
  * Replaces String {placeholders} with properties of a given object, but
@@ -3218,18 +3425,37 @@ function formatToArray(str, obj, options) {
   return parts
 }
 
-function maybeCall(item, prop) {
-  var value = item[prop]
+/**
+ * Get a named property from an object, calling it and returning its result if
+ * it's a function.
+ */
+function maybeCall(obj, prop) {
+  var value = obj[prop]
   if (is.Function(value)) {
-    value = value.call(item)
+    value = value.call(obj)
   }
   return value
 }
 
+/**
+ * Creates a list of choice pairs from a list of objects using the given named
+ * properties for the value and label.
+ */
 function makeChoices(list, valueProp, labelProp) {
   return list.map(function(item) {
     return [maybeCall(item, valueProp), maybeCall(item, labelProp)]
   })
+}
+
+/**
+ * A version of bind which passes any extra arguments *after* the eventual
+ * function call's own arguments.
+ */
+function bindRight(func, context) {
+  var partials = slice.call(arguments, 2)
+  return function() {
+    return func.apply(context, slice.call(arguments).concat(partials))
+  }
 }
 
 /**
@@ -3319,51 +3545,19 @@ var prettyName = (function() {
 })()
 
 /**
- * Creates an object representing the data held in a form's elements.
- * @param {HTMLFormElement|string} form a form DOM element or a String
- *   specifying a form's id or name attribute. If a String is given, id is tried
- *   before name when attempting to find the form in the DOM. An error will be
- *   thrown if the form could not be found.
- * @return an object representing the data present in the form.
+ * @param {HTMLFormElement} form a form element.
+ * @return {Object.<string,(string|Array.<string>)>} an object containing the
+ *   submittable value(s) held in each of the form's elements.
  */
 function formData(form) {
-  var data = {}
-  if (is.String(form)) {
-    form = document.getElementById(form) || document.forms[form]
-  }
   if (!form) {
-    throw new Error("formData couldn't find a form with '" + form + "'")
+    throw new Error('formData was given form=' + form)
   }
+  var data = {}
 
   for (var i = 0, l = form.elements.length; i < l; i++) {
     var element = form.elements[i]
-    var type = element.type
-    var value = null
-
-    // Retrieve the element's value (or values)
-    if (type == 'hidden' || type == 'password' || type == 'text' ||
-        type == 'email' || type == 'url' || type == 'number' || type == 'file' ||
-        type == 'textarea' || ((type == 'checkbox' ||
-                                type == 'radio') && element.checked)) {
-      value = element.value
-    }
-    else if (type == 'select-one') {
-      if (element.options.length) {
-        value = element.options[element.selectedIndex].value
-      }
-    }
-    else if (type == 'select-multiple') {
-      value = []
-      for (var j = 0, m = element.options.length; j < m; j++) {
-        if (element.options[j].selected) {
-          value.push(element.options[j].value)
-        }
-      }
-      if (value.length === 0) {
-        value = null
-      }
-    }
-
+    var value = getFormElementValue(element)
     // Add any value obtained to the data object
     if (value !== null) {
       if (object.hasOwn(data, element.name)) {
@@ -3384,6 +3578,87 @@ function formData(form) {
 }
 
 /**
+ * @param {HTMLFormElement} form a form element.
+ * @field {string} a field name.
+ * @return {(string|Array.<string>)} the named field's submittable value(s),
+ */
+function fieldData(form, field) {
+  if (!form) {
+    throw new Error('fieldData was given form=' + form)
+  }
+  var data = null
+  var element = form.elements[field]
+
+  // Check if we've got a NodeList
+  if (typeof element.item == 'function' && typeof element.length == 'number') {
+    for (var i = 0, l = element.length; i < l; i++) {
+      var value = getFormElementValue(element[i])
+      if (value !== null) {
+        if (data !== null) {
+          if (is.Array(data)) {
+            data= data.concat(value)
+          }
+          else {
+            data = [data, value]
+          }
+        }
+        else {
+          data = value
+        }
+      }
+    }
+  }
+  else {
+    data = getFormElementValue(element)
+  }
+
+  return data
+}
+
+/**
+ * Lookup for <input>s whose value can be accessed with .value.
+ */
+var textInputTypes = object.lookup([
+  'hidden', 'password', 'text', 'email', 'url', 'number', 'file', 'textarea'
+])
+
+/**
+ * Lookup for <inputs> which have a .checked property.
+ */
+var checkedInputTypes = object.lookup(['checkbox', 'radio'])
+
+/**
+ * @param {HTMLElement} element a form element.
+ * @return {(string|Array.<string>)} the element's submittable value(s),
+ */
+function getFormElementValue(element) {
+  var value = null
+  var type = element.type
+
+  if (textInputTypes[type] || checkedInputTypes[type] && element.checked) {
+    value = element.value
+  }
+  else if (type == 'select-one') {
+    if (element.options.length) {
+      value = element.options[element.selectedIndex].value
+    }
+  }
+  else if (type == 'select-multiple') {
+    value = []
+    for (var i = 0, l = element.options.length; i < l; i++) {
+      if (element.options[i].selected) {
+        value.push(element.options[i].value)
+      }
+    }
+    if (value.length === 0) {
+      value = null
+    }
+  }
+
+  return value
+}
+
+/**
  * Coerces to string and strips leading and trailing spaces.
  */
 var strip = function() {
@@ -3392,6 +3667,39 @@ var strip = function() {
     return (''+s).replace(stripRE, '')
   }
 }()
+
+/**
+ * From Underscore.js 1.5.2
+ * http://underscorejs.org
+ * (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds. If `immediate` is passed, trigger the function on the
+ * leading edge, instead of the trailing.
+ */
+function debounce(func, wait, immediate) {
+  var timeout, args, context, timestamp, result
+  return function() {
+    context = this
+    args = arguments
+    timestamp = new Date()
+    var later = function() {
+      var last = (new Date()) - timestamp
+      if (last < wait) {
+        timeout = setTimeout(later, wait - last)
+      } else {
+        timeout = null
+        if (!immediate) { result = func.apply(context, args) }
+      }
+    };
+    var callNow = immediate && !timeout
+    if (!timeout) {
+      timeout = setTimeout(later, wait)
+    }
+    if (callNow) { result = func.apply(context, args) }
+    return result
+  }
+}
 
 /**
  * A collection of field errors that knows how to display itself in various
@@ -3412,6 +3720,16 @@ ErrorObject.prototype.set = function(field, error) {
 
 ErrorObject.prototype.get = function(field) {
   return this.errors[field]
+}
+
+ErrorObject.prototype.remove = function(fields) {
+  return delete this.errors[fields]
+}
+
+ErrorObject.prototype.removeAll = function(fields) {
+  for (var i = 0, l = fields.length; i < l; i++) {
+    delete this.errors[fields[i]]
+  }
 }
 
 ErrorObject.prototype.hasField = function(field) {
@@ -3565,20 +3883,20 @@ ErrorList.prototype.toJSON = function() {
 }
 
 module.exports = {
-  DEFAULT_DATE_INPUT_FORMATS: DEFAULT_DATE_INPUT_FORMATS
-, DEFAULT_TIME_INPUT_FORMATS: DEFAULT_TIME_INPUT_FORMATS
-, DEFAULT_DATETIME_INPUT_FORMATS: DEFAULT_DATETIME_INPUT_FORMATS
-, ErrorObject: ErrorObject
+  ErrorObject: ErrorObject
 , ErrorList: ErrorList
 , formData: formData
+, fieldData: fieldData
 , formatToArray: formatToArray
 , makeChoices: makeChoices
 , normaliseChoices: normaliseChoices
 , prettyName: prettyName
 , strip: strip
+, debounce: debounce
+, bindRight: bindRight
 }
 
-},{"Concur":8,"isomorph/is":12,"isomorph/object":13,"validators":18}],7:[function(_dereq_,module,exports){
+},{"Concur":9,"isomorph/is":13,"isomorph/object":14,"validators":19}],8:[function(_dereq_,module,exports){
 'use strict';
 
 var Concur = _dereq_('Concur')
@@ -3589,6 +3907,7 @@ var time = _dereq_('isomorph/time')
 var React = (window.React)
 
 var env = _dereq_('./env')
+var formats = _dereq_('./formats')
 var util = _dereq_('./util')
 
 /**
@@ -3653,7 +3972,7 @@ Widget.prototype.subWidgets = function(name, value, kwargs) {
  *
  * @abstract
  */
-Widget.prototype.render = function(name, value, kwargs) {
+Widget.prototype.render = function(name, value, kwargs, validation) {
   throw new Error('Constructors extending must implement a render() method.')
 }
 
@@ -3710,25 +4029,38 @@ Input.prototype._formatValue = function(value) {
   return value
 }
 
-Input.prototype.render = function(name, value, kwargs) {
+Input.prototype.render = function(name, value, kwargs, validation) {
   kwargs = object.extend({attrs: null}, kwargs)
   if (value === null) {
     value = ''
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {type: this.inputType,
                                                   name: name})
-  // Only add the value attribute if value is non-empty
-  if (value !== '') {
-    // Hidden inputs can be made controlled inputs by default, as the user
-    // can't directly interact with them. This will allow them to reflect
-    // changes to the form's state without you having to manually go and update
-    // the DOM node, or manually flip a key property to force new state.
-    // For example, when using a FormSet client-side, if you want to display
-    // another form, you need to bump the formset's extra count - with
-    // controlled hidden components, the formset's management form will reflect
-    // the new value on the next render.
-    var valueAttr = (this.isHidden ? 'value' : 'defaultValue')
-    finalAttrs[valueAttr] = ''+this._formatValue(value)
+  if (!validation || validation == 'manual') {
+    // Only add the value attribute if value is non-empty
+    if (value !== '') {
+      // Hidden inputs can be made controlled inputs by default, as the user
+      // can't directly interact with them. This will allow them to reflect
+      // changes to the form's state without you having to manually go and update
+      // the DOM node, or manually flip a key property to force new state.
+      // For example, when using a FormSet client-side, if you want to display
+      // another form, you need to bump the formset's extra count - with
+      // controlled hidden components, the formset's management form will reflect
+      // the new value on the next render.
+      var valueAttr = (this.isHidden ? 'value' : 'defaultValue')
+      finalAttrs[valueAttr] = ''+this._formatValue(value)
+    }
+  }
+  else {
+    // Make the input controlled by giving it a value attribute
+    finalAttrs.value = (value !== '' ? ''+this._formatValue(value) : value)
+    // Add an onChange handler to let the form know when the field changes
+    finalAttrs.onChange = validation.onChange
+    // If validation should be performed when a different event fires, hook up
+    // the supplied handler for it.
+    if (validation.event != 'onChange') {
+      finalAttrs[validation.event] = validation.eventHandler
+    }
   }
   return React.DOM.input(finalAttrs)
 }
@@ -4054,7 +4386,7 @@ var DateInput = DateTimeBaseInput.extend({
     if (!(this instanceof DateInput)) { return new DateInput(kwargs) }
     DateTimeBaseInput.call(this, kwargs)
   }
-, defaultFormat: util.DEFAULT_DATE_INPUT_FORMATS[0]
+, defaultFormat: formats.DEFAULT_DATE_INPUT_FORMATS[0]
 })
 
 /**
@@ -4067,7 +4399,7 @@ var DateTimeInput = DateTimeBaseInput.extend({
     if (!(this instanceof DateTimeInput)) { return new DateTimeInput(kwargs) }
     DateTimeBaseInput.call(this, kwargs)
   }
-, defaultFormat: util.DEFAULT_DATETIME_INPUT_FORMATS[0]
+, defaultFormat: formats.DEFAULT_DATETIME_INPUT_FORMATS[0]
 })
 
 /**
@@ -4080,7 +4412,7 @@ var TimeInput = DateTimeBaseInput.extend({
     if (!(this instanceof TimeInput)) { return new TimeInput(kwargs) }
     DateTimeBaseInput.call(this, kwargs)
   }
-, defaultFormat: util.DEFAULT_TIME_INPUT_FORMATS[0]
+, defaultFormat: formats.DEFAULT_TIME_INPUT_FORMATS[0]
 })
 
 var defaultCheckTest = function(value) {
@@ -4755,7 +5087,7 @@ module.exports = {
 , SplitHiddenDateTimeWidget: SplitHiddenDateTimeWidget
 }
 
-},{"./env":1,"./util":6,"Concur":8,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13,"isomorph/time":14}],8:[function(_dereq_,module,exports){
+},{"./env":1,"./formats":3,"./util":7,"Concur":9,"isomorph/format":12,"isomorph/is":13,"isomorph/object":14,"isomorph/time":15}],9:[function(_dereq_,module,exports){
 'use strict';
 
 var is = _dereq_('isomorph/is')
@@ -4883,7 +5215,7 @@ Concur.extend = function(prototypeProps, constructorProps) {
   return childConstructor
 }
 
-},{"isomorph/is":12,"isomorph/object":13}],9:[function(_dereq_,module,exports){
+},{"isomorph/is":13,"isomorph/object":14}],10:[function(_dereq_,module,exports){
 /*! http://mths.be/punycode v1.2.4 by @mathias */
 ;(function(root) {
 
@@ -5392,7 +5724,7 @@ Concur.extend = function(prototypeProps, constructorProps) {
 
 }(this));
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 'use strict';
 
 var is = _dereq_('./is')
@@ -5695,7 +6027,7 @@ module.exports = {
 , deepCopy: deepCopy
 }
 
-},{"./is":12}],11:[function(_dereq_,module,exports){
+},{"./is":13}],12:[function(_dereq_,module,exports){
 'use strict';
 
 var slice = Array.prototype.slice
@@ -5752,7 +6084,7 @@ module.exports = {
 , fileSize: fileSize
 }
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 'use strict';
 
 var toString = Object.prototype.toString
@@ -5820,7 +6152,7 @@ module.exports = {
 , String: isString
 }
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -5957,7 +6289,7 @@ module.exports = {
 , setDefault: setDefault
 }
 
-},{}],14:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 'use strict';
 
 var is = _dereq_('./is')
@@ -6310,7 +6642,7 @@ time.strftime = function(date, format, locale) {
 
 module.exports = time
 
-},{"./is":12}],15:[function(_dereq_,module,exports){
+},{"./is":13}],16:[function(_dereq_,module,exports){
 'use strict';
 
 // parseUri 1.2.2
@@ -6401,7 +6733,7 @@ module.exports = {
 , makeUri: makeUri
 }
 
-},{}],16:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 'use strict';
 
 var Concur = _dereq_('Concur')
@@ -6564,7 +6896,7 @@ module.exports = {
   ValidationError: ValidationError
 }
 
-},{"Concur":8,"isomorph/format":11,"isomorph/is":12,"isomorph/object":13}],17:[function(_dereq_,module,exports){
+},{"Concur":9,"isomorph/format":12,"isomorph/is":13,"isomorph/object":14}],18:[function(_dereq_,module,exports){
 'use strict';
 
 var object = _dereq_('isomorph/object')
@@ -6848,7 +7180,7 @@ module.exports = {
 , isValidIPv6Address: isValidIPv6Address
 }
 
-},{"./errors":16,"./validators":18,"isomorph/object":13}],18:[function(_dereq_,module,exports){
+},{"./errors":17,"./validators":19,"isomorph/object":14}],19:[function(_dereq_,module,exports){
 'use strict';
 
 var Concur = _dereq_('Concur')
@@ -7194,6 +7526,6 @@ module.exports = {
 , ipv6: ipv6
 }
 
-},{"./errors":16,"./ipv6":17,"Concur":8,"isomorph/is":12,"isomorph/object":13,"isomorph/url":15,"punycode":9}]},{},[5])
-(5)
+},{"./errors":17,"./ipv6":18,"Concur":9,"isomorph/is":13,"isomorph/object":14,"isomorph/url":16,"punycode":10}]},{},[6])
+(6)
 });
