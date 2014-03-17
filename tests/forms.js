@@ -389,7 +389,7 @@ QUnit.test("Widget output", 10, function() {
   reactHTMLEqual(f.boundField("subject").asTextarea(),
         "<textarea rows=\"10\" cols=\"40\" name=\"subject\" value=\"\"></textarea>")
   reactHTMLEqual(f.boundField("subject").asHidden(),
-        "<input type=\"hidden\" name=\"subject\">")
+        "<input type=\"hidden\" name=\"subject\" value=\"\">")
 
   //The "widget" parameter to a Field can also be an instance
   var ContactForm = forms.Form.extend({
@@ -1093,30 +1093,30 @@ QUnit.test("Hidden widget", 12, function() {
   reactHTMLEqual(p.asTable(),
 "<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\"></td></tr>" +
 "<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\"></td></tr>" +
-"<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></td></tr>")
+"<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\" value=\"\"></td></tr>")
   reactHTMLEqual(p.asUl(),
 "<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>" +
 "<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>" +
-"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></li>")
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\" value=\"\"></li>")
   reactHTMLEqual(p.asDiv(),
 "<div><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></div>" +
 "<div><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></div>" +
-"<div><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\"></div>")
+"<div><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\"><input type=\"hidden\" name=\"hidden_text\" value=\"\"></div>")
 
   // With autoId set, a HiddenInput still gets an id, but it doesn't get a label.
   p = new Person({autoId: "id_{name}"})
   reactHTMLEqual(p.asTable.bind(p),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>" +
-"<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></td></tr>")
+"<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\" value=\"\"></td></tr>")
   reactHTMLEqual(p.asUl.bind(p),
 "<li><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></li>" +
 "<li><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></li>" +
-"<li><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></li>")
+"<li><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\" value=\"\"></li>")
   reactHTMLEqual(p.asDiv.bind(p),
 "<div><label for=\"id_first_name\">First name:</label><span> </span><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></div>" +
 "<div><label for=\"id_last_name\">Last name:</label><span> </span><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></div>" +
-"<div><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\"></div>")
+"<div><label for=\"id_birthday\">Birthday:</label><span> </span><input type=\"text\" name=\"birthday\" id=\"id_birthday\"><input type=\"hidden\" name=\"hidden_text\" id=\"id_hidden_text\" value=\"\"></div>")
 
   // If a field with a HiddenInput has errors, the asTable(), asUl() and asDiv()
   // output will include the error message(s) with the text
@@ -1127,17 +1127,17 @@ QUnit.test("Hidden widget", 12, function() {
 "<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></td></tr>" +
 "<tr><th>First name:</th><td><input type=\"text\" name=\"first_name\" value=\"John\"></td></tr>" +
 "<tr><th>Last name:</th><td><input type=\"text\" name=\"last_name\" value=\"Lennon\"></td></tr>" +
-"<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></td></tr>")
+"<tr><th>Birthday:</th><td><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\" value=\"\"></td></tr>")
   reactHTMLEqual(p.asUl(),
 "<li><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></li>" +
 "<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\" value=\"John\"></li>" +
 "<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\" value=\"Lennon\"></li>" +
-"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></li>")
+"<li><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\" value=\"\"></li>")
   reactHTMLEqual(p.asDiv(),
 "<div><ul class=\"errorlist\"><li>(Hidden field hidden_text) This field is required.</li></ul></div>" +
 "<div><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\" value=\"John\"></div>" +
 "<div><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\" value=\"Lennon\"></div>" +
-"<div><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\"></div>")
+"<div><span>Birthday:</span><span> </span><input type=\"text\" name=\"birthday\" value=\"1940-10-9\"><input type=\"hidden\" name=\"hidden_text\" value=\"\"></div>")
 
   // A corner case: It's possible for a form to have only HiddenInputs. Since
   // we expect that the content of asTable() and asUl() will be held in
@@ -1152,11 +1152,11 @@ QUnit.test("Hidden widget", 12, function() {
   })
   p = new TestForm({autoId: false})
   reactHTMLEqual(p.asTable(),
-"<tr><td colspan=\"2\"><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></td></tr>")
+"<tr><td colspan=\"2\"><input type=\"hidden\" name=\"foo\" value=\"\"><input type=\"hidden\" name=\"bar\" value=\"\"></td></tr>")
   reactHTMLEqual(p.asUl(),
-"<li><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></li>")
+"<li><input type=\"hidden\" name=\"foo\" value=\"\"><input type=\"hidden\" name=\"bar\" value=\"\"></li>")
   reactHTMLEqual(p.asDiv(),
-"<div><input type=\"hidden\" name=\"foo\"><input type=\"hidden\" name=\"bar\"></div>")
+"<div><input type=\"hidden\" name=\"foo\" value=\"\"><input type=\"hidden\" name=\"bar\" value=\"\"></div>")
 })
 
 QUnit.test("Field order", 1, function() {
@@ -2022,7 +2022,7 @@ QUnit.test("Hidden initial gets id", 1, function() {
     field1: forms.CharField({maxLength: 50, showHiddenInitial: true})
   })
   reactHTMLEqual(function() { return new MyForm().asTable() },
-"<tr><th><label for=\"id_field1\">Field1:</label></th><td><div><input maxlength=\"50\" type=\"text\" name=\"field1\" id=\"id_field1\"><input type=\"hidden\" name=\"initial-field1\" id=\"initial-id_field1\"></div></td></tr>")
+"<tr><th><label for=\"id_field1\">Field1:</label></th><td><div><input maxlength=\"50\" type=\"text\" name=\"field1\" id=\"id_field1\"><input type=\"hidden\" name=\"initial-field1\" id=\"initial-id_field1\" value=\"\"></div></td></tr>")
 })
 
 QUnit.test("Row/error/required HTML classes", 3, function() {
@@ -2072,7 +2072,7 @@ QUnit.test("Label split datetime not displayed", 1, function() {
   })
   var form = new EventForm()
   reactHTMLEqual(form.asUl.bind(form),
-"<li><div><input type=\"hidden\" name=\"happened_at_0\" id=\"id_happened_at_0\"><input type=\"hidden\" name=\"happened_at_1\" id=\"id_happened_at_1\"></div></li>")
+"<li><div><input type=\"hidden\" name=\"happened_at_0\" id=\"id_happened_at_0\" value=\"\"><input type=\"hidden\" name=\"happened_at_1\" id=\"id_happened_at_1\" value=\"\"></div></li>")
 })
 
 QUnit.test("Multipart-encoded forms", 3, function() {

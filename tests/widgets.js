@@ -65,9 +65,9 @@ QUnit.test("PasswordInput", 11, function() {
 QUnit.test("HiddenInput", 10, function() {
   var w = forms.HiddenInput()
   reactHTMLEqual(w.render("email", ""),
-        "<input type=\"hidden\" name=\"email\">")
+        "<input type=\"hidden\" name=\"email\" value=\"\">")
   reactHTMLEqual(w.render("email", null),
-        "<input type=\"hidden\" name=\"email\">")
+        "<input type=\"hidden\" name=\"email\" value=\"\">")
   reactHTMLEqual(w.render("email", "test@example.com"),
         "<input type=\"hidden\" name=\"email\" value=\"test@example.com\">")
   reactHTMLEqual(w.render("email", "some \"quoted\" & ampersanded value"),
@@ -78,14 +78,14 @@ QUnit.test("HiddenInput", 10, function() {
   // You can also pass "attrs" to the constructor
   w = forms.HiddenInput({attrs: {"className": "fun"}})
   reactHTMLEqual(w.render("email", ""),
-        "<input class=\"fun\" type=\"hidden\" name=\"email\">")
+        "<input class=\"fun\" type=\"hidden\" name=\"email\" value=\"\">")
   reactHTMLEqual(w.render("email", "foo@example.com"),
         "<input class=\"fun\" type=\"hidden\" name=\"email\" value=\"foo@example.com\">")
 
   // Attributes passed to render() get precedence over those passed to the constructor
   w = forms.HiddenInput({attrs: {"className": "pretty"}})
   reactHTMLEqual(w.render("email", "", {attrs: {"className": "special"}}),
-        "<input class=\"special\" type=\"hidden\" name=\"email\">")
+        "<input class=\"special\" type=\"hidden\" name=\"email\" value=\"\">")
 
   // Boolean values are rendered to their string forms ("true" and "false")
   w = forms.HiddenInput()
@@ -1062,7 +1062,7 @@ QUnit.test("TimeInput", 5, function() {
 QUnit.test("SplitHiddenDateTimeWidget", 3, function() {
   var w = forms.SplitHiddenDateTimeWidget()
   reactHTMLEqual(w.render("date", ""),
-        "<div><input type=\"hidden\" name=\"date_0\"><input type=\"hidden\" name=\"date_1\"></div>")
+        "<div><input type=\"hidden\" name=\"date_0\" value=\"\"><input type=\"hidden\" name=\"date_1\" value=\"\"></div>")
   var d = new Date(2007, 8, 17, 12, 51, 34)
   reactHTMLEqual(w.render("date", d),
         "<div><input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:34\"></div>")

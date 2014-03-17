@@ -131,9 +131,9 @@ QUnit.test("Forms with *only* hidden fields", 4, function() {
   })
   var f = new HiddenForm({data: {}})
   reactHTMLEqual(f.asDiv.bind(f),
-"<div><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>")
+"<div><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\" value=\"\"></div>")
   reactHTMLEqual(f.asTable.bind(f),
-"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>")
+"<tr><td colspan=\"2\"><ul class=\"errorlist\"><li>(Hidden field data) This field is required.</li></ul><input type=\"hidden\" name=\"data\" id=\"id_data\" value=\"\"></td></tr>")
 
   // A form with only hidden fields can make use of the hiddenFieldRowCssClass
   // property if a row is created solely to hold hidden fields and causes style
@@ -144,9 +144,9 @@ QUnit.test("Forms with *only* hidden fields", 4, function() {
   })
   f = new HiddenForm()
   reactHTMLEqual(f.asDiv.bind(f),
-"<div class=\"hiddenFields\"><input type=\"hidden\" name=\"data\" id=\"id_data\"></div>")
+"<div class=\"hiddenFields\"><input type=\"hidden\" name=\"data\" id=\"id_data\" value=\"\"></div>")
   reactHTMLEqual(f.asTable.bind(f),
-"<tr class=\"hiddenFields\"><td colspan=\"2\"><input type=\"hidden\" name=\"data\" id=\"id_data\"></td></tr>")
+"<tr class=\"hiddenFields\"><td colspan=\"2\"><input type=\"hidden\" name=\"data\" id=\"id_data\" value=\"\"></td></tr>")
 })
 
 QUnit.test("SlugField normalisation", 1, function() {
