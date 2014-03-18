@@ -945,15 +945,15 @@ QUnit.test("MultiWidget", 6, function() {
 
   var w = new MyMultiWidget([forms.TextInput({attrs: {"className": "big"}}), forms.TextInput({attrs: {"className": "small"}})])
   reactHTMLEqual(w.render("name", ["john", "lennon"]),
-        "<div><input class=\"big\" type=\"text\" name=\"name_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" value=\"lennon\"></div>")
+        "<div><input class=\"big\" type=\"text\" name=\"name_0\" data-newforms-field=\"name\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" data-newforms-field=\"name\" value=\"lennon\"></div>")
   reactHTMLEqual(w.render("name", "john__lennon"),
-        "<div><input class=\"big\" type=\"text\" name=\"name_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" value=\"lennon\"></div>")
+        "<div><input class=\"big\" type=\"text\" name=\"name_0\" data-newforms-field=\"name\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" data-newforms-field=\"name\" value=\"lennon\"></div>")
   reactHTMLEqual(w.render.bind(w, "name", "john__lennon", {attrs: {id: "foo"}}),
-        "<div><input class=\"big\" type=\"text\" name=\"name_0\" id=\"foo_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"foo_1\" value=\"lennon\"></div>")
+        "<div><input class=\"big\" type=\"text\" name=\"name_0\" data-newforms-field=\"name\" id=\"foo_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" data-newforms-field=\"name\" id=\"foo_1\" value=\"lennon\"></div>")
 
   w = new MyMultiWidget([forms.TextInput({attrs: {"className": "big"}}), forms.TextInput({attrs: {"className": "small"}})], {attrs: {id: "bar"}})
   reactHTMLEqual(w.render.bind(w, "name", ["john", "lennon"]),
-        "<div><input class=\"big\" type=\"text\" name=\"name_0\" id=\"bar_0\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"bar_1\" value=\"lennon\"></div>")
+        "<div><input class=\"big\" type=\"text\" name=\"name_0\" id=\"bar_0\" data-newforms-field=\"name\" value=\"john\"><input class=\"small\" type=\"text\" name=\"name_1\" id=\"bar_1\" data-newforms-field=\"name\" value=\"lennon\"></div>")
 
   // Test needsMultipartForm if any widget needs it
   w = new MyMultiWidget([forms.TextInput(), forms.FileInput()])
@@ -966,22 +966,22 @@ QUnit.test("MultiWidget", 6, function() {
 QUnit.test("SplitDateTimeWidget", 9, function() {
   var w = forms.SplitDateTimeWidget()
   reactHTMLEqual(w.render("date", ""),
-        "<div><input type=\"text\" name=\"date_0\"><input type=\"text\" name=\"date_1\"></div>")
+        "<div><input type=\"text\" name=\"date_0\" data-newforms-field=\"date\"><input type=\"text\" name=\"date_1\" data-newforms-field=\"date\"></div>")
   reactHTMLEqual(w.render("date", new Date(2006, 0, 10, 7, 30)),
-        "<div><input type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" value=\"07:30:00\"></div>")
+        "<div><input type=\"text\" name=\"date_0\" data-newforms-field=\"date\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" data-newforms-field=\"date\" value=\"07:30:00\"></div>")
   reactHTMLEqual(w.render("date", [new Date(2006, 0, 10), new Date(1900, 0, 1, 7, 30)]),
-        "<div><input type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" value=\"07:30:00\"></div>")
+        "<div><input type=\"text\" name=\"date_0\" data-newforms-field=\"date\" value=\"2006-01-10\"><input type=\"text\" name=\"date_1\" data-newforms-field=\"date\" value=\"07:30:00\"></div>")
 
   // You can also pass "attrs" to the constructor. In this case, the attrs
   // will be included on both widgets.
   w = forms.SplitDateTimeWidget({attrs: {"className": "pretty"}})
   reactHTMLEqual(w.render("date", new Date(2006, 0, 10, 7, 30)),
-        "<div><input class=\"pretty\" type=\"text\" name=\"date_0\" value=\"2006-01-10\"><input class=\"pretty\" type=\"text\" name=\"date_1\" value=\"07:30:00\"></div>")
+        "<div><input class=\"pretty\" type=\"text\" name=\"date_0\" data-newforms-field=\"date\" value=\"2006-01-10\"><input class=\"pretty\" type=\"text\" name=\"date_1\" data-newforms-field=\"date\" value=\"07:30:00\"></div>")
 
   // Use "dateFormat" and "timeFormat" to change the way a value is displayed
   w = forms.SplitDateTimeWidget({dateFormat: "%d/%m/%Y", timeFormat: "%H:%M"})
   reactHTMLEqual(w.render("date", new Date(2006, 0, 10, 7, 30)),
-        "<div><input type=\"text\" name=\"date_0\" value=\"10&#x2f;01&#x2f;2006\"><input type=\"text\" name=\"date_1\" value=\"07:30\"></div>")
+        "<div><input type=\"text\" name=\"date_0\" data-newforms-field=\"date\" value=\"10&#x2f;01&#x2f;2006\"><input type=\"text\" name=\"date_1\" data-newforms-field=\"date\" value=\"07:30\"></div>")
 
   // Django #13390  - SplitDateTimeWidget should recognise when it's no
   // longer required.
@@ -1062,12 +1062,12 @@ QUnit.test("TimeInput", 5, function() {
 QUnit.test("SplitHiddenDateTimeWidget", 3, function() {
   var w = forms.SplitHiddenDateTimeWidget()
   reactHTMLEqual(w.render("date", ""),
-        "<div><input type=\"hidden\" name=\"date_0\" value=\"\"><input type=\"hidden\" name=\"date_1\" value=\"\"></div>")
+        "<div><input type=\"hidden\" name=\"date_0\" data-newforms-field=\"date\" value=\"\"><input type=\"hidden\" name=\"date_1\" data-newforms-field=\"date\" value=\"\"></div>")
   var d = new Date(2007, 8, 17, 12, 51, 34)
   reactHTMLEqual(w.render("date", d),
-        "<div><input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:34\"></div>")
+        "<div><input type=\"hidden\" name=\"date_0\" data-newforms-field=\"date\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" data-newforms-field=\"date\" value=\"12:51:34\"></div>")
   reactHTMLEqual(w.render("date", new Date(2007, 8, 17, 12, 51)),
-        "<div><input type=\"hidden\" name=\"date_0\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" value=\"12:51:00\"></div>")
+        "<div><input type=\"hidden\" name=\"date_0\" data-newforms-field=\"date\" value=\"2007-09-17\"><input type=\"hidden\" name=\"date_1\" data-newforms-field=\"date\" value=\"12:51:00\"></div>")
 })
 
 QUnit.test("ClearableFileInput", 5, function() {

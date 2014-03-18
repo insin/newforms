@@ -651,9 +651,9 @@ QUnit.test("Hidden data", 5, function() {
   f = new MessageForm({data: {when_0: "1992-01-01", when_1: "01:01"}})
   strictEqual(f.isValid(), true)
   reactHTMLEqual(function() { return f.boundField("when").render() },
-"<div><input type=\"text\" name=\"when_0\" id=\"id_when_0\" value=\"1992-01-01\"><input type=\"text\" name=\"when_1\" id=\"id_when_1\" value=\"01:01\"></div>")
+"<div><input type=\"text\" name=\"when_0\" data-newforms-field=\"when\" id=\"id_when_0\" value=\"1992-01-01\"><input type=\"text\" name=\"when_1\" data-newforms-field=\"when\" id=\"id_when_1\" value=\"01:01\"></div>")
   reactHTMLEqual(function() { return f.boundField("when").asHidden() },
-"<div><input type=\"hidden\" name=\"when_0\" id=\"id_when_0\" value=\"1992-01-01\"><input type=\"hidden\" name=\"when_1\" id=\"id_when_1\" value=\"01:01\"></div>")
+"<div><input type=\"hidden\" name=\"when_0\" data-newforms-field=\"when\" id=\"id_when_0\" value=\"1992-01-01\"><input type=\"hidden\" name=\"when_1\" data-newforms-field=\"when\" id=\"id_when_1\" value=\"01:01\"></div>")
 })
 
 QUnit.test("Mutiple choice checkbox", 3, function() {
@@ -2072,7 +2072,7 @@ QUnit.test("Label split datetime not displayed", 1, function() {
   })
   var form = new EventForm()
   reactHTMLEqual(form.asUl.bind(form),
-"<li><div><input type=\"hidden\" name=\"happened_at_0\" id=\"id_happened_at_0\" value=\"\"><input type=\"hidden\" name=\"happened_at_1\" id=\"id_happened_at_1\" value=\"\"></div></li>")
+"<li><div><input type=\"hidden\" name=\"happened_at_0\" data-newforms-field=\"happened_at\" id=\"id_happened_at_0\" value=\"\"><input type=\"hidden\" name=\"happened_at_1\" data-newforms-field=\"happened_at\" id=\"id_happened_at_1\" value=\"\"></div></li>")
 })
 
 QUnit.test("Multipart-encoded forms", 3, function() {

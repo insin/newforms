@@ -28,12 +28,12 @@ QUnit.test("MultiWidget and MultiValueField", 11, function() {
 
   var w = ComplexWidget()
   reactHTMLEqual(w.render("name", "some text,JP,2007-04-25 06:24:00"),
-"<div class=\"complex\"><input type=\"text\" name=\"name_0\" value=\"some text\"><select name=\"name_1\" multiple>" +
+"<div class=\"complex\"><input type=\"text\" name=\"name_0\" data-newforms-field=\"name\" value=\"some text\"><select name=\"name_1\" multiple data-newforms-field=\"name\">" +
 "<option value=\"J\" selected>John</option>" +
 "<option value=\"P\" selected>Paul</option>" +
 "<option value=\"G\">George</option>" +
 "<option value=\"R\">Ringo</option>" +
-"</select><div><input type=\"text\" name=\"name_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"name_2_1\" value=\"06:24:00\"></div></div>")
+"</select><div><input type=\"text\" name=\"name_2_0\" data-newforms-field=\"name\" value=\"2007-04-25\"><input type=\"text\" name=\"name_2_1\" data-newforms-field=\"name\" value=\"06:24:00\"></div></div>")
 
   var ComplexField = forms.MultiValueField.extend({
     constructor: function(kwargs) {
@@ -82,21 +82,21 @@ QUnit.test("MultiWidget and MultiValueField", 11, function() {
   })
   f = new ComplexFieldForm()
   reactHTMLEqual(f.asTable.bind(f),
-"<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" id=\"id_field1_0\"><select name=\"field1_1\" multiple id=\"id_field1_1\">" +
+"<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" data-newforms-field=\"field1\" id=\"id_field1_0\"><select name=\"field1_1\" multiple data-newforms-field=\"field1\" id=\"id_field1_1\">" +
 "<option value=\"J\">John</option>" +
 "<option value=\"P\">Paul</option>" +
 "<option value=\"G\">George</option>" +
 "<option value=\"R\">Ringo</option>" +
-"</select><div><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\"></div></div></td></tr>")
+"</select><div><input type=\"text\" name=\"field1_2_0\" data-newforms-field=\"field1\" id=\"id_field1_2_0\"><input type=\"text\" name=\"field1_2_1\" data-newforms-field=\"field1\" id=\"id_field1_2_1\"></div></div></td></tr>")
 
   f = new ComplexFieldForm({data: {field1_0: "some text", field1_1 :["J", "P"], field1_2_0: "2007-04-25", field1_2_1: "06:24:00"}})
   reactHTMLEqual(f.asTable.bind(f),
-"<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" id=\"id_field1_0\" value=\"some text\"><select name=\"field1_1\" multiple id=\"id_field1_1\">" +
+"<tr><th><label for=\"id_field1_0\">Field1:</label></th><td><div class=\"complex\"><input type=\"text\" name=\"field1_0\" data-newforms-field=\"field1\" id=\"id_field1_0\" value=\"some text\"><select name=\"field1_1\" multiple data-newforms-field=\"field1\" id=\"id_field1_1\">" +
 "<option value=\"J\" selected>John</option>" +
 "<option value=\"P\" selected>Paul</option>" +
 "<option value=\"G\">George</option>" +
 "<option value=\"R\">Ringo</option>" +
-"</select><div><input type=\"text\" name=\"field1_2_0\" id=\"id_field1_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"field1_2_1\" id=\"id_field1_2_1\" value=\"06:24:00\"></div></div></td></tr>")
+"</select><div><input type=\"text\" name=\"field1_2_0\" data-newforms-field=\"field1\" id=\"id_field1_2_0\" value=\"2007-04-25\"><input type=\"text\" name=\"field1_2_1\" data-newforms-field=\"field1\" id=\"id_field1_2_1\" value=\"06:24:00\"></div></div></td></tr>")
 
   equal(f.cleanedData["field1"], "some text,JP,2007-04-25 06:24:00")
 })
