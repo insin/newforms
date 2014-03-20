@@ -1080,7 +1080,7 @@ QUnit.test("ClearableFileInput", 5, function() {
   var w = forms.ClearableFileInput()
   w.isRequired = false
   reactHTMLEqual(w.render.bind(w, "myfile", new FakeFieldFile()),
-"<div>Currently: <a href=\"something\">something</a> <input type=\"checkbox\" name=\"myfile-clear\" id=\"myfile-clear_id\"> <label for=\"myfile-clear_id\">Clear</label><br>Change: <input type=\"file\" name=\"myfile\"></div>")
+"<span>Currently: <a href=\"something\">something</a> <input type=\"checkbox\" name=\"myfile-clear\" id=\"myfile-clear_id\"> <label for=\"myfile-clear_id\">Clear</label><br>Change: <input type=\"file\" name=\"myfile\"></span>")
 
   // A ClearableFileInput should escape name, filename and URL when rendering
   // HTML.
@@ -1088,12 +1088,12 @@ QUnit.test("ClearableFileInput", 5, function() {
   StrangeFieldFile.prototype.toString = function() { return "something<div onclick=\"alert('oops')\">.jpg"; }
   var file = new StrangeFieldFile()
   reactHTMLEqual(w.render.bind(w, "my<div>file", file),
-"<div>Currently: <a href=\"something?chapter=1&amp;sect=2&amp;copy=3&amp;lang=en\">something&lt;div onclick=&quot;alert(&#x27;oops&#x27;)&quot;&gt;.jpg</a> <input type=\"checkbox\" name=\"my&lt;div&gt;file-clear\" id=\"my&lt;div&gt;file-clear_id\"> <label for=\"my&lt;div&gt;file-clear_id\">Clear</label><br>Change: <input type=\"file\" name=\"my&lt;div&gt;file\"></div>")
+"<span>Currently: <a href=\"something?chapter=1&amp;sect=2&amp;copy=3&amp;lang=en\">something&lt;div onclick=&quot;alert(&#x27;oops&#x27;)&quot;&gt;.jpg</a> <input type=\"checkbox\" name=\"my&lt;div&gt;file-clear\" id=\"my&lt;div&gt;file-clear_id\"> <label for=\"my&lt;div&gt;file-clear_id\">Clear</label><br>Change: <input type=\"file\" name=\"my&lt;div&gt;file\"></span>")
 
   // A ClearableFileInput instantiated with no initial value does not render
   // a clear checkbox.
   reactHTMLEqual(w.render("myfile", null),
-"<input type=\"file\" name=\"myfile\">")
+"<span><input type=\"file\" name=\"myfile\"></span>")
 
   // ClearableFileInput.valueFromData returns false if the clear checkbox is
   // checked, if not required.
@@ -1105,5 +1105,5 @@ QUnit.test("ClearableFileInput", 5, function() {
   // A ClearableFileInput with isRequired=True does not render a clear
   // checkbox.
   reactHTMLEqual(w.render("myfile", new FakeFieldFile()),
-"<div>Currently: <a href=\"something\">something</a> <br>Change: <input type=\"file\" name=\"myfile\"></div>")
+"<span>Currently: <a href=\"something\">something</a> <br>Change: <input type=\"file\" name=\"myfile\"></span>")
 })

@@ -24,23 +24,23 @@ QUnit.test("Forms with file fields", 6, function() {
   var FileForm = forms.Form.extend({file1: forms.FileField()})
   var f = new FileForm({autoId: false})
   reactHTMLEqual(f.asTable(),
-"<tr><th>File1:</th><td><input type=\"file\" name=\"file1\"></td></tr>")
+"<tr><th>File1:</th><td><span><input type=\"file\" name=\"file1\"></span></td></tr>")
 
   f = new FileForm({data: {}, files: {}, autoId: false})
   reactHTMLEqual(f.asTable(),
-"<tr><th>File1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"file\" name=\"file1\"></td></tr>")
+"<tr><th>File1:</th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><span><input type=\"file\" name=\"file1\"></span></td></tr>")
 
   f = new FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "")}, autoId: false})
   reactHTMLEqual(f.asTable(),
-"<tr><th>File1:</th><td><ul class=\"errorlist\"><li>The submitted file is empty.</li></ul><input type=\"file\" name=\"file1\"></td></tr>")
+"<tr><th>File1:</th><td><ul class=\"errorlist\"><li>The submitted file is empty.</li></ul><span><input type=\"file\" name=\"file1\"></span></td></tr>")
 
   f = new FileForm({data: {}, files: {file1: "something that is not a file"}, autoId: false})
   reactHTMLEqual(f.asTable(),
-"<tr><th>File1:</th><td><ul class=\"errorlist\"><li>No file was submitted. Check the encoding type on the form.</li></ul><input type=\"file\" name=\"file1\"></td></tr>")
+"<tr><th>File1:</th><td><ul class=\"errorlist\"><li>No file was submitted. Check the encoding type on the form.</li></ul><span><input type=\"file\" name=\"file1\"></span></td></tr>")
 
   f = new FileForm({data: {}, files: {file1: new SimpleUploadedFile("name", "some content")}, autoId: false})
   reactHTMLEqual(f.asTable(),
-"<tr><th>File1:</th><td><input type=\"file\" name=\"file1\"></td></tr>")
+"<tr><th>File1:</th><td><span><input type=\"file\" name=\"file1\"></span></td></tr>")
   strictEqual(f.isValid(), true)
 })
 
