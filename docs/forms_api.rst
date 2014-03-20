@@ -67,6 +67,41 @@ Forms API
    :param Object kwargs.files:
       input file data.
 
+   :param validation:
+      .. versionadded:: 0.6
+
+      Configures form-wide validation when the user interacts with form inputs
+      in the browser. This can be a String, or an Object which configures
+      default validation for form inputs.
+
+      If ``'manual'``, validation will not be performed -- you are responsible
+      for hooking up validation and using methods such as ``setData()`` and
+      ``isValid()`` to perform validation. This is the default setting.
+
+      If ``'auto'``, text fields will, by default be validated when the
+      ``onChange`` event fires, with a 250 millisecond delay from the last user
+      input to the validation being performed.
+
+      If an Object is given, it should use the following properties:
+
+      ``event``
+         The name of the default event to use to trigger validation. This should
+         be in camelCase format, as used by React. For example, if ``'onBlur'``,
+         text input validation will be performed when the input loses focus
+         after editing.
+
+      ``delay``
+         A delay, in milliseconds, to be used to debounce performing of
+         validation, to give the user time to enter input without distracting
+         them with error messages or other change in how the input's displayed
+         while they're still typing.
+
+      If any String but ``'manual'`` or ``'auto'`` is given, it will be used as
+      if it were passed as the ``event`` property of an Object.
+
+      For example, passing ``{validation: 'onChange'}`` will cause each form
+      inputs to trigger validation as soon as the user makes any change.
+
    :param String kwargs.autoId:
       a template for use when automatically generating ``id`` attributes for
       fields, which should contain a ``{name}`` placeholder for the field name
@@ -81,7 +116,7 @@ Forms API
    :param Object kwargs.initial:
       initial form data, where property names are field names -- if a field's
       value is not specified in ``data``, these values will be used when
-      rendering field widgets.
+      initially rendering field widgets.
 
    :param Function kwargs.errorConstructor:
       the constructor function to be used when creating error details. Defaults
