@@ -565,67 +565,67 @@ QUnit.test("RadioSelect", 21, function() {
   var w = forms.RadioSelect()
   reactHTMLEqual(w.render("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"J\" checked> John</label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li>" +
 "</ul>")
 
   // If the value is null, none of the options are checked
   reactHTMLEqual(w.render("beatle", null, {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"J\"><span> </span><span>John</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li>" +
 "</ul>")
 
   // If the value corresponds to a label (but not to an option value), none of the options are checked
   reactHTMLEqual(w.render("beatle", "John", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"J\"><span> </span><span>John</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li>" +
+"<li><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li>" +
 "</ul>")
 
   // The value is compared to its String representation
   reactHTMLEqual(w.render("num", 2, {choices: [['1', '1'], ['2', '2'], ['3', '3']]}),
 "<ul>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"3\"><span> </span><span>3</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked> 2</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("num", "2", {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"3\"><span> </span><span>3</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked> 2</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("num", 2, {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"3\"><span> </span><span>3</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked> 2</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>" +
 "</ul>")
 
   // You can also pass "choices" to the constructor:
   w = forms.RadioSelect({choices: [[1, 1], [2, 2], [3, 3]]})
   reactHTMLEqual(w.render("num", 2),
 "<ul>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"3\"><span> </span><span>3</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked> 2</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>" +
 "</ul>")
 
   // If 'choices' is passed to both the constructor and render(), then they'll both be in the output
   reactHTMLEqual(w.render("num", 2, {choices: [[4, 4], [5, 5]]}),
 "<ul>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"3\"><span> </span><span>3</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"4\"><span> </span><span>4</span></label></li>" +
-"<li><label><input type=\"radio\" name=\"num\" value=\"5\"><span> </span><span>5</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"1\"> 1</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"2\" checked> 2</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"3\"> 3</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"4\"> 4</label></li>" +
+"<li><label><input type=\"radio\" name=\"num\" value=\"5\"> 5</label></li>" +
 "</ul>")
 
   // RadioSelect uses a RadioFieldRenderer to render the individual radio
@@ -643,17 +643,17 @@ QUnit.test("RadioSelect", 21, function() {
   }
   reactHTMLEqual(React.DOM.div(null, inputs1),
 "<div>" +
-"<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></label><br>" +
-"<label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label><br>" +
-"<label><input type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></label><br>" +
-"<label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label><br>" +
+"<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked> John</label><br>" +
+"<label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br>" +
+"<label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label><br>" +
+"<label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label><br>" +
 "</div>")
   reactHTMLEqual(React.DOM.div(null, inputs2),
 "<div>" +
-"<p><input type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></p>" +
-"<p><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></p>" +
-"<p><input type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></p>" +
-"<p><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></p>" +
+"<p><input type=\"radio\" name=\"beatle\" value=\"J\" checked> John</p>" +
+"<p><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</p>" +
+"<p><input type=\"radio\" name=\"beatle\" value=\"G\"> George</p>" +
+"<p><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</p>" +
 "</div>")
   reactHTMLEqual(React.DOM.div(null, inputs3),
 "<div>" +
@@ -679,7 +679,7 @@ QUnit.test("RadioSelect", 21, function() {
 
   w = forms.RadioSelect({renderer: MyRenderer})
   reactHTMLEqual(w.render("beatle", "G", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
-        "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"><span> </span><span>John</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked><span> </span><span>George</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></div>")
+        "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked> George</label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></div>")
 
   // Or you can use custom RadioSelect fields that use your custom renderer
   var CustomRadioSelect = forms.RadioSelect.extend({
@@ -690,14 +690,14 @@ QUnit.test("RadioSelect", 21, function() {
 
   w = new CustomRadioSelect()
   reactHTMLEqual(w.render("beatle", "G", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
-        "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"><span> </span><span>John</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked><span> </span><span>George</span></label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></div>")
+        "<div><label><input type=\"radio\" name=\"beatle\" value=\"J\"> John</label><br><label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br><label><input type=\"radio\" name=\"beatle\" value=\"G\" checked> George</label><br><label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></div>")
 
   // A RadioFieldRenderer object also allows index access to individual
   // RadioInput objects.
   w = forms.RadioSelect()
   r = w.getRenderer("beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]})
-  reactHTMLEqual(r.choiceInput(1).render(), "<label><input type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label>")
-  reactHTMLEqual(r.choiceInput(0).render(), "<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></label>")
+  reactHTMLEqual(r.choiceInput(1).render(), "<label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label>")
+  reactHTMLEqual(r.choiceInput(0).render(), "<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked> John</label>")
   strictEqual(r.choiceInput(0).isChecked(), true)
   strictEqual(r.choiceInput(1).isChecked(), false)
   throws(function() { r.choiceInput(10) })
@@ -706,27 +706,27 @@ QUnit.test("RadioSelect", 21, function() {
   w = forms.RadioSelect()
   reactHTMLEqual(w.render("escape", null, {choices: [["bad", "you & me"]]}),
 "<ul>" +
-"<li><label><input type=\"radio\" name=\"escape\" value=\"bad\"><span> </span><span>you &amp; me</span></label></li>" +
+"<li><label><input type=\"radio\" name=\"escape\" value=\"bad\"> you &amp; me</label></li>" +
 "</ul>")
 
   // Attributes provided at instantiation are passed to the constituent inputs
   w = forms.RadioSelect({attrs: {id: "foo"}})
   reactHTMLEqual(w.render.bind(w, "beatle", "J", {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul id=\"foo\">" +
-"<li><label for=\"foo_0\"><input id=\"foo_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
-"<li><label for=\"foo_1\"><input id=\"foo_1\" type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
-"<li><label for=\"foo_2\"><input id=\"foo_2\" type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></label></li>" +
-"<li><label for=\"foo_3\"><input id=\"foo_3\" type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
+"<li><label for=\"foo_0\"><input id=\"foo_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked> John</label></li>" +
+"<li><label for=\"foo_1\"><input id=\"foo_1\" type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>" +
+"<li><label for=\"foo_2\"><input id=\"foo_2\" type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li>" +
+"<li><label for=\"foo_3\"><input id=\"foo_3\" type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li>" +
 "</ul>")
 
   // Attributes provided at render-time are passed to the constituent inputs
   w = forms.RadioSelect()
   reactHTMLEqual(w.render.bind(w, "beatle", "J", {attrs: {id: "bar"}, choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul id=\"bar\">" +
-"<li><label for=\"bar_0\"><input id=\"bar_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
-"<li><label for=\"bar_1\"><input id=\"bar_1\" type=\"radio\" name=\"beatle\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
-"<li><label for=\"bar_2\"><input id=\"bar_2\" type=\"radio\" name=\"beatle\" value=\"G\"><span> </span><span>George</span></label></li>" +
-"<li><label for=\"bar_3\"><input id=\"bar_3\" type=\"radio\" name=\"beatle\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
+"<li><label for=\"bar_0\"><input id=\"bar_0\" type=\"radio\" name=\"beatle\" value=\"J\" checked> John</label></li>" +
+"<li><label for=\"bar_1\"><input id=\"bar_1\" type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label></li>" +
+"<li><label for=\"bar_2\"><input id=\"bar_2\" type=\"radio\" name=\"beatle\" value=\"G\"> George</label></li>" +
+"<li><label for=\"bar_3\"><input id=\"bar_3\" type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label></li>" +
 "</ul>")
 })
 
@@ -741,14 +741,14 @@ QUnit.test("Nested choices", 2, function() {
 
   reactHTMLEqual(w.render.bind(w, 'nestchoice', 'dvd', {attrs: {id: 'media'}}),
 "<ul id=\"media\">" +
-"<li><label for=\"media_0\"><input id=\"media_0\" type=\"radio\" name=\"nestchoice\" value=\"unknown\"><span> </span><span>Unknown</span></label></li>" +
-"<li><span>Audio</span><ul id=\"media_1\">" +
-  "<li><label for=\"media_1_0\"><input id=\"media_1_0\" type=\"radio\" name=\"nestchoice\" value=\"vinyl\"><span> </span><span>Vinyl</span></label></li>" +
-  "<li><label for=\"media_1_1\"><input id=\"media_1_1\" type=\"radio\" name=\"nestchoice\" value=\"cd\"><span> </span><span>CD</span></label></li>" +
+"<li><label for=\"media_0\"><input id=\"media_0\" type=\"radio\" name=\"nestchoice\" value=\"unknown\"> Unknown</label></li>" +
+"<li>Audio<ul id=\"media_1\">" +
+  "<li><label for=\"media_1_0\"><input id=\"media_1_0\" type=\"radio\" name=\"nestchoice\" value=\"vinyl\"> Vinyl</label></li>" +
+  "<li><label for=\"media_1_1\"><input id=\"media_1_1\" type=\"radio\" name=\"nestchoice\" value=\"cd\"> CD</label></li>" +
 "</ul></li>" +
-"<li><span>Video</span><ul id=\"media_2\">" +
-  "<li><label for=\"media_2_0\"><input id=\"media_2_0\" type=\"radio\" name=\"nestchoice\" value=\"vhs\"><span> </span><span>VHS</span></label></li>" +
-  "<li><label for=\"media_2_1\"><input id=\"media_2_1\" type=\"radio\" name=\"nestchoice\" value=\"dvd\" checked><span> </span><span>DVD</span></label></li>" +
+"<li>Video<ul id=\"media_2\">" +
+  "<li><label for=\"media_2_0\"><input id=\"media_2_0\" type=\"radio\" name=\"nestchoice\" value=\"vhs\"> VHS</label></li>" +
+  "<li><label for=\"media_2_1\"><input id=\"media_2_1\" type=\"radio\" name=\"nestchoice\" value=\"dvd\" checked> DVD</label></li>" +
 "</ul></li>" +
 "</ul>")
 
@@ -761,14 +761,14 @@ QUnit.test("Nested choices", 2, function() {
   ]
   reactHTMLEqual(w.render.bind(w, 'nestchoice', ['vinyl', 'dvd'], {attrs: {id: 'media'}}),
 "<ul id=\"media\">" +
-"<li><label for=\"media_0\"><input id=\"media_0\" type=\"checkbox\" name=\"nestchoice\" value=\"unknown\"><span> </span><span>Unknown</span></label></li>" +
-"<li><span>Audio</span><ul id=\"media_1\">" +
-  "<li><label for=\"media_1_0\"><input id=\"media_1_0\" type=\"checkbox\" name=\"nestchoice\" value=\"vinyl\" checked><span> </span><span>Vinyl</span></label></li>" +
-  "<li><label for=\"media_1_1\"><input id=\"media_1_1\" type=\"checkbox\" name=\"nestchoice\" value=\"cd\"><span> </span><span>CD</span></label></li>" +
+"<li><label for=\"media_0\"><input id=\"media_0\" type=\"checkbox\" name=\"nestchoice\" value=\"unknown\"> Unknown</label></li>" +
+"<li>Audio<ul id=\"media_1\">" +
+  "<li><label for=\"media_1_0\"><input id=\"media_1_0\" type=\"checkbox\" name=\"nestchoice\" value=\"vinyl\" checked> Vinyl</label></li>" +
+  "<li><label for=\"media_1_1\"><input id=\"media_1_1\" type=\"checkbox\" name=\"nestchoice\" value=\"cd\"> CD</label></li>" +
 "</ul></li>" +
-"<li><span>Video</span><ul id=\"media_2\">" +
-  "<li><label for=\"media_2_0\"><input id=\"media_2_0\" type=\"checkbox\" name=\"nestchoice\" value=\"vhs\"><span> </span><span>VHS</span></label></li>" +
-  "<li><label for=\"media_2_1\"><input id=\"media_2_1\" type=\"checkbox\" name=\"nestchoice\" value=\"dvd\" checked><span> </span><span>DVD</span></label></li>" +
+"<li>Video<ul id=\"media_2\">" +
+  "<li><label for=\"media_2_0\"><input id=\"media_2_0\" type=\"checkbox\" name=\"nestchoice\" value=\"vhs\"> VHS</label></li>" +
+  "<li><label for=\"media_2_1\"><input id=\"media_2_1\" type=\"checkbox\" name=\"nestchoice\" value=\"dvd\" checked> DVD</label></li>" +
 "</ul></li>" +
 "</ul>")
 })
@@ -777,99 +777,99 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
   var w = forms.CheckboxSelectMultiple()
   reactHTMLEqual(w.render("beatles", ["J"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"><span> </span><span>George</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked> John</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("beatles", ["J", "P"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked><span> </span><span>Paul</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"><span> </span><span>George</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked> John</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked> Paul</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("beatles", ["J", "P", "R"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked><span> </span><span>Paul</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"><span> </span><span>George</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\" checked><span> </span><span>Ringo</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked> John</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\" checked> Paul</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\" checked> Ringo</label></li>" +
 "</ul>")
 
   // If the value is null, none of the options are selected
   reactHTMLEqual(w.render("beatles", null, {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\"><span> </span><span>John</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"><span> </span><span>George</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\"> John</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>" +
 "</ul>")
 
   // If the value corresponds to a label (but not to an option value), none of the options are selected
   reactHTMLEqual(w.render("beatles", ["John"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\"><span> </span><span>John</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"><span> </span><span>George</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\"> John</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\"> George</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>" +
 "</ul>")
 
   // If multiple values are given, but some of them are not valid, the valid ones are selected
   reactHTMLEqual(w.render("beatles", ["J", "G", "foo"], {choices: [['J', 'John'], ['P', 'Paul'], ['G', 'George'], ['R', 'Ringo']]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked><span> </span><span>John</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"><span> </span><span>Paul</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\" checked><span> </span><span>George</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"><span> </span><span>Ringo</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"J\" checked> John</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"P\"> Paul</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"G\" checked> George</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"beatles\" value=\"R\"> Ringo</label></li>" +
 "</ul>")
 
   // The value is compared to its String representation
   reactHTMLEqual(w.render("nums", [2], {choices: [['1', '1'], ['2', '2'], ['3', '3']]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"><span> </span><span>3</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked> 2</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("nums", ["2"], {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"><span> </span><span>3</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked> 2</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>" +
 "</ul>")
   reactHTMLEqual(w.render("nums", [2], {choices: [[1, 1], [2, 2], [3, 3]]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"><span> </span><span>3</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked> 2</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>" +
 "</ul>")
 
   // You can also pass 'choices' to the constructor
   w = forms.CheckboxSelectMultiple({choices: [[1, 1], [2, 2], [3, 3]]})
   reactHTMLEqual(w.render("nums", [2]),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"><span> </span><span>3</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked> 2</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>" +
 "</ul>")
 
   // If 'choices' is passed to both the constructor and render(), then they'll both be in the output
   reactHTMLEqual(w.render("nums", [2], {choices: [[4, 4], [5, 5]]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked><span> </span><span>2</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"><span> </span><span>3</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"4\"><span> </span><span>4</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"nums\" value=\"5\"><span> </span><span>5</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"1\"> 1</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"2\" checked> 2</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"3\"> 3</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"4\"> 4</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"nums\" value=\"5\"> 5</label></li>" +
 "</ul>")
 
   // Choices are escaped correctly
   reactHTMLEqual(w.render("escape", null, {choices: [["bad", "you & me"]]}),
 "<ul>" +
-"<li><label><input type=\"checkbox\" name=\"escape\" value=\"1\"><span> </span><span>1</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"escape\" value=\"2\"><span> </span><span>2</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"escape\" value=\"3\"><span> </span><span>3</span></label></li>" +
-"<li><label><input type=\"checkbox\" name=\"escape\" value=\"bad\"><span> </span><span>you &amp; me</span></label></li>" +
+"<li><label><input type=\"checkbox\" name=\"escape\" value=\"1\"> 1</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"escape\" value=\"2\"> 2</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"escape\" value=\"3\"> 3</label></li>" +
+"<li><label><input type=\"checkbox\" name=\"escape\" value=\"bad\"> you &amp; me</label></li>" +
 "</ul>")
 
   // Each input gets a separate ID
@@ -879,9 +879,9 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
   , attrs: {id: 'abc'}
   }),
 "<ul id=\"abc\">" +
-"<li><label for=\"abc_0\"><input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked><span> </span><span>A</span></label></li>" +
-"<li><label for=\"abc_1\"><input id=\"abc_1\" type=\"checkbox\" name=\"letters\" value=\"b\"><span> </span><span>B</span></label></li>" +
-"<li><label for=\"abc_2\"><input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked><span> </span><span>C</span></label></li>" +
+"<li><label for=\"abc_0\"><input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked> A</label></li>" +
+"<li><label for=\"abc_1\"><input id=\"abc_1\" type=\"checkbox\" name=\"letters\" value=\"b\"> B</label></li>" +
+"<li><label for=\"abc_2\"><input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked> C</label></li>" +
 "</ul>")
 
   // Each input gets a separate ID when the ID is passed to the constructor
@@ -890,20 +890,20 @@ QUnit.test("CheckboxSelectMultiple", 17, function() {
     choices: [['a', 'A'], ['b', 'B'], ['c', 'C']]
   }),
 "<ul id=\"abc\">" +
-"<li><label for=\"abc_0\"><input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked><span> </span><span>A</span></label></li>" +
-"<li><label for=\"abc_1\"><input id=\"abc_1\" type=\"checkbox\" name=\"letters\" value=\"b\"><span> </span><span>B</span></label></li>" +
-"<li><label for=\"abc_2\"><input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked><span> </span><span>C</span></label></li>" +
+"<li><label for=\"abc_0\"><input id=\"abc_0\" type=\"checkbox\" name=\"letters\" value=\"a\" checked> A</label></li>" +
+"<li><label for=\"abc_1\"><input id=\"abc_1\" type=\"checkbox\" name=\"letters\" value=\"b\"> B</label></li>" +
+"<li><label for=\"abc_2\"><input id=\"abc_2\" type=\"checkbox\" name=\"letters\" value=\"c\" checked> C</label></li>" +
 "</ul>")
 
   w = forms.CheckboxSelectMultiple()
   var r = w.getRenderer("abc", "b", {choices:[['a', 'A'], ['b', 'B'], ['c', 'C']]})
   // You can access elements of a CheckboxFieldRenderer
   reactHTMLEqual(r.choiceInputs().map(function(input) { return input.render() }),
-"<label><input type=\"checkbox\" name=\"abc\" value=\"a\"><span> </span><span>A</span></label>" +
-"<label><input type=\"checkbox\" name=\"abc\" value=\"b\" checked><span> </span><span>B</span></label>" +
-"<label><input type=\"checkbox\" name=\"abc\" value=\"c\"><span> </span><span>C</span></label>")
+"<label><input type=\"checkbox\" name=\"abc\" value=\"a\"> A</label>" +
+"<label><input type=\"checkbox\" name=\"abc\" value=\"b\" checked> B</label>" +
+"<label><input type=\"checkbox\" name=\"abc\" value=\"c\"> C</label>")
   // You can access individual elements
-  reactHTMLEqual(r.choiceInput(1).render(), "<label><input type=\"checkbox\" name=\"abc\" value=\"b\" checked><span> </span><span>B</span></label>")
+  reactHTMLEqual(r.choiceInput(1).render(), "<label><input type=\"checkbox\" name=\"abc\" value=\"b\" checked> B</label>")
   throws(function() { r.choiceInput(10) })
 })
 
@@ -1080,7 +1080,7 @@ QUnit.test("ClearableFileInput", 5, function() {
   var w = forms.ClearableFileInput()
   w.isRequired = false
   reactHTMLEqual(w.render.bind(w, "myfile", new FakeFieldFile()),
-"<div><span>Currently</span><span>: </span><a href=\"something\">something</a><span> </span><input type=\"checkbox\" name=\"myfile-clear\" id=\"myfile-clear_id\"><span> </span><label for=\"myfile-clear_id\">Clear</label><br><span>Change</span><span>: </span><input type=\"file\" name=\"myfile\"></div>")
+"<div>Currently: <a href=\"something\">something</a> <input type=\"checkbox\" name=\"myfile-clear\" id=\"myfile-clear_id\"> <label for=\"myfile-clear_id\">Clear</label><br>Change: <input type=\"file\" name=\"myfile\"></div>")
 
   // A ClearableFileInput should escape name, filename and URL when rendering
   // HTML.
@@ -1088,7 +1088,7 @@ QUnit.test("ClearableFileInput", 5, function() {
   StrangeFieldFile.prototype.toString = function() { return "something<div onclick=\"alert('oops')\">.jpg"; }
   var file = new StrangeFieldFile()
   reactHTMLEqual(w.render.bind(w, "my<div>file", file),
-"<div><span>Currently</span><span>: </span><a href=\"something?chapter=1&amp;sect=2&amp;copy=3&amp;lang=en\">something&lt;div onclick=&quot;alert(&#x27;oops&#x27;)&quot;&gt;.jpg</a><span> </span><input type=\"checkbox\" name=\"my&lt;div&gt;file-clear\" id=\"my&lt;div&gt;file-clear_id\"><span> </span><label for=\"my&lt;div&gt;file-clear_id\">Clear</label><br><span>Change</span><span>: </span><input type=\"file\" name=\"my&lt;div&gt;file\"></div>")
+"<div>Currently: <a href=\"something?chapter=1&amp;sect=2&amp;copy=3&amp;lang=en\">something&lt;div onclick=&quot;alert(&#x27;oops&#x27;)&quot;&gt;.jpg</a> <input type=\"checkbox\" name=\"my&lt;div&gt;file-clear\" id=\"my&lt;div&gt;file-clear_id\"> <label for=\"my&lt;div&gt;file-clear_id\">Clear</label><br>Change: <input type=\"file\" name=\"my&lt;div&gt;file\"></div>")
 
   // A ClearableFileInput instantiated with no initial value does not render
   // a clear checkbox.
@@ -1105,5 +1105,5 @@ QUnit.test("ClearableFileInput", 5, function() {
   // A ClearableFileInput with isRequired=True does not render a clear
   // checkbox.
   reactHTMLEqual(w.render("myfile", new FakeFieldFile()),
-"<div><span>Currently</span><span>: </span><a href=\"something\">something</a><span> </span><br><span>Change</span><span>: </span><input type=\"file\" name=\"myfile\"></div>")
+"<div>Currently: <a href=\"something\">something</a> <br>Change: <input type=\"file\" name=\"myfile\"></div>")
 })

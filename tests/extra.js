@@ -109,8 +109,8 @@ QUnit.test("Extra attrs", 1, function() {
   })
 
   reactHTMLEqual(new TestForm({autoId: false}).asDiv(),
-"<div><span>F1:</span><span> </span><input class=\"special\" maxlength=\"10\" type=\"text\" name=\"f1\"></div>" +
-"<div><span>F2:</span><span> </span><input class=\"special\" type=\"text\" name=\"f2\"></div>")
+"<div>F1: <input class=\"special\" maxlength=\"10\" type=\"text\" name=\"f1\"></div>" +
+"<div>F2: <input class=\"special\" type=\"text\" name=\"f2\"></div>")
 })
 
 QUnit.test("Data field", 2, function() {

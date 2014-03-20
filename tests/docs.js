@@ -93,10 +93,10 @@ QUnit.test("Overview - Looping over the Form's Fields", function() {
   })
   reactHTMLEqual(Contact(),
 "<form action=\"&#x2f;contact\" method=\"POST\">\
-<div class=\"fieldWrapper\"><label for=\"id_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
-<div class=\"fieldWrapper\"><label for=\"id_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_message\"></div>\
-<div class=\"fieldWrapper\"><label for=\"id_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
-<div class=\"fieldWrapper\"><label for=\"id_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
+<div class=\"fieldWrapper\"><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
+<div class=\"fieldWrapper\"><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></div>\
+<div class=\"fieldWrapper\"><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
+<div class=\"fieldWrapper\"><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
 <div><input type=\"submit\" value=\"Send message\"></div>\
 </form>")
 })
@@ -173,16 +173,16 @@ QUnit.test('Forms - Outputting forms as HTML', function() {
 
   f = new ContactForm()
   reactHTMLEqual(f.asDiv.bind(f),
-"<div><label for=\"id_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
-<div><label for=\"id_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_message\"></div>\
-<div><label for=\"id_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
-<div><label for=\"id_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>",
+"<div><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
+<div><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></div>\
+<div><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
+<div><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>",
   "asDiv()")
   reactHTMLEqual(f.asUl.bind(f),
-"<li><label for=\"id_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></li>\
-<li><label for=\"id_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_message\"></li>\
-<li><label for=\"id_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_sender\"></li>\
-<li><label for=\"id_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></li>",
+"<li><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></li>\
+<li><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></li>\
+<li><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"></li>\
+<li><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></li>",
   "asUl()")
 })
 
@@ -220,16 +220,16 @@ QUnit.test('Forms - Configuring form elements’ HTML id attributes and <label> 
 <tr><th>Cc myself:</th><td><input type=\"checkbox\" name=\"ccMyself\"></td></tr>",
   "asTable(), autoId == false")
   reactHTMLEqual(f.asUl(),
-"<li><span>Subject:</span><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\"></li>\
-<li><span>Message:</span><span> </span><input type=\"text\" name=\"message\"></li>\
-<li><span>Sender:</span><span> </span><input type=\"email\" name=\"sender\"></li>\
-<li><span>Cc myself:</span><span> </span><input type=\"checkbox\" name=\"ccMyself\"></li>",
+"<li>Subject: <input maxlength=\"100\" type=\"text\" name=\"subject\"></li>\
+<li>Message: <input type=\"text\" name=\"message\"></li>\
+<li>Sender: <input type=\"email\" name=\"sender\"></li>\
+<li>Cc myself: <input type=\"checkbox\" name=\"ccMyself\"></li>",
   "asUl(), autoId == false")
   reactHTMLEqual(f.asDiv(),
-"<div><span>Subject:</span><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\"></div>\
-<div><span>Message:</span><span> </span><input type=\"text\" name=\"message\"></div>\
-<div><span>Sender:</span><span> </span><input type=\"email\" name=\"sender\"></div>\
-<div><span>Cc myself:</span><span> </span><input type=\"checkbox\" name=\"ccMyself\"></div>",
+"<div>Subject: <input maxlength=\"100\" type=\"text\" name=\"subject\"></div>\
+<div>Message: <input type=\"text\" name=\"message\"></div>\
+<div>Sender: <input type=\"email\" name=\"sender\"></div>\
+<div>Cc myself: <input type=\"checkbox\" name=\"ccMyself\"></div>",
   "asDiv(), autoId == false")
 
   f = new ContactForm({autoId: true})
@@ -240,16 +240,16 @@ QUnit.test('Forms - Configuring form elements’ HTML id attributes and <label> 
 <tr><th><label for=\"ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"ccMyself\"></td></tr>",
   "asTable(), autoId == true")
   reactHTMLEqual(f.asUl.bind(f),
-"<li><label for=\"subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"subject\"></li>\
-<li><label for=\"message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"message\"></li>\
-<li><label for=\"sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"sender\"></li>\
-<li><label for=\"ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"ccMyself\"></li>",
+"<li><label for=\"subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"subject\"></li>\
+<li><label for=\"message\">Message:</label> <input type=\"text\" name=\"message\" id=\"message\"></li>\
+<li><label for=\"sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"sender\"></li>\
+<li><label for=\"ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"ccMyself\"></li>",
   "asUl(), autoId == true")
   reactHTMLEqual(f.asDiv.bind(f),
-"<div><label for=\"subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"subject\"></div>\
-<div><label for=\"message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"message\"></div>\
-<div><label for=\"sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"sender\"></div>\
-<div><label for=\"ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"ccMyself\"></div>",
+"<div><label for=\"subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"subject\"></div>\
+<div><label for=\"message\">Message:</label> <input type=\"text\" name=\"message\" id=\"message\"></div>\
+<div><label for=\"sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"sender\"></div>\
+<div><label for=\"ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"ccMyself\"></div>",
   "asDiv(), autoId == true")
 
   f = new ContactForm({autoId: 'id_for_{name}'})
@@ -260,32 +260,32 @@ QUnit.test('Forms - Configuring form elements’ HTML id attributes and <label> 
 <tr><th><label for=\"id_for_ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></td></tr>",
   "asTable(), autoId == 'id_for_{name}'")
   reactHTMLEqual(f.asUl.bind(f),
-"<li><label for=\"id_for_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></li>\
-<li><label for=\"id_for_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_for_message\"></li>\
-<li><label for=\"id_for_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_for_sender\"></li>\
-<li><label for=\"id_for_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></li>",
+"<li><label for=\"id_for_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></li>\
+<li><label for=\"id_for_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_for_message\"></li>\
+<li><label for=\"id_for_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_for_sender\"></li>\
+<li><label for=\"id_for_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></li>",
   "asUl(), autoId == 'id_for_{name}'")
   reactHTMLEqual(f.asDiv.bind(f),
-"<div><label for=\"id_for_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></div>\
-<div><label for=\"id_for_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_for_message\"></div>\
-<div><label for=\"id_for_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_for_sender\"></div>\
-<div><label for=\"id_for_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></div>",
+"<div><label for=\"id_for_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></div>\
+<div><label for=\"id_for_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_for_message\"></div>\
+<div><label for=\"id_for_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_for_sender\"></div>\
+<div><label for=\"id_for_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></div>",
   "asDiv(), autoId == 'id_for_{name}'")
 
   f = new ContactForm({autoId: 'id_for_{name}', labelSuffix: ''})
   reactHTMLEqual(f.asUl.bind(f),
-"<li><label for=\"id_for_subject\">Subject</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></li>\
-<li><label for=\"id_for_message\">Message</label><span> </span><input type=\"text\" name=\"message\" id=\"id_for_message\"></li>\
-<li><label for=\"id_for_sender\">Sender</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_for_sender\"></li>\
-<li><label for=\"id_for_ccMyself\">Cc myself</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></li>",
+"<li><label for=\"id_for_subject\">Subject</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></li>\
+<li><label for=\"id_for_message\">Message</label> <input type=\"text\" name=\"message\" id=\"id_for_message\"></li>\
+<li><label for=\"id_for_sender\">Sender</label> <input type=\"email\" name=\"sender\" id=\"id_for_sender\"></li>\
+<li><label for=\"id_for_ccMyself\">Cc myself</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></li>",
   "labelSuffix == ''")
 
   f = new ContactForm({autoId: 'id_for_{name}', labelSuffix: ' ->'})
   reactHTMLEqual(f.asUl.bind(f),
-"<li><label for=\"id_for_subject\">Subject -&gt;</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></li>\
-<li><label for=\"id_for_message\">Message -&gt;</label><span> </span><input type=\"text\" name=\"message\" id=\"id_for_message\"></li>\
-<li><label for=\"id_for_sender\">Sender -&gt;</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_for_sender\"></li>\
-<li><label for=\"id_for_ccMyself\">Cc myself -&gt;</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></li>",
+"<li><label for=\"id_for_subject\">Subject -&gt;</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></li>\
+<li><label for=\"id_for_message\">Message -&gt;</label> <input type=\"text\" name=\"message\" id=\"id_for_message\"></li>\
+<li><label for=\"id_for_sender\">Sender -&gt;</label> <input type=\"email\" name=\"sender\" id=\"id_for_sender\"></li>\
+<li><label for=\"id_for_ccMyself\">Cc myself -&gt;</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></li>",
   "labelSuffix == ' ->'")
 })
 
@@ -304,16 +304,16 @@ QUnit.test('Forms - How errors are displayed', function() {
 <tr><th><label for=\"id_ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></td></tr>",
   "asTable() error display")
   reactHTMLEqual(f.asUl.bind(f),
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></li>\
-<li><label for=\"id_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></li>\
-<li><ul class=\"errorlist\"><li>Enter a valid email address.</li></ul><label for=\"id_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_sender\" value=\"invalid email address\"></li>\
-<li><label for=\"id_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></li>",
+"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></li>\
+<li><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></li>\
+<li><ul class=\"errorlist\"><li>Enter a valid email address.</li></ul><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\" value=\"invalid email address\"></li>\
+<li><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></li>",
  "asUl() error display")
   reactHTMLEqual(f.asDiv.bind(f),
-"<div><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
-<div><label for=\"id_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></div>\
-<div><ul class=\"errorlist\"><li>Enter a valid email address.</li></ul><label for=\"id_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_sender\" value=\"invalid email address\"></div>\
-<div><label for=\"id_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></div>",
+"<div><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
+<div><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></div>\
+<div><ul class=\"errorlist\"><li>Enter a valid email address.</li></ul><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\" value=\"invalid email address\"></div>\
+<div><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></div>",
   "asDiv() error display")
 
   var DivErrorList = forms.ErrorList.extend({
@@ -327,10 +327,10 @@ QUnit.test('Forms - How errors are displayed', function() {
   })
   f = new ContactForm({data: data, errorConstructor: DivErrorList, autoId: false})
   reactHTMLEqual(f.asDiv(),
-"<div><div class=\"errorlist\"><div>This field is required.</div></div><span>Subject:</span><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\"></div>\
-<div><span>Message:</span><span> </span><input type=\"text\" name=\"message\" value=\"Hi there\"></div>\
-<div><div class=\"errorlist\"><div>Enter a valid email address.</div></div><span>Sender:</span><span> </span><input type=\"email\" name=\"sender\" value=\"invalid email address\"></div>\
-<div><span>Cc myself:</span><span> </span><input type=\"checkbox\" name=\"ccMyself\" checked></div>",
+"<div><div class=\"errorlist\"><div>This field is required.</div></div>Subject: <input maxlength=\"100\" type=\"text\" name=\"subject\"></div>\
+<div>Message: <input type=\"text\" name=\"message\" value=\"Hi there\"></div>\
+<div><div class=\"errorlist\"><div>Enter a valid email address.</div></div>Sender: <input type=\"email\" name=\"sender\" value=\"invalid email address\"></div>\
+<div>Cc myself: <input type=\"checkbox\" name=\"ccMyself\" checked></div>",
   "Customising the error list format")
 })
 
@@ -417,10 +417,10 @@ QUnit.test("Forms - Extending forms", function() {
   })
   var b = new BeatleForm({autoId: false})
   reactHTMLEqual(b.asUl(),
-"<li><span>First name:</span><span> </span><input type=\"text\" name=\"first_name\"></li>\
-<li><span>Last name:</span><span> </span><input type=\"text\" name=\"last_name\"></li>\
-<li><span>Instrument:</span><span> </span><input type=\"text\" name=\"instrument\"></li>\
-<li><span>Haircut type:</span><span> </span><input type=\"text\" name=\"haircut_type\"></li>",
+"<li>First name: <input type=\"text\" name=\"first_name\"></li>\
+<li>Last name: <input type=\"text\" name=\"last_name\"></li>\
+<li>Instrument: <input type=\"text\" name=\"instrument\"></li>\
+<li>Haircut type: <input type=\"text\" name=\"haircut_type\"></li>",
   "Using forms as mixins")
 })
 
@@ -428,11 +428,11 @@ QUnit.test('Forms - Prefixes for forms', function() {
   var mother = new PersonForm({prefix: 'mother'})
   var father = new PersonForm({prefix: 'father'})
   reactHTMLEqual(mother.asUl.bind(mother),
-"<li><label for=\"id_mother-first_name\">First name:</label><span> </span><input type=\"text\" name=\"mother-first_name\" id=\"id_mother-first_name\"></li>\
-<li><label for=\"id_mother-last_name\">Last name:</label><span> </span><input type=\"text\" name=\"mother-last_name\" id=\"id_mother-last_name\"></li>" )
+"<li><label for=\"id_mother-first_name\">First name:</label> <input type=\"text\" name=\"mother-first_name\" id=\"id_mother-first_name\"></li>\
+<li><label for=\"id_mother-last_name\">Last name:</label> <input type=\"text\" name=\"mother-last_name\" id=\"id_mother-last_name\"></li>" )
   reactHTMLEqual(father.asUl.bind(father),
-"<li><label for=\"id_father-first_name\">First name:</label><span> </span><input type=\"text\" name=\"father-first_name\" id=\"id_father-first_name\"></li>\
-<li><label for=\"id_father-last_name\">Last name:</label><span> </span><input type=\"text\" name=\"father-last_name\" id=\"id_father-last_name\"></li>")
+"<li><label for=\"id_father-first_name\">First name:</label> <input type=\"text\" name=\"father-first_name\" id=\"id_father-first_name\"></li>\
+<li><label for=\"id_father-last_name\">Last name:</label> <input type=\"text\" name=\"father-last_name\" id=\"id_father-last_name\"></li>")
 })
 
 QUnit.test('Fields - Field.clean()', function() {
@@ -608,10 +608,10 @@ QUnit.test('Forms and React - Using a Form in a React component', function() {
   })
   reactHTMLEqual(new Contact(),
 "<form action=\"&#x2f;contact\" method=\"POST\">\
-<div><label for=\"id_subject\">Subject:</label><span> </span><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
-<div><label for=\"id_message\">Message:</label><span> </span><input type=\"text\" name=\"message\" id=\"id_message\"></div>\
-<div><label for=\"id_sender\">Sender:</label><span> </span><input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
-<div><label for=\"id_ccMyself\">Cc myself:</label><span> </span><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
+<div><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
+<div><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></div>\
+<div><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
+<div><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
 <div><input type=\"submit\" value=\"Submit\"><input type=\"button\" value=\"Cancel\"></div>\
 </form>")
 })
@@ -849,16 +849,16 @@ QUnit.test('Widgets - RadioSelect', function() {
     })
   },
 "<div class=\"myRadio\">\
-<label for=\"id_beatles_0\"><input id=\"id_beatles_0\" type=\"radio\" name=\"beatles\" value=\"john\"><span> </span><span>John</span></label>\
+<label for=\"id_beatles_0\"><input id=\"id_beatles_0\" type=\"radio\" name=\"beatles\" value=\"john\"> John</label>\
 </div>\
 <div class=\"myRadio\">\
-<label for=\"id_beatles_1\"><input id=\"id_beatles_1\" type=\"radio\" name=\"beatles\" value=\"paul\"><span> </span><span>Paul</span></label>\
+<label for=\"id_beatles_1\"><input id=\"id_beatles_1\" type=\"radio\" name=\"beatles\" value=\"paul\"> Paul</label>\
 </div>\
 <div class=\"myRadio\">\
-<label for=\"id_beatles_2\"><input id=\"id_beatles_2\" type=\"radio\" name=\"beatles\" value=\"george\"><span> </span><span>George</span></label>\
+<label for=\"id_beatles_2\"><input id=\"id_beatles_2\" type=\"radio\" name=\"beatles\" value=\"george\"> George</label>\
 </div>\
 <div class=\"myRadio\">\
-<label for=\"id_beatles_3\"><input id=\"id_beatles_3\" type=\"radio\" name=\"beatles\" value=\"ringo\"><span> </span><span>Ringo</span></label>\
+<label for=\"id_beatles_3\"><input id=\"id_beatles_3\" type=\"radio\" name=\"beatles\" value=\"ringo\"> Ringo</label>\
 </div>")
 
   reactHTMLEqual(function() {
@@ -870,19 +870,19 @@ QUnit.test('Widgets - RadioSelect', function() {
     })
   },
 "<label for=\"id_beatles_0\">\
-<span>John</span>\
+John\
 <span class=\"radio\"><input id=\"id_beatles_0\" type=\"radio\" name=\"beatles\" value=\"john\"></span>\
 </label>\
 <label for=\"id_beatles_1\">\
-<span>Paul</span>\
+Paul\
 <span class=\"radio\"><input id=\"id_beatles_1\" type=\"radio\" name=\"beatles\" value=\"paul\"></span>\
 </label>\
 <label for=\"id_beatles_2\">\
-<span>George</span>\
+George\
 <span class=\"radio\"><input id=\"id_beatles_2\" type=\"radio\" name=\"beatles\" value=\"george\"></span>\
 </label>\
 <label for=\"id_beatles_3\">\
-<span>Ringo</span>\
+Ringo\
 <span class=\"radio\"><input id=\"id_beatles_3\" type=\"radio\" name=\"beatles\" value=\"ringo\"></span>\
 </label>")
 })

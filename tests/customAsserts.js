@@ -67,7 +67,6 @@ function validationErrorEqual(validator, message, value) {
  * Custom assertion for contents created with React.DOM.
  */
 var reactHTMLEqual = (function() {
-  var reactAttrs = / data-react[-\w]+="[^"]+"/g
   var wrapperElement = /^<div>|<\/div>$/g
 
   return function reactHTMLEqual(component, expectedHTML, message) {
@@ -102,8 +101,7 @@ var reactHTMLEqual = (function() {
       component = reactClass()
     }
 
-    var html = React.renderComponentToString(component)
-    html = html.replace(reactAttrs, '')
+    var html = React.renderComponentToStaticMarkup(component)
     // Remove HTML for any wrapper element which was added
     if (wrapped) {
       html = html.replace(wrapperElement, '')
