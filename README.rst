@@ -26,10 +26,10 @@ Browser bundles
 
       * https://github.com/insin/newforms/tree/react/dist
 
-   **v0.5.0** / 2014-03-11 -- `View CHANGES`_
+   **v0.5.1** / 2014-04-01 -- `View CHANGES`_
 
-      * `newforms-0.5.0.js`_
-      * `newforms-0.5.0.min.js`_
+      * `newforms-0.5.1.js`_
+      * `newforms-0.5.1.min.js`_
 
    Development bundles (updated intermittently):
 
@@ -45,8 +45,8 @@ Node.js
 
       var forms = require('newforms')
 
-.. _`newforms-0.5.0-rc1.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.0.js
-.. _`newforms-0.5.0-rc1.min.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.0.min.js
+.. _`newforms-0.5.1.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.1.js
+.. _`newforms-0.5.1.min.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.1.min.js
 .. _`View CHANGES`: https://github.com/insin/newforms/blob/react/CHANGES.rst
 .. _`newforms.js`: https://github.com/insin/newforms/raw/react/newforms.js
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/react/newforms.min.js

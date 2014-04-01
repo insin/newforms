@@ -30,7 +30,8 @@ gulp.task('build-js', ['lint'], function(){
   var stream = gulp.src(jsEntryPoint, {read: false})
     .pipe(plumber())
     .pipe(browserify({
-      debug: !gutil.env.production
+      transform: 'browserify-shim'
+    , debug: !gutil.env.production
     , standalone: 'forms'
     , detectGlobals: false
     }))

@@ -1,7 +1,7 @@
 {
   "name": "newforms",
   "description": "JavaScript port of Django's form-handling library, usable in browsers and Node.js, making use of React on both sides",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
   "tags": [
     "isomorphic",
@@ -21,7 +21,7 @@
   "dependencies": {
     "Concur": "~0.2.5",
     "isomorph": "~0.2.1",
-    "react": "~0.9.0",
+    "react": ">=0.9.0",
     "validators": "~0.3.0"
   },
   "devDependencies": {
@@ -42,9 +42,6 @@
   "scripts": {
     "test": "gulp build-js && node tests/tests.js",
     "dist": "gulp dist --production --release"
-  },
-  "browserify": {
-    "transform": [ "browserify-shim" ]
   },
   "browserify-shim": {
     "react": "global:React"
