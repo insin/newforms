@@ -1,3 +1,8 @@
+0.5.1 / 2014-04-01
+==================
+
+* Fixed browserification when used as a Node module.
+
 0.5.0 / 2014-03-11
 ==================
 
