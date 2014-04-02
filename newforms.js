@@ -1,5 +1,5 @@
 /**
- * newforms 0.6.0-alpha (dev build at Tue, 18 Mar 2014 15:05:41 GMT) - https://github.com/insin/newforms
+ * newforms 0.6.0-alpha (dev build at Wed, 02 Apr 2014 20:18:41 GMT) - https://github.com/insin/newforms
  * MIT Licensed
  */
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.forms=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -1683,6 +1683,7 @@ var copy = _dereq_('isomorph/copy')
 var validators = _dereq_('validators')
 var React = (window.React)
 
+var env = _dereq_('./env')
 var util = _dereq_('./util')
 var fields = _dereq_('./fields')
 var widgets = _dereq_('./widgets')
@@ -1807,7 +1808,11 @@ BoundField.prototype.asWidget = function(kwargs) {
     attrs.id = (!kwargs.onlyInitial ? autoId : this.htmlInitialId)
   }
 
-  return widget.render(name, this.value(), {attrs: attrs}, validation)
+  var renderKwargs = {attrs: attrs, validation: validation}
+  if (widget.needsInitialValue) {
+    renderKwargs.initialValue = this.initialValue()
+  }
+  return widget.render(name, this.value(), renderKwargs)
 }
 
 BoundField.prototype.validation = function(widget) {
@@ -1826,7 +1831,7 @@ BoundField.prototype.validation = function(widget) {
     // We're going to add stuff to validation now, so make a shallow copy
     validation = object.extend({}, validation)
     // Validation is driven off form.data, so we always need to keep it up to
-    // date.
+    // date on change, regardless of whether or not validation will happen then.
     validation.onChange =
         util.bindRight(this.form._handleFieldChange, this.form, validation)
     if (validation.event != 'onChange') {
@@ -1865,16 +1870,13 @@ BoundField.prototype.asHidden = function(kwargs) {
 }
 
 /**
- * Returns the value for this BoundField, using the initial value if the form
- * is not bound or the data otherwise.
+ * Returns the value to be displayed for this BoundField, using the initia
+ * value if the form is not bound or the data otherwise.
  */
 BoundField.prototype.value = function() {
   var data
   if (!this.form.isBound) {
-    data = object.get(this.form.initial, this.name, this.field.initial)
-    if (is.Function(data)) {
-      data = data()
-    }
+    data = this.initialValue()
   }
   else {
     data = this.field.boundData(this.data(),
@@ -1883,6 +1885,19 @@ BoundField.prototype.value = function() {
                                            this.field.initial))
   }
   return this.field.prepareValue(data)
+}
+
+/**
+ * Returns the initial value for this BoundField from the form or field's
+ * configured initial values - the field's default initial value of null will
+ * be returned if none was configured.
+ */
+BoundField.prototype.initialValue = function() {
+  var value = object.get(this.form.initial, this.name, this.field.initial)
+  if (is.Function(value)) {
+    value = value()
+  }
+  return value
 }
 
 BoundField.prototype._addLabelSuffix = function(label, labelSuffix) {
@@ -2094,6 +2109,7 @@ BaseForm.prototype.setData = function(data) {
  * @param {Object.<string,*>} data updated input data for the form.
  */
 BaseForm.prototype.updateData = function(data) {
+  this._changedData = null
   object.extend(this.data, data)
   if (!this.isBound) {
     this.isBound = true
@@ -2126,50 +2142,46 @@ BaseForm.prototype.errors = function(name) {
 }
 
 BaseForm.prototype.changedData = function() {
-  if (this._changedData === null) {
-    this._changedData = []
-    var initialValue
-    // XXX: For now we're asking the individual fields whether or not
-    // the data has changed. It would probably be more efficient to hash
-    // the initial data, store it in a hidden field, and compare a hash
-    // of the submitted data, but we'd need a way to easily get the
-    // string value for a given field. Right now, that logic is embedded
-    // in the render method of each field's widget.
-    for (var name in this.fields) {
-      if (!object.hasOwn(this.fields, name)) { continue }
-
-      var field = this.fields[name]
-      var prefixedName = this.addPrefix(name)
-      var dataValue = field.widget.valueFromData(this.data,
-                                                 this.files,
-                                                 prefixedName)
-      if (!field.showHiddenInitial) {
-        initialValue = object.get(this.initial, name, field.initial)
-        if (is.Function(initialValue)) {
-          initialValue = initialValue()
-        }
-      }
-      else {
-        var initialPrefixedName = this.addInitialPrefix(name)
-        var hiddenWidget = new field.hiddenWidget()
-        try {
-          initialValue = hiddenWidget.valueFromData(
-                  this.data, this.files, initialPrefixedName)
-        }
-        catch (e) {
-          if (!(e instanceof ValidationError)) { throw e }
-          // Always assume data has changed if validation fails
-          this._changedData.push(name)
-          continue
-        }
-      }
-
-      if (field._hasChanged(initialValue, dataValue)) {
-        this._changedData.push(name)
+  if (!env.browser && this._changedData != null) { return this._changedData }
+  var changedData = []
+  var initialValue
+  // XXX: For now we're asking the individual fields whether or not
+  // the data has changed. It would probably be more efficient to hash
+  // the initial data, store it in a hidden field, and compare a hash
+  // of the submitted data, but we'd need a way to easily get the
+  // string value for a given field. Right now, that logic is embedded
+  // in the render method of each field's widget.
+  for (var name in this.fields) {
+    if (!object.hasOwn(this.fields, name)) { continue }
+    var field = this.fields[name]
+    var prefixedName = this.addPrefix(name)
+    var dataValue = field.widget.valueFromData(this.data, this.files, prefixedName)
+    if (!field.showHiddenInitial) {
+      initialValue = object.get(this.initial, name, field.initial)
+      if (is.Function(initialValue)) {
+        initialValue = initialValue()
       }
     }
+    else {
+      var initialPrefixedName = this.addInitialPrefix(name)
+      var hiddenWidget = new field.hiddenWidget()
+      try {
+        initialValue = hiddenWidget.valueFromData(
+                this.data, this.files, initialPrefixedName)
+      }
+      catch (e) {
+        if (!(e instanceof ValidationError)) { throw e }
+        // Always assume data has changed if validation fails
+        changedData.push(name)
+        continue
+      }
+    }
+    if (field._hasChanged(initialValue, dataValue)) {
+      changedData.push(name)
+    }
   }
-  return this._changedData
+  if (!env.browser) { this._changedData = changedData }
+  return changedData
 }
 
 BaseForm.prototype.render = function() {
@@ -2806,7 +2818,7 @@ module.exports = {
 , Form: Form
 }
 
-},{"./fields":2,"./util":7,"./widgets":8,"Concur":9,"isomorph/copy":11,"isomorph/format":12,"isomorph/is":13,"isomorph/object":14,"validators":19}],5:[function(_dereq_,module,exports){
+},{"./env":1,"./fields":2,"./util":7,"./widgets":8,"Concur":9,"isomorph/copy":11,"isomorph/format":12,"isomorph/is":13,"isomorph/object":14,"validators":19}],5:[function(_dereq_,module,exports){
 'use strict';
 
 var Concur = _dereq_('Concur')
@@ -3985,10 +3997,12 @@ var Widget = Concur.extend({
 , isHidden: false
   /** Determines whether this widget needs a multipart-encoded form. */
 , needsMultipartForm: false
-  /** Determines whether this widget is for a required field.. */
+  /** Determines whether this widget is for a required field. */
 , isRequired: false
   /** Override for active validation config a partcular widget needs to use. */
 , validation: null
+  /** Determines whether this widget's render logic always needs to use the initial value. */
+, needsInitialValue: false
 })
 
 /**
@@ -4009,7 +4023,7 @@ Widget.prototype.subWidgets = function(name, value, kwargs) {
  *
  * @abstract
  */
-Widget.prototype.render = function(name, value, kwargs, validation) {
+Widget.prototype.render = function(name, value, kwargs) {
   throw new Error('Constructors extending must implement a render() method.')
 }
 
@@ -4075,13 +4089,13 @@ Input.prototype._formatValue = function(value) {
   return value
 }
 
-Input.prototype.render = function(name, value, kwargs, validation) {
+Input.prototype.render = function(name, value, kwargs) {
   kwargs = object.extend({attrs: null}, kwargs)
   if (value === null) {
     value = ''
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {type: this.inputType,
-                                                  name: name}, validation)
+                                                  name: name}, kwargs.validation)
   // Hidden inputs can be made controlled inputs by default, as the user
   // can't directly interact with them.
   var valueAttr = (this.isHidden ? 'value' : 'defaultValue')
@@ -4167,11 +4181,13 @@ var PasswordInput = TextInput.extend({
 , inputType: 'password'
 })
 
-PasswordInput.prototype.render = function(name, value, kwargs, validation) {
+PasswordInput.prototype.render = function(name, value, kwargs) {
+  kwargs = object.extend({validation: 'manual'}, kwargs)
+  var validation = kwargs.validation
   if (((!validation || validation == 'manual') || !env.browser) && !this.renderValue) {
     value = ''
   }
-  return TextInput.prototype.render.call(this, name, value, kwargs, validation)
+  return TextInput.prototype.render.call(this, name, value, kwargs)
 }
 
 /**
@@ -4244,10 +4260,11 @@ var FileInput = Input.extend({
   }
 , inputType: 'file'
 , needsMultipartForm: true
+, validation: {event: 'onChange'}
 })
 
-FileInput.prototype.render = function(name, value, kwargs, validation) {
-  return Input.prototype.render.call(this, name, null, kwargs, validation)
+FileInput.prototype.render = function(name, value, kwargs) {
+  return Input.prototype.render.call(this, name, null, kwargs)
 }
 
 /**
@@ -4266,7 +4283,8 @@ var FILE_INPUT_CONTRADICTION = {}
  * @param {Object=} kwargs
  */
 var ClearableFileInput = FileInput.extend({
-  constructor: function ClearableFileInput(kwargs) {
+  needsInitialValue: true
+, constructor: function ClearableFileInput(kwargs) {
     if (!(this instanceof Widget)) { return new ClearableFileInput(kwargs) }
     FileInput.call(this, kwargs)
   }
@@ -4307,9 +4325,15 @@ ClearableFileInput.prototype.clearCheckboxId = function(name) {
   return name + '_id'
 }
 
-ClearableFileInput.prototype.render = function(name, value, kwargs, validation) {
-  var input = FileInput.prototype.render.call(this, name, value, kwargs, validation)
-  if (value && typeof value.url != 'undefined') {
+ClearableFileInput.prototype.render = function(name, value, kwargs) {
+  kwargs = object.extend({attrs: {}}, kwargs)
+  kwargs.attrs.key = 'input'
+  var input = FileInput.prototype.render.call(this, name, value, kwargs)
+  var initialValue = kwargs.initialValue
+  if (!initialValue && value && typeof value.url != 'undefined') {
+    initialValue = value
+  }
+  if (initialValue && typeof initialValue.url != 'undefined') {
     var clearTemplate
     if (!this.isRequired) {
       var clearCheckboxName = this.clearCheckboxName(name)
@@ -4322,15 +4346,15 @@ ClearableFileInput.prototype.render = function(name, value, kwargs, validation) 
     }
     var contents = this.templateWithInitial({
       initialText: this.initialText
-    , initial: this.urlMarkupTemplate(value.url, ''+value)
+    , initial: this.urlMarkupTemplate(initialValue.url, ''+initialValue)
     , clearTemplate: clearTemplate
     , inputText: this.inputText
     , input: input
     })
-    return React.DOM.div(null, contents)
+    return React.DOM.span(null, contents)
   }
   else {
-    return input
+    return React.DOM.span(null, input)
   }
 }
 
@@ -4371,12 +4395,12 @@ var Textarea = Widget.extend({
   }
 })
 
-Textarea.prototype.render = function(name, value, kwargs, validation) {
-  kwargs = object.extend({attrs: null}, kwargs)
+Textarea.prototype.render = function(name, value, kwargs) {
+  kwargs = object.extend({validation: 'manual'}, kwargs)
   if (value === null) {
     value = ''
   }
-  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name}, validation)
+  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name}, kwargs.validation)
   finalAttrs.defaultValue = value
   return React.DOM.textarea(finalAttrs)
 }
@@ -4464,10 +4488,10 @@ var CheckboxInput = Widget.extend({
 , validation: {event: 'onChange'}
 })
 
-CheckboxInput.prototype.render = function(name, value, kwargs, validation) {
-  kwargs = object.extend({attrs: null}, kwargs)
+CheckboxInput.prototype.render = function(name, value, kwargs) {
+  kwargs = object.extend({validation: 'manual'}, kwargs)
   var finalAttrs = this.buildAttrs(kwargs.attrs, {type: 'checkbox',
-                                                  name: name}, validation)
+                                                  name: name}, kwargs.validation)
   if (value !== '' && value !== true && value !== false && value !== null &&
       value !== undefined) {
     // Only add the value attribute if value is non-empty
@@ -4520,12 +4544,12 @@ var Select = Widget.extend({
  *   addition to those already held by the widget itself.
  * @return a <select> element.
  */
-Select.prototype.render = function(name, selectedValue, kwargs, validation) {
-  kwargs = object.extend({attrs: null, choices: []}, kwargs)
+Select.prototype.render = function(name, selectedValue, kwargs) {
+  kwargs = object.extend({choices: []}, kwargs)
   if (selectedValue === null) {
     selectedValue = ''
   }
-  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name}, validation)
+  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name}, kwargs.validation)
   var options = this.renderOptions(kwargs.choices, [selectedValue])
   finalAttrs.defaultValue = selectedValue
   return React.DOM.select(finalAttrs, options)
@@ -4586,7 +4610,7 @@ var NullBooleanSelect = Select.extend({
   }
 })
 
-NullBooleanSelect.prototype.render = function(name, value, kwargs, validation) {
+NullBooleanSelect.prototype.render = function(name, value, kwargs) {
   if (value === true || value == '2') {
     value = '2'
   }
@@ -4596,7 +4620,7 @@ NullBooleanSelect.prototype.render = function(name, value, kwargs, validation) {
   else {
     value = '1'
   }
-  return Select.prototype.render.call(this, name, value, kwargs, validation)
+  return Select.prototype.render.call(this, name, value, kwargs)
 }
 
 NullBooleanSelect.prototype.valueFromData = function(data, files, name) {
@@ -4642,8 +4666,8 @@ var SelectMultiple = Select.extend({
  *   addition to those already held by the widget itself.
  * @return a <select> element which allows multiple selections.
  */
-SelectMultiple.prototype.render = function(name, selectedValues, kwargs, validation) {
-  kwargs = object.extend({attrs: null, choices: []}, kwargs)
+SelectMultiple.prototype.render = function(name, selectedValues, kwargs) {
+  kwargs = object.extend({choices: []}, kwargs)
   if (selectedValues === null) {
     selectedValues = []
   }
@@ -4651,7 +4675,7 @@ SelectMultiple.prototype.render = function(name, selectedValues, kwargs, validat
     selectedValues = [selectedValues]
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name,
-                                                  multiple: 'multiple'}, validation)
+                                                  multiple: 'multiple'}, kwargs.validation)
   var options = this.renderOptions(kwargs.choices, selectedValues)
   finalAttrs.defaultValue = selectedValues
   return React.DOM.select(finalAttrs, options)
@@ -4873,18 +4897,18 @@ RendererMixin.prototype.subWidgets = function(name, value, kwargs, validation) {
 /**
  * @return an instance of the renderer to be used to render this widget.
  */
-RendererMixin.prototype.getRenderer = function(name, value, kwargs, validation) {
-  kwargs = object.extend({attrs: null, choices: []}, kwargs)
+RendererMixin.prototype.getRenderer = function(name, value, kwargs) {
+  kwargs = object.extend({choices: [], validation: 'manual'}, kwargs)
   if (value === null) {
     value = this._emptyValue
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs)
   var choices = this.choices.concat(kwargs.choices)
-  return new this.renderer(name, value, finalAttrs, validation, choices)
+  return new this.renderer(name, value, finalAttrs, kwargs.validation, choices)
 }
 
-RendererMixin.prototype.render = function(name, value, kwargs, validation) {
-  return this.getRenderer(name, value, kwargs, validation).render()
+RendererMixin.prototype.render = function(name, value, kwargs) {
+  return this.getRenderer(name, value, kwargs).render()
 }
 
 /**
@@ -4976,8 +5000,9 @@ var MultiWidget = Widget.extend({
  * @config {Object=} validation
  * @return a rendered collection of widgets.
  */
-MultiWidget.prototype.render = function(name, value, kwargs, validation) {
-  kwargs = object.extend({attrs: null}, kwargs)
+MultiWidget.prototype.render = function(name, value, kwargs) {
+  kwargs = object.extend({validation: 'manual'}, kwargs)
+  var validation = kwargs.validation
   if (!(is.Array(value))) {
     value = this.decompress(value)
   }

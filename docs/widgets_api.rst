@@ -43,6 +43,13 @@ Widgets API
 
       :type: Boolean
 
+   .. js:attribute:: Widget#needsInitialValue
+
+      Determines whether this widget's render logic always needs to use the
+      initial value.
+
+      :type: Boolean
+
    .. js:attribute:: Widget#isRequired
 
       Determines whether this widget is for a required field.
