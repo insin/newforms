@@ -67,22 +67,22 @@ Forms API
    :param Object kwargs.files:
       input file data.
 
-   :param validation:
-      .. versionadded:: 0.6
+   :param kwargs.validation:
+      .. _ref-form-kwargs-validation:
 
-      Configures form-wide validation when the user interacts with form inputs
-      in the browser. This can be a String, or an Object which configures
-      default validation for form inputs.
+      Configures form-wide interactive validation when the user makes changes to
+      form inputs in the browser. This can be a String, or an Object which
+      configures default validation for form inputs.
 
       If ``'manual'``, validation will not be performed -- you are responsible
       for hooking up validation and using methods such as ``setData()`` and
-      ``isValid()`` to perform validation. This is the default setting.
+      ``isValid()`` to perform all validation. This is the default setting.
 
       If ``'auto'``, text fields will, by default be validated when the
       ``onChange`` event fires, with a 250 millisecond delay from the last user
       input to the validation being performed.
 
-      If an Object is given, it should use the following properties:
+      If an Object is given, it should have the following properties:
 
       ``event``
          The name of the default event to use to trigger validation. This should
@@ -101,6 +101,23 @@ Forms API
 
       For example, passing ``{validation: 'onChange'}`` will cause each form
       inputs to trigger validation as soon as the user makes any change.
+
+      .. versionadded:: 0.6
+
+   :param Function onStateChange:
+      .. _ref-form-kwargs-onstatechange:
+
+      If interactive validation is configured for a Form or any of its Fields,
+      this callback function **must** be provided, or an Error will be thrown.
+
+      It will be called any time the form's input data or validation state
+      changes as the result of user input.
+
+      Typically, this function should at least force React to update the component
+      in which the Form is being rendered, to display the latest validation state
+      to the user from the last change they made to the form.
+
+      .. versionadded:: 0.6
 
    :param String kwargs.autoId:
       a template for use when automatically generating ``id`` attributes for

@@ -91,20 +91,48 @@ Widgets API
       :param Object kwargs.attrs:
          additonal HTML attributes for the rendered widget.
 
-   .. js:function:: Widget#buildAttrs(extraAttrs[, kwargs])
+      :param kwargs.validation:
+         .. _ref-widget-render-kwargs-validation:
+
+         validation configuration for the widget. When interactive validation has
+         been configured for a widget's field, its BoundField will pass an object
+         with these properties:
+
+         ``event``
+            the name of the event which should trigger validation
+
+         ``onChange``
+            a function which should be registered for the widget's HTML input's
+            ``onChange`` event to let the containing Form know the widget's input
+            has been changed.
+
+         ``eventHandler``
+            if ``event`` is not ``'onChange'``, this additional function will be
+            given to be registered for the named ``event`` to trigger validation
+            by the Form.
+
+      :param kwargs.initialValue:
+         if the widget has :js:attr:`Widget#needsInitialValue` configured to
+         true, its initial value will always be passed
+
+   .. js:function:: Widget#buildAttrs(kwargAttrs, renderAttrs[, validation])
 
       Helper function for building an HTML attributes object using
       ``widget.attrs`` and the given arguments.
 
-      :param Object extraAttrs:
-         extra HTML attributes to be included -- generally, these are any
-         ``attrs`` passed into the ``render()`` method.
+      :param Object kwargsAttrs:
+         any extra HTML attributes passed to the Widget's ``render()`` method.
 
-      :param Object kwargs:
-         any other attributes which should be incluuded in a Widget's HTML
-         attributes by default -- when given, these are usually provided by a
-         ``render()`` method for attributes related to the type of widget being
-         implemented.
+      :param Object renderAttrs:
+         any other attributes which should be included in a Widget's HTML
+         attributes by default -- provided by the ``render()`` method for
+         attributes related to the type of widget being implemented.
+
+      :param Object validation:
+         interactive validation configuration for the Widget -- as per the
+         :ref:`validation config given to render() <ref-widget-render-kwargs-validation>`.
+         This function handles setting up the appropriate event handling
+         attributes.
 
    .. js:function:: Widget#valueFromData(data, files, name)
 

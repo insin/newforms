@@ -57,6 +57,21 @@ Fields API
 
       .. versionadded:: 0.5
 
+   :param kwargs.validation:
+      Configures validation when the user interacts with this field's widget in
+      the browser.
+
+      This can be used to configure validation for only specific fields, or to
+      override any form-wide validation that's been configured.
+
+      Takes the same arguments as :ref:`Form's validation configuration <ref-form-kwargs-validation>`
+
+      If validation configuration is given, the Form containing the Field
+      **must** be configured with an :ref:`onStateChange callback <ref-form-kwargs-onstatechange>`,
+      or an Error will be thrown.
+
+      .. versionadded:: 0.6
+
    **Prototype Functions**
 
    .. js:function:: Field#prepareValue(value)
