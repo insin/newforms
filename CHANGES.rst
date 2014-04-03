@@ -1,3 +1,8 @@
+0.5.2 / 2014-04-03
+==================
+
+* Fixed Select widget's defaultValue attribute.
+
 0.5.1 / 2014-04-01
 ==================
 
