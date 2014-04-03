@@ -200,15 +200,29 @@ Forms API
 
       .. versionadded:: 0.5
 
-      Updates the form's :js:attr:`form.data` (and :js:attr:`form.isBound`, if
-      necessary) and triggers form cleaning and validation, returning the result
-      of ``form.isValid()``.
+      Replaces the form's :js:attr:`form.data` with the given data (and flips
+      :js:attr:`form.isBound` to true, if necessary) and triggers form cleaning
+      and validation, returning the result of ``form.isValid()``.
 
       :param Object data: new input data for the form
 
       :return:
          ``true`` if the form has no errors after validating the updated data,
          ``false`` otherwise.
+
+   .. js:function:: BaseForm#updateData(data)
+
+      .. versionadded:: 0.6
+
+      Updates the form's :js:attr:`form.data` (and flips :js:attr:`form.isBound`
+      to true, if necessary) then triggers validation of fields which had their
+      input data updated, as well as form-wide cleaning.
+
+      :param Object data:
+         partial input data for the form, field name -> input data.
+
+         If your form has a :ref:`prefix <ref-form-prefixes>`, field names in
+         the given data object must also be prefixed.
 
    .. js:function:: BaseForm#isValid()
 
@@ -246,12 +260,18 @@ Forms API
 
    .. js:function:: BaseForm#fullClean()
 
-      Validates and cleans ``this.data`` and populates errors and
-      ``cleanedData``.
+      Validates and cleans ``forms.data`` and populates errors and ``cleanedData``.
 
       You shouldn't need to call this function directly in general use, as it's
       called for you when necessary by :js:func:`BaseForm#isValid` and
       :js:func:`BaseForm#errors`.
+
+   .. js:function:: BaseForm#partialClean(fieldNames)
+
+      Validates and cleans ``form.data`` for the given field names and triggers
+      cross-form cleaning in case any ``form.cleanedData`` it uses has changed.
+
+      :param Array fieldNames: a list of unprefixed field names.
 
    .. js:function:: BaseForm#clean()
 

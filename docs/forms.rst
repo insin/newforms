@@ -951,6 +951,8 @@ its field list includes their fields:
    <li><span>Haircut type:</span><span> </span><input type="text" name="haircut_type"></li>
    */
 
+.. _ref-form-prefixes:
+
 Prefixes for forms
 ==================
 
