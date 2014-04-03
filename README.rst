@@ -22,14 +22,9 @@ Browser bundles
    They expose newforms as a global ``forms`` variable and expect to find a
    global ``React`` variable to work with.
 
-   Release bundles will be available from:
+   Release bundles are available from:
 
       * https://github.com/insin/newforms/tree/react/dist
-
-   **v0.5.1** / 2014-04-01 -- `View CHANGES`_
-
-      * `newforms-0.5.1.js`_
-      * `newforms-0.5.1.min.js`_
 
    Development bundles (updated intermittently):
 
@@ -45,8 +40,6 @@ Node.js
 
       var forms = require('newforms')
 
-.. _`newforms-0.5.1.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.1.js
-.. _`newforms-0.5.1.min.js`: https://github.com/insin/newforms/raw/react/dist/newforms-0.5.1.min.js
 .. _`View CHANGES`: https://github.com/insin/newforms/blob/react/CHANGES.rst
 .. _`newforms.js`: https://github.com/insin/newforms/raw/react/newforms.js
 .. _`newforms.min.js`: https://github.com/insin/newforms/raw/react/newforms.min.js
