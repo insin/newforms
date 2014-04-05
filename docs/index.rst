@@ -67,7 +67,6 @@ Contents
    validation_api
    widgets_api
    formsets_api
-   port_differences
 
 .. _`Django`: http://www.djangoproject.com
 .. _`Node.js`: http://nodejs.org
