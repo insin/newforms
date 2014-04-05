@@ -58,6 +58,7 @@ Contents
    fields
    react
    validation
+   interactive_validation
    widgets
    formsets
    util

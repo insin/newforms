@@ -277,6 +277,8 @@ If you return anything from a custom field cleaning function, the form's
 Cleaning and validating fields that depend on each other
 --------------------------------------------------------
 
+.. _ref-validation-form-clean:
+
 Form#clean()
 ~~~~~~~~~~~~
 

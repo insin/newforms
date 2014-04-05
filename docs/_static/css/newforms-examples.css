@@ -1,0 +1,13 @@
+.newforms-example {
+  background: none repeat scroll 0 0 #FFFFFF;
+  border: 1px solid #E1E4E5;
+  margin: 1px 0 24px;
+  padding: 12px;
+}
+.newforms-example label { color: #404040; }
+.newforms-example .example-container form {
+  margin-bottom: 16px;
+}
+.newforms-example .example-container .cleaned-data {
+
+}
