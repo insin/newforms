@@ -5,6 +5,15 @@ link.rel = 'stylesheet'
 link.href = '_static/css/newforms-examples.css'
 document.querySelector('head').appendChild(link)
 
+function extend(dest, src) {
+  for (var prop in src) {
+    if (src.hasOwnProperty(prop)) {
+      dest[prop] = src[prop]
+    }
+  }
+  return dest
+}
+
 var FormRenderer = React.createClass({
   getInitialState: function() {
     return {
@@ -13,8 +22,7 @@ var FormRenderer = React.createClass({
   }
 
 , createForm: function() {
-    // Sphinx includes underscore.js and aliases it to $u
-    var args = $u.extend({onStateChange: this.onFormStateChange}, this.props.args)
+    var args = extend({onStateChange: this.onFormStateChange}, this.props.args)
     return new this.props.form(args)
   }
 
