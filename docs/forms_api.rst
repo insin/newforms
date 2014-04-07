@@ -196,6 +196,21 @@ Forms API
    Prototype functions for validating and getting information about the results
    of validation:
 
+   .. js:function:: BaseForm#validate(form)
+
+      .. versionadded:: 0.6
+
+      Gets input data from the ``<form>`` containing this Form's rendered widgets
+      and validates it.
+
+      :param form:
+        a ``<form>`` DOM node -- if React's representation of the ``<form>``
+        is given, its ``getDOMNode()`` function will be called to get the real
+        DOM node.
+
+      :return:
+         ``true`` if the <form> data is valid, ``false`` otherwise.
+
    .. js:function:: BaseForm#setData(data)
 
       .. versionadded:: 0.5

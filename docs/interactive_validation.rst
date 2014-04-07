@@ -2,6 +2,12 @@
 Interactive validation
 ======================
 
+By default, validating form input is left in your hands, typically by hooking
+into a ``<form>``'s ``onSubmit`` event and passing the ``<form>`` DOM node into
+``Form.validate()``. While the ``onSubmit`` event is always needed to determine
+that the user is done with form input, it can also be useful to provide feedback
+as they work their way through the form's fields.
+
 To validate individual form fields as the user interacts with them, you can pass
 a ``validation`` argument when instantiating a Form or Field.
 
