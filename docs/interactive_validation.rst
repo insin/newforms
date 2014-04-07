@@ -43,6 +43,8 @@ example:
      this.setState({form: this.state.form})
    }
 
+.. _ref-form-auto-validation:
+
 Form ``'auto'`` validation
 --------------------------
 
@@ -102,7 +104,62 @@ user input.
 Field ``validation``
 ====================
 
-XXX
+Fields also accept a ``validation`` argument -- validation defined at the field
+level overrides any configured at the Form level, so if you want to use interaction
+validation only for certain fields or opt fields out when validation has been
+configured at the form level, use the ``validation`` argument when defining those
+fields.
+
+``validation`` options
+======================
+
+``'manual'``
+------------
+
+This is the default option, which disables interactive validation.
+
+You're only likely to need to use this if you're opting specific fields out of
+form-wide interactive validation.
+
+``validation`` object
+---------------------
+
+Interactive validation can be specified as an object with the following
+properties:
+
+``event``
+   The name of the default event to use to trigger validation on text input
+   fields. This should be in camelCase format, as used by React.
+
+   For example, if ``'onBlur'``, text input validation will be performed when
+   the input loses focus after editing.
+
+``delay``
+   A delay, in milliseconds, to be used to debounce performing of
+   validation, to give the user time to enter input without distracting
+   them with error messages or other change in how the input's displayed
+   while they're still typing.
+
+``'auto'``
+----------
+
+The behaviour of ``'auto'`` validation is :ref:`documented above <ref-form-auto-validation>`.
+It's equivalent to passing:
+
+.. code-block:: javascript
+
+   validation: {event: 'onChange', delay: 250}
+
+Any event name
+--------------
+
+If you pass any other string as the ``validation`` argument, it will be assumed
+to be an event name, so the following lines are equivalent:
+
+.. code-block:: javascript
+
+   validation: 'onBlur'
+   validation: {event: 'onBlur'}
 
 .. raw:: html
 
