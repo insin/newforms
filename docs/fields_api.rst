@@ -72,6 +72,15 @@ Fields API
 
       .. versionadded:: 0.6
 
+   :param Boolean controlled:
+      Configures whether or not the field will render a controlled component
+
+      This can be used to configure creation of controlled components for only
+      specific fields, or to override any form-wide ``controlled`` that's been
+      configured.
+
+      .. versionadded:: 0.6
+
    **Prototype Functions**
 
    .. js:function:: Field#prepareValue(value)

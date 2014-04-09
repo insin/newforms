@@ -26,42 +26,6 @@ QUnit.test("TextInput", 8, function() {
         "<input class=\"special\" type=\"text\" name=\"email\">")
 })
 
-QUnit.test("PasswordInput", 11, function() {
-  var w = forms.PasswordInput()
-  reactHTMLEqual(w.render("email", ""),
-        "<input type=\"password\" name=\"email\">")
-  reactHTMLEqual(w.render("email", null),
-        "<input type=\"password\" name=\"email\">")
-  reactHTMLEqual(w.render("email", "secret"),
-        "<input type=\"password\" name=\"email\">")
-
-  // The renderValue argument lets you specify whether the widget should
-  // render its value. You may want to do this for security reasons.
-  w = forms.PasswordInput({renderValue: true})
-  reactHTMLEqual(w.render("email", ""),
-        "<input type=\"password\" name=\"email\">")
-  reactHTMLEqual(w.render("email", null),
-        "<input type=\"password\" name=\"email\">")
-  reactHTMLEqual(w.render("email", "test@example.com"),
-        "<input type=\"password\" name=\"email\" value=\"test@example.com\">")
-  reactHTMLEqual(w.render("email", "some \"quoted\" & ampersanded value"),
-        "<input type=\"password\" name=\"email\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">")
-  reactHTMLEqual(w.render("email", "test@example.com", {attrs: {"className": "fun"}}),
-        "<input type=\"password\" name=\"email\" class=\"fun\" value=\"test@example.com\">")
-
-  // You can also pass "attrs" to the constructor
-  w = forms.PasswordInput({attrs: {"className": "fun"}, renderValue: true})
-  reactHTMLEqual(w.render("email", ""),
-        "<input class=\"fun\" type=\"password\" name=\"email\">")
-  reactHTMLEqual(w.render("email", "foo@example.com"),
-        "<input class=\"fun\" type=\"password\" name=\"email\" value=\"foo@example.com\">")
-
-  // Attributes passed to render() get precedence over those passed to the constructor
-  w = forms.PasswordInput({attrs: {"className": "pretty"}, renderValue: true})
-  reactHTMLEqual(w.render("email", "", {attrs: {"className": "special"}}),
-        "<input class=\"special\" type=\"password\" name=\"email\">")
-})
-
 QUnit.test("HiddenInput", 10, function() {
   var w = forms.HiddenInput()
   reactHTMLEqual(w.render("email", ""),

@@ -104,6 +104,14 @@ Forms API
 
       .. versionadded:: 0.6
 
+   :param Boolean controlled:
+      Configures whether or not the form will render controlled components -
+      when using controlled components, you can update the values displayed in
+      the form post initial render using ``form.setData()`` or
+      ``form.updateData()``
+
+      .. versionadded:: 0.6
+
    :param Function onStateChange:
       .. _ref-form-kwargs-onstatechange:
 

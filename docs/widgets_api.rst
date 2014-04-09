@@ -91,31 +91,14 @@ Widgets API
       :param Object kwargs.attrs:
          additonal HTML attributes for the rendered widget.
 
-      :param kwargs.validation:
-         .. _ref-widget-render-kwargs-validation:
-
-         validation configuration for the widget. When interactive validation has
-         been configured for a widget's field, its BoundField will pass an object
-         with these properties:
-
-         ``event``
-            the name of the event which should trigger validation
-
-         ``onChange``
-            a function which should be registered for the widget's HTML input's
-            ``onChange`` event to let the containing Form know the widget's input
-            has been changed.
-
-         ``eventHandler``
-            if ``event`` is not ``'onChange'``, this additional function will be
-            given to be registered for the named ``event`` to trigger validation
-            by the Form.
+      :param Boolean kwargs.controlled:
+         ``true`` if the Widget should render a controlled component.
 
       :param kwargs.initialValue:
          if the widget has :js:attr:`Widget#needsInitialValue` configured to
          true, its initial value will always be passed
 
-   .. js:function:: Widget#buildAttrs(kwargAttrs, renderAttrs[, validation])
+   .. js:function:: Widget#buildAttrs(kwargAttrs, renderAttrs)
 
       Helper function for building an HTML attributes object using
       ``widget.attrs`` and the given arguments.
@@ -127,12 +110,6 @@ Widgets API
          any other attributes which should be included in a Widget's HTML
          attributes by default -- provided by the ``render()`` method for
          attributes related to the type of widget being implemented.
-
-      :param Object validation:
-         interactive validation configuration for the Widget -- as per the
-         :ref:`validation config given to render() <ref-widget-render-kwargs-validation>`.
-         This function handles setting up the appropriate event handling
-         attributes.
 
    .. js:function:: Widget#valueFromData(data, files, name)
 

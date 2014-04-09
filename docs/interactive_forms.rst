@@ -1,47 +1,25 @@
-======================
-Interactive validation
-======================
+=================
+Interactive forms
+=================
+
+.. versionadded:: 0.6
+
+Form validation
+===============
 
 By default, validating form input is left in your hands, typically by hooking
-into a ``<form>``'s ``onSubmit`` event and passing the ``<form>`` DOM node into
-``Form.validate()``. While the ``onSubmit`` event is always needed to determine
-that the user is done with form input, it can also be useful to provide feedback
-as they work their way through the form's fields.
+into a ``<form>``'s ``onSubmit`` event and passing the ``<form>`` node into
+``Form.validate()``.
+
+While the ``onSubmit`` event must always be used o determine when the user is
+done with form input, we can also provide feedback for the user as they work
+their way through the form's fields.
 
 To validate individual form fields as the user interacts with them, you can pass
 a ``validation`` argument when instantiating a Form or Field.
 
-Form ``validation``
-===================
-
 Passing a ``validation`` argument when instantiating a form sets up interactive
 validation for every field on the form.
-
-Form state and ``onStateChange()``
-----------------------------------
-
-When using interactive validation, either at the Form or individual Field level,
-you must pass the Form an ``onStateChange`` argument, which should be a callback
-function from the React component the form is being rendered in. An Error will
-be thrown if this argument is not provided.
-
-While a Form is not itself a React component, it is stateful. When user input is
-taken as the user makes changes and validation is run, the form's ``data``,
-``errors()`` and ``cleanedData`` will be changed depending on the outcome of
-validation.
-
-In order to update display of the form to let the user see the current validation
-state, a Form will call its given ``onStateChange()`` function each time user
-input is taken and validation is performed.
-
-Typically, this function will just force its React component to update, for
-example:
-
-.. code-block:: javascript
-
-   onFormStateChange: function() {
-     this.setState({form: this.state.form})
-   }
 
 .. _ref-form-auto-validation:
 
@@ -161,8 +139,72 @@ to be an event name, so the following lines are equivalent:
    validation: 'onBlur'
    validation: {event: 'onBlur'}
 
+Controlled components
+=====================
+
+By default, newforms generates `uncontrolled React components`_, which can
+provide initial values for form inputs but require manual updating via the DOM
+should you wish to change the displayed values via code.
+
+If you need to programatically update the values displayed in a form after its
+initial display, you will need to use `controlled React components`_.
+
+You can do this byt passing a ``controlled`` argument when constructing the Form
+or individual Fields you wish to have control over:
+
+.. code-block:: javascript
+
+   var form = new SignupForm({controlled: true, onStateChange: this.onFormStateChange})
+
+Controlled components created by newforms reflect the values held in
+``form.data``. It's recommended that you call ``form.setData()`` or
+``form.updateData()`` to update ``form.data``, as they handle transitioning from
+initial display of data to displaying user input and will also call
+``onStateChange()`` for you to trigger re-rendering of the containing React
+component.
+
+``controlled`` example form
+---------------------------
+
+XXX
+
+.. raw:: html
+
+   <div id="example-controlled-form" class="newforms-example"></div>
+
+Form state and ``onStateChange()``
+==================================
+
+When using interactive validation or controlled components, either at the Form
+or individual Field level, you must pass the Form an ``onStateChange`` argument,
+which should be a callback function for the React component the form is being
+rendered in.
+
+An Error will be thrown if this argument is not provided.
+
+While a Form is not itself a React component, it is stateful. When user input is
+taken as the user makes changes and the form's user input data is updated or
+interactive validation is run, the form's ``data``, ``errors()`` and
+``cleanedData`` may be changed.
+
+In order to update display of the form to let the user see the updated state, a
+Form will call its given ``onStateChange()`` function each time user input is
+taken or validation is performed.
+
+Typically, this function will just force its React component to update, for
+example:
+
+.. code-block:: javascript
+
+   onFormStateChange: function() {
+     this.setState({form: this.state.form})
+   }
+
 .. raw:: html
 
    <script src="_static/js/react-0.10.0.min.js"></script>
    <script src="_static/js/newforms.min.js"></script>
    <script src="_static/js/interactive-validation.js"></script>
+
+.. _`uncontrolled React components`: http://facebook.github.io/react/docs/forms.html#uncontrolled-components
+.. _`controlled React components`: http://facebook.github.io/react/docs/forms.html#controlled-components

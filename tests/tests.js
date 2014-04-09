@@ -15,6 +15,7 @@ global.forms = require('../newforms.js')
 
 var tests = [ 'util.js'
             , 'forms.js'
+            , 'forms-browser.js'
             , 'forms-server.js'
             , 'formsets.js'
             , 'formsets-server.js'
