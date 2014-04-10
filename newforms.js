@@ -1,5 +1,5 @@
 /**
- * newforms 0.6.0-alpha (dev build at Wed, 02 Apr 2014 20:18:41 GMT) - https://github.com/insin/newforms
+ * newforms 0.6.0-alpha (dev build at Wed, 09 Apr 2014 01:34:31 GMT) - https://github.com/insin/newforms
  * MIT Licensed
  */
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.forms=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -51,7 +51,8 @@ var Field = Concur.extend({
     kwargs = object.extend({
       required: true, widget: null, label: null, initial: null,
       helpText: null, errorMessages: null, showHiddenInitial: false,
-      validators: [], cssClass: null, validation: null, custom: null
+      validators: [], cssClass: null, validation: null, controlled: null,
+      custom: null
     }, kwargs)
     this.required = kwargs.required
     this.label = kwargs.label
@@ -66,6 +67,7 @@ var Field = Concur.extend({
                          ? {event: 'onChange', delay: 250}
                          : {event: this.validation})
     }
+    this.controlled = kwargs.controlled
     this.custom = kwargs.custom
 
     var widget = kwargs.widget || this.widget
@@ -1799,7 +1801,6 @@ BoundField.prototype.asWidget = function(kwargs) {
   }, kwargs)
   var widget = (kwargs.widget !== null ? kwargs.widget : this.field.widget)
   var attrs = (kwargs.attrs !== null ? kwargs.attrs : {})
-  var validation = this.validation(widget)
   var autoId = this.autoId()
   var name = !kwargs.onlyInitial ? this.htmlName : this.htmlInitialName
   if (autoId &&
@@ -1807,37 +1808,67 @@ BoundField.prototype.asWidget = function(kwargs) {
       typeof widget.attrs.id == 'undefined') {
     attrs.id = (!kwargs.onlyInitial ? autoId : this.htmlInitialId)
   }
+  if (typeof attrs.key == 'undefined') {
+    attrs.key = name
+  }
+  var controlled = this.controlled(widget)
+  var validation = this.validation(widget)
 
-  var renderKwargs = {attrs: attrs, validation: validation}
+  // Add an onChange event handler to update form.data when the field is changed
+  // if it's controlled or uses interactive validation.
+  if (controlled || validation != 'manual') {
+    attrs.onChange =
+      util.bindRight(this.form._handleFieldChange, this.form, validation)
+  }
+
+  // If validation should happen on an event other than onChange, also add an
+  // event handler for it.
+  if (validation != 'manual' && validation.event != 'onChange') {
+    attrs[validation.event] =
+      util.bindRight(this.form._handleFieldValidation, this.form, validation)
+  }
+
+  var renderKwargs = {attrs: attrs, controlled: controlled}
   if (widget.needsInitialValue) {
     renderKwargs.initialValue = this.initialValue()
   }
   return widget.render(name, this.value(), renderKwargs)
 }
 
+/**
+ * Determines if the widget should be a controlled or uncontrolled React
+ * component.
+ */
+BoundField.prototype.controlled = function(widget) {
+  if (arguments.length === 0) {
+    widget = this.field.widget
+  }
+  var controlled = false
+  if (widget.isValueSettable) {
+    // If the field has any controlled config set, it should take precedence,
+    // otherwise use the form's as it has a default.
+    controlled = (this.field.controlled !== null
+                  ? this.field.controlled
+                  : this.form.controlled)
+  }
+  return controlled
+}
+
+/**
+ * Gets the configured validation for the field or form, allowing the widget
+ * which is going to be rendered to override it if necessary.
+ */
 BoundField.prototype.validation = function(widget) {
   if (arguments.length === 0) {
     widget = this.field.widget
   }
   // If the field has any validation config set, it should take precedence,
-  // otherwise use the form's, as it has a default.
+  // otherwise use the form's as it has a default.
   var validation = this.field.validation || this.form.validation
-  if (validation != 'manual') {
-    // Allow widgets to override the type of validation that's used for them -
-    // primarily for inputs which can only be changed by click or focus.
-    if (widget.validation !== null) {
-      validation = widget.validation
-    }
-    // We're going to add stuff to validation now, so make a shallow copy
-    validation = object.extend({}, validation)
-    // Validation is driven off form.data, so we always need to keep it up to
-    // date on change, regardless of whether or not validation will happen then.
-    validation.onChange =
-        util.bindRight(this.form._handleFieldChange, this.form, validation)
-    if (validation.event != 'onChange') {
-      validation.eventHandler =
-          util.bindRight(this.form._handleFieldValidation, this.form, validation)
-    }
+  // Allow widgets to override the type of validation that's used for them -
+  // primarily for inputs which can only be changed by click/selection.
+  if (validation != 'manual' && widget.validation !== null) {
+    validation = widget.validation
   }
   return validation
 }
@@ -1969,7 +2000,8 @@ var BaseForm = Concur.extend({
     kwargs = object.extend({
       data: null, files: null, autoId: 'id_{name}', prefix: null,
       initial: null, errorConstructor: ErrorList, labelSuffix: ':',
-      emptyPermitted: false, validation: 'manual', onStateChange: null
+      emptyPermitted: false, validation: 'manual', controlled: false,
+      onStateChange: null
     }, kwargs)
     this.isBound = kwargs.data !== null || kwargs.files !== null
     this.data = kwargs.data || {}
@@ -1987,6 +2019,7 @@ var BaseForm = Concur.extend({
                          ? {event: 'onChange', delay: 250}
                          : {event: this.validation})
     }
+    this.controlled = kwargs.controlled
     this.onStateChange = kwargs.onStateChange
     this._errors = null // Stores errors after clean() has been called
     this._changedData = null
@@ -1998,22 +2031,28 @@ var BaseForm = Concur.extend({
     // always modify this.fields; they should not modify baseFields.
     this.fields = copy.deepCopy(this.baseFields)
 
-    // Now that form.fields exists, we can check if there's any active
-    // validation configured on the form or any of its fields.
-    if (this.hasActiveValidation()) {
-      // For active validation, we *must* have an onStateChange function to call
+    // Now that form.fields exists, we can check if there's any configuration
+    // which needs onStateChange on the form or its fields.
+    if (this._needsOnStateChange()) {
       if (!is.Function(kwargs.onStateChange)) {
         throw new Error(
-          'Forms must be given an onStateChange callback when their validation ' +
-          "- or any of their fields' validation - is not manual")
+          'Forms must be given an onStateChange callback when they, or any of ' +
+          'their fields, are controlled or use interactive validation.')
       }
       // isBound will flip to true as soon as the first field is validated. At
       // that point, rendering will flip to using form.data as its source, so
       // ensure data has a copy of any initial data that's been configured.
       if (!this.isBound) {
-        object.extend(this.data,
-                      this._prefixedFieldInitialData(),
-                      this._prefixData(this.initial))
+        var initialData = object.extend(this._fieldInitialData(), this.initial)
+        var initialFields = Object.keys(initialData)
+        for (var i = 0, l = initialFields.length; i < l; i++) {
+          var fieldName = initialFields[i]
+          if (typeof this.fields[fieldName] == 'undefined') { continue }
+          // Don't copy initial to input data for fields which can't have the
+          // initial data set as their current value.
+          if (!this.fields[fieldName].widget.isValueSettable) { continue }
+          this.data[this.addPrefix(fieldName)] = initialData[fieldName]
+        }
       }
     }
   }
@@ -2087,6 +2126,20 @@ BaseForm.prototype._delayedFieldValidation = function(field, delay) {
 }
 
 /**
+ * Validates the given HTML form's data.
+ * @param {HTMLFormElement} form the <form> containing this Form's rendered
+ *   widgets.
+ * @return {boolean} true if the form's data is valid.
+ */
+BaseForm.prototype.validate = function(form) {
+  if (form && typeof form.getDOMNode == 'function') {
+    form = form.getDOMNode()
+  }
+  var data = util.formData(form)
+  return this.setData(data)
+}
+
+/**
  * Resets validation state, replaces the form's input data (and flips its bound
  * flag if necessary) and revalidates, returning the result of isValid().
  * @param {Object.<string,*>} data new input data for the form.
@@ -2100,7 +2153,11 @@ BaseForm.prototype.setData = function(data) {
     this.isBound = true
   }
   // This call ultimately triggers a fullClean() because _errors isn't set
-  return this.isValid()
+  var isValid = this.isValid()
+  if (typeof this.onStateChange == 'function') {
+    this.onStateChange()
+  }
+  return isValid
 }
 
 /**
@@ -2122,6 +2179,9 @@ BaseForm.prototype.updateData = function(data) {
     }
   }
   this.partialClean(fields)
+  if (typeof this.onStateChange == 'function') {
+    this.onStateChange()
+  }
 }
 
 /**
@@ -2551,6 +2611,12 @@ BaseForm.prototype.partialClean = function(fields) {
     this.cleanedData = {}
   }
 
+  // If the form is permitted to be empty, and none of the form data has
+  // changed from the initial data, short circuit any validation.
+  if (this.emptyPermitted && !this.hasChanged()) {
+    return
+  }
+
   for (var i = 0, l = fields.length; i < l; i++) {
     this._cleanField(fields[i])
   }
@@ -2671,41 +2737,36 @@ BaseForm.prototype.isMultipart = function() {
 
 /**
  * @return {boolean} true if the form or any of its fields have active
- *   validation configured.
+ *   validation configured or are configured to be controlled.
  */
-BaseForm.prototype.hasActiveValidation = function() {
-  if (this.validation !== 'manual') { return true}
+BaseForm.prototype._needsOnStateChange = function() {
+  if (this.validation !== 'manual' || this.controlled === true) { return true }
   for (var name in this.fields) {
     if (!object.hasOwn(this.fields, name)) { continue }
-    var fieldvalidation = this.fields[name].validation
-    if (fieldvalidation !== null && fieldvalidation !== 'manual') {
+    var field = this.fields[name]
+    if (field.controlled === true || (field.validation !== null &&
+                                      field.validation !== 'manual')) {
       return true
     }
   }
   return false
 }
 
-BaseForm.prototype._prefixedFieldInitialData = function() {
+/**
+ * Gets initial data configured in this form's fields as a field -> initial
+ * value object.
+ */
+BaseForm.prototype._fieldInitialData = function() {
   var fieldInitial = {}
   var fieldNames = Object.keys(this.fields)
-  for (var i = 0, l = fieldNames.length, fieldName, initial; i < l; i++) {
-    fieldName = fieldNames[i]
-    initial = this.fields[fieldName].initial
+  for (var i = 0, l = fieldNames.length; i < l; i++) {
+    var fieldName = fieldNames[i]
+    var initial = this.fields[fieldName].initial
     if (initial !== null) {
-      fieldInitial[this.addPrefix(fieldName)] = initial
+      fieldInitial[fieldName] = initial
     }
   }
   return fieldInitial
-}
-
-BaseForm.prototype._prefixData = function(data) {
-  var prefixedData = {}
-  var fieldNames = Object.keys(data)
-  for (var i = 0, l = fieldNames.length, fieldName; i < l; i++) {
-    fieldName = fieldNames[i]
-    prefixedData[fieldName] = this.addPrefix(data[fieldName])
-  }
-  return prefixedData
 }
 
 /**
@@ -2878,7 +2939,8 @@ var BaseFormSet = Concur.extend({
   constructor: function BaseFormSet(kwargs) {
     kwargs = object.extend({
       data: null, files: null, autoId: 'id_{name}', prefix: null,
-      initial: null, errorConstructor: ErrorList, managementFormCssClass: null
+      initial: null, errorConstructor: ErrorList, managementFormCssClass: null,
+      validation: 'manual', controlled: false, onStateChange: null
     }, kwargs)
     this.isBound = kwargs.data !== null || kwargs.files !== null
     this.prefix = kwargs.prefix || this.getDefaultPrefix()
@@ -2888,6 +2950,9 @@ var BaseFormSet = Concur.extend({
     this.initial = kwargs.initial
     this.errorConstructor = kwargs.errorConstructor
     this.managementFormCssClass = kwargs.managementFormCssClass
+    this.validation = kwargs.validation
+    this.controlled = kwargs.controlled
+    this.onStateChange = kwargs.onStateChange
     this._forms = null
     this._errors = null
     this._nonFormErrors = null
@@ -2906,6 +2971,7 @@ BaseFormSet.prototype.setData = function(data) {
   if (!this.isBound) {
     this.isBound = true
   }
+  this.forms().map(function(form) { form.setData(data) })
   return this.isValid()
 }
 
@@ -2988,18 +3054,28 @@ BaseFormSet.prototype.initialFormCount = function() {
 }
 
 /**
- * @browser Instantiates forms.
- * @server Instantiates forms only when first accessed.
+ * Instantiates forms when first accessed.
  */
 BaseFormSet.prototype.forms = function() {
-  if (!env.browser && this._forms !== null) { return this._forms }
+  if (this._forms !== null) { return this._forms }
   var forms = []
   var totalFormCount = this.totalFormCount()
   for (var i = 0; i < totalFormCount; i++) {
     forms.push(this._constructForm(i))
   }
-  if (!env.browser) { this._forms = forms }
+  this._forms = forms
   return forms
+}
+
+/**
+ * Adds another form and increments extra.
+ */
+BaseFormSet.prototype.addAnother = function() {
+  var currentFormCount = this.totalFormCount()
+  this.extra++
+  if (this._forms !== null) {
+    this._forms[currentFormCount] = this._constructForm(currentFormCount)
+  }
 }
 
 /**
@@ -3010,6 +3086,9 @@ BaseFormSet.prototype._constructForm = function(i) {
     autoId: this.autoId
   , prefix: this.addPrefix(i)
   , errorConstructor: this.errorConstructor
+  , validation: this.validation
+  , controlled: this.controlled
+  , onStateChange: this.onStateChange
   }
   if (this.isBound) {
     defaults.data = this.data
@@ -3430,7 +3509,8 @@ object.extend(
   , ErrorList: util.ErrorList
   , formData: util.formData
   , util: {
-      formatToArray: util.formatToArray
+      fieldData: util.fieldData
+    , formatToArray: util.formatToArray
     , makeChoices: util.makeChoices
     , prettyName: util.prettyName
     }
@@ -3948,7 +4028,6 @@ module.exports = {
 
 var Concur = _dereq_('Concur')
 var is = _dereq_('isomorph/is')
-var format = _dereq_('isomorph/format').formatObj
 var object = _dereq_('isomorph/object')
 var time = _dereq_('isomorph/time')
 var React = (window.React)
@@ -4003,6 +4082,8 @@ var Widget = Concur.extend({
 , validation: null
   /** Determines whether this widget's render logic always needs to use the initial value. */
 , needsInitialValue: false
+  /** Determines wherther this widget's value can be set. */
+, isValueSettable: true
 })
 
 /**
@@ -4030,17 +4111,8 @@ Widget.prototype.render = function(name, value, kwargs) {
 /**
  * Helper function for building an HTML attributes object.
  */
-Widget.prototype.buildAttrs = function(kwargAttrs, renderAttrs, validation) {
+Widget.prototype.buildAttrs = function(kwargAttrs, renderAttrs) {
   var attrs = object.extend({}, this.attrs, renderAttrs, kwargAttrs)
-  if (validation && validation !== 'manual') {
-    // Add an onChange handler to let the form know when the field changes
-    attrs.onChange = validation.onChange
-    // If validation should be performed when a different event fires, hook up
-    // the supplied handler for it.
-    if (validation.event != 'onChange') {
-      attrs[validation.event] = validation.eventHandler
-    }
-  }
   return attrs
 }
 
@@ -4095,10 +4167,10 @@ Input.prototype.render = function(name, value, kwargs) {
     value = ''
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {type: this.inputType,
-                                                  name: name}, kwargs.validation)
+                                                  name: name})
   // Hidden inputs can be made controlled inputs by default, as the user
   // can't directly interact with them.
-  var valueAttr = (this.isHidden ? 'value' : 'defaultValue')
+  var valueAttr = (kwargs.controlled || this.isHidden ? 'value' : 'defaultValue')
   if (!(valueAttr == 'defaultValue' && value === '')) {
     finalAttrs[valueAttr] = (value !== '' ? ''+this._formatValue(value) : value)
   }
@@ -4182,9 +4254,7 @@ var PasswordInput = TextInput.extend({
 })
 
 PasswordInput.prototype.render = function(name, value, kwargs) {
-  kwargs = object.extend({validation: 'manual'}, kwargs)
-  var validation = kwargs.validation
-  if (((!validation || validation == 'manual') || !env.browser) && !this.renderValue) {
+  if (!env.browser && !this.renderValue) {
     value = ''
   }
   return TextInput.prototype.render.call(this, name, value, kwargs)
@@ -4227,13 +4297,16 @@ MultipleHiddenInput.prototype.render = function(name, value, kwargs) {
   var finalAttrs = this.buildAttrs(kwargs.attrs, {type: this.inputType,
                                                   name: name})
   var id = object.get(finalAttrs, 'id', null)
+  var key = object.get(finalAttrs, 'key', null)
   var inputs = []
   for (var i = 0, l = value.length; i < l; i++) {
     var inputAttrs = object.extend({}, finalAttrs, {value: value[i]})
+    // Add numeric index suffixes to attributes which should be unique
     if (id) {
-      // An ID attribute was given. Add a numeric index as a suffix
-      // so that the inputs don't all have the same ID attribute.
-      inputAttrs.id = format('{id}_{i}', {id: id, i: i})
+      inputAttrs.id = id + '_' + i
+    }
+    if (key) {
+      inputAttrs.key = id + '_' + i
     }
     inputs.push(React.DOM.input(inputAttrs))
   }
@@ -4261,6 +4334,7 @@ var FileInput = Input.extend({
 , inputType: 'file'
 , needsMultipartForm: true
 , validation: {event: 'onChange'}
+, isValueSettable: false
 })
 
 FileInput.prototype.render = function(name, value, kwargs) {
@@ -4284,6 +4358,7 @@ var FILE_INPUT_CONTRADICTION = {}
  */
 var ClearableFileInput = FileInput.extend({
   needsInitialValue: true
+, isValueSettable: false
 , constructor: function ClearableFileInput(kwargs) {
     if (!(this instanceof Widget)) { return new ClearableFileInput(kwargs) }
     FileInput.call(this, kwargs)
@@ -4396,12 +4471,13 @@ var Textarea = Widget.extend({
 })
 
 Textarea.prototype.render = function(name, value, kwargs) {
-  kwargs = object.extend({validation: 'manual'}, kwargs)
+  kwargs = object.extend({}, kwargs)
   if (value === null) {
     value = ''
   }
-  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name}, kwargs.validation)
-  finalAttrs.defaultValue = value
+  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name})
+  var valueAttr = (kwargs.controlled ? 'value' : 'defaultValue')
+  finalAttrs[valueAttr] = value
   return React.DOM.textarea(finalAttrs)
 }
 
@@ -4489,15 +4565,16 @@ var CheckboxInput = Widget.extend({
 })
 
 CheckboxInput.prototype.render = function(name, value, kwargs) {
-  kwargs = object.extend({validation: 'manual'}, kwargs)
+  kwargs = object.extend({}, kwargs)
   var finalAttrs = this.buildAttrs(kwargs.attrs, {type: 'checkbox',
-                                                  name: name}, kwargs.validation)
+                                                  name: name})
   if (value !== '' && value !== true && value !== false && value !== null &&
       value !== undefined) {
     // Only add the value attribute if value is non-empty
     finalAttrs.value = value
   }
-  finalAttrs.defaultChecked = this.checkTest(value)
+  var checkedAttr = (kwargs.controlled ? 'checked' : 'defaultChecked')
+  finalAttrs[checkedAttr] = this.checkTest(value)
   return React.DOM.input(finalAttrs)
 }
 
@@ -4549,9 +4626,10 @@ Select.prototype.render = function(name, selectedValue, kwargs) {
   if (selectedValue === null) {
     selectedValue = ''
   }
-  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name}, kwargs.validation)
+  var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name})
   var options = this.renderOptions(kwargs.choices, [selectedValue])
-  finalAttrs.defaultValue = selectedValue
+  var valueAttr = (kwargs.controlled ? 'value' : 'defaultValue')
+  finalAttrs[valueAttr] = selectedValue
   return React.DOM.select(finalAttrs, options)
 }
 
@@ -4661,9 +4739,6 @@ var SelectMultiple = Select.extend({
  *   selected, or null if no values are selected - these will be normalised to
  *   Strings for comparison with choice values.
  * @param {Object} [kwargs] additional rendering options.
- * @config {Object} [attrs] additional HTML attributes for the rendered widget.
- * @config {Array} [choices] choices to be used when rendering the widget, in
- *   addition to those already held by the widget itself.
  * @return a <select> element which allows multiple selections.
  */
 SelectMultiple.prototype.render = function(name, selectedValues, kwargs) {
@@ -4675,9 +4750,10 @@ SelectMultiple.prototype.render = function(name, selectedValues, kwargs) {
     selectedValues = [selectedValues]
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name,
-                                                  multiple: 'multiple'}, kwargs.validation)
+                                                  multiple: 'multiple'})
   var options = this.renderOptions(kwargs.choices, selectedValues)
-  finalAttrs.defaultValue = selectedValues
+  var valueAttr = (kwargs.controlled ? 'value' : 'defaultValue')
+  finalAttrs[valueAttr] = selectedValues
   return React.DOM.select(finalAttrs, options)
 }
 
@@ -4700,16 +4776,19 @@ SelectMultiple.prototype.valueFromData = function(data, files, name) {
  * <input>.
  */
 var ChoiceInput = SubWidget.extend({
-  constructor: function ChoiceInput(name, value, attrs, validation, choice, index) {
+  constructor: function ChoiceInput(name, value, attrs, controlled, choice, index) {
     this.name = name
     this.value = value
     this.attrs = attrs
-    this.validation = validation
+    this.controlled = controlled
     this.choiceValue = ''+choice[0]
     this.choiceLabel = ''+choice[1]
     this.index = index
     if (typeof this.attrs.id != 'undefined') {
       this.attrs.id += '_' + this.index
+    }
+    if (typeof this.attrs.key != 'undefined') {
+      this.attrs.key += '_' + this.index
     }
   }
 , inputType: null // Subclasses must define this
@@ -4736,8 +4815,9 @@ ChoiceInput.prototype.isChecked = function() {
 ChoiceInput.prototype.tag = function() {
   var finalAttrs = Widget.prototype.buildAttrs.call(this, {}, {
     type: this.inputType, name: this.name, value: this.choiceValue
-  }, this.validation)
-  finalAttrs.defaultChecked = this.isChecked()
+  })
+  var checkedAttr = (this.controlled ? 'checked' : 'defaultChecked')
+  finalAttrs[checkedAttr] = this.isChecked()
   return React.DOM.input(finalAttrs)
 }
 
@@ -4746,25 +4826,25 @@ ChoiceInput.prototype.idForLabel = function() {
 }
 
 var RadioChoiceInput = ChoiceInput.extend({
-  constructor: function RadioChoiceInput(name, value, attrs, validation, choice, index) {
+  constructor: function RadioChoiceInput(name, value, attrs, controlled, choice, index) {
     if (!(this instanceof RadioChoiceInput)) {
-      return new RadioChoiceInput(name, value, attrs, validation, choice, index)
+      return new RadioChoiceInput(name, value, attrs, controlled, choice, index)
     }
-    ChoiceInput.call(this, name, value, attrs, validation, choice, index)
+    ChoiceInput.call(this, name, value, attrs, controlled, choice, index)
     this.value = ''+this.value
   }
 , inputType: 'radio'
 })
 
 var CheckboxChoiceInput = ChoiceInput.extend({
-  constructor: function CheckboxChoiceInput(name, value, attrs, validation, choice, index) {
+  constructor: function CheckboxChoiceInput(name, value, attrs, controlled, choice, index) {
     if (!(this instanceof CheckboxChoiceInput)) {
-      return new CheckboxChoiceInput(name, value, attrs, validation, choice, index)
+      return new CheckboxChoiceInput(name, value, attrs, controlled, choice, index)
     }
     if (!is.Array(value)) {
       value = [value]
     }
-    ChoiceInput.call(this, name, value, attrs, validation, choice, index)
+    ChoiceInput.call(this, name, value, attrs, controlled, choice, index)
     for (var i = 0, l = this.value.length; i < l; i++) {
       this.value[i] = ''+this.value[i]
     }
@@ -4782,18 +4862,18 @@ CheckboxChoiceInput.prototype.isChecked = function() {
  * @param {string} name
  * @param {string} value
  * @param {Object} attrs
- * @param {Object} validation
+ * @param {boolean} controlled
  * @param {Array} choices
  */
 var ChoiceFieldRenderer = Concur.extend({
-  constructor: function ChoiceFieldRenderer(name, value, attrs, validation, choices) {
+  constructor: function ChoiceFieldRenderer(name, value, attrs, controlled, choices) {
     if (!(this instanceof ChoiceFieldRenderer)) {
-      return new ChoiceFieldRenderer(name, value, attrs, validation, choices)
+      return new ChoiceFieldRenderer(name, value, attrs, controlled, choices)
     }
     this.name = name
     this.value = value
     this.attrs = attrs
-    this.validation = validation
+    this.controlled = controlled
     this.choices = choices
   }
 , choiceInputConstructor: null
@@ -4804,7 +4884,7 @@ ChoiceFieldRenderer.prototype.choiceInputs = function() {
   for (var i = 0, l = this.choices.length; i < l; i++) {
     inputs.push(this.choiceInputConstructor(this.name, this.value,
                                             object.extend({}, this.attrs),
-                                            this.validation,
+                                            this.controlled,
                                             this.choices[i], i))
   }
   return inputs
@@ -4816,9 +4896,9 @@ ChoiceFieldRenderer.prototype.choiceInput = function(i) {
   }
   return this.choiceInputConstructor(this.name, this.value,
                                      object.extend({}, this.attrs),
-                                     this.validation,
+                                     this.controlled,
                                      this.choices[i], i)
-}
+  }
 
 /**
  * Outputs a <ul> for this set of choice fields.
@@ -4827,6 +4907,7 @@ ChoiceFieldRenderer.prototype.choiceInput = function(i) {
  */
 ChoiceFieldRenderer.prototype.render = function() {
   var id = object.get(this.attrs, 'id', null)
+  var key = object.pop(this.attrs, 'key', null)
   var items = []
   for (var i = 0, l = this.choices.length; i < l; i++) {
     var choice = this.choices[i]
@@ -4837,8 +4918,12 @@ ChoiceFieldRenderer.prototype.render = function() {
       if (id) {
         attrsPlus.id +='_' + i
       }
+      if (key) {
+        attrsPlus.key += '_' + i
+      }
       var subRenderer = ChoiceFieldRenderer(this.name, this.value,
-                                            attrsPlus, this.validation,
+                                            attrsPlus,
+                                            this.controlled,
                                             choiceLabel)
       subRenderer.choiceInputConstructor = this.choiceInputConstructor
       items.push(React.DOM.li(null, choiceValue, subRenderer.render()))
@@ -4846,7 +4931,7 @@ ChoiceFieldRenderer.prototype.render = function() {
     else {
       var w = this.choiceInputConstructor(this.name, this.value,
                                           object.extend({}, this.attrs),
-                                          this.validation,
+                                          this.controlled,
                                           choice, i)
       items.push(React.DOM.li(null, w.render()))
     }
@@ -4859,9 +4944,9 @@ ChoiceFieldRenderer.prototype.render = function() {
 }
 
 var RadioFieldRenderer = ChoiceFieldRenderer.extend({
-  constructor: function RadioFieldRenderer(name, value, attrs, validation, choices) {
+  constructor: function RadioFieldRenderer(name, value, attrs, controlled, choices) {
     if (!(this instanceof RadioFieldRenderer)) {
-      return new RadioFieldRenderer(name, value, attrs, validation, choices)
+      return new RadioFieldRenderer(name, value, attrs, controlled, choices)
     }
     ChoiceFieldRenderer.apply(this, arguments)
   }
@@ -4869,9 +4954,9 @@ var RadioFieldRenderer = ChoiceFieldRenderer.extend({
 })
 
 var CheckboxFieldRenderer = ChoiceFieldRenderer.extend({
-  constructor: function CheckboxFieldRenderer(name, value, attrs, validation, choices) {
+  constructor: function CheckboxFieldRenderer(name, value, attrs, controlled, choices) {
     if (!(this instanceof CheckboxFieldRenderer)) {
-      return new CheckboxFieldRenderer(name, value, attrs, validation, choices)
+      return new CheckboxFieldRenderer(name, value, attrs, controlled, choices)
     }
     ChoiceFieldRenderer.apply(this, arguments)
   }
@@ -4890,21 +4975,21 @@ var RendererMixin = Concur.extend({
 , validation: {event: 'onChange'}
 })
 
-RendererMixin.prototype.subWidgets = function(name, value, kwargs, validation) {
-  return this.getRenderer(name, value, kwargs, validation).choiceInputs()
+RendererMixin.prototype.subWidgets = function(name, value, kwargs) {
+  return this.getRenderer(name, value, kwargs).choiceInputs()
 }
 
 /**
  * @return an instance of the renderer to be used to render this widget.
  */
 RendererMixin.prototype.getRenderer = function(name, value, kwargs) {
-  kwargs = object.extend({choices: [], validation: 'manual'}, kwargs)
+  kwargs = object.extend({choices: [], controlled: false}, kwargs)
   if (value === null) {
     value = this._emptyValue
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs)
   var choices = this.choices.concat(kwargs.choices)
-  return new this.renderer(name, value, finalAttrs, kwargs.validation, choices)
+  return new this.renderer(name, value, finalAttrs, kwargs.controlled, choices)
 }
 
 RendererMixin.prototype.render = function(name, value, kwargs) {
@@ -4997,17 +5082,16 @@ var MultiWidget = Widget.extend({
  * @param {(Array.<*>|*)} value a list of values, or a normal value (e.g., a String that has
  *   been "compressed" from a list of values).
  * @param {Object=} kwargs]additional rendering options
- * @config {Object=} validation
  * @return a rendered collection of widgets.
  */
 MultiWidget.prototype.render = function(name, value, kwargs) {
-  kwargs = object.extend({validation: 'manual'}, kwargs)
-  var validation = kwargs.validation
+  kwargs = object.extend({}, kwargs)
   if (!(is.Array(value))) {
     value = this.decompress(value)
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {'data-newforms-field': name})
-  var id = (typeof finalAttrs.id != 'undefined' ? finalAttrs.id : null)
+  var id = object.get(finalAttrs, 'id', null)
+  var key = object.get(finalAttrs, 'key', null)
   var renderedWidgets = []
   for (var i = 0, l = this.widgets.length; i < l; i++) {
     var widget = this.widgets[i]
@@ -5018,14 +5102,12 @@ MultiWidget.prototype.render = function(name, value, kwargs) {
     if (id) {
       finalAttrs.id = id + '_' + i
     }
-    if (validation && validation !== 'manual') {
-      finalAttrs.onChange = validation.onChange
-      if (validation.event != 'onChange') {
-        finalAttrs[validation.event] = validation.eventHandler
-      }
+    if (key) {
+      finalAttrs.key = key + '_' + i
     }
     renderedWidgets.push(
-        widget.render(name + '_' + i, widgetValue, {attrs: finalAttrs}))
+        widget.render(name + '_' + i, widgetValue, {attrs: finalAttrs,
+                                                    controlled: kwargs.controlled}))
   }
   return this.formatOutput(renderedWidgets)
 }
@@ -5150,7 +5232,7 @@ module.exports = {
 , SplitHiddenDateTimeWidget: SplitHiddenDateTimeWidget
 }
 
-},{"./env":1,"./formats":3,"./util":7,"Concur":9,"isomorph/format":12,"isomorph/is":13,"isomorph/object":14,"isomorph/time":15}],9:[function(_dereq_,module,exports){
+},{"./env":1,"./formats":3,"./util":7,"Concur":9,"isomorph/is":13,"isomorph/object":14,"isomorph/time":15}],9:[function(_dereq_,module,exports){
 'use strict';
 
 var is = _dereq_('isomorph/is')
