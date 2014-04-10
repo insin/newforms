@@ -82,7 +82,8 @@ Quick Guide
      // Implement custom whole-form validation by adding a clean() function to
      // the form's prototype
      , clean: function() {
-         if (this.cleanedData.subject.indexOf('that tenner you owe me') != -1 &&
+         if (this.cleanedData.subject &&
+             this.cleanedData.subject.indexOf('that tenner you owe me') != -1 &&
              PEOPLE_I_OWE_A_TENNER_TO.indexOf(this.cleanedData.sender) != 1) {
            // This error will be associated with the named field
            this.addError('sender', "Your email address doesn't seem to be working.")
@@ -99,13 +100,22 @@ Quick Guide
   **not**  automatically optional for the Form and FormSet constructors you
   create::
 
-     var form = new ContactForm()
+     // ...in a React component...
+     getInitialState: function() {
+       return {
+         form: new ContactForm({
+           validation: 'auto'
+         , onStateChange: this.forceUpdate.bind(this)
+         })
+       }
+     }
 
 * Forms have default convenience rendering methods to get you started quickly,
   which display a label, input widgets and any validation errors for each field
   (however, JSX and ``React.DOM`` make it convenient to write your own custom
   rendering later)::
 
+     // ...in a React component's render() method...
      <form ref="contactForm" onSubmit={this.onSubmit}>
        <table>
          <tbody>
@@ -124,22 +134,21 @@ Quick Guide
   For example, if the form was held as state in a React component which
   had the above JSX in its ``render()`` method::
 
-     function onSubmit(e) {
+     // ...in a React component...
+     onSubmit: function(e) {
        e.preventDefault()
 
-       var form = this.state.form
-       var formData = forms.formData(this.refs.contactForm.getDOMNode())
-       var isValid = form.setData(formData)
+       // A Form's validate() method gets input data from a given <form> and
+       // validates it.
+       var isValid = this.state.form.validate(this.refs.contactForm)
+
+       // If the data was invalid, the forms's error object will be populated
+       // with field validation errors and the form will have called its
+       // onStateChange callback to update its display.
 
        if (isValid) {
-         // form.cleanedData now contains validated input data, coerced to the
+         // form.cleanedData contains validated input data, coerced to the
          // appropriate JavaScript data types by its Fields.
-       }
-       else {
-         // If the data was invalid, the forms's error object will be populated
-         // with field validation errors, which will be displayed the next time
-         // it's rendered.
-         this.forceUpdate()
        }
      }
 
