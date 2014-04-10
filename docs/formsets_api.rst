@@ -95,11 +95,9 @@ Formsets API
 
       Returns a list of this formset's form instances.
 
-      Browser-specific
-         On the browser, new form instances are created each time this method is
-         called, as data bound to the FormSet can be changed.
-      Server-specific
-         On the server, forms are instantiated once and cached.
+   .. js:function:: BaseFormSet#addAnother()
+
+      Increments ``formset.extra`` and adds another form to the formset.
 
    .. js:function:: BaseFormSet#initialForms()
 
