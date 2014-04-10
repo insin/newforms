@@ -1,6 +1,6 @@
 {
   "name": "newforms",
-  "description": "JavaScript port of Django's form-handling library, usable in browsers and Node.js, making use of React on both sides",
+  "description": "An isomorphic form-handling library for React",
   "version": "0.6.0-alpha",
   "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
   "tags": [
