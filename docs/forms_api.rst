@@ -104,7 +104,7 @@ Forms API
 
       .. versionadded:: 0.6
 
-   :param Boolean controlled:
+   :param Boolean kwargs.controlled:
       Configures whether or not the form will render controlled components -
       when using controlled components, you can update the values displayed in
       the form post initial render using ``form.setData()`` or
@@ -112,7 +112,7 @@ Forms API
 
       .. versionadded:: 0.6
 
-   :param Function onStateChange:
+   :param Function kwargs.onStateChange:
       .. _ref-form-kwargs-onstatechange:
 
       If interactive validation is configured for a Form or any of its Fields,
@@ -219,7 +219,7 @@ Forms API
       :return:
          ``true`` if the <form> data is valid, ``false`` otherwise.
 
-   .. js:function:: BaseForm#setData(data)
+   .. js:function:: BaseForm#setData(data[, kwargs])
 
       .. versionadded:: 0.5
 
@@ -229,23 +229,52 @@ Forms API
 
       :param Object data: new input data for the form
 
+      :param Object kwargs: data updating options, which are as follows:
+
+      :param Boolean kwargs.prefixed:
+         pass ``true`` when updating data in a prefixed form and the field
+         names in ``data`` are already prefixed -- defaults to ``false``
+
       :return:
          ``true`` if the form has no errors after validating the updated data,
          ``false`` otherwise.
 
-   .. js:function:: BaseForm#updateData(data)
+   .. js:function:: BaseForm#updateData(data[, kwargs])
 
       .. versionadded:: 0.6
 
       Updates the form's :js:attr:`form.data` (and flips :js:attr:`form.isBound`
-      to true, if necessary) then triggers validation of fields which had their
-      input data updated, as well as form-wide cleaning.
+      to true, if necessary).
+
+      By default, triggers validation of fields which had their input data
+      updated, as well as form-wide cleaning.
 
       :param Object data:
          partial input data for the form, field name -> input data.
 
          If your form has a :ref:`prefix <ref-form-prefixes>`, field names in
          the given data object must also be prefixed.
+
+      :param Object kwargs: data updating options, which are as follows:
+
+      :param Boolean kwargs.prefixed:
+         pass ``true`` when updating data in a prefixed form and the field
+         names in ``data`` are already prefixed -- defaults to ``false``
+
+      The follwing options are intended for use with controlled forms, when
+      you're only updating data in order to change what's displayed in the
+      controlled components:
+
+      :param Boolean kwargs.validate:
+         pass ``false`` if you want to skip validating the  updated fields --
+         defaults to ``true``. This can be ignored if you're passing known-good
+         data.
+
+      :param Boolean kwargs.clearValidation:
+         pass ``false`` if you're skipping validation and you also want to skip
+         clearing of the results of any previous validation on the fields being
+         updated, such as error messages and ``cleanedData`` -- defaults to
+         ``true``
 
    .. js:function:: BaseForm#isValid()
 

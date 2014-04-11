@@ -327,7 +327,7 @@ fields). More information about this is in :doc:`validation`.
 Updating a form's input data
 =============================
 
-To update a Form's input data use ``form.setData()``.
+To replace a Form's input data use ``form.setData()``.
 
 This will also trigger validation -- updating ``form.errors()`` and
 ``form.cleanedData``, and returning the result of ``form.isValid()``:
