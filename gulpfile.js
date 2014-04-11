@@ -1,11 +1,13 @@
+var browserify = require('browserify')
 var gulp = require('gulp')
+var source = require('vinyl-source-stream')
 
-var browserify = require('gulp-browserify')
 var concat = require('gulp-concat')
 var header = require('gulp-header')
 var jshint = require('gulp-jshint')
 var plumber = require('gulp-plumber')
 var rename = require('gulp-rename')
+var streamify = require('gulp-streamify')
 var uglify = require('gulp-uglify')
 var gutil = require('gulp-util')
 
@@ -27,23 +29,23 @@ gulp.task('lint', function() {
 })
 
 gulp.task('build-js', ['lint'], function(){
-  var stream = gulp.src(jsEntryPoint, {read: false})
-    .pipe(plumber())
-    .pipe(browserify({
-      transform: 'browserify-shim'
-    , debug: !gutil.env.production
+  var b = browserify([jsEntryPoint])
+  b.transform('browserify-shim')
+  var stream = b.bundle({
+      debug: !gutil.env.production
     , standalone: 'forms'
     , detectGlobals: false
-    }))
-    .pipe(concat('newforms.js'))
-    .pipe(header(srcHeader, {pkg: pkg, dev: dev}))
+    })
+    .pipe(plumber())
+    .pipe(source('newforms.js'))
+    .pipe(streamify(header(srcHeader, {pkg: pkg, dev: dev})))
     .pipe(gulp.dest('./'))
 
   if (gutil.env.production) {
     stream = stream
       .pipe(rename('newforms.min.js'))
-      .pipe(uglify())
-      .pipe(header(srcHeader, {pkg: pkg, dev: dev}))
+      .pipe(streamify(uglify()))
+      .pipe(streamify(header(srcHeader, {pkg: pkg, dev: dev})))
       .pipe(gulp.dest('./'))
   }
 
