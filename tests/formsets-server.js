@@ -842,8 +842,8 @@ QUnit.test("With management data works fine", 7, function() {
   var formset = new ArticleFormSet({data: data})
   strictEqual(formset.initialFormCount(), 0)
   strictEqual(formset.totalFormCount(), 1)
-  strictEqual(formset.isBound, true)
-  strictEqual(formset.forms()[0].isBound, true)
+  strictEqual(formset.isInitialRender, false)
+  strictEqual(formset.forms()[0].isInitialRender, false)
   strictEqual(formset.isValid(), true)
   strictEqual(formset.forms()[0].isValid(), true)
   deepEqual(formset.cleanedData(), [{}])
@@ -876,8 +876,8 @@ QUnit.test("Empty forms are unbound", 3, function() {
   var boundFormset = new ArticleFormSet({data: data})
   var emptyForms = [unboundFormset.emptyForm(), boundFormset.emptyForm()]
   // Empty forms should be unbound
-  strictEqual(emptyForms[0].isBound, false)
-  strictEqual(emptyForms[1].isBound, false)
+  strictEqual(emptyForms[0].isInitialRender, true)
+  strictEqual(emptyForms[1].isInitialRender, true)
   // The empty forms should be equal
   equal(""+emptyForms[0].asDiv(), ""+emptyForms[1].asDiv())
 })

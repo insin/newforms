@@ -20,7 +20,7 @@ QUnit.test("Form", 12, function() {
   // Pass a data object when initialising - this is typical of server-side usage
   // where data is supplied only once via the HTTP request.
   var p = new Person({data: {first_name: "John", last_name: "Lennon", birthday: "1940-10-9"}})
-  strictEqual(p.isBound, true)
+  strictEqual(p.isInitialRender, false)
   strictEqual(p.errors().isPopulated(), false)
   strictEqual(p.isValid(), true)
   strictEqual(p.errors().asUl(), undefined)
@@ -56,10 +56,10 @@ QUnit.test('Setting form data', function() {
   // where the form must first be crated and displayed to take user input. It
   // should be, behaviour-wise, equivalent to instantiating with data.
   var p = new Person()
-  strictEqual(p.isBound, false, 'initial isBound value')
+  strictEqual(p.isInitialRender, true, 'initial isInitialRender value')
   var isValid = p.setData({first_name: "John", last_name: "Lennon", birthday: "1940-10-9"})
   strictEqual(isValid, true, 'setData calls and returns the result of isValid')
-  strictEqual(p.isBound, true, 'setData makes the form bound if it was not already')
+  strictEqual(p.isInitialRender, false, 'setData makes the form bound if it was not already')
   reactHTMLEqual(p.render.bind(p),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\" value=\"John\"></td></tr>\
 <tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\"></td></tr>\
@@ -74,7 +74,7 @@ QUnit.test('Updating form data', 32, function() {
   // they move off the field.
   var p = new Person()
   p.updateData({birthday: 'invalid'})
-  strictEqual(p.isBound, true, 'updateData makes the form bound if it was not already')
+  strictEqual(p.isInitialRender, false, 'updateData makes the form bound if it was not already')
   strictEqual(p.isValid(), false, 'isValid correctly reports the state of data validated so far')
   deepEqual(p.errors('birthday').messages(), ["Enter a valid date."], 'Invalid updateData data generates an error message')
   deepEqual(p.data, {birthday: 'invalid'}, 'form.data contains the updated data')
@@ -154,7 +154,7 @@ QUnit.test('Updating form data', 32, function() {
 QUnit.test("Empty data object", 10, function() {
   // Empty objects are valid, too
   var p = new Person({data: {}})
-  strictEqual(p.isBound, true)
+  strictEqual(p.isInitialRender, false)
   deepEqual(p.errors("first_name").messages(), ["This field is required."])
   deepEqual(p.errors("last_name").messages(), ["This field is required."])
   deepEqual(p.errors("birthday").messages(), ["This field is required."])
@@ -183,7 +183,7 @@ QUnit.test("Unbound form", 8, function() {
   // be considered unbound and won't do any validation. Form.errors will be
   // empty *but* Form.isValid() will return False.
   var p = new Person()
-  strictEqual(p.isBound, false)
+  strictEqual(p.isInitialRender, true)
   strictEqual(p.errors().isPopulated(), false)
   strictEqual(p.isValid(), false)
   equal(typeof p.cleanedData, "undefined")

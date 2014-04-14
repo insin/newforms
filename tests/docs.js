@@ -144,7 +144,7 @@ QUnit.test("Forms - Updating a form's input data", function() {
   , ccMyself: true
   }
   var isValid = f.setData(data)
-  strictEqual(f.isBound, true, 'setData updates isBound')
+  strictEqual(f.isInitialRender, false, 'setData updates isInitialRender')
   strictEqual(isValid, true, 'setData returns result of isValid')
 })
 
