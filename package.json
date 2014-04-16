@@ -30,7 +30,7 @@
     "gulp": "3.6.x",
     "gulp-concat": "2.2.x",
     "gulp-header": "1.0.x",
-    "gulp-jshint": "1.5.x",
+    "gulp-jshint-cached": "1.4.x",
     "gulp-plumber": "0.6.x",
     "gulp-rename": "1.2.x",
     "gulp-streamify": "0.0.x",
@@ -38,7 +38,8 @@
     "gulp-util": "2.2.x",
     "jshint-stylish": "0.1.x",
     "qqunit": "0.6.x",
-    "vinyl-source-stream": "0.1.x"
+    "vinyl-source-stream": "0.1.x",
+    "watchify": "0.7.x"
   },
   "scripts": {
     "test": "gulp build-js && node tests/tests.js",

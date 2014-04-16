@@ -1,11 +1,10 @@
-var browserify = require('browserify')
 var gulp = require('gulp')
 var source = require('vinyl-source-stream')
+var watchify = require('watchify')
 
 var concat = require('gulp-concat')
 var header = require('gulp-header')
-var jshint = require('gulp-jshint')
-var plumber = require('gulp-plumber')
+var jshint = require('gulp-jshint-cached')
 var rename = require('gulp-rename')
 var streamify = require('gulp-streamify')
 var uglify = require('gulp-uglify')
@@ -24,32 +23,37 @@ var jsEntryPoint = './lib/newforms.js'
 // Lints the build modules dir
 gulp.task('lint', function() {
   return gulp.src(jsPath)
-    .pipe(jshint('./.jshintrc'))
+    .pipe(jshint.cached('./.jshintrc'))
     .pipe(jshint.reporter('jshint-stylish'))
 })
 
 gulp.task('build-js', ['lint'], function(){
-  var b = browserify([jsEntryPoint])
-  b.transform('browserify-shim')
-  var stream = b.bundle({
-      debug: !gutil.env.production
-    , standalone: 'forms'
-    , detectGlobals: false
-    })
-    .pipe(plumber())
-    .pipe(source('newforms.js'))
-    .pipe(streamify(header(srcHeader, {pkg: pkg, dev: dev})))
-    .pipe(gulp.dest('./'))
+  var bundler = watchify(jsEntryPoint)
+  bundler.transform('browserify-shim')
+  bundler.on('update', rebundle)
 
-  if (gutil.env.production) {
-    stream = stream
-      .pipe(rename('newforms.min.js'))
-      .pipe(streamify(uglify()))
+  function rebundle() {
+    var stream = bundler.bundle({
+        debug: !gutil.env.production
+      , standalone: 'forms'
+      , detectGlobals: false
+      })
+      .pipe(source('newforms.js'))
       .pipe(streamify(header(srcHeader, {pkg: pkg, dev: dev})))
       .pipe(gulp.dest('./'))
+
+    if (gutil.env.production) {
+      stream = stream
+        .pipe(rename('newforms.min.js'))
+        .pipe(streamify(uglify()))
+        .pipe(streamify(header(srcHeader, {pkg: pkg, dev: dev})))
+        .pipe(gulp.dest('./'))
+    }
+
+    return stream
   }
 
-  return stream
+  return rebundle()
 })
 
 // Copies browser build to ./dist, renaming to include a version number suffix
