@@ -1,3 +1,59 @@
+0.6.0 / 199X
+============
+
+Breaking Changes
+----------------
+
+* Renamed ``form.isBound`` to ``form.isInitialRender``, which more accurately
+  reflects usage of this property (it was always being used in Forms as
+  ``!isBound``)
+* Changed ``setData()`` to no longer accept prefixed data by default. Added a
+  ``prefixed`` option argument which controls this. This makes ``setData()``
+  more user-friendly for use with controlled forms, to update what's displayed
+  in them.
+
+New Features
+------------
+
+* Added creation of controlled React components by Widgets, configured by
+  passing a ``controlled`` argument when constructing a Form. When using
+  controlled components, form widgets reflect the state of ``form.data``, so you
+  can change  what's displayed in the form by updating its data.
+* Added per-field validation as the user makes changes to the form, configured
+  by passing a ``validation`` argument when constructing a Form or Field.
+* Added calling of an ``onStateChange()`` callback -- passed as an argument when
+  constructing a Form -- any time validation state may have changed as a result
+  of calling ``setData()`` or ``updateData()``, or as a result of validation
+  triggered by user interaction.
+* Added ``form.validate(<form>)`` as a convenience method for retrieving and
+  validating input data from a ``<form>`` -- this removes a common step when
+  hooking up full-form validation.
+* Added ``Widget.prototype.needsInitialValue`` to allow Widgets to always
+  receive the initial value of a field in addition to user input to be rendered.
+* Added support for partial updating (``form.updateData(partialData)``) and
+  cleaning (``form.partialClean(fieldNames)``) of data.
+* Added a ``validate`` option to ``form.setData()`` to support setting incomplete
+  data in a controlled form without triggering required field validation errors.
+
+Changes
+-------
+
+* Changed default widget attributes to always have a ``key`` property, to prevent
+  fields being recreated when content around them changes (e.g. new validation
+  errors being displayed), which makes them lose focus.
+* Changed caching behaviour of ``form.changedData()`` -- this is now only cached
+  when running on the server.
+* Updated to React 0.10 -- there are no library dependencies on new 0.10 features,
+  but unit tests now make use of its enhanced support for rendering to static
+  HTML.
+
+Bug Fixes
+---------
+
+* FormSet forms are no longer created from scratch every time they're accessed
+  when running in the browser -- this was throwing away form state. which
+  effectively broke FormSets.
+
 0.5.2 / 2014-04-03
 ==================
 
