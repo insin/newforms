@@ -34,6 +34,9 @@ New Features
   cleaning (``form.partialClean(fieldNames)``) of data.
 * Added a ``validate`` option to ``form.setData()`` to support setting incomplete
   data in a controlled form without triggering required field validation errors.
+* Added ``.errorMessage()`` and ``.errorMessages()`` to BoundField as a
+  convenience for accessing error message strings, instead of having to go
+  through ``.errors()`` and use the ErrorList API.
 
 Changes
 -------

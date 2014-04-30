@@ -518,6 +518,21 @@ Forms API
 
       :type: :js:class:`ErrorList` (by default, but configurable via :js:class:`BaseForm` ``kwargs.errorConstructor``)
 
+   .. js:function:: BoundField#errorMessages()
+
+      :returns:
+         all validation error messages for the field - if there were none,
+         returns an empty list.
+
+   .. js:function:: BoundField#errorMessages()
+
+      Convenience method for getting the first error message for the field, as
+      a single error message is the most common error scenario for a field.
+
+      :returns:
+         the first validation error message for the field - if there were none,
+         returns undefined.
+
    .. js:function:: BoundField#isHidden()
 
       :returns: ``true`` if the field is configured with a hidden widget.
