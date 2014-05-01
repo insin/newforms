@@ -11,12 +11,12 @@ By default, validating form input is left in your hands, typically by hooking
 into a ``<form>``'s ``onSubmit`` event and passing the ``<form>`` node into
 ``Form.validate()``.
 
-While the ``onSubmit`` event must always be used o determine when the user is
-done with form input, we can also provide feedback for the user as they work
-their way through the form's fields.
+While the ``onSubmit`` event must always be used in this way to determine when
+the user is done with form input, we can also provide feedback for the user as
+they work their way through the form's fields.
 
-To validate individual form fields as the user interacts with them, you can pass
-a ``validation`` argument when instantiating a Form or Field.
+To validate individual form fields as the user interacts with them, pass a
+``validation`` argument when instantiating a Form or Field.
 
 Passing a ``validation`` argument when instantiating a form sets up interactive
 validation for every field on the form.
@@ -26,7 +26,7 @@ validation for every field on the form.
 Form ``'auto'`` validation
 --------------------------
 
-The easiest way to get started is to pass ``'auto'``:
+The quickest way to get started is to pass ``'auto'``:
 
 .. code-block:: javascript
 
@@ -34,8 +34,9 @@ The easiest way to get started is to pass ``'auto'``:
 
 When the form's validation is set to ``'auto'``:
 
-* Text fields are validated using the ``onChange`` event, with a debounced 250ms
-  delay between the last change and validation being performed.
+* Text fields are validated using the ``onChange`` and ``onBlur`` events, with a
+  debounced 250ms delay applied to ``onChange`` between the last change being
+  made and validation being performed.
 * Other fields are validated as soon as the user interacts with them.
 
 .. note::
@@ -84,7 +85,7 @@ Field ``validation``
 
 Fields also accept a ``validation`` argument -- validation defined at the field
 level overrides any configured at the Form level, so if you want to use interaction
-validation only for certain fields or opt fields out when validation has been
+validation only for certain fields, or to opt fields out when validation has been
 configured at the form level, use the ``validation`` argument when defining those
 fields.
 
@@ -105,18 +106,20 @@ form-wide interactive validation.
 Interactive validation can be specified as an object with the following
 properties:
 
-``event``
+``on``
    The name of the default event to use to trigger validation on text input
-   fields. This should be in camelCase format, as used by React.
+   fields. This can be specified with or without an ``'on'`` prefix. If validation
+   should be triggerd by multiple events, their names can be passed as a
+   space-delimited string or a list of strings.
 
-   For example, if ``'onBlur'``, text input validation will be performed when
-   the input loses focus after editing.
+   For example, given ``validation: {on: 'blur'}``, text input validation will
+   be performed when the input loses focus after editing.
 
-``delay``
+``onChangeDelay``
    A delay, in milliseconds, to be used to debounce performing of
-   validation, to give the user time to enter input without distracting
-   them with error messages or other change in how the input's displayed
-   while they're still typing.
+   validation when using the ``onChange`` event, to give the user time to enter
+   input without distracting them with error messages or other disply changes
+   around the input while they're still typing.
 
 ``'auto'``
 ----------
@@ -126,7 +129,7 @@ It's equivalent to passing:
 
 .. code-block:: javascript
 
-   validation: {event: 'onChange', delay: 250}
+   validation: {on: 'blur change', onChangeDelay: 250}
 
 Any event name
 --------------
@@ -136,11 +139,11 @@ to be an event name, so the following lines are equivalent:
 
 .. code-block:: javascript
 
-   validation: 'onBlur'
-   validation: {event: 'onBlur'}
+   validation: 'blur'
+   validation: {on: 'blur'}
 
-Controlled components
-=====================
+Controlled forms
+================
 
 By default, newforms generates `uncontrolled React components`_, which can
 provide initial values for form inputs but require manual updating via the DOM
@@ -149,7 +152,7 @@ should you wish to change the displayed values via code.
 If you need to programatically update the values displayed in a form after its
 initial display, you will need to use `controlled React components`_.
 
-You can do this byt passing a ``controlled`` argument when constructing the Form
+You can do this by passing a ``controlled`` argument when constructing the Form
 or individual Fields you wish to have control over:
 
 .. code-block:: javascript
@@ -166,7 +169,48 @@ component.
 ``controlled`` example form
 ---------------------------
 
-XXX
+An example of reusing the same controlled Form to edit a bunch of different
+objects which have the same fields.
+
+First, define a form:
+
+.. code-block:: javascript
+
+   var PersonForm = forms.Form.extend({
+     name: forms.CharField({maxLength: 100})
+   , age: forms.IntegerField({minValue: 0, maxValue: 115})
+   , bio: forms.CharField({widget: forms.Textarea})
+   })
+
+When creating the form in our example React component, we're passing
+``controlled: true``:
+
+.. code-block:: javascript
+
+   getInitialState: function() {
+     return {
+       form: new PersonForm({
+         controlled: true
+       , validation: 'auto'
+       , onStateChange: this.forceUpdate.bind(this)
+       })
+     , editing: null
+     , people: [/* ... */]
+     }
+   }
+
+To update what's displayed in the form, we have a ``handleEdit`` function in our
+React component which is calling ``setData()``:
+
+.. code-block:: javascript
+
+   handleEdit: function(personIndex) {
+     this.state.form.setData(extend({}, this.state.people[personIndex]))
+     this.setState({editing: personIndex})
+   }
+
+Note that we're creating a shallow copy of the data to be edited because (XXX
+aargh this is a use case for setting data as initial data XXX)
 
 .. raw:: html
 
@@ -197,7 +241,7 @@ example:
 .. code-block:: javascript
 
    onFormStateChange: function() {
-     this.setState({form: this.state.form})
+     this.forceUpdate()
    }
 
 .. raw:: html
