@@ -30,6 +30,8 @@ New Features
   hooking up full-form validation.
 * Added ``Widget.prototype.needsInitialValue`` to allow Widgets to always
   receive the initial value of a field in addition to user input to be rendered.
+* Added ``form.reset(newInitial)`` to reset a form back to its initial state,
+  optionally providing new initial data in the process.
 * Added support for partial updating (``form.updateData(partialData)``) and
   cleaning (``form.partialClean(fieldNames)``) of data.
 * Added a ``validate`` option to ``form.setData()`` to support setting incomplete
@@ -44,8 +46,6 @@ Changes
 * Changed default widget attributes to always have a ``key`` property, to prevent
   fields being recreated when content around them changes (e.g. new validation
   errors being displayed), which makes them lose focus.
-* Changed caching behaviour of ``form.changedData()`` -- this is now only cached
-  when running on the server.
 * Updated to React 0.10 -- there are no library dependencies on new 0.10 features,
   but unit tests now make use of its enhanced support for rendering to static
   HTML.

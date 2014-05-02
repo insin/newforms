@@ -219,6 +219,15 @@ Forms API
       :return:
          ``true`` if the <form> data is valid, ``false`` otherwise.
 
+   .. js:function:: BaseForm#reset([initialData])
+
+      .. versionadded:: 0.6
+
+      Resets the form to its initial render state.
+
+      :param Object initialData:
+         new initial data for the form can optionally be specified.
+
    .. js:function:: BaseForm#setData(data[, kwargs])
 
       .. versionadded:: 0.5

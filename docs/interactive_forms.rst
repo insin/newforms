@@ -200,17 +200,14 @@ When creating the form in our example React component, we're passing
    }
 
 To update what's displayed in the form, we have a ``handleEdit`` function in our
-React component which is calling ``setData()``:
+React component which is calling ``reset()``:
 
 .. code-block:: javascript
 
    handleEdit: function(personIndex) {
-     this.state.form.setData(extend({}, this.state.people[personIndex]))
+     this.state.form.reset(this.state.people[personIndex])
      this.setState({editing: personIndex})
    }
-
-Note that we're creating a shallow copy of the data to be edited because (XXX
-aargh this is a use case for setting data as initial data XXX)
 
 .. raw:: html
 

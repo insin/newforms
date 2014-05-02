@@ -116,7 +116,7 @@ var PeopleEditor = React.createClass({
   }
 
 , handleEdit: function(i) {
-    this.state.form.setData(extend({}, this.state.people[i]))
+    this.state.form.reset(this.state.people[i])
     this.setState({editing: i})
   }
 
@@ -133,6 +133,10 @@ var PeopleEditor = React.createClass({
     this.setState({editing: null})
   }
 
+, handleReset: function() {
+    this.state.form.reset()
+  }
+
 , render: function() {
     return React.DOM.div(null
     , this.renderPeople()
@@ -141,6 +145,8 @@ var PeopleEditor = React.createClass({
       , this.state.form.boundFields().map(renderField)
       , React.DOM.div(null
         , React.DOM.button({type: 'button', onClick: this.handleCancel}, 'Cancel')
+        , ' '
+        , React.DOM.button({type: 'button', onClick: this.handleReset}, 'Reset')
         , ' '
         , React.DOM.button({type: 'submit'}, 'Save')
         )
