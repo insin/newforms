@@ -285,14 +285,37 @@ Forms API
          updated, such as error messages and ``cleanedData`` -- defaults to
          ``true``
 
+   .. js:function:: BaseForm#isComplete()
+
+      Determines whether or not the form has errors and valid input data for all
+      required fields, triggering cleaning of the form first if necessary.
+
+      This can be used to indicate to the user that a form which is being
+      validated as they fill it in is ready for submission.
+
+      The distinction between ``isComplete()`` and :js:func:`BaseForm#isValid()`
+      is that a form which has had, for example, a single field filled in and
+      validated is valid according to the partial validation which has been
+      performed so far (i.e. it doesn't have any error messages) but isn't yet
+      complete.
+
+      :return:
+         ``true`` if the form has input data and has no errors, and there is
+         cleanedData present for every required field on the form.
+
    .. js:function:: BaseForm#isValid()
 
       Determines whether or not the form has errors, triggering cleaning of the
       form first if necessary.
 
+      When user input is being incrementally validated as it's given, this
+      function gives you the current state of validation (i.e. whether or not
+      there are any errors). It will not reflect the validity of the whole form
+      until a method which performs whole-form validation (:js:func:`BaseForm#validate` or :js:func:`setData`) has been called.
+
       :return:
-         ``true`` if the form is bound and has no errors, ``false`` otherwise.
-         If errors are being ignored, returns ``false``.
+         ``true`` if the form is has input data and has no errors, ``false``
+         otherwise. If errors are being ignored, returns ``false``.
 
    .. js:function:: BaseForm#errors()
 

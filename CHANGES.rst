@@ -15,12 +15,12 @@ Breaking Changes
 New Features
 ------------
 
+* Added per-field validation as the user makes changes to the form, configured
+  by passing a ``validation`` argument when constructing a Form or Field.
 * Added creation of controlled React components by Widgets, configured by
   passing a ``controlled`` argument when constructing a Form. When using
   controlled components, form widgets reflect the state of ``form.data``, so you
   can change  what's displayed in the form by updating its data.
-* Added per-field validation as the user makes changes to the form, configured
-  by passing a ``validation`` argument when constructing a Form or Field.
 * Added calling of an ``onStateChange()`` callback -- passed as an argument when
   constructing a Form -- any time validation state may have changed as a result
   of calling ``setData()`` or ``updateData()``, or as a result of validation
@@ -28,6 +28,8 @@ New Features
 * Added ``form.validate(<form>)`` as a convenience method for retrieving and
   validating input data from a ``<form>`` -- this removes a common step when
   hooking up full-form validation.
+* Added ``form.isComplete()`` to determine if all required fields have valid
+  input data when validation is being performed interactively.
 * Added ``Widget.prototype.needsInitialValue`` to allow Widgets to always
   receive the initial value of a field in addition to user input to be rendered.
 * Added ``form.reset(newInitial)`` to reset a form back to its initial state,

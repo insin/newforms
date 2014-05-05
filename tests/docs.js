@@ -135,8 +135,8 @@ QUnit.test('Forms - Accessing the fields from the form', function() {
    'You can alter fields')
 })
 
-QUnit.test("Forms - Updating a form's input data", function() {
-  var f =new ContactForm()
+QUnit.test("Forms - Updating a form's input data - setData", function() {
+  var f = new ContactForm()
   var data = {
     subject: 'hello'
   , message: 'Hi there'
@@ -146,6 +146,16 @@ QUnit.test("Forms - Updating a form's input data", function() {
   var isValid = f.setData(data)
   strictEqual(f.isInitialRender, false, 'setData updates isInitialRender')
   strictEqual(isValid, true, 'setData returns result of isValid')
+})
+
+QUnit.test("Forms - Updating a form's input data - updateData & isComplete", function() {
+  var f = new ContactForm()
+  f.updateData({subject: 'hello'})
+  strictEqual(f.isComplete(), false)
+  f.updateData({message: 'Hi there'})
+  strictEqual(f.isComplete(), false)
+  f.updateData({sender: 'foo@example.com'})
+  strictEqual(f.isComplete(), true)
 })
 
 QUnit.test('Forms - Outputting forms as HTML', function() {
