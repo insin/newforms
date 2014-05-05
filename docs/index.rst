@@ -68,7 +68,7 @@ Documentation Contents
 ======================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
    quickstart
    overview
@@ -85,12 +85,6 @@ Documentation Contents
    validation_api
    widgets_api
    formsets_api
-
-.. toctree::
-   :hidden:
-
-   guide
-   api
 
 .. _`Django`: http://www.djangoproject.com
 .. _`Node.js`: http://nodejs.org

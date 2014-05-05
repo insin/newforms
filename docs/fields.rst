@@ -312,7 +312,7 @@ For each field, we describe the default widget used if you don't specify
 
    .. note::
 
-      Since all ``Field`` subclasses have ``required: true`` by default, the
+      Since all ``Field`` types have ``required: true`` by default, the
       validation condition here is important. If you want to include a boolean
       in your form that can be either ``true`` or ``false`` (e.g. a checked or
       unchecked checkbox), you must remember to pass in ``required: false`` when
@@ -821,7 +821,7 @@ Slightly complex built-in ``Field`` types
 
    * Default widget: :js:class:`TextInput`
    * Empty value: ``''`` (an empty string)
-   * Normalises to: the type returned by the ``compress`` method of the subclass.
+   * Normalises to: the type returned by the ``compress`` method of the field.
    * Validates that the given value against each of the fields specified
      as an argument to the ``MultiValueField``.
    * Error message keys: ``required``, ``invalid``, ``incomplete``
@@ -859,7 +859,7 @@ Slightly complex built-in ``Field`` types
         will be raised.
 
         A default ``incomplete`` error message can be defined on the
-        :js:class:`MultiValueField` subclass, or different messages can be defined
+        :js:class:`MultiValueField`, or different messages can be defined
         on each individual field. For example:
 
         .. code-block:: javascript

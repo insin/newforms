@@ -96,14 +96,14 @@ When a form is instantiated with the ``validate`` option, as above, it will
 automatically hook its rendered fields up with ``onChange`` handlers to validate
 user input as it's entered.
 
-To supply a form with completed user input to be validated and cleaned -- such
-as when the user submits the form -- call ``setData()`` on a form to bind
-new data to it, or if you already have the data, pass a ``data`` option when
-creating the form.
+To supply a form with a complete set of user input to be validated and cleaned
+-- such as when the user submits a ``<form>`` -- call ``setData()`` on a form
+instance to bind new data to it, or if you already have the data, pass a ``data``
+option when instantiating the form.
 
 A convenience wrapper around ``setData()`` is provided -- ``validate()`` --
 which takes a reference to a ``<form>``, extracts input data from it and sets
-it on the form.
+it on the form, which validates it.
 
 For example, if the form was held as state in a React component which had the
 above JSX in its ``render()`` method:
