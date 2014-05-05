@@ -9,5 +9,13 @@
   margin-bottom: 16px;
 }
 .newforms-example .example-container .cleaned-data {
+}
 
+.newforms-example .form-field {
+  margin-bottom: 6px;
+}
+
+.newforms-example .form-field.required label:after {
+  content: " *";
+  color: #e32;
 }

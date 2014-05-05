@@ -17,18 +17,18 @@ function extend(dest, src) {
 }
 
 function renderField(bf) {
-  var fieldStyle = {style: {marginBottom: '6px'}}
+  var className = bf.cssClasses('form-field')
   if (bf.field instanceof forms.BooleanField) {
-    return React.DOM.div(fieldStyle
-    , React.DOM.label(null, bf.asWidget({attrs: {key: bf.htmlName}}), ' ', bf.label)
+    return React.DOM.div({className: className}
+    , React.DOM.label(null, bf.render(), ' ', bf.label)
     , ' '
     , bf.errors().messages()[0]
     )
   }
   else {
-    return React.DOM.div(fieldStyle
+    return React.DOM.div({className: className}
     , bf.labelTag()
-    , bf.asWidget({attrs: {key: bf.htmlName}})
+    , bf.render()
     , ' '
     , bf.errors().messages()[0]
     )
@@ -75,7 +75,9 @@ var FormRenderer = React.createClass({
 })
 
 var SignupForm = forms.Form.extend({
-  email: forms.EmailField()
+  requiredCssClass: 'required'
+
+, email: forms.EmailField()
 , password: forms.CharField({widget: forms.PasswordInput})
 , confirm: forms.CharField({label: 'Confirm password', widget: forms.PasswordInput})
 , terms: forms.BooleanField({
@@ -95,6 +97,7 @@ var PersonForm = forms.Form.extend({
   name: forms.CharField({maxLength: 100})
 , age: forms.IntegerField({minValue: 0, maxValue: 115})
 , bio: forms.CharField({widget: forms.Textarea})
+, requiredCssClass: 'required'
 })
 
 var PeopleEditor = React.createClass({
