@@ -59,7 +59,7 @@ The ``initial`` argument lets you specify the initial value to use when
 rendering this ``Field`` in an unbound ``Form``.
 
 To specify dynamic initial data, see the
-:ref:`Form.initial <ref-dynamic-initial-values>` parameter.
+:ref:`initial <ref-dynamic-initial-values>` option.
 
 widget
 ------
@@ -293,8 +293,8 @@ Server-side example of using a form with dynamic choices:
 Built-in ``Field`` types (A-Z)
 ==============================
 
-Naturally, the ``forms`` library comes with a set of ``Field`` types that
-represent common validation needs. This section documents each built-in field.
+newforms comes with a set of ``Field`` types that represent common validation
+eeds. This section documents each built-in field.
 
 For each field, we describe the default widget used if you don't specify
 ``widget``. We also specify the value returned when you provide an empty value

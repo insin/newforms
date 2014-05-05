@@ -17,27 +17,33 @@ Forms
    which would be created when running in a browser, with React managing
    keeping the real DOM in sync with the rendered state of forms.
 
-.. _ref-forms-bound-unbound:
+.. _ref-form-initial-input-data:
 
-Bound and unbound forms
-=======================
+Initial input data
+==================
 
-A :js:class:`Form` instance is either **bound** to a set of data, or **unbound**.
+When constructing a :js:class:`Form` instance, whether or not you pass input
+data determines the bhaviour of the form's initial render.
 
-* If it's **bound** to a set of data, it's capable of validating that data
-  and rendering the form with the data displayed in form inputs.
+* If a user input ``data`` object is given, initial rendering will trigger
+  validation when it tries to determine if there are any error messages to be
+  displayed.
 
-* If it's **unbound**, it cannot do validation (because there's no data to
-  validate!), but it can still render the blank form or display any default
-  initial values that have been configured.
+  This is typically how user input is passed to the form when using newforms on
+  the server to validate a POST request's submitted data.
 
-To create an unbound Form instance, simply instantiate it:
+* If ``data`` is not given, validation will not be performed on initial render,
+  so the form can render with blank inputs or display any default initial values
+  that have been configured, without triggering validation.
+
+To create a Form instance , simply instantiate it:
 
 .. code-block:: javascript
 
    var f = new ContactForm()
 
-To bind data to a form, pass the data as an object argument:
+To create an instance with input data, pass ``data`` as an option argument, like
+so:
 
 .. code-block:: javascript
 
@@ -55,35 +61,37 @@ validate. These will usually be strings, but there's no requirement that they be
 strings; the type of data you pass depends on the :js:class:`Field`, as we'll
 see in a moment.
 
-Data can also be bound to an existing form. Note that binding data this way
-triggers form cleaning and validation, returning the validation result:
+Data can also be set on a Form instance, which triggers validation, returning
+the validation result:
 
 .. code-block:: javascript
 
    var isValid = f.setData(data)
 
-Form.isBound
-------------
+``form.isInitialRender``
+------------------------
 
-If you need to distinguish between bound and unbound form instances at runtime,
-check the value of the form's :js:attr:`form.isBound` property:
+If you need to distinguish between the type of rendering behaviour a form
+instance will exhibit, check the value of the form's :js:attr:`form.isInitialRender`
+property:
 
 .. code-block:: javascript
 
    var f = mew ContactForm()
-   print(f.isBound)
-   // => false
-   f = new ContactForm({data: {subject: 'hello'}})
-   print(f.isBound)
+   print(f.isInitialRender)
    // => true
+   f = new ContactForm({data: {subject: 'hello'}})
+   print(f.isInitialRender)
+   // => false
 
-A form given an empty object is still bound:
+A form given an *empty* data object will still be considered to have user input
+and will trigger validation when rendered:
 
 .. code-block:: javascript
 
    var f = new ContactForm({data: {}})
-   print(f.isBound)
-   // => true
+   print(f.isInitialRender)
+   // => false
 
 Using forms to validate data
 ============================
@@ -120,7 +128,7 @@ email address:
    print(f.isValid())
    // => false
 
-``Form.errors()`` returns an :js:class:`ErrorObject` containing error messages:
+``form.errors()`` returns an :js:class:`ErrorObject` containing error messages:
 
 .. code-block:: javascript
 
@@ -132,35 +140,37 @@ email address:
      * Enter a valid email address.
    */
 
-You can access ``Form.errors()`` without having to call ``Form.isValid()``
+You can access ``form.errors()`` without having to call ``Form.isValid()``
 first. The form's data will be validated the first time you either call
-``Form.isValid()` or ``Form.errors()``.
+``form.isValid()`` or ``form.errors()``.
 
-The validation routines will only get called once for a particular set of bound
-data, regardless of how many times you call ``Form.isValid()` or
-``Form.errors()``. This means that if validation has side effects, those side
-effects will only be triggered once.
+The validation routines will only get called once for a given set of data,
+regardless of how many times you call ``form.isValid()`` or ``form.errors()``.
+This means that if validation has side effects, those side effects will only be
+triggered once per set of input data.
 
-Behaviour of unbound forms
---------------------------
-
-It's meaningless to validate a form with no data, but, for the record, here's
-what happens with unbound forms:
+On the client-side, the user's input is held in form DOM inputs, not a tidy
+JavaScript object as in the above examples (whereas if you're handling a request
+on the server, the request body serves this purpose). By wrapping your inputs in
+a ``<form>`` you can make use of ``form.validate()``, which extracts user input
+from a given ``<form>``'s elements, sets it as input data and returns the result
+of validating the data:
 
 .. code-block:: javascript
 
-   var f = new ContactForm()
-   print(f.isValid())
-   // => false
-   print(f.errors().errors)
-   // => {}
+   // Form creation in a React component's getInitialState()
+   var form = new ContactForm()
+
+   // Validation in an onSubmit event handler, where the form's fields were
+   // rendered intio a <form ref="form"> in the component's render()
+   var isValid = this.state.form.validate(this.refs.form)
 
 .. _ref-dynamic-initial-values:
 
 Dynamic initial values
 ======================
 
-Use ``Form.initial`` to declare the initial value of form fields at runtime. For
+Use ``form.initial`` to declare the initial value of form fields at runtime. For
 example, you might want to fill in a ``username`` field with the username of the
 current session.
 
@@ -172,9 +182,6 @@ value, for example:
 .. code-block:: javascript
 
    var f = new ContactForm({initial: {subject: 'Hi there!'}})
-
-These values are only displayed for unbound forms, and they're not used as
-fallback values if a particular value isn't provided.
 
 Where both a Field and Form define an initial value for the same field, the
 Form-level ``initial`` gets precedence:
@@ -235,12 +242,12 @@ Accessing "clean" data
 ======================
 
 Each field in a ``Form`` is responsible not only for validating data, but also
-for "cleaning" it -- normalising it to a consistent format. This is a nice
-feature, because it allows data for a particular field to be input in a variety
-of ways, always resulting in consistent output.
+for "cleaning" it -- normalising it to a consistent format. This allows data for
+a particular field to be input in a variety of ways, always resulting in
+consistent output.
 
-Once you've created a ``Form`` instance with a set of data and validated it, you
-can access the clean data via its ``cleanedData`` property:
+Once a set of input data has been validated, you can access the clean data via
+a form's ``cleanedData`` property:
 
 .. code-block:: javascript
 
@@ -256,7 +263,8 @@ can access the clean data via its ``cleanedData`` property:
    print(f.cleanedData)
    // => {subject: 'hello', message: 'Hi there', sender: 'foo@example.com', ccMyself: true}
 
-If your data does *not* validate, ``cleanedData`` contains only the valid fields:
+If input data does *not* validate, ``cleanedData`` contains only the valid
+fields:
 
 .. code-block:: javascript
 
@@ -327,7 +335,10 @@ fields). More information about this is in :doc:`validation`.
 Updating a form's input data
 =============================
 
-To replace a Form's input data use ``form.setData()``.
+``form.setData()``
+------------------
+
+To replace a Form's entire input data with a new set, use ``form.setData()``.
 
 This will also trigger validation -- updating ``form.errors()`` and
 ``form.cleanedData``, and returning the result of ``form.isValid()``:
@@ -343,10 +354,42 @@ This will also trigger validation -- updating ``form.errors()`` and
    , ccMyself: true
    }
    var isValid = f.setData(data)
-   print(f.isBound)
-   // => true
+   print(f.isInitialRender)
+   // => false
    print(isValid)
    // => true
+
+``form.updateData()``
+---------------------
+
+To partially update a Form's input data, use ``form.updateData()``.
+
+This will trigger validation of the fields for which new input data has been
+given, and also any form-wide validation if configured.
+
+It doesn't return the result of the validation it triggers, since the validity
+of a subset of fields doesn't tell you whether or not the entire form is valid.
+
+If you're peforming partial updates of user input (which is the case if you're
+using :doc:`interactive_forms`) and need to check if the entire form is valid
+*without* triggering validation errors on fields the user may not have reached
+yet, use :js:func:`BaseForm#isComplete`:
+
+.. code-block:: javascript
+
+   var f = new ContactForm()
+   f.updateData({subject: 'hello'})
+   print(f.isComplete())
+   // => false
+   f.updateData({message: 'Hi there'})
+   print(f.isComplete())
+   // => false
+   f.updateData({sender: 'foo@example.com'})
+   print(f.isComplete())
+   // => true
+
+Note that ``form.isComplete()`` returns ``true`` once all required fields have
+valid input data.
 
 .. _ref-outputting-forms-as-html:
 

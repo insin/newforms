@@ -4,16 +4,46 @@ Interactive forms
 
 .. versionadded:: 0.6
 
-Form validation
-===============
+.. _ref-interactive-onstatechange:
+
+Form state and ``onStateChange()``
+==================================
+
+When using interactive validation or controlled components, either at the Form
+or individual Field level, you must pass the Form an ``onStateChange`` argument,
+which should be a callback function for the React component the form is being
+rendered in.
+
+An Error will be thrown if this argument is not provided.
+
+While a Form is not itself a React component, it is stateful. When user input is
+taken as the user makes changes and the form's user input data is updated or
+interactive validation is run, the form's ``data``, ``errors()`` and
+``cleanedData`` may be changed.
+
+In order to update display of the form to let the user see the updated state, a
+Form will call its given ``onStateChange()`` function each time user input is
+taken or validation is performed.
+
+Typically, this function will just force its React component to update, for
+example:
+
+.. code-block:: javascript
+
+   onFormStateChange: function() {
+     this.forceUpdate()
+   }
+
+Form ``validation``
+===================
 
 By default, validating form input is left in your hands, typically by hooking
 into a ``<form>``'s ``onSubmit`` event and passing the ``<form>`` node into
-``Form.validate()``.
+``form.validate()``.
 
-While the ``onSubmit`` event must always be used in this way to determine when
-the user is done with form input, we can also provide feedback for the user as
-they work their way through the form's fields.
+While the ``onSubmit`` event must always be used in this way to handle the user
+submitting the form, we can also provide feedback for the user as they work
+their way through the form's fields.
 
 To validate individual form fields as the user interacts with them, pass a
 ``validation`` argument when instantiating a Form or Field.
@@ -163,8 +193,8 @@ Controlled components created by newforms reflect the values held in
 ``form.data``. It's recommended that you call ``form.setData()`` or
 ``form.updateData()`` to update ``form.data``, as they handle transitioning from
 initial display of data to displaying user input and will also call
-``onStateChange()`` for you to trigger re-rendering of the containing React
-component.
+:ref:`onStateChange() <ref-interactive-onstatechange>` for you, to trigger
+re-rendering of the containing React component.
 
 ``controlled`` example form
 ---------------------------
@@ -200,7 +230,8 @@ When creating the form in our example React component, we're passing
    }
 
 To update what's displayed in the form, we have a ``handleEdit`` function in our
-React component which is calling ``reset()``:
+React component which is calling ``form.reset()`` to put the form back into its
+initial state, with new initial data:
 
 .. code-block:: javascript
 
@@ -212,34 +243,6 @@ React component which is calling ``reset()``:
 .. raw:: html
 
    <div id="example-controlled-form" class="newforms-example"></div>
-
-Form state and ``onStateChange()``
-==================================
-
-When using interactive validation or controlled components, either at the Form
-or individual Field level, you must pass the Form an ``onStateChange`` argument,
-which should be a callback function for the React component the form is being
-rendered in.
-
-An Error will be thrown if this argument is not provided.
-
-While a Form is not itself a React component, it is stateful. When user input is
-taken as the user makes changes and the form's user input data is updated or
-interactive validation is run, the form's ``data``, ``errors()`` and
-``cleanedData`` may be changed.
-
-In order to update display of the form to let the user see the updated state, a
-Form will call its given ``onStateChange()`` function each time user input is
-taken or validation is performed.
-
-Typically, this function will just force its React component to update, for
-example:
-
-.. code-block:: javascript
-
-   onFormStateChange: function() {
-     this.forceUpdate()
-   }
 
 .. raw:: html
 

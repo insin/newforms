@@ -48,13 +48,14 @@ Formsets API
 
    The following instance properties are also available:
 
-   .. js:attribute:: formset.isBound
+   .. js:attribute:: formset.isInitialRender
 
       Determines if this formset has been given input data which can be
-      validated.
+      validated, or if it will display as blank or with configured initial
+      values the first time it's redered.
 
-      ``true`` if the formset was instantiated with ``kwargs.data`` or
-      ``kwargs.files``.
+      ``false`` if the formset was instantiated with ``kwargs.data`` or
+      ``kwargs.files``, ``true`` otherwise.
 
    **Prototype Functions**
 
@@ -118,17 +119,17 @@ Formsets API
 
    .. js:function:: BaseFormSet#setData(data)
 
-      .. versionadded:: 0.5
-
       Updates the formset's :js:attr:`formset.data` (and
-      :js:attr:`formset.isBound`, if necessary) and triggers form cleaning and
-      validation, returning the result of ``formset.isValid()``.
+      :js:attr:`formset.isInitialRender`, if necessary) and triggers form
+      cleaning and validation, returning the result of ``formset.isValid()``.
 
       :param Object data: new input data for the formset.
 
       :return:
          ``true`` if the formset has no errors after validating the updated
          data, ``false`` otherwise.
+
+      .. versionadded:: 0.5
 
    .. js:function:: BaseFormSet#cleanedData()
 
@@ -192,9 +193,9 @@ Formsets API
 
    .. js:function:: BaseFormSet#render()
 
-      .. versionadded: newforms 0.5
-
       Default rendering method, which calls :js:func:`BaseFormSet#asTable`
+
+      .. versionadded:: 0.5
 
    .. js:function:: BaseFormSet#asTable()
 
@@ -208,10 +209,10 @@ Formsets API
 
    .. js:function:: BaseFormSet#asDiv()
 
-      .. versionadded: newforms 0.5
-
       Renders the formset's forms as a series of ``<div>`` tags, with each
       ``<div>`` containing one field.
+
+      .. versionadded:: 0.5
 
    Prototype functions for use in rendering forms.
 

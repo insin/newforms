@@ -78,7 +78,7 @@ overridden:
   called, you also have access to the form's ``errors()``, which contains all
   the errors thrown by cleaning of individual fields.
 
-  Note that any errors thrown by your ``Form.clean()`` override will not
+  Note that any errors thrown by your ``form.clean()`` override will not
   be associated with any field in particular. They go into a special
   "field" (called ``__all__``), which you can access via the
   ``nonFieldErrors()`` method if you need to. If you want to attach
@@ -89,7 +89,7 @@ These methods are run in the order given above, one field at a time. That is,
 for each field in the form (in the order they are declared in the form
 definition), the ``Field.clean()`` method (or its override) is run, then
 ``clean<Fieldname>()`` (or ``clean_<fieldName>()``) if defined. Finally, the
-``Form.clean()`` method, or its override, is executed whether or not the
+``form.clean()`` method, or its override, is executed whether or not the
 previous methods have thrown errors.
 
 Examples of each of these methods are provided below.

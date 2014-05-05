@@ -183,7 +183,7 @@ Forms API
 
       :type: Object with field names as property names and Field instances as properties.
 
-   .. js:attribute:: form.isBound
+   .. js:attribute:: form.isInitialRender
 
       Determines if this form has been given input data which can be validated.
 
@@ -206,8 +206,6 @@ Forms API
 
    .. js:function:: BaseForm#validate(form)
 
-      .. versionadded:: 0.6
-
       Gets input data from the ``<form>`` containing this Form's rendered widgets
       and validates it.
 
@@ -219,22 +217,23 @@ Forms API
       :return:
          ``true`` if the <form> data is valid, ``false`` otherwise.
 
+      .. versionadded:: 0.6
+
    .. js:function:: BaseForm#reset([initialData])
+
+      Resets the form to its initial render state, optionally giving it new
+      initial data.
+
+      :param Object initialData:
+         new initial data for the form.
 
       .. versionadded:: 0.6
 
-      Resets the form to its initial render state.
-
-      :param Object initialData:
-         new initial data for the form can optionally be specified.
-
    .. js:function:: BaseForm#setData(data[, kwargs])
 
-      .. versionadded:: 0.5
-
       Replaces the form's :js:attr:`form.data` with the given data (and flips
-      :js:attr:`form.isBound` to true, if necessary) and triggers form cleaning
-      and validation, returning the result of ``form.isValid()``.
+      :js:attr:`form.isInitialRender` to ``false``, if necessary) and triggers
+      form cleaning and validation, returning the result of ``form.isValid()``.
 
       :param Object data: new input data for the form
 
@@ -244,16 +243,18 @@ Forms API
          pass ``true`` when updating data in a prefixed form and the field
          names in ``data`` are already prefixed -- defaults to ``false``
 
+         .. versionadded:: 0.6
+
       :return:
          ``true`` if the form has no errors after validating the updated data,
          ``false`` otherwise.
 
+      .. versionadded:: 0.5
+
    .. js:function:: BaseForm#updateData(data[, kwargs])
 
-      .. versionadded:: 0.6
-
-      Updates the form's :js:attr:`form.data` (and flips :js:attr:`form.isBound`
-      to true, if necessary).
+      Updates the form's :js:attr:`form.data` (and flips
+      :js:attr:`form.isInitialRender` to ``false``, if necessary).
 
       By default, triggers validation of fields which had their input data
       updated, as well as form-wide cleaning.
@@ -285,6 +286,8 @@ Forms API
          updated, such as error messages and ``cleanedData`` -- defaults to
          ``true``
 
+      .. versionadded:: 0.6
+
    .. js:function:: BaseForm#isComplete()
 
       Determines whether or not the form has errors and valid input data for all
@@ -302,6 +305,8 @@ Forms API
       :return:
          ``true`` if the form has input data and has no errors, and there is
          cleanedData present for every required field on the form.
+
+      .. versionadded:: 0.6
 
    .. js:function:: BaseForm#isValid()
 
@@ -369,8 +374,6 @@ Forms API
 
    .. js:function:: BaseForm#addError(field, error)
 
-      .. versionadded:: 0.5
-
       This function allows adding errors to specific fields from within the
       ``form.clean()`` method, or from outside the form altogether. This is a
       better alternative to fiddling directly with ``form._errors``, which we
@@ -386,6 +389,8 @@ Forms API
       Note that ``form.addError()`` automatically removes the relevant field
       from :js:attr:`form.cleanedData`.
 
+      .. versionadded:: 0.5
+
    A number of default rendering functions are provided to generate
    ``React.DOM`` representations of a Form's fields.
 
@@ -397,9 +402,9 @@ Forms API
 
    .. js:function:: BaseForm#render()
 
-      .. versionadded: 0.5
-
       Default rendering method, which calls :js:func:`BaseForm#asTable`
+
+      .. versionadded:: 0.5
 
    .. js:function:: BaseForm#asTable()
 
@@ -417,10 +422,10 @@ Forms API
 
    .. js:function:: BaseForm#asDiv()
 
-      .. versionadded:: 0.5
-
       Renders the form as a series of ``<div>`` tags, with each ``<div>``
       containing one field.
+
+      .. versionadded:: 0.5
 
    Prototype functions for use in rendering form fields.
 
@@ -473,6 +478,8 @@ Forms API
    .. js:function:: BaseForm#addInitialPrefix(fieldName)
 
       Adds an initial prefix for checking dynamic initial values.
+
+.. _ref-api-boundfield:
 
 ``BoundField``
 ==============
@@ -550,13 +557,7 @@ Forms API
 
       :type: :js:class:`ErrorList` (by default, but configurable via :js:class:`BaseForm` ``kwargs.errorConstructor``)
 
-   .. js:function:: BoundField#errorMessages()
-
-      :returns:
-         all validation error messages for the field - if there were none,
-         returns an empty list.
-
-   .. js:function:: BoundField#errorMessages()
+   .. js:function:: BoundField#errorMessage()
 
       Convenience method for getting the first error message for the field, as
       a single error message is the most common error scenario for a field.
@@ -564,6 +565,12 @@ Forms API
       :returns:
          the first validation error message for the field - if there were none,
          returns undefined.
+
+   .. js:function:: BoundField#errorMessages()
+
+      :returns:
+         all validation error messages for the field - if there were none,
+         returns an empty list.
 
    .. js:function:: BoundField#isHidden()
 
@@ -586,8 +593,6 @@ Forms API
       single widget or a :js:class:`MutiWidget`.
 
    .. js:function:: BoundField#render([kwargs])
-
-      .. versionadded: newforms 0.5
 
       Default rendering method - if the field has ``showHiddenInitial`` set,
       renders the default widget and a hidden version, otherwise just renders

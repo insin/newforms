@@ -205,21 +205,21 @@ Text input widgets
 
 .. js:class:: NumberInput([kwargs])
 
-   .. versionadded:: 0.5
-
    An ``<input type="number">`` widget
+
+   .. versionadded:: 0.5
 
 .. js:class:: EmailInput([kwargs])
 
-   .. versionadded:: 0.5
-
    An ``<input type="email">`` widget
+
+   .. versionadded:: 0.5
 
 .. js:class:: URLInput([kwargs])
 
-   .. versionadded:: 0.5
-
    An ``<input type="url">`` widget
+
+   .. versionadded:: 0.5
 
 .. js:class:: PasswordInput([kwargs])
 

@@ -219,10 +219,10 @@ The formset's own form management configuration is used whether or not the
 formset is boound.
 
 Of particular interest is the formset's ``extra`` property, which can be used to
-implement "add another" functionality by incrementing its value and re-rendering
-to generate the resulting extra form.
+implement "add another" functionality -- since this is a common use case,
+formsets have an ``addAnother()`` method does this for you.
 
-If you have a need to use FormSets on the client side *and* perform a regular
+If you ever have a need to use FormSets on the client side *and* perform a regular
 HTTP POST request to process the form, you can still render
 ``formset.managmentForm()`` -- its hidden fields will be kept in sync with any
 changes made to the forset's form management configuration.
