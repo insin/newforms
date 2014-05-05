@@ -128,6 +128,7 @@ var PeopleEditor = React.createClass({
     var isValid = this.state.form.validate(this.refs.form)
     if (isValid) {
       this.state.people[this.state.editing] = this.state.form.cleanedData
+      delete this.state.form.cleanedData
       this.setState({editing: null})
     }
   }
