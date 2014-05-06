@@ -15,7 +15,15 @@
   margin-bottom: 6px;
 }
 
-.newforms-example .form-field.required label:after {
+.newforms-example .form-field.example-required label:after {
   content: " *";
   color: #e32;
+}
+
+.newforms-example .form-field.example-error input {
+  background-color: #ecc;
+}
+
+.newforms-example .form-field.example-valid input {
+  background-color: #cec;
 }

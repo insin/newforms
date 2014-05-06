@@ -75,7 +75,9 @@ var FormRenderer = React.createClass({
 })
 
 var SignupForm = forms.Form.extend({
-  requiredCssClass: 'required'
+  errorCssClass: 'example-error'
+, requiredCssClass: 'example-required'
+, validCssClass: 'example-valid'
 
 , email: forms.EmailField()
 , password: forms.CharField({widget: forms.PasswordInput})
@@ -97,7 +99,6 @@ var PersonForm = forms.Form.extend({
   name: forms.CharField({maxLength: 100})
 , age: forms.IntegerField({minValue: 0, maxValue: 115})
 , bio: forms.CharField({widget: forms.Textarea})
-, requiredCssClass: 'required'
 })
 
 var PeopleEditor = React.createClass({

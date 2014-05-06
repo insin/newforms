@@ -41,6 +41,8 @@ New Features
 * Added ``.errorMessage()`` and ``.errorMessages()`` to BoundField as a
   convenience for accessing error message strings, instead of having to go
   through ``.errors()`` and use the ErrorList API.
+* Added generation of a ``validCssClass`` in default rendering or when using
+  ``BoundField#cssClasses()`` directly, if present on a form or its prototype.
 
 Changes
 -------
