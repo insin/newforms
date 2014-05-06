@@ -51,6 +51,9 @@ Changes
 * Updated to React 0.10 -- there are no library dependencies on new 0.10 features,
   but unit tests now make use of its enhanced support for rendering to static
   HTML.
+* Form and FormSet ``cleanedData`` is now always defined regardless of whether
+  or not any validation has been performed yet -- this makes it safe to check
+  for data at any time.
 
 Bug Fixes
 ---------

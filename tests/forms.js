@@ -178,7 +178,7 @@ QUnit.test("Empty data object", 10, function() {
 "<div><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_birthday\">Birthday:</label> <input type=\"text\" name=\"birthday\" id=\"id_birthday\"></div>")
 })
 
-QUnit.test("Unbound form", 8, function() {
+QUnit.test("Unbound form", 7, function() {
   // If you don't pass any "data" values, or if you pass null, the Form will
   // be considered unbound and won't do any validation. Form.errors will be
   // empty *but* Form.isValid() will return False.
@@ -186,7 +186,6 @@ QUnit.test("Unbound form", 8, function() {
   strictEqual(p.isInitialRender, true)
   strictEqual(p.errors().isPopulated(), false)
   strictEqual(p.isValid(), false)
-  equal(typeof p.cleanedData, "undefined")
   reactHTMLEqual(p.render.bind(p),
 "<tr><th><label for=\"id_first_name\">First name:</label></th><td><input type=\"text\" name=\"first_name\" id=\"id_first_name\"></td></tr>" +
 "<tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\"></td></tr>" +
