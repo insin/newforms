@@ -17,27 +17,28 @@ New Features
 
 * Added per-field validation as the user makes changes to the form, configured
   by passing a ``validation`` argument when constructing a Form or Field.
-* Added creation of controlled React components by Widgets, configured by
+* Added toggling of creation of controlled React components, configured by
   passing a ``controlled`` argument when constructing a Form. When using
   controlled components, form widgets reflect the state of ``form.data``, so you
-  can change  what's displayed in the form by updating its data.
+  can change what's displayed in the form by updating its data.
 * Added calling of an ``onStateChange()`` callback -- passed as an argument when
   constructing a Form -- any time validation state may have changed as a result
   of calling ``setData()`` or ``updateData()``, or as a result of validation
-  triggered by user interaction.
+  triggered by user interaction. This option becomes required when using
+  interactive validation or controlled components.
+* Added support for partial updating (``form.updateData(partialData)``) and
+  cleaning (``form.partialClean(fieldNames)``) of data.
+* Added ``form.reset(newInitial)`` to reset a form back to its initial state,
+  optionally providing new initial data in the process.
+* Added a ``validate`` option to ``form.setData()`` to support setting incomplete
+  data in a controlled form without triggering required field validation errors.
 * Added ``form.validate(<form>)`` as a convenience method for retrieving and
   validating input data from a ``<form>`` -- this removes a common step when
-  hooking up full-form validation.
+  hooking up full-form ``onSubmit`` validation.
 * Added ``form.isComplete()`` to determine if all required fields have valid
   input data when validation is being performed interactively.
 * Added ``Widget.prototype.needsInitialValue`` to allow Widgets to always
   receive the initial value of a field in addition to user input to be rendered.
-* Added ``form.reset(newInitial)`` to reset a form back to its initial state,
-  optionally providing new initial data in the process.
-* Added support for partial updating (``form.updateData(partialData)``) and
-  cleaning (``form.partialClean(fieldNames)``) of data.
-* Added a ``validate`` option to ``form.setData()`` to support setting incomplete
-  data in a controlled form without triggering required field validation errors.
 * Added ``.errorMessage()`` and ``.errorMessages()`` to BoundField as a
   convenience for accessing error message strings, instead of having to go
   through ``.errors()`` and use the ErrorList API.
@@ -45,8 +46,8 @@ New Features
   ``BoundField#cssClasses()`` directly, if present on a form or its prototype.
 * Added a ``setFormData()`` method to Forms and FormSets for manually setting
   prefixed data.
-* Added a top-level ``validateAll`` utility method equivalent to ``form.validate()``
-  but for multiple Forms and/or FormSets.
+* Added a top-level ``validateAll`` utility method equivalent to
+  ``form.validate()`` but for multiple Forms and/or FormSets.
 
 Changes
 -------
@@ -54,19 +55,19 @@ Changes
 * Changed default widget attributes to always have a ``key`` property, to prevent
   fields being recreated when content around them changes (e.g. new validation
   errors being displayed), which makes them lose focus.
-* Updated to React 0.10 -- there are no library dependencies on new 0.10 features,
-  but unit tests now make use of its enhanced support for rendering to static
-  HTML.
 * Form and FormSet ``cleanedData`` is now always defined regardless of whether
   or not any validation has been performed yet -- this makes it safe to check
   for data at any time.
+* Updated to React 0.10 -- there are no library dependencies on new 0.10 features,
+  but unit tests now make use of its enhanced support for rendering to static
+  HTML.
 
 Bug Fixes
 ---------
 
-* FormSet forms are no longer created from scratch every time they're accessed
-  when running in the browser -- this was throwing away form state. which
-  effectively broke FormSets.
+* FormSet sub-forms are no longer created from scratch every time they're
+  accessed when running in the browser -- this was throwing away form state,
+  which effectively broke FormSets.
 
 0.5.2 / 2014-04-03
 ==================
