@@ -65,7 +65,7 @@ The quickest way to get started is to pass ``'auto'``:
 When the form's validation is set to ``'auto'``:
 
 * Text fields are validated using the ``onChange`` and ``onBlur`` events, with a
-  debounced 250ms delay applied to ``onChange`` between the last change being
+  debounce delay of 369ms applied to ``onChange`` between the last change being
   made and validation being performed.
 * Other fields are validated as soon as the user interacts with them.
 
@@ -159,7 +159,7 @@ It's equivalent to passing:
 
 .. code-block:: javascript
 
-   validation: {on: 'blur change', onChangeDelay: 250}
+   validation: {on: 'blur change', onChangeDelay: 369}
 
 Any event name
 --------------
