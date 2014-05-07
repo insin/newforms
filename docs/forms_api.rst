@@ -251,6 +251,21 @@ Forms API
 
       .. versionadded:: 0.5
 
+   .. js:function:: BaseForm#setFormData(formData)
+
+      Replaces with form's input data with data extracted from a ``<form>`` (i.e.
+      with :js:func:`formData`).
+
+      When using multiple forms with prefixes, form data will always be prefixed -
+      using this method when working with manually extracting form data should
+      ensure there are no surprises if moving from non-prefixed forms to prefixed
+      forms.
+
+      :param Object formData:
+         new input data for the form, which has been extracted from a ``<form>``
+
+       .. versionadded:: 0.6
+
    .. js:function:: BaseForm#updateData(data[, kwargs])
 
       Updates the form's :js:attr:`form.data` (and flips

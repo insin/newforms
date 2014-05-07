@@ -43,6 +43,10 @@ New Features
   through ``.errors()`` and use the ErrorList API.
 * Added generation of a ``validCssClass`` in default rendering or when using
   ``BoundField#cssClasses()`` directly, if present on a form or its prototype.
+* Added a ``setFormData()`` method to Forms and FormSets for manually setting
+  prefixed data.
+* Added a top-level ``validateAll`` utility method equivalent to ``form.validate()``
+  but for multiple Forms and/or FormSets.
 
 Changes
 -------

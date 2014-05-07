@@ -23,6 +23,23 @@ for customisation purposes.
       properties. Inputs with multiple values or duplicate names will have a
       list of values set.
 
+.. js:function:: validateAll(form, formsAndFormsets)
+
+   Extracts data from a ``<form>`` using :js:func:`formData` and validates it
+   with a list of Forms and/or FormSets.
+
+   :param form:
+      the ``<form>`` into which any given forms and formsets have been rendered
+      -- this can be a React ``<form>`` component or a real ``<form>`` DOM node.
+
+   :param Array formsAndFormsets:
+      a list of Form and/or FormSet instances to be used to validate the
+      ``<form>``'s input data.
+
+   :returns:
+      ``true`` if the ``<form>``'s input data are valid according to all given
+      forms and formsets
+
 .. js:function:: util.formatToArray(str, obj[, options])
 
    Replaces ``'{placeholders}'`` in a string with same-named properties from a
@@ -140,8 +157,6 @@ for customisation purposes.
 
    .. js:function:: ErrorList#render()
 
-      .. versionadded:: 0.5
-
       Default rendering is as a list.
 
    .. js:function:: ErrorList#asUl()
@@ -155,14 +170,10 @@ for customisation purposes.
 
    .. js:function:: ErrorList#asData()
 
-      .. versionadded:: 0.5
-
       Creates an "unwrapped" version of the data in the ErrorList - a plain
       Array containing ValidationErrors.
 
    .. js:function:: ErrorList#toJSON()
-
-      .. versionadded:: 0.5
 
       Creates a representation of all the contents of the ErrorList for
       serialisation, to be called by ``JSON.stringify()`` if this object is

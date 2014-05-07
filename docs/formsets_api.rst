@@ -131,6 +131,13 @@ Formsets API
 
       .. versionadded:: 0.5
 
+   .. js:function:: BaseFormSet#setFormData(formData)
+
+      Alias for :js:func:`BaseFormSet#setData`, to keep the FormSet API
+      consistent with the Form API.
+
+       .. versionadded:: 0.6
+
    .. js:function:: BaseFormSet#cleanedData()
 
       Returns a list of :js:attr:`form.cleanedData` objects for every form in
