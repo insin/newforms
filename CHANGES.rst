@@ -1,5 +1,5 @@
-0.6.0 / 199X
-============
+0.6.0 / 2014-05-07
+==================
 
 Breaking Changes
 ----------------
@@ -7,25 +7,25 @@ Breaking Changes
 * Renamed ``form.isBound`` to ``form.isInitialRender``, which more accurately
   reflects usage of this property (it was always being used in Forms as
   ``!isBound``)
-* Changed ``setData()`` to no longer accept prefixed data by default. Added a
-  ``prefixed`` option argument which controls this. This makes ``setData()``
-  more user-friendly for use with controlled forms, to update what's displayed
-  in them.
+* Changed ``form.setData()`` to no longer accept prefixed data by default.
+  Added a ``prefixed`` option argument which controls this and a new
+  ``setFormData()`` method which replicates the old behaviour. This makes
+  ``setData()`` more user-friendly for use with controlled forms.
 
 New Features
 ------------
 
 * Added per-field validation as the user makes changes to the form, configured
-  by passing a ``validation`` argument when constructing a Form or Field.
+  by passing a ``validation`` option when constructing a Form, Field or FormSet.
 * Added toggling of creation of controlled React components, configured by
-  passing a ``controlled`` argument when constructing a Form. When using
-  controlled components, form widgets reflect the state of ``form.data``, so you
-  can change what's displayed in the form by updating its data.
-* Added calling of an ``onStateChange()`` callback -- passed as an argument when
-  constructing a Form -- any time validation state may have changed as a result
-  of calling ``setData()`` or ``updateData()``, or as a result of validation
-  triggered by user interaction. This option becomes required when using
-  interactive validation or controlled components.
+  passing a ``controlled`` option when constructing a Form or FormSet. When
+  using  controlled components, form widgets reflect the state of ``form.data``,
+  so you can change what's displayed in the form by updating its data.
+* Added calling of a``onStateChange()`` callback when provided -- passed as an
+  option when  constructing a Form or FormSet -- any time validation state may
+  have changed as a result of updating user input from controlled components, or
+  as a result of validation triggered by user interaction. This option becomes
+  required when using ``validation`` or ``controlled`` options.
 * Added support for partial updating (``form.updateData(partialData)``) and
   cleaning (``form.partialClean(fieldNames)``) of data.
 * Added ``form.reset(newInitial)`` to reset a form back to its initial state,
@@ -37,17 +37,15 @@ New Features
   hooking up full-form ``onSubmit`` validation.
 * Added ``form.isComplete()`` to determine if all required fields have valid
   input data when validation is being performed interactively.
-* Added ``Widget.prototype.needsInitialValue`` to allow Widgets to always
-  receive the initial value of a field in addition to user input to be rendered.
 * Added ``.errorMessage()`` and ``.errorMessages()`` to BoundField as a
   convenience for accessing error message strings, instead of having to go
   through ``.errors()`` and use the ErrorList API.
 * Added generation of a ``validCssClass`` in default rendering or when using
   ``BoundField#cssClasses()`` directly, if present on a form or its prototype.
-* Added a ``setFormData()`` method to Forms and FormSets for manually setting
-  prefixed data.
 * Added a top-level ``validateAll`` utility method equivalent to
   ``form.validate()`` but for multiple Forms and/or FormSets.
+* Added ``Widget.prototype.needsInitialValue`` to allow Widgets to always
+  receive the initial value of a field in addition to user input to be rendered.
 
 Changes
 -------
@@ -57,7 +55,7 @@ Changes
   errors being displayed), which makes them lose focus.
 * Form and FormSet ``cleanedData`` is now always defined regardless of whether
   or not any validation has been performed yet -- this makes it safe to check
-  for data at any time.
+  for data at any time, particularly in cross-field validation.
 * Updated to React 0.10 -- there are no library dependencies on new 0.10 features,
   but unit tests now make use of its enhanced support for rendering to static
   HTML.
