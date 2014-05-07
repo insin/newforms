@@ -248,7 +248,7 @@ initial state, with new initial data:
 
    <script src="_static/js/react-0.10.0.min.js"></script>
    <script src="_static/js/newforms.min.js"></script>
-   <script src="_static/js/interactive-validation.js"></script>
+   <script src="_static/js/interactive-forms.js"></script>
 
 .. _`uncontrolled React components`: http://facebook.github.io/react/docs/forms.html#uncontrolled-components
 .. _`controlled React components`: http://facebook.github.io/react/docs/forms.html#controlled-components

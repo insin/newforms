@@ -35,6 +35,10 @@ function renderField(bf) {
   }
 }
 
+/**
+ * Generic form-rendering component for demo forms which just need to be wrapped
+ * and rendered.
+ */
 var FormRenderer = React.createClass({
   getInitialState: function() {
     return {
@@ -43,17 +47,13 @@ var FormRenderer = React.createClass({
   }
 
 , createForm: function() {
-    var args = extend({onStateChange: this.onFormStateChange}, this.props.args)
+    var args = extend({onStateChange: this.forceUpdate.bind(this)}, this.props.args)
     return new this.props.form(args)
   }
 
 , onSubmit: function(e) {
     e.preventDefault()
     this.state.form.validate(this.refs.form)
-  }
-
-, onFormStateChange: function() {
-    this.forceUpdate()
   }
 
 , render: function() {
