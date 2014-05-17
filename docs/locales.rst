@@ -27,7 +27,7 @@ Property                    Value
 ``B``                       List of full month names
 ``DATE_INPUT_FORMATS``      Accepted date input `format strings`_
 ``DATETIME_INPUT_FORMATS``  Accepted date/time input `format strings`_
-``TIME_INPUT_FORMATS``      Accepted date input `format strings`_
+``TIME_INPUT_FORMATS``      Accepted time input `format strings`_
 ==========================  ==========================================
 
 For each of the ``*_INPUT_FORMATS``, `ISO 8601`_ standard formats will be
