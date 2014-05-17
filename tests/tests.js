@@ -14,6 +14,8 @@ global.isomorph = require('isomorph')
 global.forms = require('../newforms.js')
 
 var tests = [ 'util.js'
+            , 'formats.js'
+            , 'locales.js'
             , 'forms.js'
             , 'forms-browser.js'
             , 'forms-server.js'

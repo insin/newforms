@@ -79,6 +79,7 @@ Documentation Contents
    interactive_forms
    widgets
    formsets
+   locales
    util
    forms_api
    fields_api
