@@ -2,6 +2,8 @@
 Locales
 =======
 
+.. versionadded:: 0.7
+
 Newforms comes with two pre-configured locales: ``en`` and ``en_GB``.
 
 The default locale is ``en``, which (for backwards-compatibility) expects any

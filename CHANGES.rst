@@ -1,3 +1,14 @@
+0.7.0 / 2014-07-27
+==================
+
+* Updated to React 0.11 -- there are no library dependencies on new 0.11 features,
+  but unit tests depend on improvements made to its static HTML generation.
+
+New Features
+------------
+
+* Added locale support.
+
 0.6.0 / 2014-05-07
 ==================
 
