@@ -1,3 +1,4 @@
+var browserify = require('browserify')
 var gulp = require('gulp')
 var source = require('vinyl-source-stream')
 var watchify = require('watchify')
@@ -27,8 +28,8 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter('jshint-stylish'))
 })
 
-gulp.task('build-js', ['lint'], function(){
-  var bundler = watchify(jsEntryPoint)
+function buildJS(watch) {
+  var bundler = (watch ? watchify(jsEntryPoint) : browserify(jsEntryPoint))
   bundler.transform('browserify-shim')
   bundler.on('update', rebundle)
 
@@ -54,10 +55,18 @@ gulp.task('build-js', ['lint'], function(){
   }
 
   return rebundle()
+}
+
+gulp.task('browserify-js', ['lint'], function() {
+  return buildJS(false)
+})
+
+gulp.task('watchify-js', ['lint'], function() {
+  return buildJS(true)
 })
 
 // Copies browser build to ./dist, renaming to include a version number suffix
-gulp.task('dist', ['build-js'], function() {
+gulp.task('dist', ['browserify-js'], function() {
   return gulp.src('./newforms*.js')
     .pipe(rename(function(path) {
        // As of 1.0, gulp-rename doesn't include .min as part of the extension,
@@ -69,9 +78,9 @@ gulp.task('dist', ['build-js'], function() {
 })
 
 gulp.task('watch', function() {
-  gulp.watch(jsPath, ['build-js'])
+  gulp.watch(jsPath, ['watchify-js'])
 })
 
 gulp.task('default', function() {
-  gulp.start('build-js', 'watch')
+  gulp.start('browserify-js', 'watch')
 })

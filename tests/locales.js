@@ -35,7 +35,7 @@ QUnit.test('Adding and using a new locale', function() {
   var w = forms.DateInput()
   var d = new Date(2014, 4, 17)
   reactHTMLEqual(w.render("date", d),
-    "<input type=\"text\" name=\"date\" value=\"17&#x2f;05&#x2f;2014\">",
+    "<input type=\"text\" name=\"date\" value=\"17/05/2014\">",
     "Date widget renders with first localised date format")
   w = forms.DateInput({format: '%d %b %Y'})
   reactHTMLEqual(w.render("date", d),

@@ -9,7 +9,7 @@ global.navigator = {userAgent: 'fake'}
 global.NodeList = require('../node_modules/qqunit/node_modules/jsdom/lib/jsdom').dom.level3.core.NodeList
 
 object.extend(global, require('./customAsserts.js'))
-global.React = window.React = require('../vendor/react-0.10.0.js')
+global.React = window.React = require('../vendor/react-0.11.1.js')
 global.isomorph = require('isomorph')
 global.forms = require('../newforms.js')
 

@@ -120,27 +120,27 @@ QUnit.test("FileInput", 7, function() {
 QUnit.test("Textarea", 8, function() {
   var w = forms.Textarea()
   reactHTMLEqual(w.render("msg", ""),
-        "<textarea rows=\"10\" cols=\"40\" name=\"msg\" value=\"\"></textarea>")
+        "<textarea rows=\"10\" cols=\"40\" name=\"msg\"></textarea>")
   reactHTMLEqual(w.render("msg", null),
-        "<textarea rows=\"10\" cols=\"40\" name=\"msg\" value=\"\"></textarea>")
+        "<textarea rows=\"10\" cols=\"40\" name=\"msg\"></textarea>")
   reactHTMLEqual(w.render("msg", "value"),
-        "<textarea rows=\"10\" cols=\"40\" name=\"msg\" value=\"value\">value</textarea>")
+        "<textarea rows=\"10\" cols=\"40\" name=\"msg\">value</textarea>")
   reactHTMLEqual(w.render("msg", "some \"quoted\" & ampersanded value"),
-        "<textarea rows=\"10\" cols=\"40\" name=\"msg\" value=\"some &quot;quoted&quot; &amp; ampersanded value\">some &quot;quoted&quot; &amp; ampersanded value</textarea>")
+        "<textarea rows=\"10\" cols=\"40\" name=\"msg\">some &quot;quoted&quot; &amp; ampersanded value</textarea>")
   reactHTMLEqual(w.render("msg", "value", {attrs: {"className": "pretty", rows: 20}}),
-        "<textarea rows=\"20\" cols=\"40\" name=\"msg\" class=\"pretty\" value=\"value\">value</textarea>")
+        "<textarea rows=\"20\" cols=\"40\" name=\"msg\" class=\"pretty\">value</textarea>")
 
   // You can also pass "attrs" to the constructor
   w = forms.Textarea({attrs: {"className": "pretty"}})
   reactHTMLEqual(w.render("msg", ""),
-        "<textarea rows=\"10\" cols=\"40\" class=\"pretty\" name=\"msg\" value=\"\"></textarea>")
+        "<textarea rows=\"10\" cols=\"40\" class=\"pretty\" name=\"msg\"></textarea>")
   reactHTMLEqual(w.render("msg", "example"),
-        "<textarea rows=\"10\" cols=\"40\" class=\"pretty\" name=\"msg\" value=\"example\">example</textarea>")
+        "<textarea rows=\"10\" cols=\"40\" class=\"pretty\" name=\"msg\">example</textarea>")
 
   // Attributes passed to render() get precedence over those passed to the constructor
   w = forms.Textarea({attrs: {"className": "pretty"}})
   reactHTMLEqual(w.render("msg", "", {attrs: {"className": "special"}}),
-        "<textarea rows=\"10\" cols=\"40\" class=\"special\" name=\"msg\" value=\"\"></textarea>")
+        "<textarea rows=\"10\" cols=\"40\" class=\"special\" name=\"msg\"></textarea>")
 })
 
 QUnit.test("CheckboxInput", 18, function() {
@@ -945,7 +945,7 @@ QUnit.test("SplitDateTimeWidget", 9, function() {
   // Use "dateFormat" and "timeFormat" to change the way a value is displayed
   w = forms.SplitDateTimeWidget({dateFormat: "%d/%m/%Y", timeFormat: "%H:%M"})
   reactHTMLEqual(w.render("date", new Date(2006, 0, 10, 7, 30)),
-        "<div><input type=\"text\" name=\"date_0\" data-newforms-field=\"date\" value=\"10&#x2f;01&#x2f;2006\"><input type=\"text\" name=\"date_1\" data-newforms-field=\"date\" value=\"07:30\"></div>")
+        "<div><input type=\"text\" name=\"date_0\" data-newforms-field=\"date\" value=\"10/01/2006\"><input type=\"text\" name=\"date_1\" data-newforms-field=\"date\" value=\"07:30\"></div>")
 
   // Django #13390  - SplitDateTimeWidget should recognise when it's no
   // longer required.
@@ -980,7 +980,7 @@ QUnit.test("DateTimeInput", 4, function() {
   // Use "format" to change the way a value is displayed
   w = forms.DateTimeInput({format: "%d/%m/%Y %H:%M", attrs: {type: "datetime"}})
   reactHTMLEqual(w.render("date", d),
-        "<input type=\"datetime\" name=\"date\" value=\"17&#x2f;09&#x2f;2007 12:51\">")
+        "<input type=\"datetime\" name=\"date\" value=\"17/09/2007 12:51\">")
 })
 
 QUnit.test("DateInput", 4, function() {
@@ -999,7 +999,7 @@ QUnit.test("DateInput", 4, function() {
   // Use "format" to change the way a value is displayed
   w = forms.DateInput({format: "%d/%m/%Y", attrs: {type: "date"}})
   reactHTMLEqual(w.render("date", d),
-        "<input type=\"date\" name=\"date\" value=\"17&#x2f;09&#x2f;2007\">")
+        "<input type=\"date\" name=\"date\" value=\"17/09/2007\">")
 })
 
 QUnit.test("TimeInput", 5, function() {

@@ -49,3 +49,5 @@ QUnit.test('makeChoices', 2, function() {
   deepEqual(forms.util.makeChoices(projects, 'id', 'name'), expected)
   deepEqual(forms.util.makeChoices(projects, 'id', 'toString'), expected)
 })
+
+// TODO Test normaliseValidation()

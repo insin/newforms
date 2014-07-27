@@ -246,7 +246,7 @@ initial state, with new initial data:
 
 .. raw:: html
 
-   <script src="_static/js/react-0.10.0.min.js"></script>
+   <script src="_static/js/react.min.js"></script>
    <script src="_static/js/newforms.min.js"></script>
    <script src="_static/js/interactive-forms.js"></script>
 

@@ -51,6 +51,11 @@ QUnit.test("Form", 12, function() {
 "<tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\"></td></tr>")
 })
 
+// TODO
+// QUnit.test('Resetting forms', function() {
+//
+// })
+
 QUnit.test('Setting form data', function() {
   // Set a data oject after initialising - this is typically client-side usage,
   // where the form must first be crated and displayed to take user input. It
@@ -65,6 +70,8 @@ QUnit.test('Setting form data', function() {
 <tr><th><label for=\"id_last_name\">Last name:</label></th><td><input type=\"text\" name=\"last_name\" id=\"id_last_name\" value=\"Lennon\"></td></tr>\
 <tr><th><label for=\"id_birthday\">Birthday:</label></th><td><input type=\"text\" name=\"birthday\" id=\"id_birthday\" value=\"1940-10-9\"></td></tr>",
   "data set with setData render as expected")
+
+  // TODO Test new options
 })
 
 QUnit.test('Updating form data', 32, function() {
@@ -149,6 +156,8 @@ QUnit.test('Updating form data', 32, function() {
   equal(p.cleanedData.last_name, 'Lennon')
   equal(p.cleanedData.first_name, 'John')
   equal(p.cleanedData.birthday.valueOf(), new Date(1940, 9, 9).valueOf())
+
+  // TODO Test new options
 })
 
 QUnit.test("Empty data object", 10, function() {
@@ -390,14 +399,14 @@ QUnit.test("Widget output", 10, function() {
   reactHTMLEqual(f.boundField("subject").render(),
         "<input type=\"text\" name=\"subject\">")
   reactHTMLEqual(f.boundField("message").render(),
-        "<textarea rows=\"10\" cols=\"40\" name=\"message\" value=\"\"></textarea>")
+        "<textarea rows=\"10\" cols=\"40\" name=\"message\"></textarea>")
 
   // asTextarea(), asText() and asHidden() are shortcuts for changing the
   // output widget type
   reactHTMLEqual(f.boundField("subject").asText(),
         "<input type=\"text\" name=\"subject\">")
   reactHTMLEqual(f.boundField("subject").asTextarea(),
-        "<textarea rows=\"10\" cols=\"40\" name=\"subject\" value=\"\"></textarea>")
+        "<textarea rows=\"10\" cols=\"40\" name=\"subject\"></textarea>")
   reactHTMLEqual(f.boundField("subject").asHidden(),
         "<input type=\"hidden\" name=\"subject\" value=\"\">")
 
@@ -410,7 +419,7 @@ QUnit.test("Widget output", 10, function() {
   })
   f = new ContactForm({autoId: false})
   reactHTMLEqual(f.boundField("message").render(),
-        "<textarea rows=\"80\" cols=\"20\" name=\"message\" value=\"\"></textarea>")
+        "<textarea rows=\"80\" cols=\"20\" name=\"message\"></textarea>")
 
   // Instance-level attrs are *not* carried over to asTextarea(), asText() and
   // asHidden()
@@ -418,7 +427,7 @@ QUnit.test("Widget output", 10, function() {
         "<input type=\"text\" name=\"message\">")
   f = new ContactForm({data: {subject: "Hello", message: "I love you."}, autoId: false})
   reactHTMLEqual(f.boundField("subject").asTextarea(),
-        "<textarea rows=\"10\" cols=\"40\" name=\"subject\" value=\"Hello\">Hello</textarea>")
+        "<textarea rows=\"10\" cols=\"40\" name=\"subject\">Hello</textarea>")
   reactHTMLEqual(f.boundField("message").asText(),
         "<input type=\"text\" name=\"message\" value=\"I love you.\">")
   reactHTMLEqual(f.boundField("message").asHidden(),
@@ -1479,7 +1488,7 @@ QUnit.test("Help text", 6, function() {
   p  = new UserRegistration({autoId: false})
   reactHTMLEqual(p.asUl(),
 "<li>Username: <input maxlength=\"10\" type=\"text\" name=\"username\"> <span class=\"helpText\">e.g., user@example.com</span></li>" +
-"<li>Password: <input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"next\" value=\"&#x2f;\"></li>")
+"<li>Password: <input type=\"password\" name=\"password\"><input type=\"hidden\" name=\"next\" value=\"/\"></li>")
 
   // To include HTML in help text when using defaultrendering, pass an object
   // with an __html property.

@@ -61,7 +61,7 @@ QUnit.test('Overview - Customising form display', function() {
     }
   })
   reactHTMLEqual(Contact(),
-"<form action=\"&#x2f;contact\" method=\"POST\">\
+"<form action=\"/contact\" method=\"POST\">\
 <div class=\"fieldWrapper\"><label for=\"id_subject\">Email subject:</label><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
 <div class=\"fieldWrapper\"><label for=\"id_message\">Your message:</label><input type=\"text\" name=\"message\" id=\"id_message\"></div>\
 <div class=\"fieldWrapper\"><label for=\"id_sender\">Your email address:</label><input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
@@ -92,7 +92,7 @@ QUnit.test("Overview - Looping over the Form's Fields", function() {
     }
   })
   reactHTMLEqual(Contact(),
-"<form action=\"&#x2f;contact\" method=\"POST\">\
+"<form action=\"/contact\" method=\"POST\">\
 <div class=\"fieldWrapper\"><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
 <div class=\"fieldWrapper\"><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></div>\
 <div class=\"fieldWrapper\"><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
@@ -617,7 +617,7 @@ QUnit.test('Forms and React - Using a Form in a React component', function() {
     }
   })
   reactHTMLEqual(new Contact(),
-"<form action=\"&#x2f;contact\" method=\"POST\">\
+"<form action=\"/contact\" method=\"POST\">\
 <div><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
 <div><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></div>\
 <div><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\

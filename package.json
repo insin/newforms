@@ -2,7 +2,7 @@
   "name": "newforms",
   "description": "An isomorphic form-handling library for React",
   "version": "0.7.0-alpha",
-  "author": "Jonathan Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
+  "author": "Jonny Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
   "tags": [
     "isomorphic",
     "form-handling",
@@ -21,28 +21,28 @@
   "dependencies": {
     "Concur": "~0.2.5",
     "isomorph": "~0.2.1",
-    "react": ">=0.9.0",
+    "react": ">=0.11.0",
     "validators": "~0.3.0"
   },
   "devDependencies": {
-    "browserify": "3.41.x",
-    "browserify-shim": "3.4.x",
-    "gulp": "3.6.x",
-    "gulp-concat": "2.2.x",
+    "browserify": "4.x",
+    "browserify-shim": "3.6.x",
+    "gulp": "3.8.x",
+    "gulp-concat": "2.3.x",
     "gulp-header": "1.0.x",
     "gulp-jshint-cached": "1.4.x",
     "gulp-plumber": "0.6.x",
     "gulp-rename": "1.2.x",
     "gulp-streamify": "0.0.x",
-    "gulp-uglify": "0.2.x",
-    "gulp-util": "2.2.x",
-    "jshint-stylish": "0.1.x",
+    "gulp-uglify": "0.3.x",
+    "gulp-util": "3.0.x",
+    "jshint-stylish": "0.4.x",
     "qqunit": "0.6.x",
     "vinyl-source-stream": "0.1.x",
-    "watchify": "0.7.x"
+    "watchify": "0.10.x"
   },
   "scripts": {
-    "test": "gulp build-js && node tests/tests.js",
+    "test": "gulp browserify-js && node tests/tests.js",
     "dist": "gulp dist --production --release"
   },
   "browserify-shim": {
