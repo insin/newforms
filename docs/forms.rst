@@ -77,7 +77,7 @@ property:
 
 .. code-block:: javascript
 
-   var f = mew ContactForm()
+   var f = new ContactForm()
    print(f.isInitialRender)
    // => true
    f = new ContactForm({data: {subject: 'hello'}})
