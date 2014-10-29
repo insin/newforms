@@ -118,7 +118,7 @@ Displaying objects
 
 Objects which would be coerced to a string for display in ``django.forms``, such
 as Forms, FormSets and ErrorLists, have a ``render()`` method to generate their
-default representation as ``React.DOM`` components.
+default representation as ``ReactElement`` objects.
 
 String placeholders
 -------------------

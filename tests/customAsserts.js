@@ -64,7 +64,7 @@ function validationErrorEqual(validator, message, value) {
 }
 
 /**
- * Custom assertion for contents created with React.DOM.
+ * Custom assertion for contents created with ReactElements.
  */
 var reactHTMLEqual = (function() {
   var wrapperElement = /^<div>|<\/div>$/g
@@ -79,7 +79,7 @@ var reactHTMLEqual = (function() {
     // element for rendering.
     var wrapped = false
     if (Array.isArray(component)) {
-      component = React.DOM.div(null, component)
+      component = React.createElement('div', null, component)
       wrapped = true
     }
 
@@ -92,16 +92,16 @@ var reactHTMLEqual = (function() {
         render: function() {
           var rendered = renderFunc()
           if (Array.isArray(rendered)) {
-            rendered = React.DOM.div(null, rendered)
+            rendered = React.createElement('div', null, rendered)
             wrapped = true
           }
           return rendered
         }
       })
-      component = reactClass()
+      component = React.createElement(reactClass)
     }
 
-    var html = React.renderComponentToStaticMarkup(component)
+    var html = React.renderToStaticMarkup(component)
     // Remove HTML for any wrapper element which was added
     if (wrapped) {
       html = html.replace(wrapperElement, '')

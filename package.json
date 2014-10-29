@@ -1,7 +1,7 @@
 {
   "name": "newforms",
   "description": "An isomorphic form-handling library for React",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "author": "Jonny Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
   "tags": [
     "isomorphic",
@@ -21,7 +21,7 @@
   "dependencies": {
     "Concur": "~0.2.5",
     "isomorph": "~0.2.1",
-    "react": ">=0.11.0",
+    "react": ">=0.12.0",
     "validators": "~0.3.0"
   },
   "devDependencies": {

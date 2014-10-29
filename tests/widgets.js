@@ -600,26 +600,26 @@ QUnit.test("RadioSelect", 21, function() {
   var inputs1 = [], inputs2 = [], inputs3 = []
   var radioInputs = r.choiceInputs()
   for (var i = 0, inp; inp = radioInputs[i]; i++) {
-    inputs1.push(inp.render(), React.DOM.br(null))
-    inputs2.push(React.DOM.p(null, inp.tag(), " ", inp.choiceLabel))
-    inputs3.push(React.DOM.span(null,
+    inputs1.push(inp.render(), React.createElement('br', null))
+    inputs2.push(React.createElement('p', null, inp.tag(), " ", inp.choiceLabel))
+    inputs3.push(React.createElement('span', null,
         [inp.name, inp.value, inp.choiceValue, inp.choiceLabel, inp.isChecked()].join(' ')))
   }
-  reactHTMLEqual(React.DOM.div(null, inputs1),
+  reactHTMLEqual(React.createElement('div', null, inputs1),
 "<div>" +
 "<label><input type=\"radio\" name=\"beatle\" value=\"J\" checked> John</label><br>" +
 "<label><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</label><br>" +
 "<label><input type=\"radio\" name=\"beatle\" value=\"G\"> George</label><br>" +
 "<label><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</label><br>" +
 "</div>")
-  reactHTMLEqual(React.DOM.div(null, inputs2),
+  reactHTMLEqual(React.createElement('div', null, inputs2),
 "<div>" +
 "<p><input type=\"radio\" name=\"beatle\" value=\"J\" checked> John</p>" +
 "<p><input type=\"radio\" name=\"beatle\" value=\"P\"> Paul</p>" +
 "<p><input type=\"radio\" name=\"beatle\" value=\"G\"> George</p>" +
 "<p><input type=\"radio\" name=\"beatle\" value=\"R\"> Ringo</p>" +
 "</div>")
-  reactHTMLEqual(React.DOM.div(null, inputs3),
+  reactHTMLEqual(React.createElement('div', null, inputs3),
 "<div>" +
 "<span>beatle J J John true</span>" +
 "<span>beatle J P Paul false</span>" +
@@ -635,10 +635,10 @@ QUnit.test("RadioSelect", 21, function() {
     for (var i = 0, l = inputs.length; i < l; i++) {
       items.push(inputs[i].render())
       if (i != l - 1) {
-        items.push(React.DOM.br(null))
+        items.push(React.createElement('br', null))
       }
     }
-    return React.DOM.div(null, items)
+    return React.createElement('div', null, items)
   }
 
   w = forms.RadioSelect({renderer: MyRenderer})

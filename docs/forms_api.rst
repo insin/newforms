@@ -407,7 +407,7 @@ Forms API
       .. versionadded:: 0.5
 
    A number of default rendering functions are provided to generate
-   ``React.DOM`` representations of a Form's fields.
+   ``ReactElement`` representations of a Form's fields.
 
    These are general-purpose in that they attempt to handle all form rendering
    scenarios and edge cases, ensuring that valid markup is always produced.

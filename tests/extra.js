@@ -23,7 +23,7 @@ QUnit.test("MultiWidget and MultiValueField", 11, function() {
     return [null, null, null]
   }
   ComplexWidget.prototype.formatOutput = function(renderedWidgets) {
-    return React.DOM.div({"className": "complex"}, renderedWidgets)
+    return React.createElement('div', {"className": "complex"}, renderedWidgets)
   }
 
   var w = ComplexWidget()

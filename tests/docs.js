@@ -34,33 +34,33 @@ QUnit.test('Overview - Customising form display', function() {
       var form = this.state.form
       var fields = form.boundFieldsObj()
 
-      return React.DOM.form({ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"}
+      return React.createElement('form', {ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"}
       , form.nonFieldErrors().render()
-      , React.DOM.div({key: fields.subject.htmlName, className:"fieldWrapper"}
+      , React.createElement('div', {key: fields.subject.htmlName, className:"fieldWrapper"}
         , fields.subject.errors().render()
-        , React.DOM.label( {htmlFor:"id_subject"}, "Email subject:")
+        , React.createElement('label', {htmlFor:"id_subject"}, "Email subject:")
         , fields.subject.render()
         )
-      , React.DOM.div({key: fields.message.htmlName, className:"fieldWrapper"}
+      , React.createElement('div', {key: fields.message.htmlName, className:"fieldWrapper"}
         , fields.message.errors().render()
-        , React.DOM.label( {htmlFor:"id_message"}, "Your message:")
+        , React.createElement('label', {htmlFor:"id_message"}, "Your message:")
         , fields.message.render()
         )
-      , React.DOM.div({key: fields.sender.htmlName, className:"fieldWrapper"}
+      , React.createElement('div', {key: fields.sender.htmlName, className:"fieldWrapper"}
         , fields.sender.errors().render()
-        , React.DOM.label( {htmlFor:"id_sender"}, "Your email address:")
+        , React.createElement('label', {htmlFor:"id_sender"}, "Your email address:")
         , fields.sender.render()
         )
-      , React.DOM.div({key: fields.ccMyself.htmlName, className:"fieldWrapper"}
+      , React.createElement('div', {key: fields.ccMyself.htmlName, className:"fieldWrapper"}
         , fields.ccMyself.errors().render()
-        , React.DOM.label( {htmlFor:"id_ccMyself"}, "CC yourself?")
+        , React.createElement('label', {htmlFor:"id_ccMyself"}, "CC yourself?")
         , fields.ccMyself.render()
         )
-      , React.DOM.div(null, React.DOM.input( {type:"submit", value:"Send message"}))
+      , React.createElement('div', null, React.createElement('input',  {type:"submit", value:"Send message"}))
       )
     }
   })
-  reactHTMLEqual(Contact(),
+  reactHTMLEqual(React.createElement(Contact),
 "<form action=\"/contact\" method=\"POST\">\
 <div class=\"fieldWrapper\"><label for=\"id_subject\">Email subject:</label><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
 <div class=\"fieldWrapper\"><label for=\"id_message\">Your message:</label><input type=\"text\" name=\"message\" id=\"id_message\"></div>\
@@ -77,21 +77,21 @@ QUnit.test("Overview - Looping over the Form's Fields", function() {
 
   , render: function() {
       var form = this.state.form
-      return React.DOM.form({ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"}
+      return React.createElement('form', {ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"}
       , form.nonFieldErrors().render()
       , form.boundFields().map(this.renderField)
-      , React.DOM.div(null, React.DOM.input( {type:"submit", value:"Send message"}))
+      , React.createElement('div', null, React.createElement('input',  {type:"submit", value:"Send message"}))
       )
     }
 
   , renderField: function(bf) {
-      return React.DOM.div({key: bf.htmlName, className:"fieldWrapper"}
+      return React.createElement('div', {key: bf.htmlName, className:"fieldWrapper"}
       , bf.errors().render()
       , bf.labelTag(), ' ', bf.render()
       )
     }
   })
-  reactHTMLEqual(Contact(),
+  reactHTMLEqual(React.createElement(Contact),
 "<form action=\"/contact\" method=\"POST\">\
 <div class=\"fieldWrapper\"><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
 <div class=\"fieldWrapper\"><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></div>\
@@ -328,9 +328,9 @@ QUnit.test('Forms - How errors are displayed', function() {
 
   var DivErrorList = forms.ErrorList.extend({
     render: function() {
-      return React.DOM.div({className: 'errorlist'}
+      return React.createElement('div', {className: 'errorlist'}
       , this.messages().map(function(error) {
-          return React.DOM.div(null, error)
+          return React.createElement('div', null, error)
         })
       )
     }
@@ -595,11 +595,11 @@ QUnit.test('Forms and React - Using a Form in a React component', function() {
     }
 
   , render: function() {
-      return React.DOM.form({ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"},
+      return React.createElement('form', {ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"},
         this.state.form.asDiv(),
-        React.DOM.div(null,
-          React.DOM.input({type:"submit", value:"Submit"}),
-          React.DOM.input({type:"button", value:"Cancel", onClick:this.props.onCancel})
+        React.createElement('div', null,
+          React.createElement('input', {type:"submit", value:"Submit"}),
+          React.createElement('input', {type:"button", value:"Cancel", onClick:this.props.onCancel})
         )
       )
     }
@@ -616,7 +616,7 @@ QUnit.test('Forms and React - Using a Form in a React component', function() {
       }
     }
   })
-  reactHTMLEqual(new Contact(),
+  reactHTMLEqual(React.createElement(Contact),
 "<form action=\"/contact\" method=\"POST\">\
 <div><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
 <div><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></div>\
@@ -815,7 +815,7 @@ QUnit.test('Widgets - MultiWidget', function() {
     }
 
   , formatOutput: function(renderedWidgets) {
-      return React.DOM.div(null, renderedWidgets)
+      return React.createElement('div', null, renderedWidgets)
     }
 
   , valueFromData: function(data, files, name) {
@@ -855,7 +855,7 @@ QUnit.test('Widgets - RadioSelect', function() {
   var myForm = new MyForm()
   reactHTMLEqual(function() {
     return myForm.boundField('beatles').subWidgets().map(function(radio) {
-      return React.DOM.div({className: 'myRadio'}, radio.render())
+      return React.createElement('div', {className: 'myRadio'}, radio.render())
     })
   },
 "<div class=\"myRadio\">\
@@ -873,9 +873,9 @@ QUnit.test('Widgets - RadioSelect', function() {
 
   reactHTMLEqual(function() {
     return myForm.boundField('beatles').subWidgets().map(function(radio) {
-      return React.DOM.label({htmlFor: radio.idForLabel()}
+      return React.createElement('label', {htmlFor: radio.idForLabel()}
       , radio.choiceLabel
-      , React.DOM.span({className: 'radio'}, radio.tag())
+      , React.createElement('span', {className: 'radio'}, radio.tag())
       )
     })
   },

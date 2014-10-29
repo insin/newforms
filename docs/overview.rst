@@ -17,7 +17,7 @@ The core concepts newforms deals with are:
 Widgets
    Widgets correspond to HTML form inputs -- they hold metadata required to
    display an input (or inputs) and given a field's name and user input data,
-   will create ``React.DOM`` components which can be rendered to a browser's DOM
+   will create ``ReactElement`` objects which can be rendered to a browser's DOM
    or to a string of HTML.
 
    For example, a ``Select`` knows which ``<option>`` values and labels it
@@ -91,7 +91,7 @@ Displaying a Form
 -----------------
 
 Rather than newforms providing its own custom React components, ``Form`` objects
-render to ``React.DOM`` components, to be included in the ``render()`` output of
+render to ``ReactElement`` objects, to be included in the ``render()`` output of
 the React component the form is being used in.
 
 A form also only outputs its own fields; it's up to you to provide the
@@ -163,7 +163,7 @@ Forms provide a number of methods for creating BoundFields. These are:
   order.
 * ``form.boundField(fieldName)`` -- returns the BoundField for the named field.
 
-Every object which can generate ``React.DOM`` components in newforms has a
+Every object which can generate ``ReactElement`` objects in newforms has a
 default ``render()`` method -- for BoundFields, the default ``render()`` for a
 non-hidden field calls ``asWidget()``, which renders the Widget the field
 is configured with.
@@ -214,7 +214,7 @@ Useful BoundField methods:
    Gets the value to be displayed in the field.
 
 Using these, let's customise rendering of our ContactForm. Rendering things in
-React is just a case of creating ``React.DOM`` components, so the full power of
+React is just a case of creating ``ReactElement`` objects, so the full power of
 JavaScript and, should you need them, custom React components are available to you.
 
 For example, let's customise rendering to add a CSS class to our form field rows

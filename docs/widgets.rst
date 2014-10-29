@@ -150,7 +150,7 @@ this, you use the ``Widget.attrs`` argument when creating the widget:
 
 .. Note::
 
-   Widgets are rendered as ``React.DOM`` componeonts -- in the example above,
+   Widgets are rendered as ``ReactElement`` objects -- in the example above,
    we used ``className`` instead of ``class`` as React has standardised on the
    `JavaScript-safe versions of attribute names`_, which avoid conflicting with
    JavaScript reserved words.
@@ -198,7 +198,7 @@ foundation for custom widgets.
 Key Widget methods are:
 
    :js:func:`Widget#render`
-      Returns a ``React.DOM`` representation of the widget. This method must be
+      Returns a ``ReactElement`` representation of the widget. This method must be
       implemented by extending widgets, or an ``Error`` will be thrown.
 
       The 'value' given is not guaranteed to be valid input, therefore
@@ -269,8 +269,8 @@ Other methods that may be useful to implement include:
       implemented by extending widgets.
 
    :js:func:`MultiWidget#formatOutput`
-      Given a list of rendered widgets (as ``React.DOM`` components), returns
-      the list or a ``React.DOM`` component containing the widgets.
+      Given a list of rendered widgets (as ``ReactElement`` objects), returns
+      the list or a ``ReactElement`` object containing the widgets.
       This hook allows you to lay out the widgets any way you'd like.
 
 Here's an example widget which extends :js:class:`MultiWidget` to display
@@ -302,7 +302,7 @@ a :js:class:`MultiValueField`, so we've implemented
      }
 
    , formatOutput: function(renderedWidgets) {
-       return React.DOM.div(null, renderedWidgets)
+       return React.createElement('div', null, renderedWidgets)
      }
 
    , valueFromData: function(data, files, name) {

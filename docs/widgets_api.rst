@@ -70,8 +70,8 @@ Widgets API
 
    .. js:function:: Widget#render(name, value[, kwargs])
 
-      Returns a rendered representation of this Widget as a ``React.DOM``
-      component.
+      Returns a rendered representation of this Widget as a ``ReactElement``
+      object.
 
       The default implementation throws an ``Error`` -- extending widgets must
       provide an implementation.

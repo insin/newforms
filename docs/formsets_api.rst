@@ -190,7 +190,7 @@ Formsets API
       Returns ``true`` if any form differs from initial.
 
    A number of default rendering functions are provided to generate
-   ``React.DOM`` representations of a FormSet's fields.
+   ``ReactElement`` representations of a FormSet's fields.
 
    These are general-purpose in that they attempt to handle all form rendering
    scenarios and edge cases, ensuring that valid markup is always produced.

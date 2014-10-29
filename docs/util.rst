@@ -49,8 +49,8 @@ for customisation purposes.
    it is returned. To disable this, pass an options object with a ``'strip'``
    property which is ``false``.
 
-   This is useful for simple templating which needs to include ``React.DOM``
-   components.
+   This is useful for simple templating which needs to include ``ReactElement``
+   objects.
 
    :param String str:
       a String containing placeholder names surrounded by ``{`` ``}``

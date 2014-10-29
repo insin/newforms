@@ -11,13 +11,13 @@ function renderField(field, cb) {
   var _Component = React.createClass({
     displayName: 'QUnitTestComponent'
   , render: function() {
-      return React.DOM.form({id: 'form'}
-      , React.DOM.div(null, new _Form().boundField('f').render())
+      return React.createElement('form', {id: 'form'}
+      , React.createElement('div', null, new _Form().boundField('f').render())
       )
     }
   })
   stop()
-  React.renderComponent(_Component(), document.getElementById('qunit-fixture'), function() {
+  React.render(React.createElement(_Component), document.getElementById('qunit-fixture'), function() {
     cb()
     start()
   })

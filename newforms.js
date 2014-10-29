@@ -1,5 +1,5 @@
 /**
- * newforms 0.7.0 - https://github.com/insin/newforms
+ * newforms 0.8.0 (dev build at Wed, 29 Oct 2014 14:55:23 GMT) - https://github.com/insin/newforms
  * MIT Licensed
  */
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.forms=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -89,8 +89,8 @@ BoundField.prototype.idForLabel = function() {
 
 BoundField.prototype.render = function(kwargs) {
   if (this.field.showHiddenInitial) {
-    return React.DOM.div(null, this.asWidget(kwargs),
-                         this.asHidden({onlyInitial: true}))
+    return React.createElement('div', null, this.asWidget(kwargs),
+                               this.asHidden({onlyInitial: true}))
   }
   return this.asWidget(kwargs)
 }
@@ -284,7 +284,7 @@ BoundField.prototype.labelTag = function(kwargs) {
   var id = object.get(widget.attrs, 'id', this.autoId())
   if (id) {
     var attrs = object.extend(kwargs.attrs || {}, {htmlFor: widget.idForLabel(id)})
-    contents = React.DOM.label(attrs, contents)
+    contents = React.createElement('label', attrs, contents)
   }
   return contents
 }
@@ -393,9 +393,9 @@ ErrorList.prototype.asUl = function() {
   if (!this.isPopulated()) {
     return
   }
-  return React.DOM.ul({className: 'errorlist'}
+  return React.createElement('ul', {className: 'errorlist'}
   , this.messages().map(function(error) {
-      return React.DOM.li(null, error)
+      return React.createElement('li', null, error)
     })
   )
 }
@@ -489,10 +489,10 @@ ErrorObject.prototype.render = function() {
  */
 ErrorObject.prototype.asUl = function() {
   var items = Object.keys(this.errors).map(function(field) {
-    return React.DOM.li(null, field, this.errors[field].asUl())
+    return React.createElement('li', null, field, this.errors[field].asUl())
   }.bind(this))
   if (items.length === 0) { return }
-  return React.DOM.ul({className: 'errorlist'}, items)
+  return React.createElement('ul', {className: 'errorlist'}, items)
 }
 
 /**
@@ -3110,7 +3110,7 @@ BaseForm.prototype._rawValue = function(fieldName) {
 
 /**
  * Default render method, which just calls asTable().
- * @return {Array} React.DOM components
+ * @return {Array} ReactElements
  */
 BaseForm.prototype.render = function() {
   return this.asTable()
@@ -3118,7 +3118,7 @@ BaseForm.prototype.render = function() {
 
 /**
  * Returns this form rendered as HTML <tr>s - excluding the <table>.
- * @return {Array} React.DOM components
+ * @return {Array} ReactElements
  */
 BaseForm.prototype.asTable = (function() {
   function normalRow(key, cssClasses, label, field, helpText, errors, extraContent) {
@@ -3126,15 +3126,15 @@ BaseForm.prototype.asTable = (function() {
     if (errors) { contents.push(errors) }
     contents.push(field)
     if (helpText) {
-      contents.push(React.DOM.br(null))
+      contents.push(React.createElement('br', null))
       contents.push(helpText)
     }
     if (extraContent) { contents.push.apply(contents, extraContent) }
     var rowAttrs = {key: key}
     if (cssClasses) { rowAttrs.className = cssClasses }
-    return React.DOM.tr(rowAttrs
-    , React.DOM.th(null, label)
-    , React.DOM.td(null, contents)
+    return React.createElement('tr', rowAttrs
+    , React.createElement('th', null, label)
+    , React.createElement('td', null, contents)
     )
   }
 
@@ -3144,8 +3144,8 @@ BaseForm.prototype.asTable = (function() {
     if (extraContent) { contents.push.apply(contents, extraContent) }
     var rowAttrs = {key: key}
     if (cssClasses) { rowAttrs.className = cssClasses }
-    return React.DOM.tr(rowAttrs
-    , React.DOM.td({colSpan: 2}, contents)
+    return React.createElement('tr', rowAttrs
+    , React.createElement('td', {colSpan: 2}, contents)
     )
   }
 
@@ -3154,21 +3154,21 @@ BaseForm.prototype.asTable = (function() {
 
 /**
  * Returns this form rendered as HTML <li>s - excluding the <ul>.
- * @return {Array} React.DOM components
+ * @return {Array} ReactElements
  */
-BaseForm.prototype.asUl = _singleElementRow(React.DOM.li)
+BaseForm.prototype.asUl = _singleElementRow(React.createFactory('li'))
 
 /**
  * Returns this form rendered as HTML <div>s.
- * @return {Array} React.DOM components
+ * @return {Array} ReactElements
  */
-BaseForm.prototype.asDiv = _singleElementRow(React.DOM.div)
+BaseForm.prototype.asDiv = _singleElementRow(React.createFactory('div'))
 
 /**
  * Helper function for outputting HTML.
  * @param {Function} normalRow a function which produces a normal row.
  * @param {Function} errorRow a function which produces an error row.
- * @return {Array} React.DOM components
+ * @return {Array} ReactElements
  */
 BaseForm.prototype._htmlOutput = function(normalRow, errorRow) {
   var bf
@@ -3204,8 +3204,8 @@ BaseForm.prototype._htmlOutput = function(normalRow, errorRow) {
     helpText = bf.helpText
     if (helpText) {
       helpText = ((is.Object(helpText) && object.hasOwn(helpText, '__html'))
-                  ? React.DOM.span({className: 'helpText', dangerouslySetInnerHTML: helpText})
-                  : React.DOM.span({className: 'helpText'}, helpText))
+                  ? React.createElement('span', {className: 'helpText', dangerouslySetInnerHTML: helpText})
+                  : React.createElement('span', {className: 'helpText'}, helpText))
     }
     // If this is the last row, it should include any hidden fields
     extraContent = (i == l - 1 && hiddenFields.length > 0 ? hiddenFields : null)
@@ -4717,7 +4717,7 @@ Input.prototype.render = function(name, value, kwargs) {
   if (!(valueAttr == 'defaultValue' && value === '')) {
     finalAttrs[valueAttr] = (value !== '' ? ''+this._formatValue(value) : value)
   }
-  return React.DOM.input(finalAttrs)
+  return React.createElement('input', finalAttrs)
 }
 
 /**
@@ -4851,9 +4851,9 @@ MultipleHiddenInput.prototype.render = function(name, value, kwargs) {
     if (key) {
       inputAttrs.key = id + '_' + i
     }
-    inputs.push(React.DOM.input(inputAttrs))
+    inputs.push(React.createElement('input', inputAttrs))
   }
-  return React.DOM.div(null, inputs)
+  return React.createElement('div', null, inputs)
 }
 
 MultipleHiddenInput.prototype.valueFromData = function(data, files, name) {
@@ -4912,19 +4912,19 @@ var ClearableFileInput = FileInput.extend({
 , templateWithInitial: function(params) {
     return util.formatToArray(
       '{initialText}: {initial} {clearTemplate}{br}{inputText}: {input}'
-    , object.extend(params, {br: React.DOM.br(null)})
+    , object.extend(params, {br: React.createElement('br', null)})
     )
   }
 , templateWithClear: function(params) {
     return util.formatToArray(
       '{checkbox} {label}'
     , object.extend(params, {
-        label: React.DOM.label({htmlFor: params.checkboxId}, params.label)
+        label: React.createElement('label', {htmlFor: params.checkboxId}, params.label)
       })
     )
   }
 , urlMarkupTemplate: function(href, name) {
-    return React.DOM.a({href: href}, name)
+    return React.createElement('a', {href: href}, name)
   }
 })
 
@@ -4969,10 +4969,10 @@ ClearableFileInput.prototype.render = function(name, value, kwargs) {
     , inputText: this.inputText
     , input: input
     })
-    return React.DOM.span(null, contents)
+    return React.createElement('span', null, contents)
   }
   else {
-    return React.DOM.span(null, input)
+    return React.createElement('span', null, input)
   }
 }
 
@@ -5021,7 +5021,7 @@ Textarea.prototype.render = function(name, value, kwargs) {
   var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name})
   var valueAttr = (kwargs.controlled ? 'value' : 'defaultValue')
   finalAttrs[valueAttr] = value
-  return React.DOM.textarea(finalAttrs)
+  return React.createElement('textarea', finalAttrs)
 }
 
 /**
@@ -5122,7 +5122,7 @@ CheckboxInput.prototype.render = function(name, value, kwargs) {
   }
   var checkedAttr = (kwargs.controlled ? 'checked' : 'defaultChecked')
   finalAttrs[checkedAttr] = this.checkTest(value)
-  return React.DOM.input(finalAttrs)
+  return React.createElement('input', finalAttrs)
 }
 
 CheckboxInput.prototype.valueFromData = function(data, files, name) {
@@ -5177,7 +5177,7 @@ Select.prototype.render = function(name, selectedValue, kwargs) {
   var options = this.renderOptions(kwargs.choices, [selectedValue])
   var valueAttr = (kwargs.controlled ? 'value' : 'defaultValue')
   finalAttrs[valueAttr] = selectedValue
-  return React.DOM.select(finalAttrs, options)
+  return React.createElement('select', finalAttrs, options)
 }
 
 Select.prototype.renderOptions = function(additionalChoices, selectedValues) {
@@ -5194,7 +5194,7 @@ Select.prototype.renderOptions = function(additionalChoices, selectedValues) {
                                                optgroupChoices[j][0],
                                                optgroupChoices[j][1]))
       }
-      options.push(React.DOM.optgroup({label: choice[0]}, optgroupOptions))
+      options.push(React.createElement('optgroup', {label: choice[0]}, optgroupOptions))
     }
     else {
       options.push(this.renderOption(selectedValuesLookup,
@@ -5216,7 +5216,7 @@ Select.prototype.renderOption = function(selectedValuesLookup, optValue,
       delete selectedValuesLookup[optValue]
     }
   }
-  return React.DOM.option(attrs, optLabel)
+  return React.createElement('option', attrs, optLabel)
 }
 
 /**
@@ -5301,7 +5301,7 @@ SelectMultiple.prototype.render = function(name, selectedValues, kwargs) {
   var options = this.renderOptions(kwargs.choices, selectedValues)
   var valueAttr = (kwargs.controlled ? 'value' : 'defaultValue')
   finalAttrs[valueAttr] = selectedValues
-  return React.DOM.select(finalAttrs, options)
+  return React.createElement('select', finalAttrs, options)
 }
 
 /**
@@ -5349,7 +5349,7 @@ ChoiceInput.prototype.render = function() {
   if (this.idForLabel()) {
     labelAttrs.htmlFor = this.idForLabel()
   }
-  return React.DOM.label(labelAttrs, this.tag(), ' ', this.choiceLabel)
+  return React.createElement('label', labelAttrs, this.tag(), ' ', this.choiceLabel)
 }
 
 ChoiceInput.prototype.isChecked = function() {
@@ -5365,7 +5365,7 @@ ChoiceInput.prototype.tag = function() {
   })
   var checkedAttr = (this.controlled ? 'checked' : 'defaultChecked')
   finalAttrs[checkedAttr] = this.isChecked()
-  return React.DOM.input(finalAttrs)
+  return React.createElement('input', finalAttrs)
 }
 
 ChoiceInput.prototype.idForLabel = function() {
@@ -5473,21 +5473,21 @@ ChoiceFieldRenderer.prototype.render = function() {
                                             this.controlled,
                                             choiceLabel)
       subRenderer.choiceInputConstructor = this.choiceInputConstructor
-      items.push(React.DOM.li(null, choiceValue, subRenderer.render()))
+      items.push(React.createElement('li', null, choiceValue, subRenderer.render()))
     }
     else {
       var w = this.choiceInputConstructor(this.name, this.value,
                                           object.extend({}, this.attrs),
                                           this.controlled,
                                           choice, i)
-      items.push(React.DOM.li(null, w.render()))
+      items.push(React.createElement('li', null, w.render()))
     }
   }
   var listAttrs = {}
   if (id) {
     listAttrs.id = id
   }
-  return React.DOM.ul(listAttrs, items)
+  return React.createElement('ul', listAttrs, items)
 }
 
 var RadioFieldRenderer = ChoiceFieldRenderer.extend({
@@ -5683,7 +5683,7 @@ MultiWidget.prototype.valueFromData = function(data, files, name) {
  * @return a <div> containing the rendered widgets.
  */
 MultiWidget.prototype.formatOutput = function(renderedWidgets) {
-  return React.DOM.div(null, renderedWidgets)
+  return React.createElement('div', null, renderedWidgets)
 }
 
 /**

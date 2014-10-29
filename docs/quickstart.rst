@@ -87,7 +87,7 @@ validation errors for each field::
 
 The API used to implement default rendering is exposed for you to
 :ref:`implement your own custom rendering <ref-overview-customising-display>`
-using JSX (if you wish) and ``React.DOM``.
+using JSX (if you wish) and ``React.createElement``.
 
 Validating input with a Form
 ============================

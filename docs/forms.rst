@@ -4,7 +4,7 @@ Forms
 
 .. Note::
 
-   Newforms Forms and Widgets "render" by creating ``React.DOM`` components,
+   Newforms Forms and Widgets "render" by creating ``ReactElement`` objects,
    rather than directly creating DOM elements or HTML strings.
 
    In code examples which display HTML string output, we use a ``reactHTML()``
@@ -411,7 +411,7 @@ rendering, so calling ``render()`` is equivalent:
    <tr><th><label for="id_ccMyself">Cc myself:</label></th><td><input type="checkbox" name="ccMyself" id="id_ccMyself"></td></tr>
    */
 
-Since forms render themselves to ``React.DOM`` components, rendering in JSX is
+Since forms render themselves to ``ReactElement`` objects, rendering in JSX is
 just a case of calling the appopriate render method::
 
    <table>
@@ -471,8 +471,8 @@ Notice the following:
 
 Although ``<table>`` output is the default output style when you ``render()`` a
 form, other output styles are available. Each style is available as a method on
-a form object, and each rendering method returns a list of ``React.DOM``
-components.
+a form object, and each rendering method returns a list of ``ReactElement``
+objects.
 
 ``asDiv()``
 -----------
@@ -744,9 +744,9 @@ pass an alternate constructor for displaying errors at form construction time:
 
    var DivErrorList = forms.ErrorList.extend({
      render: function() {
-       return React.DOM.div({className: 'errorlist'}
+       return React.createElemenr('div', {className: 'errorlist'}
        , this.messages().map(function(error) {
-           return React.DOM.div(null, error)
+           return React.createElemenr('div', null, error)
          })
        )
      }
