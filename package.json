@@ -41,6 +41,9 @@
     "vinyl-source-stream": "0.1.x",
     "watchify": "0.10.x"
   },
+  "peerDependencies": {
+    "react": ">=0.12.0"
+  },
   "scripts": {
     "test": "gulp browserify-js && node tests/tests.js",
     "dist": "gulp dist --production --release"
