@@ -1,3 +1,9 @@
+0.8.0 / 2014-10-29
+==================
+
+* Updated to React 0.12 -- using new ``React.createElement()`` and
+  ``React.createFactory()`` API for ``ReactElement`` creation.
+
 0.7.0 / 2014-07-27
 ==================
 
