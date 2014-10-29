@@ -1,3 +1,4 @@
+build
 dist
 docs
 scratch
@@ -8,5 +9,3 @@ vendor
 .npmignore
 .travis.yml
 gulpfile.js
-/newforms.js
-/newforms.min.js
