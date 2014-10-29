@@ -11,7 +11,7 @@ global.NodeList = require('../node_modules/qqunit/node_modules/jsdom/lib/jsdom')
 object.extend(global, require('./customAsserts.js'))
 global.React = window.React = require('../vendor/react-0.12.0.js')
 global.isomorph = require('isomorph')
-global.forms = require('../newforms.js')
+global.forms = require('../build/newforms.js')
 
 var tests = [ 'util.js'
             , 'formats.js'

@@ -1,4 +1,5 @@
 *.pyc
+build
 docs/_build
 node_modules
 scratch

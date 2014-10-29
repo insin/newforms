@@ -9,6 +9,15 @@ An isomorphic JavaScript form-handling library for `React`_.
 Getting newforms
 ================
 
+Node.js
+   ::
+
+      npm install newforms
+
+   .. code-block:: javascript
+
+      var forms = require('newforms')
+
 Browser bundles
    Browser bundles include all dependencies except React.
 
@@ -19,27 +28,10 @@ Browser bundles
 
       * https://github.com/insin/newforms/tree/react/dist
 
-   Development bundles (updated intermittently):
-
-      * `newforms.js`_
-      * `newforms.min.js`_
-
-Node.js
-   ::
-
-      npm install newforms
-
-   .. code-block:: javascript
-
-      var forms = require('newforms')
-
 Source
    Newforms source code and issue tracking is on GitHub:
 
       * https://github.com/insin/newforms
-
-.. _`newforms.js`: https://github.com/insin/newforms/raw/react/newforms.js
-.. _`newforms.min.js`: https://github.com/insin/newforms/raw/react/newforms.min.js
 
 Documentation
 =============

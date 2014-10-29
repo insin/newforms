@@ -41,14 +41,14 @@ function buildJS(watch) {
       })
       .pipe(source('newforms.js'))
       .pipe(streamify(header(srcHeader, {pkg: pkg, dev: dev})))
-      .pipe(gulp.dest('./'))
+      .pipe(gulp.dest('./build'))
 
     if (gutil.env.production) {
       stream = stream
         .pipe(rename('newforms.min.js'))
         .pipe(streamify(uglify()))
         .pipe(streamify(header(srcHeader, {pkg: pkg, dev: dev})))
-        .pipe(gulp.dest('./'))
+        .pipe(gulp.dest('./build'))
     }
 
     return stream
@@ -67,7 +67,7 @@ gulp.task('watchify-js', ['lint'], function() {
 
 // Copies browser build to ./dist, renaming to include a version number suffix
 gulp.task('dist', ['browserify-js'], function() {
-  return gulp.src('./newforms*.js')
+  return gulp.src('./build/newforms*.js')
     .pipe(rename(function(path) {
        // As of 1.0, gulp-rename doesn't include .min as part of the extension,
        // so we need to use this custom rename function to insert the desired

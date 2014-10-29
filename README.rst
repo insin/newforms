@@ -18,21 +18,6 @@ An isomorphic JavaScript form-handling library for `React`_.
 Getting newforms
 ================
 
-Browser bundles
-   Browser bundles include all dependencies except React.
-
-   They expose newforms as a global ``forms`` variable and expect to find a
-   global ``React`` variable to work with.
-
-   Release bundles are available from:
-
-      * https://github.com/insin/newforms/tree/react/dist
-
-   Development bundles (updated intermittently):
-
-      * `newforms.js`_
-      * `newforms.min.js`_
-
 Node.js
    ::
 
@@ -42,9 +27,15 @@ Node.js
 
       var forms = require('newforms')
 
-.. _`View CHANGES`: https://github.com/insin/newforms/blob/react/CHANGES.rst
-.. _`newforms.js`: https://github.com/insin/newforms/raw/react/newforms.js
-.. _`newforms.min.js`: https://github.com/insin/newforms/raw/react/newforms.min.js
+Browser bundles
+   Browser bundles include all dependencies except React.
+
+   They expose newforms as a global ``forms`` variable and expect to find a
+   global ``React`` variable to work with.
+
+   Release bundles are available from:
+
+      * https://github.com/insin/newforms/tree/react/dist
 
 `Documentation @ ReadTheDocs`_
 ==============================
