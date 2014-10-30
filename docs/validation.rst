@@ -334,3 +334,32 @@ The second argument oto ``addError()`` can be a simple string, or preferably
 an instance of ``ValidationError``. See :ref:`throwing-validation-error` for
 more details. Note that ``addError()`` automatically removes the field
 from ``cleanedData``.
+
+Specifying fields used in cross-field validation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. versionadded:: 0.9
+
+To let a form know which fields are used in cross-field validation, specify its
+``clean()`` method as an array of field named followed by the cleaning function
+itself.
+
+In scenarios where the form is being partially updated, such as when individual
+field input values are being updated and validated when an ``onChange`` event
+fires, if this information is available cross-field cleaning will only be
+performed if one of the fields it uses is affected.
+
+.. code-block:: javascript
+
+   var PersonForm = forms.Form.extend({
+     firstName: forms.CharField({required: false, maxLength: 50}),
+     lastName: forms.CharField({required: false, maxLength: 50}),
+     jobTitle: forms.CharField({required: false, maxLength: 100}),
+     organisation : forms.CharField({required: false}),
+
+     clean: ['firstName', 'lastName', function() {
+        if (!this.cleanedData.firstName && !this.cleanedData.lastName) {
+          throw forms.ValidationError('A first name or last name is required.')
+        }
+     }]
+   })

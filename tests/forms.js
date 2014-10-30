@@ -160,6 +160,28 @@ QUnit.test('Updating form data', 32, function() {
   // TODO Test new options
 })
 
+QUnit.test('Specifying fields used by clean()', 3, function() {
+  // You can let the form know which fields are used in cross-field cleaning
+  var cleanCalled = false
+  var TestForm = forms.Form.extend({
+    name: forms.CharField(),
+    age: forms.IntegerField(),
+    clean: ['name', function() {
+      cleanCalled = true
+    }]
+  })
+  deepEqual(TestForm.prototype.clean.fields, {name: true})
+
+  // When partial updates are being performed (e.g. by onChange validaton) and
+  // fields have been specified, clean() should only be called when one of the
+  // fields it uses is affected.
+  var t = new TestForm()
+  t.updateData({age: 42})
+  strictEqual(cleanCalled, false, 'clean() was not called by updateData')
+  t.updateData({name: 'Douglas'})
+  strictEqual(cleanCalled, true, 'clean() was called by updateData')
+})
+
 QUnit.test("Empty data object", 10, function() {
   // Empty objects are valid, too
   var p = new Person({data: {}})

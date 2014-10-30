@@ -1,3 +1,11 @@
+0.9.0 (in development)
+======================
+
+* ``clean()`` functions can now specify which fields they make use of for
+  cross-field validation. When provided, ``clean()`` will only be called during
+  partial form updates (e.g. ``onChange`` handling) if one of the specified
+  fields is affected.
+
 0.8.0 / 2014-10-29
 ==================
 
