@@ -10,7 +10,7 @@ Forms API
    Extends :js:class:`BaseForm` and registers :js:func:`DeclarativeFieldsMeta`
    as a mixin to be used to set up Fields when this constructor is extended.
 
-   This is intended intended as the entry point for defining your own forms.
+   This is intended to be used as the entry point for defining your own forms.
 
    You can do this using its static ``extend()`` function, which is provided by
    `Concur`_.
@@ -74,40 +74,42 @@ Forms API
       form inputs in the browser. This can be a String, or an Object which
       configures default validation for form inputs.
 
-      If ``'manual'``, validation will not be performed -- you are responsible
-      for hooking up validation and using methods such as ``setData()`` and
-      ``isValid()`` to perform all validation. This is the default setting.
-
-      If ``'auto'``, text fields will, by default be validated when the
-      ``onChange`` event fires, with a 250 millisecond delay from the last user
-      input to the validation being performed.
+      If ``'manual'``, interactive validation will not be performed -- you are
+      responsible for hooking up validation and using methods such as
+      ``setData()`` and ``isValid()`` to perform all validation. This is the
+      default setting.
 
       If an Object is given, it should have the following properties:
 
-      ``event``
-         The name of the default event to use to trigger validation. This should
-         be in camelCase format, as used by React. For example, if ``'onBlur'``,
-         text input validation will be performed when the input loses focus
-         after editing.
+      ``on``
+         The name of the default event to use to trigger validation. For
+         example, if ``'blur'``, text input validation will be performed when
+         the input loses focus after editing. Multiple, space-separated event
+         names can be given.
 
-      ``delay``
+      ``onChangeDelay``
          A delay, in milliseconds, to be used to debounce performing of
-         validation, to give the user time to enter input without distracting
-         them with error messages or other change in how the input's displayed
-         while they're still typing.
+         ``onChange`` validation.
+
+      If ``'auto'``, validation behaviour will be the equivalent of having
+      passed:
+
+      ..code-block: javascript
+
+         validation: {on: 'blur change', onChangeDelay: 369}
 
       If any String but ``'manual'`` or ``'auto'`` is given, it will be used as
-      if it were passed as the ``event`` property of an Object.
+      if it were passed as the ``on`` property of an Object.
 
-      For example, passing ``{validation: 'onChange'}`` will cause each form
-      inputs to trigger validation as soon as the user makes any change.
+      For example, passing ``{validation: 'change'}`` will cause form inputs to
+      trigger validation as soon as the user makes any change.
 
       .. versionadded:: 0.6
 
    :param Boolean kwargs.controlled:
       Configures whether or not the form will render controlled components -
       when using controlled components, you can update the values displayed in
-      the form post initial render using ``form.setData()`` or
+      the form after its initial render using ``form.setData()`` or
       ``form.updateData()``
 
       .. versionadded:: 0.6
@@ -257,7 +259,7 @@ Forms API
       with :js:func:`formData`).
 
       When using multiple forms with prefixes, form data will always be prefixed -
-      using this method when working with manually extracting form data should
+      using this method when working with manually extracted form data should
       ensure there are no surprises if moving from non-prefixed forms to prefixed
       forms.
 
