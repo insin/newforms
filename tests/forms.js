@@ -56,7 +56,7 @@ QUnit.test("Form", 12, function() {
 //
 // })
 
-QUnit.test('Setting form data', function() {
+QUnit.test('Setting form data', 4, function() {
   // Set a data oject after initialising - this is typically client-side usage,
   // where the form must first be crated and displayed to take user input. It
   // should be, behaviour-wise, equivalent to instantiating with data.
@@ -72,6 +72,15 @@ QUnit.test('Setting form data', function() {
   "data set with setData render as expected")
 
   // TODO Test new options
+})
+
+QUnit.test('Getting input data', 1, function() {
+  var p = new Person({prefix: 'test', data: {
+    'test-first_name': 'John'
+  , 'test-last_name': 'Lennon'
+  , 'test-birthday': '1940-10-9'
+  }})
+  equal(p.getData('first_name'), 'John')
 })
 
 QUnit.test('Updating form data', 32, function() {
