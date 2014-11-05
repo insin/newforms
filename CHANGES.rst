@@ -1,6 +1,10 @@
 0.9.0 (in development)
 ======================
 
+* Changed ``form.validate([form])`` to no longer trigger a state change -- this
+  was convenient for single forms, but results in multiple updates when
+  processing multiple forms. Re-rendering must now be triggered manually if
+  onSubmit validation fails.
 * Added ``formset.validate([form])`` -- equivalent to the Form version, use to
   set a formset's data from a ``<form>`` or to force full validation of its
   current input data.
