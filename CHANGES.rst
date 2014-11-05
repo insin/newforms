@@ -1,6 +1,8 @@
 0.9.0 (in development)
 ======================
 
+* Added ``errorlist#first()`` for conveniently getting just the first validation
+  error message.
 * Added ``formset.addError()`` for adding non-form errors outside of ``clean()``.
 * "Empty" (really: unmodified) extra forms' ``cleanedData`` is no longer included
  in ``formset.cleanedData()``.

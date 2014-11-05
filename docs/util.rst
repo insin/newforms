@@ -142,6 +142,11 @@ for customisation purposes.
 
       Adds more errors from the given list.
 
+   .. js:function:: ErrorList#first()
+
+      Returns the first error message held in the list, or undefined if the list
+      was empty.
+
    .. js:function:: ErrorList#messages()
 
       Returns the list of error messages held in the list, converting them from
