@@ -14,7 +14,7 @@ Defining a new Form type
 
 Form constructors are created using :js:func:`Form.extend()`.
 
-This takes an object containing form fields and any other properties to be added
+This takes an object containing form Fields and any other properties to be added
 to the form's prototype, returning a Form constructor which inherits from
 :js:class:`BaseForm`.
 
