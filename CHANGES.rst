@@ -14,10 +14,10 @@
 * Added ``errorlist#first()`` for conveniently getting just the first validation
   error message.
 * Added ``formset.addError()`` for adding non-form errors outside of ``clean()``.
-* "Empty" (really: unmodified) extra forms' ``cleanedData`` is no longer included
-  in ``formset.cleanedData()``.
-* Added ``form.getData()`` to get input data more conveniently by field name in
-  prefixed forms, such as forms in a FormSet.
+* Changed ``formset.cleanedData()`` to no longer include ``cleanedData`` from
+  unmodified extra forms.
+* Added ``form.getData()`` to get input data more by field name from a prefixed
+  Form, such as those in a FormSet.
 * Form ``clean()`` functions can now specify which fields they make use of for
   cross-field validation. When provided, ``clean()`` will only be called during
   partial form updates (e.g. ``onChange`` handling) if one of the specified
