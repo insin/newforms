@@ -74,15 +74,6 @@ QUnit.test('Setting form data', 4, function() {
   // TODO Test new options
 })
 
-QUnit.test('Getting input data', 1, function() {
-  var p = new Person({prefix: 'test', data: {
-    'test-first_name': 'John'
-  , 'test-last_name': 'Lennon'
-  , 'test-birthday': '1940-10-9'
-  }})
-  equal(p.getData('first_name'), 'John')
-})
-
 QUnit.test('Updating form data', 32, function() {
   // Update input data with a field -> input object - this is typically
   // client-side usage where a user has interacticed with a field or fields

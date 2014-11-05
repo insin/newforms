@@ -236,15 +236,6 @@ Forms API
 
       .. versionadded:: 0.6
 
-   .. js:function:: BaseForm#getData(fieldName)
-
-      Gets the current input data for a field.
-
-      Note that input data may be coerced to another value based on the type of
-      widget used for a field.
-
-      .. versionadded:: 0.9
-
    .. js:function:: BaseForm#setData(data[, kwargs])
 
       Replaces the form's :js:attr:`form.data` with the given data (and flips
