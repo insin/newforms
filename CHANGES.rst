@@ -1,6 +1,9 @@
 0.9.0 (in development)
 ======================
 
+* Added ``formset.validate([form])`` -- equivalent to the Form version, use to
+  set a formset's data from a ``<form>`` or to force full validation of its
+  current input data.
 * Changed ``form.validate([form])`` so the argument is optional - it can now be
   used to force full validation of a form with its current input data.
 * Added ``formset.removeForm(index)`` to remove extra forms from a FormSet.
@@ -10,7 +13,7 @@
 * "Empty" (really: unmodified) extra forms' ``cleanedData`` is no longer included
   in ``formset.cleanedData()``.
 * Added ``form.getData()`` to get input data more conveniently by field name in
-  prefixed forms, such as forms in a ``FormSet``.
+  prefixed forms, such as forms in a FormSet.
 * Form ``clean()`` functions can now specify which fields they make use of for
   cross-field validation. When provided, ``clean()`` will only be called during
   partial form updates (e.g. ``onChange`` handling) if one of the specified

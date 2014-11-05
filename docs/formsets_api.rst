@@ -127,6 +127,22 @@ Formsets API
    Prototype functions for validating and getting information about the results
    of validation, and for retrieving forms based on submitted data:
 
+   .. js:function:: BaseFormSet#validate([form])
+
+      Forces the formset to revalidate from scratch. If a ``<form>`` is given,
+      data from it will be set on the formset's forms. Otherwise, validation
+      will be done with each form's current input data.
+
+      :param form:
+        a ``<form>`` DOM node -- if React's representation of the ``<form>``
+        is given, its ``getDOMNode()`` function will be called to get the real
+        DOM node.
+
+      :return:
+         ``true`` if the formset's forms' data is valid, ``false`` otherwise.
+
+      .. versionadded:: 0.9
+
    .. js:function:: BaseFormSet#setData(data)
 
       Updates the formset's :js:attr:`formset.data` (and

@@ -222,6 +222,14 @@ Of particular interest is the formset's ``extra`` property, which can be used to
 implement "add another" functionality -- since this is a common use case,
 formsets have an ``addAnother()`` method does this for you.
 
+Formsets also have a ``removeForm(index)`` method which takes care of the internal
+details of removing an extra form. *This should only ever be called with the index
+of an extra form in the formset.* To ensure this, if you're displaying a formset
+which contains both initial forms for existing data, and extra forms for new data
+which support deletion, use both :js:func:`BaseFormSet.initialForms` and
+:js:func:`BaseFormSet.extraForms` when rendering instead of looping over
+:js:func:`BaseFormSet.forms`.
+
 If you ever have a need to use FormSets on the client side *and* perform a regular
 HTTP POST request to process the form, you can still render
 ``formset.managmentForm()`` -- its hidden fields will be kept in sync with any
@@ -235,6 +243,12 @@ to update the data bound to the formset and its forms.
 
 This will also trigger validation -- updating each form's ``form.errors()`` and
 ``form.cleanedData``, and returning the result of ``formset.isValid()``.
+
+Validating a formset on-demand
+------------------------------
+
+To force full validation of the current state of a formset and its forms' input
+data, call ``formset.validate()``.
 
 Custom formset validation
 =========================
