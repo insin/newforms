@@ -1,6 +1,7 @@
 0.9.0 (in development)
 ======================
 
+* Added ``formset.removeForm(index)`` to remove extra forms from a FormSet.
 * Added ``errorlist#first()`` for conveniently getting just the first validation
   error message.
 * Added ``formset.addError()`` for adding non-form errors outside of ``clean()``.

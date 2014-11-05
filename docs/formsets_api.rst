@@ -100,6 +100,14 @@ Formsets API
 
       Increments ``formset.extra`` and adds another form to the formset.
 
+   .. js:function:: BaseFormSet#removeForm(index)
+
+      Decrements ``formset.extra`` and removes the form at the specified index
+      from the formset.
+
+      You must ensure the UI never lets the user remove anything but extra
+      forms.
+
    .. js:function:: BaseFormSet#initialForms()
 
       Returns a list of all the initial forms in this formset.
