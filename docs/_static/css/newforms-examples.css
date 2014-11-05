@@ -1,3 +1,17 @@
+ul.errorlist {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+ul.errorlist li {
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #f33;
+  list-style-type: none !important;
+}
+table.asTable tbody th {
+  vertical-align: top;
+}
+
 .newforms-example {
   background: none repeat scroll 0 0 #FFFFFF;
   border: 1px solid #E1E4E5;

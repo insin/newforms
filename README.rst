@@ -49,49 +49,53 @@ Browser bundles
 Quick Guide
 ===========
 
-* Form constructors are created using ``forms.Form.extend()``.
+**Note: this guide reflects the API in the current development version -- 0.9**
 
-  This takes an ``Object`` argument defining form fields and any other
-  properties for the form's prototype (custom validation functions etc.),
-  returning a Form constructor which inherits from ``BaseForm``::
+Form constructors are created using ``Form.extend()``.
 
-     var ContactForm = forms.Form.extend({
-       subject  : forms.CharField({maxLength: 100})
-     , message  : forms.CharField()
-     , sender   : forms.EmailField()
-     , ccMyself : forms.BooleanField({required: false})
+This takes an object form fields and any other properties to be added to the
+form's prototype returning a Form constructor which inherits from
+BaseForm.
+
+For convenience and compactness, the ``new`` operator is *optional* when
+using newforms' Fields, Widgets and other constructors used when defining a new
+Form type::
+
+   var ContactForm = forms.Form.extend({
+     subject: forms.CharField({maxLength: 100}),
+     message: forms.CharField(),
+     sender: forms.EmailField(),
+     ccMyself: forms.BooleanField({required: false}),
 
      // Implement custom validation for a field by adding a clean<FieldName>()
      // function to the form's prototype.
-     , cleanSender: function() {
-         if (this.cleanedData.sender == 'mymatesteve@gmail.com') {
-            throw forms.ValidationError("I know it's you, Steve. " +
-                                        "Stop messing with my example form.")
-         }
+     cleanSender: function() {
+       if (this.cleanedData.sender == 'mymatesteve@gmail.com') {
+          throw forms.ValidationError("I know it's you, Steve. " +
+                                      "Stop messing with my example form.")
        }
+     },
 
-     // Implement custom whole-form validation by adding a clean() function to
-     // the form's prototype
-     , clean: function() {
-         if (this.cleanedData.subject &&
-             this.cleanedData.subject.indexOf('that tenner you owe me') != -1 &&
-             PEOPLE_I_OWE_A_TENNER_TO.indexOf(this.cleanedData.sender) != 1) {
-           // This error will be associated with the named field
-           this.addError('sender', "Your email address doesn't seem to be working.")
-           // This error will be associated with the form itself, to be
-           // displayed independently.
-           throw forms.ValidationError('*BZZZT!* SYSTEM ERROR. Beeepity-boop etc. etc.')
-         }
+     // Implement custom cross-field validation by adding a clean() function
+     // to the form's prototype.
+     clean: function() {
+       if (this.cleanedData.subject &&
+           this.cleanedData.subject.indexOf('that tenner you owe me') != -1) {
+         // This error will be associated with the form itself, to be
+         // displayed independently.
+         throw forms.ValidationError('*BZZZT!* SYSTEM ERROR. Beeepity-boop etc.')
        }
-     })
+     }
+   })
 
-* For convenience and compactness, the ``new`` operator is **optional** when
-  using newforms' Fields, Widgets and other constructors which are commonly
-  used while defining a Form, such as ValidationError -- however ``new`` is
-  **not**  automatically optional for the Form and FormSet constructors you
-  create::
+Use instances of forms in your React components::
 
-     // ...in a React component...
+   var AddContact = React.createClass({
+     propTypes: {
+        onSubmitContact: React.PropTypes.func.isRequired
+     },
+
+     // Create instances of forms to use in your React components
      getInitialState: function() {
        return {
          form: new ContactForm({
@@ -99,49 +103,47 @@ Quick Guide
          , onStateChange: this.forceUpdate.bind(this)
          })
        }
-     }
+     },
 
-* Forms have default convenience rendering methods to get you started quickly,
-  which display a label, input widgets and any validation errors for each field
-  (however, JSX and ``React.DOM`` make it convenient to write your own custom
-  rendering later)::
+     // Forms have convenience rendering methods to get you started quickly,
+     // which display a label, input widgets and any validation errors
+     // for each field.
+     // JSX and JavaScript for display logic make it convenient to write your
+     // own custom rendering later.
+     render: function() {
+       return <form onSubmit={this.onSubmit}>
+         <table>
+           <tbody>
+             {this.state.form.asTable()}
+           </tbody>
+         </table>
+         <div className="controls">
+           <input type="submit" value="Submit"/>
+         </div>
+       </form>
+     },
 
-     // ...in a React component's render() method...
-     <form ref="contactForm" onSubmit={this.onSubmit}>
-       <table>
-         <tbody>
-           {this.state.form.asTable()}
-         </tbody>
-       </table>
-       <div className="controls">
-         <input type="submit" value="Submit"/>
-       </div>
-     </form>
-
-* To bind a form to user data to be validated and cleaned, pass a ``data``
-  object when creating it, or call the ``setData()`` method of an existing
-  form to bind new data to it.
-
-  For example, if the form was held as state in a React component which
-  had the above JSX in its ``render()`` method::
-
-     // ...in a React component...
+     // Fields will be validated as the user interacts with them, but you need
+     // to hook up the final check and use of the validated data.
      onSubmit: function(e) {
        e.preventDefault()
 
-       // A Form's validate() method gets input data from a given <form> and
-       // validates it.
-       var isValid = this.state.form.validate(this.refs.contactForm)
-
-       // If the data was invalid, the forms's error object will be populated
-       // with field validation errors and the form will have called its
-       // onStateChange callback to update its display.
+       // Calling .validate() runs validation for all fields, including any
+       // custom validation you've provided.
+       var isValid = this.state.form.validate()
 
        if (isValid) {
-         // form.cleanedData contains validated input data, coerced to the
+         // The form's .cleanedData contains validated input data, coerced to the
          // appropriate JavaScript data types by its Fields.
+         this.props.onSubmitContact(this.state.form.cleanedData)
+       }
+       else {
+         // If the data was invalid, the forms's errors will be populated with
+         // validation messages which will be displayed on the next render.
+         this.forceUpdate()
        }
      }
+   })
 
 MIT License
 ===========

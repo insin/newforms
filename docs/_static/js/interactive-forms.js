@@ -19,14 +19,14 @@ function extend(dest, src) {
 function renderField(bf) {
   var className = bf.cssClasses('form-field')
   if (bf.field instanceof forms.BooleanField) {
-    return React.DOM.div({className: className}
-    , React.DOM.label(null, bf.render(), ' ', bf.label)
+    return React.createElement('div', {className: className}
+    , React.createElement('label', null, bf.render(), ' ', bf.label)
     , ' '
     , bf.errors().messages()[0]
     )
   }
   else {
-    return React.DOM.div({className: className}
+    return React.createElement('div', {className: className}
     , bf.labelTag()
     , bf.render()
     , ' '
@@ -54,19 +54,20 @@ var FormRenderer = React.createClass({
 , onSubmit: function(e) {
     e.preventDefault()
     this.state.form.validate(this.refs.form)
+    this.forceUpdate()
   }
 
 , render: function() {
-    return React.DOM.div({className: 'example-container'}
-    , React.DOM.form({ref: 'form', onSubmit: this.onSubmit}
+    return React.createElement('div', {className: 'example-container'}
+    , React.createElement('form', {ref: 'form', onSubmit: this.onSubmit}
       , this.state.form.boundFields().map(renderField)
-      , React.DOM.div(null
-        , React.DOM.button({type: 'submit'}, this.props.submitButton)
+      , React.createElement('div', null
+        , React.createElement('button', {type: 'submit'}, this.props.submitButton)
         )
       )
-    , React.DOM.div({className: 'cleaned-data'}
-      , React.DOM.strong(null, 'form.cleanedData')
-      , React.DOM.pre(null
+    , React.createElement('div', {className: 'cleaned-data'}
+      , React.createElement('strong', null, 'form.cleanedData')
+      , React.createElement('pre', null
         , this.state.form.cleanedData && JSON.stringify(this.state.form.cleanedData, null, 2)
         )
       )
@@ -87,12 +88,12 @@ var SignupForm = forms.Form.extend({
   , errorMessages: {required: 'You must accept the terms to continue'}
   })
 
-, clean: function() {
+, clean: ['password', 'confirm', function() {
     if (this.cleanedData.password && this.cleanedData.confirm &&
         this.cleanedData.password != this.cleanedData.confirm) {
       this.addError('confirm', 'Does not match the entered password.')
     }
-  }
+  }]
 })
 
 var PersonForm = forms.Form.extend({
@@ -132,6 +133,9 @@ var PeopleEditor = React.createClass({
       delete this.state.form.cleanedData
       this.setState({editing: null})
     }
+    else {
+      this.forceUpdate()
+    }
   }
 
 , handleCancel: function(i) {
@@ -143,40 +147,40 @@ var PeopleEditor = React.createClass({
   }
 
 , render: function() {
-    return React.DOM.div(null
+    return React.createElement('div', null
     , this.renderPeople()
-    , React.DOM.hr(null)
-    , this.state.editing !== null && React.DOM.form({ref: 'form', onSubmit: this.handleSubmit}
+    , React.createElement('hr', null)
+    , this.state.editing !== null && React.createElement('form', {ref: 'form', onSubmit: this.handleSubmit}
       , this.state.form.boundFields().map(renderField)
-      , React.DOM.div(null
-        , React.DOM.button({type: 'button', onClick: this.handleCancel}, 'Cancel')
+      , React.createElement('div', null
+        , React.createElement('button', {type: 'button', onClick: this.handleCancel}, 'Cancel')
         , ' '
-        , React.DOM.button({type: 'button', onClick: this.handleReset}, 'Reset')
+        , React.createElement('button', {type: 'button', onClick: this.handleReset}, 'Reset')
         , ' '
-        , React.DOM.button({type: 'submit'}, 'Save')
+        , React.createElement('button', {type: 'submit'}, 'Save')
         )
       )
     )
   }
 
 , renderPeople: function() {
-    return React.DOM.table(null
-    , React.DOM.thead(null
-      , React.DOM.tr(null
-        , React.DOM.th(null, 'Name')
-        , React.DOM.th(null, 'Age')
-        , React.DOM.th(null, 'Bio')
-        , React.DOM.th(null)
+    return React.createElement('table', null
+    , React.createElement('thead', null
+      , React.createElement('tr', null
+        , React.createElement('th', null, 'Name')
+        , React.createElement('th', null, 'Age')
+        , React.createElement('th', null, 'Bio')
+        , React.createElement('th', null)
         )
       )
-    , React.DOM.tbody(null
+    , React.createElement('tbody', null
       , this.state.people.map(function(person, i) {
-          return React.DOM.tr(null
-          , React.DOM.td(null, person.name)
-          , React.DOM.td(null, person.age)
-          , React.DOM.td(null, person.bio)
-          , React.DOM.td(null
-            , React.DOM.button({type: 'button', onClick: this.handleEdit.bind(this, i)}, 'Edit')
+          return React.createElement('tr', null
+          , React.createElement('td', null, person.name)
+          , React.createElement('td', null, person.age)
+          , React.createElement('td', null, person.bio)
+          , React.createElement('td', null
+            , React.createElement('button', {type: 'button', onClick: this.handleEdit.bind(this, i)}, 'Edit')
             )
           )
         }.bind(this))
@@ -185,19 +189,18 @@ var PeopleEditor = React.createClass({
   }
 })
 
-React.renderComponent(
-  FormRenderer({
+React.render(
+  React.createElement(FormRenderer, {
     form: SignupForm
   , args: {validation: 'auto'}
   , submitButton: 'Sign Up'
-  })
-, document.getElementById('example-auto-form-validation')
+  }),
+  document.getElementById('example-auto-form-validation')
 )
 
-React.renderComponent(
-  PeopleEditor()
-, document.getElementById('example-controlled-form')
+React.render(
+  React.createElement(PeopleEditor, null),
+  document.getElementById('example-controlled-form')
 )
 
 }()
-

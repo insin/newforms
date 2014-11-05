@@ -1,5 +1,6 @@
 *.pyc
 build
 docs/_build
+docs/_static/js/react.js
 node_modules
 scratch

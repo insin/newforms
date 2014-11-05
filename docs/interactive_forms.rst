@@ -37,9 +37,9 @@ example:
 Form ``validation``
 ===================
 
-By default, validating form input is left in your hands, typically by hooking
-into a ``<form>``'s ``onSubmit`` event and passing the ``<form>`` node into
-``form.validate()``.
+By default, validating form input is left in your hands, for uncontrolled forms
+this is typically by hooking into a ``<form>``'s ``onSubmit`` event and passing
+the ``<form>`` node into ``form.validate()``.
 
 While the ``onSubmit`` event must always be used in this way to handle the user
 submitting the form, we can also provide feedback for the user as they work
