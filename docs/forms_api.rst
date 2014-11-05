@@ -206,10 +206,11 @@ Forms API
    Prototype functions for validating and getting information about the results
    of validation:
 
-   .. js:function:: BaseForm#validate(form)
+   .. js:function:: BaseForm#validate([form])
 
-      Gets input data from the ``<form>`` containing this Form's rendered widgets
-      and validates it.
+      Forces the form to revalidate from scratch. If a ``<form>`` is given, data
+      from it will be set on this form first. Otherwise, validation will be done
+      with this form's current input data.
 
       :param form:
         a ``<form>`` DOM node -- if React's representation of the ``<form>``
@@ -217,9 +218,13 @@ Forms API
         DOM node.
 
       :return:
-         ``true`` if the <form> data is valid, ``false`` otherwise.
+         ``true`` if the form's data is valid, ``false`` otherwise.
 
       .. versionadded:: 0.6
+
+      .. versionchanged:: 0.9
+         The ``form`` argument is now optional, to allow forcing validation of
+         the form's current input data.
 
    .. js:function:: BaseForm#reset([initialData])
 
@@ -342,7 +347,8 @@ Forms API
       When user input is being incrementally validated as it's given, this
       function gives you the current state of validation (i.e. whether or not
       there are any errors). It will not reflect the validity of the whole form
-      until a method which performs whole-form validation (:js:func:`BaseForm#validate` or :js:func:`setData`) has been called.
+      until a method which performs whole-form validation
+      (:js:func:`BaseForm#validate` or :js:func:`setData`) has been called.
 
       :return:
          ``true`` if the form is has input data and has no errors, ``false``

@@ -1,6 +1,8 @@
 0.9.0 (in development)
 ======================
 
+* Changed ``form.validate([form])`` so the argument is optional - it can now be
+  used to force full validation of a form with its current input data.
 * Added ``formset.removeForm(index)`` to remove extra forms from a FormSet.
 * Added ``errorlist#first()`` for conveniently getting just the first validation
   error message.

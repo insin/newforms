@@ -23,7 +23,7 @@ Initial input data
 ==================
 
 When constructing a :js:class:`Form` instance, whether or not you pass input
-data determines the bhaviour of the form's initial render.
+data determines the behaviour of the form's initial render.
 
 * If a user input ``data`` object is given, initial rendering will trigger
   validation when it tries to determine if there are any error messages to be
@@ -152,9 +152,9 @@ triggered once per set of input data.
 On the client-side, the user's input is held in form DOM inputs, not a tidy
 JavaScript object as in the above examples (whereas if you're handling a request
 on the server, the request body serves this purpose). By wrapping your inputs in
-a ``<form>`` you can make use of ``form.validate()``, which extracts user input
-from a given ``<form>``'s elements, sets it as input data and returns the result
-of validating the data:
+a ``<form>`` you can make use of ``form.validate(form)``'s ``form`` argument, which
+extracts user input from a given ``<form>``'s elements, sets it as input data
+and returns the result f validating the data:
 
 .. code-block:: javascript
 
@@ -164,6 +164,10 @@ of validating the data:
    // Validation in an onSubmit event handler, where the form's fields were
    // rendered intio a <form ref="form"> in the component's render()
    var isValid = this.state.form.validate(this.refs.form)
+
+If you're using interactive validation, the form's input data will be updated
+and validated the user fills it in. To force the form to fully validate, call
+``form.validate()``.
 
 .. _ref-dynamic-initial-values:
 
