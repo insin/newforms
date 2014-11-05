@@ -8,8 +8,6 @@ void function() {
 
 // TODO browser initialFormCount() doesn't use managementForm()
 
-// TODO browser forms() doesn't cache form instances
-
 // TODO BaseFormSet#setData()
 
 }()

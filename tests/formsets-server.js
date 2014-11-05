@@ -143,7 +143,7 @@ QUnit.test("Formset initial data", 3, function() {
   }
   var formset = new ChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
-  deepEqual(formset.cleanedData(), [{choice: "Calexico", votes: 100}, {}])
+  deepEqual(formset.cleanedData(), [{choice: "Calexico", votes: 100}])
 })
 
 QUnit.test("Second form partially filled", 2, function() {
@@ -200,9 +200,6 @@ QUnit.test("Displaying more than one blank form", 3, function() {
 "<li>Choice: <input type=\"text\" name=\"choices-2-choice\"></li>" +
 "<li>Votes: <input type=\"number\" name=\"choices-2-votes\"></li>")
 
-  // Since we displayed every form as blank, we will also accept them back as
-  // blank. This may seem a little strange, but later we will show how to
-  // require a minimum number of forms to be completed.
   var data = {
     "choices-TOTAL_FORMS": "3"
   , "choices-INITIAL_FORMS": "0"
@@ -216,7 +213,7 @@ QUnit.test("Displaying more than one blank form", 3, function() {
   }
   formset = new MoreChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
-  deepEqual(formset.cleanedData(), [{}, {}, {}])
+  deepEqual(formset.cleanedData(), [])
 })
 
 QUnit.test("Single form completed", 2, function() {
@@ -234,7 +231,7 @@ QUnit.test("Single form completed", 2, function() {
   }
   var formset = new MoreChoiceFormSet({data: data, autoId: false, prefix: "choices"})
   strictEqual(formset.isValid(), true)
-  deepEqual(formset.cleanedData(), [{choice: "Calexico", votes: 100}, {}, {}])
+  deepEqual(formset.cleanedData(), [{choice: "Calexico", votes: 100}])
 })
 
 QUnit.test("Second form partially filled", 2, function() {
@@ -846,7 +843,7 @@ QUnit.test("With management data works fine", 7, function() {
   strictEqual(formset.forms()[0].isInitialRender, false)
   strictEqual(formset.isValid(), true)
   strictEqual(formset.forms()[0].isValid(), true)
-  deepEqual(formset.cleanedData(), [{}])
+  deepEqual(formset.cleanedData(), [])
 })
 
 QUnit.test("Form errors are caught by FormSet", 4, function() {
