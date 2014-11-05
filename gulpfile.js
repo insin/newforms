@@ -5,7 +5,7 @@ var watchify = require('watchify')
 
 var concat = require('gulp-concat')
 var header = require('gulp-header')
-var jshint = require('gulp-jshint-cached')
+var jshint = require('gulp-jshint')
 var rename = require('gulp-rename')
 var streamify = require('gulp-streamify')
 var uglify = require('gulp-uglify')
@@ -24,21 +24,27 @@ var jsEntryPoint = './lib/newforms.js'
 // Lints the build modules dir
 gulp.task('lint', function() {
   return gulp.src(jsPath)
-    .pipe(jshint.cached('./.jshintrc'))
+    .pipe(jshint('./.jshintrc'))
     .pipe(jshint.reporter('jshint-stylish'))
 })
 
 function buildJS(watch) {
-  var bundler = (watch ? watchify(jsEntryPoint) : browserify(jsEntryPoint))
-  bundler.transform('browserify-shim')
-  bundler.on('update', rebundle)
+  var b = browserify(jsEntryPoint, {
+    debug: !gutil.env.production
+  , standalone: 'forms'
+  , detectGlobals: false
+  , cache: {}
+  , packageCache: {}
+  , fullPaths: true
+  })
+  if (watch) {
+    b = watchify(b)
+  }
+  b.transform('browserify-shim')
+  b.on('update', rebundle)
 
   function rebundle() {
-    var stream = bundler.bundle({
-        debug: !gutil.env.production
-      , standalone: 'forms'
-      , detectGlobals: false
-      })
+    var stream = b.bundle()
       .pipe(source('newforms.js'))
       .pipe(streamify(header(srcHeader, {pkg: pkg, dev: dev})))
       .pipe(gulp.dest('./build'))
@@ -81,6 +87,4 @@ gulp.task('watch', function() {
   gulp.watch(jsPath, ['watchify-js'])
 })
 
-gulp.task('default', function() {
-  gulp.start('browserify-js', 'watch')
-})
+gulp.task('default', ['browserify-js', 'watch'])

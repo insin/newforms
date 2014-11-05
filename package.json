@@ -25,21 +25,21 @@
     "validators": "~0.3.0"
   },
   "devDependencies": {
-    "browserify": "4.x",
-    "browserify-shim": "3.6.x",
-    "gulp": "3.8.x",
-    "gulp-concat": "2.3.x",
-    "gulp-header": "1.0.x",
-    "gulp-jshint-cached": "1.4.x",
-    "gulp-plumber": "0.6.x",
-    "gulp-rename": "1.2.x",
-    "gulp-streamify": "0.0.x",
-    "gulp-uglify": "0.3.x",
-    "gulp-util": "3.0.x",
-    "jshint-stylish": "0.4.x",
-    "qqunit": "0.6.x",
-    "vinyl-source-stream": "0.1.x",
-    "watchify": "0.10.x"
+    "browserify": "^6.2.0",
+    "browserify-shim": "^3.8.0",
+    "gulp": "^3.8.10",
+    "gulp-concat": "^2.4.1",
+    "gulp-header": "^1.2.2",
+    "gulp-jshint": "^1.9.0",
+    "gulp-plumber": "~0.6.6",
+    "gulp-rename": "^1.2.0",
+    "gulp-streamify": "~0.0.5",
+    "gulp-uglify": "^1.0.1",
+    "gulp-util": "^3.0.1",
+    "jshint-stylish": "^1.0.0",
+    "qqunit": "~0.6.0",
+    "vinyl-source-stream": "^1.0.0",
+    "watchify": "^2.1.1"
   },
   "peerDependencies": {
     "react": ">=0.12.0"
