@@ -238,6 +238,8 @@ Forms API
       Note that input data may be coerced to another value based on the type of
       widget used for a field.
 
+      .. versionadded:: 0.9
+
    .. js:function:: BaseForm#setData(data[, kwargs])
 
       Replaces the form's :js:attr:`form.data` with the given data (and flips

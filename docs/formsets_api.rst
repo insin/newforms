@@ -108,6 +108,8 @@ Formsets API
       You must ensure the UI never lets the user remove anything but extra
       forms.
 
+      .. versionadded:: 0.9
+
    .. js:function:: BaseFormSet#initialForms()
 
       Returns a list of all the initial forms in this formset.
@@ -144,12 +146,16 @@ Formsets API
       Alias for :js:func:`BaseFormSet#setData`, to keep the FormSet API
       consistent with the Form API.
 
-       .. versionadded:: 0.6
+      .. versionadded:: 0.6
 
    .. js:function:: BaseFormSet#cleanedData()
 
       Returns a list of :js:attr:`form.cleanedData` objects for every form in
       :js:func:`BaseFormSet#forms`.
+
+      .. versionchanged:: 0.9
+         No longer returns cleaned data for extra forms which haven't been
+         modified.
 
    .. js:function:: BaseFormSet#deletedForms()
 
@@ -167,6 +173,8 @@ Formsets API
 
       The ``error`` argument can be a simple string, or an instance
       of :js:class:`ValidationError`.
+
+      .. versionadded:: 0.9
 
    .. js:function:: BaseFormSet#nonFormErrors()
 

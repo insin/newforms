@@ -147,6 +147,8 @@ for customisation purposes.
       Returns the first error message held in the list, or undefined if the list
       was empty.
 
+      .. versionadded:: 0.9
+
    .. js:function:: ErrorList#messages()
 
       Returns the list of error messages held in the list, converting them from
