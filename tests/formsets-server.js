@@ -602,6 +602,23 @@ QUnit.test("Clean hook", 10, function() {
   reactHTMLEqual(formset.nonFormErrors().render(), "<ul class=\"errorlist\"><li>You may only specify a drink once.</li></ul>")
 })
 
+QUnit.test('Adding errors with addError', 2, function() {
+  // You can also add errors outside the cleaning process, but is assumed you've
+  // already cleanted the form.
+    data = {
+      "drinks-TOTAL_FORMS": "2"
+    , "drinks-INITIAL_FORMS": "0"
+    , "drinks-MAX_NUM_FORMS": "0"
+    , "drinks-0-name": "Gin and Tonic"
+    , "drinks-1-name": "Bloody Mary"
+    }
+
+    var formset = new FavouriteDrinksFormSet({data: data, prefix: "drinks"})
+    strictEqual(formset.isValid(), true)
+    formset.addError('I am allergic to tomatoes.')
+    deepEqual(formset.nonFormErrors().messages(), ['I am allergic to tomatoes.'])
+})
+
 QUnit.test("Limiting max forms", 4, function() {
   // When not passed, maxNum will take its default value of null, i.e. unlimited
   // number of forms, only controlled by the value of the extra parameter.

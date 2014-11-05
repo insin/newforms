@@ -1,11 +1,12 @@
 0.9.0 (in development)
 ======================
 
+* Added ``formset.addError()`` for adding non-form errors outside of ``clean()``.
 * "Empty" (really: unmodified) extra forms' ``cleanedData`` is no longer included
  in ``formset.cleanedData()``.
 * Added ``form.getData()`` to get input data more conveniently by field name in
   prefixed forms, such as forms in a ``FormSet``.
-* ``clean()`` functions can now specify which fields they make use of for
+* Form ``clean()`` functions can now specify which fields they make use of for
   cross-field validation. When provided, ``clean()`` will only be called during
   partial form updates (e.g. ``onChange`` handling) if one of the specified
   fields is affected.

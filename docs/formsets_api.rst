@@ -153,10 +153,18 @@ Formsets API
 
       Throws an Error if ordering is not allowed.
 
+   .. js:function:: BaseFormSet#addError(errpr)
+
+      Adds an error that isn't associated with a particular form.
+
+      The ``error`` argument can be a simple string, or an instance
+      of :js:class:`ValidationError`.
+
    .. js:function:: BaseFormSet#nonFormErrors()
 
       Returns an :js:class:`ErrorList` of errors that aren't associated with a
-      particular form -- i.e., from :js:func:`BaseFormSet#clean`.
+      particular form -- i.e., from :js:func:`BaseFormSet#clean` or externally
+      via :js:func:`BaseFormSet#addError`.
 
       Returns an empty :js:class:`ErrorList` if there are none.
 
