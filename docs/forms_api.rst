@@ -364,6 +364,18 @@ Forms API
 
       :returns: ``true`` if data differs from initial, ``false`` otherwise.
 
+   .. js:function:: BaseForm#notEmpty()
+
+      Determines if a form which is an extra form in a FormSet has changed from
+      its initial values. Extra forms are allowed to be empty, so required fields
+      in them do not become truly required until the form has been modified.
+
+      :returns:
+         ``true`` if a form has ``emptyPermitted`` and has changed from its
+         initial values.
+
+      .. versionadded:: 0.9
+
    .. js:function:: BaseForm#changedData()
 
       :returns:
