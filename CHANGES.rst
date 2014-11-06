@@ -19,7 +19,8 @@ New Features
 * Added ``formset.validate([form])`` -- equivalent to the Form version, use to
   set a formset's data from a ``<form>`` or to force full validation of its
   current input data.
-* Added ``formset.removeForm(index)`` to remove extra forms from a FormSet.
+* Added ``formset.removeForm(index)`` to remove extra forms from a FormSet. It
+  will also call back to trigger a re-render when possible.
 * Added ``errorlist#first()`` for conveniently getting just the first validation
   error message.
 * Added ``formset.addError()`` for adding non-form errors outside of ``clean()``.
@@ -33,6 +34,8 @@ New Features
 Changes
 -------
 
+* ``formset.addAnother()`` will now call back to trigger a re-render if
+  possible.
 * Changed partial form validation to remove any validation errors if an extra
   FormSet form is unchanged from its initial values.
 
