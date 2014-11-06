@@ -1,25 +1,40 @@
 0.9.0 (in development)
 ======================
 
-* Changed ``form.validate([form])`` to no longer trigger a state change -- this
+Breaking Changes
+----------------
+
+* Changed ``form.validate([form])`` to no longer call back to re-render -- this
   was convenient for single forms, but results in multiple updates when
   processing multiple forms. Re-rendering must now be triggered manually if
   onSubmit validation fails.
+* Changed ``formset.cleanedData()`` to no longer include ``cleanedData`` from
+  unmodified extra forms.
+
+New Features
+------------
+
+* Added ``form.notEmpty()`` to determine when required fields in an extra
+  FormSet form become truly required.
 * Added ``formset.validate([form])`` -- equivalent to the Form version, use to
   set a formset's data from a ``<form>`` or to force full validation of its
   current input data.
-* Changed ``form.validate([form])`` so the argument is optional - it can now be
-  used to force full validation of a form with its current input data.
 * Added ``formset.removeForm(index)`` to remove extra forms from a FormSet.
 * Added ``errorlist#first()`` for conveniently getting just the first validation
   error message.
 * Added ``formset.addError()`` for adding non-form errors outside of ``clean()``.
-* Changed ``formset.cleanedData()`` to no longer include ``cleanedData`` from
-  unmodified extra forms.
+* Changed ``form.validate([form])`` so the argument is optional - it can now be
+  used to force full validation of a form with its current input data.
 * Form ``clean()`` functions can now specify which fields they make use of for
-  cross-field validation. When provided, ``clean()`` will only be called during
-  partial form updates (e.g. ``onChange`` handling) if one of the specified
-  fields is affected.
+  cross-field validation: ``clean: ['field1', 'field2', function() {}]``. When
+  provided, ``clean()`` will only be called during partial form updates (e.g.
+  ``onChange`` handling) if one of the specified fields is affected.
+
+Changes
+-------
+
+* Changed partial form validation to remove any validation errors if an extra
+  FormSet form is unchanged from its initial values.
 
 0.8.0 / 2014-10-29
 ==================
