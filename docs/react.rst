@@ -12,20 +12,23 @@ This is one way a form could be used in a React component:
    var Contact = React.createClass({
      getInitialState: function() {
        return {
-         form: new ContactForm({onStateChange: this.forceUpdate.bind(this)})
+         form: new ContactForm({onChange: this.forceUpdate.bind(this)})
        }
      }
 
    , onSubmit: function(e) {
        e.preventDefault()
        var form = this.state.form
-       if (form.validate(this.refs.form)) {
+       if (form.validate()) {
          this.props.processContactData(form.cleanedData)
+       }
+       else {
+         this.forceUpdate()
        }
      }
 
    , render: function() {
-       return <form ref="form" onSubmit={this.onSubmit}>
+       return <form onSubmit={this.onSubmit}>
          {this.state.form.asDiv()}
          <div>
            <input type="submit" value="Submit"/>

@@ -67,7 +67,7 @@ Fields API
       Takes the same arguments as :ref:`Form's validation configuration <ref-form-kwargs-validation>`
 
       If validation configuration is given, the Form containing the Field
-      **must** be configured with an :ref:`onStateChange callback <ref-form-kwargs-onstatechange>`,
+      **must** be configured with an :ref:`onChange callback <ref-form-kwargs-onchange>`,
       or an Error will be thrown.
 
       .. versionadded:: 0.6

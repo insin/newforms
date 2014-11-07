@@ -35,10 +35,7 @@ var AddContact = React.createClass({displayName: 'AddContact',
 
   getInitialState: function() {
     return {
-      form: new ContactForm({
-        validation: 'auto'
-      , onStateChange: this.forceUpdate.bind(this)
-      })
+      form: new ContactForm({onChange: this.forceUpdate.bind(this)})
     }
   },
 

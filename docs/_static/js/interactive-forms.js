@@ -47,13 +47,13 @@ var FormRenderer = React.createClass({
   }
 
 , createForm: function() {
-    var args = extend({onStateChange: this.forceUpdate.bind(this)}, this.props.args)
+    var args = extend({onChange: this.forceUpdate.bind(this)}, this.props.args)
     return new this.props.form(args)
   }
 
 , onSubmit: function(e) {
     e.preventDefault()
-    this.state.form.validate(this.refs.form)
+    this.state.form.validate()
     this.forceUpdate()
   }
 
@@ -108,8 +108,7 @@ var PeopleEditor = React.createClass({
       editing: null
     , form: new PersonForm({
         controlled: true
-      , validation: 'auto'
-      , onStateChange: this.forceUpdate.bind(this)
+      , onChange: this.forceUpdate.bind(this)
       })
     , people: [
         {name: 'Alan', age: 43, bio: 'Some guy off the TV'}
@@ -127,7 +126,7 @@ var PeopleEditor = React.createClass({
 
 , handleSubmit: function(e) {
     e.preventDefault()
-    var isValid = this.state.form.validate(this.refs.form)
+    var isValid = this.state.form.validate()
     if (isValid) {
       this.state.people[this.state.editing] = this.state.form.cleanedData
       delete this.state.form.cleanedData
@@ -150,7 +149,7 @@ var PeopleEditor = React.createClass({
     return React.createElement('div', null
     , this.renderPeople()
     , React.createElement('hr', null)
-    , this.state.editing !== null && React.createElement('form', {ref: 'form', onSubmit: this.handleSubmit}
+    , this.state.editing !== null && React.createElement('form', {onSubmit: this.handleSubmit}
       , this.state.form.boundFields().map(renderField)
       , React.createElement('div', null
         , React.createElement('button', {type: 'button', onClick: this.handleCancel}, 'Cancel')

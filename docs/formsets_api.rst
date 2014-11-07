@@ -27,6 +27,22 @@ Formsets API
    :param String kwargs.prefix:
       a prefix to be applied to the name of each field in each form instance.
 
+   :param Function kwargs.onChange:
+      A callback to indicate to the a React component that the formset has
+      changed, e.g. when another form is added to the formset.
+
+      This will be passed as the :ref:`Form constructor's onChange argument
+      <ref-form-kwargs-onchange>` when creating the formset's forms.
+
+      .. versionadded:: 0.9
+         Replaces ``kwargs.onStateChange``
+
+   :param Function kwargs.onStateChange:
+      .. versionadded:: 0.6
+
+      .. deprecated:: 0.9
+         Pass ``kwargs.onChange`` instead
+
    :param Array.<Object> kwargs.initial:
       a list of initial form data objects, where property names are field names
       -- if a field's value is not specified in ``data``, these values will be
@@ -35,6 +51,13 @@ Formsets API
    :param Function kwargs.errorConstructor:
       the constructor function to be used when creating error details - defaults
       to :js:class:`ErrorList`.
+
+   :param Function kwargs.validation:
+     A value to be passed as the :ref:`Form constructor's validation argument
+     <ref-form-kwargs-validation>` when creating the formset's forms -- defaults
+     to ``null``.
+
+     .. versionadded:: 0.6
 
    :param String kwargs.managementFormCssClass:
       a CSS class to be applied when rendering

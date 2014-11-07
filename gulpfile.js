@@ -18,6 +18,8 @@ var srcHeader = '/**\n\
  * MIT Licensed\n\
  */\n'
 
+process.env.NODE_ENV = gutil.env.production ? 'production' : 'development'
+
 var jsPath = './lib/*.js'
 var jsEntryPoint = './lib/newforms.js'
 

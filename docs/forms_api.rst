@@ -114,8 +114,8 @@ Forms API
 
       .. versionadded:: 0.6
 
-   :param Function kwargs.onStateChange:
-      .. _ref-form-kwargs-onstatechange:
+   :param Function kwargs.onChange:
+      .. _ref-form-kwargs-onchange:
 
       If interactive validation is configured for a Form or any of its Fields,
       this callback function **must** be provided, or an Error will be thrown.
@@ -127,7 +127,14 @@ Forms API
       in which the Form is being rendered, to display the latest validation state
       to the user from the last change they made to the form.
 
+      .. versionadded:: 0.9
+         Replaces ``kwargs.onStateChange``
+
+   :param Function kwargs.onStateChange:
       .. versionadded:: 0.6
+
+      .. deprecated:: 0.9
+         Pass ``kwargs.onChange`` instead
 
    :param String kwargs.autoId:
       a template for use when automatically generating ``id`` attributes for

@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "Concur": "~0.2.5",
+    "envify": "^3.0.0",
     "isomorph": "~0.2.1",
     "react": ">=0.12.0",
     "validators": "~0.3.0"
@@ -47,6 +48,11 @@
   "scripts": {
     "test": "gulp browserify-js && node tests/tests.js",
     "dist": "gulp dist --production --release"
+  },
+  "browserify": {
+    "transform": [
+      "envify"
+    ]
   },
   "browserify-shim": {
     "react": "global:React"

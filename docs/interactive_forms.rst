@@ -4,13 +4,13 @@ Interactive forms
 
 .. versionadded:: 0.6
 
-.. _ref-interactive-onstatechange:
+.. _ref-interactive-onchange:
 
-Form state and ``onStateChange()``
-==================================
+Form state and ``onChange()``
+=============================
 
 When using interactive validation or controlled components, either at the Form
-or individual Field level, you must pass the Form an ``onStateChange`` argument,
+or individual Field level, you must pass the Form an ``onChange`` argument,
 which should be a callback function for the React component the form is being
 rendered in.
 
@@ -22,7 +22,7 @@ interactive validation is run, the form's ``data``, ``errors()`` and
 ``cleanedData`` may be changed.
 
 In order to update display of the form to let the user see the updated state, a
-Form will call its given ``onStateChange()`` function each time user input is
+Form will call its given ``onChange()`` function each time user input is
 taken or validation is performed.
 
 Typically, this function will just force its React component to update, for
@@ -30,7 +30,7 @@ example:
 
 .. code-block:: javascript
 
-   onFormStateChange: function() {
+   onFormChange: function() {
      this.forceUpdate()
    }
 
@@ -56,13 +56,14 @@ validation for every field on the form.
 Form ``'auto'`` validation
 --------------------------
 
-The quickest way to get started is to pass ``'auto'``:
+When you pass an ``onChange`` callback to a form, its validation setting is
+automatically implied to be ``'auto'``:
 
 .. code-block:: javascript
 
-   var form = new SignupForm({validation: 'auto', onStateChange: this.onFormStateChange})
+   var form = new SignupForm({onChange: this.onFormChange})
 
-When the form's validation is set to ``'auto'``:
+When the form's validation mode is ``'auto'``:
 
 * Text fields are validated using the ``onChange`` and ``onBlur`` events, with a
   debounce delay of 369ms applied to ``onChange`` between the last change being
@@ -187,13 +188,13 @@ or individual Fields you wish to have control over:
 
 .. code-block:: javascript
 
-   var form = new SignupForm({controlled: true, onStateChange: this.onFormStateChange})
+   var form = new SignupForm({controlled: true, onChange: this.onFormChange})
 
 Controlled components created by newforms reflect the values held in
 ``form.data``. It's recommended that you call ``form.setData()`` or
 ``form.updateData()`` to update ``form.data``, as they handle transitioning from
 initial display of data to displaying user input and will also call
-:ref:`onStateChange() <ref-interactive-onstatechange>` for you, to trigger
+:ref:`onChange() <ref-interactive-onchange>` for you, to trigger
 re-rendering of the containing React component.
 
 ``controlled`` example form
@@ -221,8 +222,7 @@ When creating the form in our example React component, we're passing
      return {
        form: new PersonForm({
          controlled: true
-       , validation: 'auto'
-       , onStateChange: this.forceUpdate.bind(this)
+       , onChange: this.forceUpdate.bind(this)
        })
      , editing: null
      , people: [/* ... */]

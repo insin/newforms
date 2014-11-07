@@ -14,6 +14,7 @@ Breaking Changes
 New Features
 ------------
 
+* Passing ``onChange`` to a Form or FormSet now implies ``validation: 'auto'``.
 * Added ``form.notEmpty()`` to determine when required fields in an extra
   FormSet form become truly required.
 * Added ``formset.validate([form])`` -- equivalent to the Form version, use to
@@ -30,6 +31,12 @@ New Features
   cross-field validation: ``clean: ['field1', 'field2', function() {}]``. When
   provided, ``clean()`` will only be called during partial form updates (e.g.
   ``onChange`` handling) if one of the specified fields is affected.
+
+Deprecations
+------------
+
+* The ``onStateChange`` argument to Form and FormSet constructors -- use
+  ``onChange`` instead.
 
 Changes
 -------
