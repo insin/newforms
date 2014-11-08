@@ -521,6 +521,8 @@ attributes to form rows in the default rendering:
 * ``rowCssClass`` -- applied to every form row
 * ``errorCssClass`` -- applied to form rows of fields which have errors
 * ``requiredCssClass`` -- applied to form rows for required fields
+* ``validCssClass`` -- applied to form rows for fields which have a
+  corresponding value present in ``cleanedData``
 
 To use these hooks, ensure your form has them as prototype or instance
 properties, e.g. to set them up as protoype properties:
@@ -531,6 +533,7 @@ properties, e.g. to set them up as protoype properties:
      rowCssClass: 'row'
    , errorCssClass: 'error'
    , requiredCssClass: 'required'
+   , validCssClass: 'valid'
    // ...and the rest of your fields here
    })
 
@@ -547,10 +550,10 @@ Once you've done that, the generated markup will look something like:
    var f = new ContactForm({data: data})
    print(reactHTML(f.render()))
    /* =>
-   <tr class="row required"><th><label for="id_subject">Subject:</label> ...
-   <tr class="row required"><th><label for="id_message">Message:</label> ...
+   <tr class="row valid required"><th><label for="id_subject">Subject:</label> ...
+   <tr class="row valid required"><th><label for="id_message">Message:</label> ...
    <tr class="row error required"><th><label for="id_sender">Sender:</label> ...
-   <tr class="row"><th><label for="id_ccMyself">Cc myself:</label> ...
+   <tr class="row valid"><th><label for="id_ccMyself">Cc myself:</label> ...
    */
 
 .. _ref-forms-configuring-label:

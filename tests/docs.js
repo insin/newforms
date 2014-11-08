@@ -34,7 +34,7 @@ QUnit.test('Overview - Customising form display', function() {
       var form = this.state.form
       var fields = form.boundFieldsObj()
 
-      return React.createElement('form', {ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"}
+      return React.createElement('form', {onSubmit:this.onSubmit, action:"/contact", method:"POST"}
       , form.nonFieldErrors().render()
       , React.createElement('div', {key: fields.subject.htmlName, className:"fieldWrapper"}
         , fields.subject.errors().render()
@@ -77,7 +77,7 @@ QUnit.test("Overview - Looping over the Form's Fields", function() {
 
   , render: function() {
       var form = this.state.form
-      return React.createElement('form', {ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"}
+      return React.createElement('form', {onSubmit:this.onSubmit, action:"/contact", method:"POST"}
       , form.nonFieldErrors().render()
       , form.boundFields().map(this.renderField)
       , React.createElement('div', null, React.createElement('input',  {type:"submit", value:"Send message"}))
@@ -201,6 +201,7 @@ QUnit.test('Forms - Styling form rows', function() {
     rowCssClass: 'row'
   , requiredCssClass: 'required'
   , errorCssClass: 'error'
+  , validCssClass: 'valid'
   , subject: forms.CharField({maxLength: 100})
   , message: forms.CharField()
   , sender: forms.EmailField()
@@ -214,10 +215,10 @@ QUnit.test('Forms - Styling form rows', function() {
   }
   var f = new CssContactForm({data: data})
   reactHTMLEqual(f.render.bind(f),
-"<tr class=\"row required\"><th><label for=\"id_subject\">Subject:</label></th><td><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\" value=\"hello\"></td></tr>\
-<tr class=\"row required\"><th><label for=\"id_message\">Message:</label></th><td><input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></td></tr>\
+"<tr class=\"row valid required\"><th><label for=\"id_subject\">Subject:</label></th><td><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\" value=\"hello\"></td></tr>\
+<tr class=\"row valid required\"><th><label for=\"id_message\">Message:</label></th><td><input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></td></tr>\
 <tr class=\"row error required\"><th><label for=\"id_sender\">Sender:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"email\" name=\"sender\" id=\"id_sender\"></td></tr>\
-<tr class=\"row\"><th><label for=\"id_ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></td></tr>",
+<tr class=\"row valid\"><th><label for=\"id_ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></td></tr>",
   "Form CSS hooks")
 })
 
