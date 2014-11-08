@@ -18,6 +18,13 @@ Node.js
 
       var forms = require('newforms')
 
+.. Note::
+
+   By default, newforms will be in development mode. To use it in production
+   mode, set the environment variable ``NODE_ENV`` to ``'production'``. To
+   completely remove all development mode code, use a minifier that performs
+   dead-code elimination, such as `UglifyJS`_.
+
 Browser bundles
    Browser bundles include all dependencies except React.
 
@@ -82,3 +89,4 @@ Documentation Contents
 .. _`Django`: http://www.djangoproject.com
 .. _`Node.js`: http://nodejs.org
 .. _`React`: http://facebook.github.io/react/
+.. _`UglifyJS`: https://github.com/mishoo/UglifyJS2

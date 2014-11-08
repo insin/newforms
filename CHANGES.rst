@@ -41,6 +41,8 @@ Deprecations
 Changes
 -------
 
+* ``onChange`` handlers are now always attached to widgets to update input data,
+  regardless of controlled/validation config.
 * ``formset.addAnother()`` will now call back to trigger a re-render if
   possible.
 * Changed partial form validation to remove any validation errors if an extra
