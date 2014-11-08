@@ -98,10 +98,7 @@ Use instances of forms in your React components::
      // Create instances of forms to use in your React components
      getInitialState: function() {
        return {
-         form: new ContactForm({
-           validation: 'auto'
-         , onStateChange: this.forceUpdate.bind(this)
-         })
+         form: new ContactForm({onChange: this.forceUpdate.bind(this)})
        }
      },
 
