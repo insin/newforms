@@ -5,6 +5,7 @@ Guide Documentation
 .. toctree::
 
    overview
+   custom_display
    forms
    fields
    react

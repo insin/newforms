@@ -71,6 +71,7 @@ Documentation Contents
 
    quickstart
    overview
+   custom_display
    forms
    fields
    react
