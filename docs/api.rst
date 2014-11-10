@@ -8,7 +8,7 @@ This section documents the public newforms API.
    Newforms uses the convention of marking the names of properties and methods
    which should be considered implementation details with a leading underscore.
 
-   These are publicly accessible, but do not use or rely on these in your own
+   These are publicly accessible, but do not use or rely on them in your own
    code, as they may be changed or be removed without warning in any given
    release.
 
@@ -23,3 +23,4 @@ This section documents the public newforms API.
    validation_api
    widgets_api
    formsets_api
+   util_api

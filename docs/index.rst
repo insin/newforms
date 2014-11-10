@@ -80,12 +80,12 @@ Documentation Contents
    widgets
    formsets
    locales
-   util
    forms_api
    fields_api
    validation_api
    widgets_api
    formsets_api
+   util_api
 
 .. _`Django`: http://www.djangoproject.com
 .. _`Node.js`: http://nodejs.org

@@ -13,4 +13,4 @@ Guide Documentation
    interactive_forms
    widgets
    formsets
-   util
+   locales
