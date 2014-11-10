@@ -56,7 +56,7 @@ for their fields. They also have convenience rendering methods to get you
 started quickly by surrounding these with some basic structure.
 
 At the very least, you must wrap these form-rendered contents in a ``<form>``,
-provide form controls such as submit button and hook up handling of form
+provide form controls such as a submit button and hook up handling of form
 submission:
 
 .. code-block:: javascript
@@ -87,11 +87,11 @@ Handling form submission
 ========================
 
 The final step in using a Form is validating the entire form when the user
-attempts to submit it. calling its ``validate()`` method validates every fields
+attempts to submit it. Calling its ``validate()`` method validates every field
 in the form with its current user input.
 
 If a Form is valid, it will have a ``cleanedData`` object containing validated
-data, coerced to the appropriate JavaScript data type when applicable:
+data, coerced to the appropriate JavaScript data type when appropriate:
 
 .. code-block:: javascript
 
