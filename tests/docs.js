@@ -423,7 +423,7 @@ QUnit.test("Forms - Extending forms", function() {
     instrument: forms.CharField()
   })
   var BeatleForm = forms.Form.extend({
-    __mixin__: [PersonForm, InstrumentForm]
+    __mixins__: [PersonForm, InstrumentForm]
   , haircut_type: forms.CharField()
   })
   var b = new BeatleForm({autoId: false})

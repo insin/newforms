@@ -4,6 +4,8 @@
 Breaking Changes
 ----------------
 
+* Form mixins must now be specified as a ``__mixins__`` property rather than
+  ``__mixin__``.
 * Changed ``form.validate([form])`` to no longer call back to re-render -- this
   was convenient for single forms, but results in multiple updates when
   processing multiple forms. Re-rendering must now be triggered manually if

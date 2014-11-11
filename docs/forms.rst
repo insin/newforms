@@ -975,7 +975,7 @@ its parent form(s), followed by any new fields defined:
    <tr><th>Priority:</th><td><input type="text" name="priority"></td></tr>
    */
 
-Forms can be used as mixins (using `Concur`_'s ``__mixin__`` functionality). In
+Forms can be used as mixins (using `Concur`_'s ``__mixins__`` functionality). In
 this example, ``BeatleForm`` mixes in ``PersonForm`` and ``InstrumentForm``, and
 its field list includes their fields:
 
@@ -989,7 +989,7 @@ its field list includes their fields:
      instrument: forms.CharField()
    })
    var BeatleForm = forms.Form.extend({
-     __mixin__: [PersonForm, InstrumentForm]
+     __mixins__: [PersonForm, InstrumentForm]
    , haircut_type: forms.CharField()
    })
    var b = new BeatleForm({autoId: false})

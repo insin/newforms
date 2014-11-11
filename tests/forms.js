@@ -1573,7 +1573,7 @@ QUnit.test("Extending forms", 13, function() {
     }
   })
   var Beatle = forms.Form.extend({
-    __mixin__: [Person, Instrument]
+    __mixins__: [Person, Instrument]
   , haircut_type: forms.CharField()
 
   , clean_last_name: function() {
@@ -1595,7 +1595,7 @@ QUnit.test("Extending forms", 13, function() {
 
   // You can also mix and match by extending one form and mixing in another.
   var Beatle = Person.extend({
-    __mixin__: Instrument
+    __mixins__: [Instrument]
   , haircut_type: forms.CharField()
 
   , clean_last_name: function() {
@@ -1628,7 +1628,7 @@ QUnit.test("Extending forms", 13, function() {
   "shadow a field from a parent to exclude it")
 
   var MysteryBeatle = forms.Form.extend({
-    __mixin__: [Person, Instrument]
+    __mixins__: [Person, Instrument]
   , haircut_type: forms.CharField()
   , first_name: null
   , last_name: null
@@ -1638,7 +1638,7 @@ QUnit.test("Extending forms", 13, function() {
 "<li>Birthday: <input type=\"text\" name=\"birthday\"></li>\
 <li>Instrument: <input type=\"text\" name=\"instrument\"></li>\
 <li>Haircut type: <input type=\"text\" name=\"haircut_type\"></li>",
-  "shadow a field from a __mixin__ form to exclude it")
+  "shadow a field from a __mixins__ form to exclude it")
 
   var FullNameMixin = forms.Form.extend({
     full_name: forms.CharField()
@@ -1646,7 +1646,7 @@ QUnit.test("Extending forms", 13, function() {
   , last_name: null
   })
   var FullNameForm = Person.extend({
-    __mixin__: [FullNameMixin]
+    __mixins__: [FullNameMixin]
   })
   var b = new FullNameForm({autoId: false})
   reactHTMLEqual(b.asUl(),

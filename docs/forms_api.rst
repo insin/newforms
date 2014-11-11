@@ -32,7 +32,7 @@ Forms API
    constructor is being created.
 
    It pops any Fields it finds off the form's prototype properties object,
-   determines if any forms are also being mixed-in via a ``__mixin__`` property
+   determines if any forms are also being mixed-in via a ``__mixins__`` property
    and handles inheritance of Fields from any form which is being directly
    extended, such that fields will be given the following order of precedence
    should there be a naming conflict with any of these three sources:
@@ -41,7 +41,7 @@ Forms API
    2. Fields from a mixed-in form
    3. Fields from the Form being inherited from
 
-   If multiple forms are provided via ``__mixin__``, they will be processed from
+   If multiple forms are provided via ``__mixins__``, they will be processed from
    left to right in order of precedence for mixing in fields and prototype
    properties.
 
