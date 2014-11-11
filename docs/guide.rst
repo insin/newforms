@@ -5,12 +5,11 @@ Guide Documentation
 .. toctree::
 
    overview
+   react_client
    custom_display
    forms
    fields
-   react
    validation
-   interactive_forms
    widgets
    formsets
    locales

@@ -10,6 +10,10 @@ Getting newforms
 ================
 
 Node.js
+
+   Newforms can be used on the server, or bundled for the client using an
+   npm-compatible packaging system such as `Browserify`_ or `webpack`_.
+
    ::
 
       npm install newforms
@@ -18,27 +22,32 @@ Node.js
 
       var forms = require('newforms')
 
-.. Note::
+   .. Note::
 
-   By default, newforms will be in development mode. To use it in production
-   mode, set the environment variable ``NODE_ENV`` to ``'production'``. To
-   completely remove all development mode code, use a minifier that performs
-   dead-code elimination, such as `UglifyJS`_.
+      By default, newforms will be in development mode. To use it in production
+      mode, set the environment variable ``NODE_ENV`` to ``'production'`` when
+      bundling. To completely remove all development mode code, use a minifier
+      that performs dead-code elimination, such as `UglifyJS`_.
 
 Browser bundles
-   Browser bundles include all dependencies except React.
+   Browser bundles expose newforms as a global ``forms`` variable and expect to
+   find a global ``React`` variable to work with.
 
-   They expose newforms as a global ``forms`` variable and expect to find a
-   global ``React`` variable to work with.
+   `newforms 0.9.0 (development version)`_
 
-   Release bundles will be available from:
+   Uncompressed, with warnings about potential mistakes.
 
-      * https://github.com/insin/newforms/tree/react/dist
+   `newforms 0.9.0 (production version)`_
+
+   Compressed version for production.
 
 Source
    Newforms source code and issue tracking is on GitHub:
 
       * https://github.com/insin/newforms
+
+.. _`newforms 0.9.0 (development version)`: #TBD
+.. _`newforms 0.9.0 (production version)`: #TBD
 
 Documentation
 =============
@@ -71,12 +80,11 @@ Documentation Contents
 
    quickstart
    overview
+   react_client
    custom_display
    forms
    fields
-   react
    validation
-   interactive_forms
    widgets
    formsets
    locales
@@ -87,7 +95,9 @@ Documentation Contents
    formsets_api
    util_api
 
+.. _`Browserify`: http://browserify.org/
 .. _`Django`: http://www.djangoproject.com
 .. _`Node.js`: http://nodejs.org
 .. _`React`: http://facebook.github.io/react/
 .. _`UglifyJS`: https://github.com/mishoo/UglifyJS2
+.. _`webpack`: http://webpack.github.io/

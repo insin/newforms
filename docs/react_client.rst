@@ -1,52 +1,86 @@
-=================
-Interactive forms
-=================
+============================
+Interactive Forms with React
+============================
 
-.. versionadded:: 0.6
+Other documentation sections use the API for providing user input when creating
+a Form instance, to demonstrate behaviour and features based on user input in a
+concise way.
 
-.. _ref-interactive-onchange:
+However, this API is more typical of using newforms on the server or as a
+standalone validator. When working with Forms in the client, user input is more
+often taken one field at a time using its ``onChange`` event, or as an update to
+an existing form instance's data.
+
+This section focuses on API and patterns of usage that are applicable to using
+newforms to create interactive forms in a React component in the browser.
+
+Provide a containing ``<form>``
+===============================
+
+.. Warning::
+   You **must** provide a ``<form>`` to contain fields you’re rendering with
+   newforms.
+
+At the time of documenting (version 0.9), you **must** provide a ``<form>`` to
+contain fields you're rendering with newforms. It's likely that you'll want one
+anyway to make use of its ``onSubmit`` event for `Final Form validation`_.
+
+React's virtual DOM doesn't provide a means of obtaining values from form
+inputs. To do this for you, newforms must reach into the real DOM when an
+``onChange`` event fires on one of the inputs it rendered for you.
+
+Forms currently make use of the real DOM's ``form.elements`` collection to
+simplify retrieving values for fields which render as multiple inputs, such
+as a ``MultipleChoiceField`` which uses a ``CheckboxSelectMultiple`` widget.
+
+Creating Forms and FormSets
+===========================
+
+There are a number of client-specific options available when creating an instance
+of a Form to use in a React component. The same options apply when creating
+FormSets, as they use them to handle creation of Form instances for you.
 
 Form state and ``onChange()``
 =============================
 
-When using interactive validation or controlled components, either at the Form
-or individual Field level, you must pass the Form an ``onChange`` argument,
-which should be a callback function for the React component the form is being
-rendered in.
+While a Form is not itself a React component, it is stateful. Its ``data``,
+``errors()`` and ``cleanedData`` properties will be changed when the user makes
+changes and their input is taken and validated.
 
-An Error will be thrown if this argument is not provided.
-
-While a Form is not itself a React component, it is stateful. When user input is
-taken as the user makes changes and the form's user input data is updated or
-interactive validation is run, the form's ``data``, ``errors()`` and
-``cleanedData`` may be changed.
-
-In order to update display of the form to let the user see the updated state, a
-Form will call its given ``onChange()`` function each time user input is
-taken or validation is performed.
+In order to update display of its containing React component, a Form will call
+a given ``onChange()`` callback each time user input is taken or validation is
+performed in response to a user changing input data.
 
 Typically, this function will just force its React component to update, for
 example:
 
 .. code-block:: javascript
 
+   getInitialState: function() {
+     return {
+       form: new ContactForm({onChange: this.onFormChange})
+     }
+   },
+
    onFormChange: function() {
      this.forceUpdate()
    }
 
-Form ``validation``
-===================
+Passing an ``onChange`` callback will also automatically configure interactive
+validation of each form input as it's updated by the user. See below for details
+of what that entails and how to configure it.
 
-By default, validating form input is left in your hands, for uncontrolled forms
-this is typically by hooking into a ``<form>``'s ``onSubmit`` event and passing
-the ``<form>`` node into ``form.validate()``.
+.. Note::
+   Due to the way controlled components work in React, if you are using
+   `Controlled forms`_ and you do not pass an ``onChange()`` callback, your form
+   inputs will be read-only! The development version of newforms will warn you
+   if this happens.
 
-While the ``onSubmit`` event must always be used in this way to handle the user
-submitting the form, we can also provide feedback for the user as they work
-their way through the form's fields.
+Interactive Form validation
+===========================
 
-To validate individual form fields as the user interacts with them, pass a
-``validation`` argument when instantiating a Form or Field.
+To validate individual form fields as the user interacts with them, you can pass
+a ``validation`` argument when instantiating a Form or Field.
 
 Passing a ``validation`` argument when instantiating a form sets up interactive
 validation for every field on the form.
@@ -94,7 +128,7 @@ Let's use a standard signup form as an example:
    , clean: function() {
        if (this.cleanedData.password && this.cleanedData.confirm &&
            this.cleanedData.password != this.cleanedData.confirm) {
-         this.addError('confirm', 'Does not match the entered password.')
+         throw forms.ValidationError('Passwords do not match.')
        }
      }
    })
@@ -111,8 +145,8 @@ user input.
 
    <div id="example-auto-form-validation" class="newforms-example"></div>
 
-Field ``validation``
-====================
+Field validation
+================
 
 Fields also accept a ``validation`` argument -- validation defined at the field
 level overrides any configured at the Form level, so if you want to use interaction
@@ -173,6 +207,47 @@ to be an event name, so the following lines are equivalent:
    validation: 'blur'
    validation: {on: 'blur'}
 
+Final Form validation
+=====================
+
+Whether or not you've given your form an ``onChange`` callback, Forms will still
+automatically update their ``data`` object with user input as the user interacts
+with each form field. Even if all fields have been used and are valid, the user
+still has to signal their intent to submit the form before final validation can
+be performed.
+
+Validating final form submission is left in your hands, as newforms doesn't know
+(or care, sorry!) what you ultimatey want to do with the ``cleanedData`` it
+creates for you.
+
+This is typically implemented by hooking into a ``<form>``'s ``onSubmit`` event
+and calling ``form.validate()`` to validate the entire form using current user
+input:
+
+.. code-block:: javascript
+
+   onSubmit: function(e) {
+     e.preventDefault()
+     var form = this.state.form
+     var isValid = form.validate()
+     if (isValid) {
+       this.props.processContactData(form.cleanedData)
+     }
+     else {
+       this.forceUpdate()
+     }
+   }
+
+Something to note is that re-rendering after unsuccessful final validation must
+be done manually -- this is to avoid needlessly re-rendering when there are
+multiple Forms or FormSets in use, as is often the case when there are multiple
+logical sections or entities being edited.
+
+Remember that Forms represent groups of related Fields and don't necessarily
+have to model the content of the entire ``<form>``. Use as many as you like, but
+don't forget to use :ref:`prefixes <ref-form-prefixes>` when necessary to avoid
+field ``name`` and ``id`` clashes.
+
 Controlled forms
 ================
 
@@ -194,10 +269,10 @@ Controlled components created by newforms reflect the values held in
 ``form.data``. It's recommended that you call ``form.setData()`` or
 ``form.updateData()`` to update ``form.data``, as they handle transitioning from
 initial display of data to displaying user input and will also call
-:ref:`onChange() <ref-interactive-onchange>` for you, to trigger
-re-rendering of the containing React component.
+``onChange()`` for you, to trigger re-rendering of the containing React
+component.
 
-``controlled`` example form
+``controlled`` example Form
 ---------------------------
 
 An example of reusing the same controlled Form to edit a bunch of different
@@ -208,9 +283,9 @@ First, define a form:
 .. code-block:: javascript
 
    var PersonForm = forms.Form.extend({
-     name: forms.CharField({maxLength: 100})
-   , age: forms.IntegerField({minValue: 0, maxValue: 115})
-   , bio: forms.CharField({widget: forms.Textarea})
+     name: forms.CharField({maxLength: 100}),
+     age: forms.IntegerField({minValue: 0, maxValue: 115}),
+     bio: forms.CharField({widget: forms.Textarea})
    })
 
 When creating the form in our example React component, we're passing
@@ -244,11 +319,29 @@ initial state, with new initial data:
 
    <div id="example-controlled-form" class="newforms-example"></div>
 
+.. _`uncontrolled React components`: http://facebook.github.io/react/docs/forms.html#uncontrolled-components
+.. _`controlled React components`: http://facebook.github.io/react/docs/forms.html#controlled-components
+
+Rendering Forms
+===============
+
+One of the benefits of using React is that display logic really is Just
+JavaScript. Reusable pieces can be extracted into functions, or React components,
+or a configurable object of some sort or... whatever your programmery heart
+desires.
+
+Newforms gives you a rendering helper -- called a BoundField -- for each field,
+which has access to the Field, its Widget and its Form, which collectively have
+access to all the metadata and user input data it needs to render the field. It
+uses these to implement rendering helper methods, which are available for you to
+use in your react components.
+
+BoundFields, their most useful properties and examples of their use are covered
+in :doc:`custom_display` and the complete :ref:`BoundField API <ref-api-boundfield>`
+is documented.
+
 .. raw:: html
 
    <script src="_static/js/react.min.js"></script>
    <script src="_static/js/newforms.min.js"></script>
    <script src="_static/js/interactive-forms.js"></script>
-
-.. _`uncontrolled React components`: http://facebook.github.io/react/docs/forms.html#uncontrolled-components
-.. _`controlled React components`: http://facebook.github.io/react/docs/forms.html#controlled-components
