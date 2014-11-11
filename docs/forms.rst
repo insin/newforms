@@ -4,18 +4,11 @@ Forms
 
 .. Note::
 
-   Newforms Forms and Widgets "render" by creating ``ReactElement`` objects,
-   rather than directly creating DOM elements or HTML strings.
+   Newforms Forms and Widgets render by creating ``ReactElement`` objects.
 
-   In code examples which display HTML string output, we use a ``reactHTML()``
-   function to indicate there's another step between rendering a form and final
-   output. An actual implementation of this function would need to strip
-   ``data-react-`` attributes from the generated HTML and pretty-print to get
-   the exact example output shown.
-
-   However, the example HTML output is representative of the DOM structure
-   which would be created when running in a browser, with React managing
-   keeping the real DOM in sync with the rendered state of forms.
+   In code examples which display HTML string output, we use an imaginary
+   ``reactHTML()`` function to make it clear there's another step between
+   rendering a form and final output.
 
 .. _ref-form-initial-input-data:
 
@@ -96,6 +89,9 @@ and will trigger validation when rendered:
 Using forms to validate data
 ============================
 
+Server or standalone validation
+-------------------------------
+
 The primary task of a ``Form`` object is to validate data. With a bound
 ``Form`` instance, call the :js:func:`BaseForm#isValid` method to run validation
 and return a boolean designating whether the data was valid:
@@ -149,25 +145,24 @@ regardless of how many times you call ``form.isValid()`` or ``form.errors()``.
 This means that if validation has side effects, those side effects will only be
 triggered once per set of input data.
 
+Client validation
+-----------------
+
 On the client-side, the user's input is held in form DOM inputs, not a tidy
 JavaScript object as in the above examples (whereas if you're handling a request
-on the server, the request body serves this purpose). By wrapping your inputs in
-a ``<form>`` you can make use of ``form.validate(form)``'s ``form`` argument, which
-extracts user input from a given ``<form>``'s elements, sets it as input data
-and returns the result f validating the data:
+on the server, the request body serves this purpose).
+
+Regardless of whether or not you're using interactive validation, the form's
+input data will be updated as the user fills it in. To force the form to fully
+validate, call ``form.validate()``:
 
 .. code-block:: javascript
 
    // Form creation in a React component's getInitialState()
    var form = new ContactForm()
 
-   // Validation in an onSubmit event handler, where the form's fields were
-   // rendered intio a <form ref="form"> in the component's render()
-   var isValid = this.state.form.validate(this.refs.form)
-
-If you're using interactive validation, the form's input data will be updated
-and validated the user fills it in. To force the form to fully validate, call
-``form.validate()``.
+   // Validation in an onSubmit event handler
+   var isValid = this.state.form.validate()
 
 .. _ref-dynamic-initial-values:
 
@@ -374,10 +369,10 @@ given, and also any form-wide validation if configured.
 It doesn't return the result of the validation it triggers, since the validity
 of a subset of fields doesn't tell you whether or not the entire form is valid.
 
-If you're peforming partial updates of user input (which is the case if you're
-using :doc:`interactive_forms`) and need to check if the entire form is valid
-*without* triggering validation errors on fields the user may not have reached
-yet, use :js:func:`BaseForm#isComplete`:
+If you're peforming partial updates of user input (which is the case if
+individual fields are being validated ``onChange``) and need to check if the
+entire form is valid *without* triggering validation errors on fields the user
+may not have reached yet, use :js:func:`BaseForm#isComplete`:
 
 .. code-block:: javascript
 
@@ -515,7 +510,7 @@ containing one field:
 Styling form rows
 -----------------
 
-When extending a form, there are a few hooks you can use to add ``class``
+When defining a Form, there are a few hooks you can use to add ``class``
 attributes to form rows in the default rendering:
 
 * ``rowCssClass`` -- applied to every form row
@@ -555,6 +550,10 @@ Once you've done that, the generated markup will look something like:
    <tr class="row error required"><th><label for="id_sender">Sender:</label> ...
    <tr class="row valid"><th><label for="id_ccMyself">Cc myself:</label> ...
    */
+
+The ``className`` string generated for each field when you configure the available
+CSS properties is also available for use in custom rendering, via a BoundField's
+:js:func:`cssClasses() <BoundField#cssClasses>` method.
 
 .. _ref-forms-configuring-label:
 
@@ -879,6 +878,11 @@ are manually constructing a ``label`` in JSX:
 
 Binding uploaded files to a form
 ================================
+
+.. Warning::
+   Since handling of file uploads in single page apps is a little bit different
+   than a regular multipart form submission, this section isn't worth much! This
+   subject will be revisited in a future release.
 
 Dealing with forms that have ``FileField`` and ``ImageField`` fields
 is a little more complicated than a normal form.
