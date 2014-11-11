@@ -46,8 +46,8 @@ Source
 
       * https://github.com/insin/newforms
 
-.. _`newforms 0.9.0 (development version)`: #TBD
-.. _`newforms 0.9.0 (production version)`: #TBD
+.. _`newforms 0.9.0 (development version)`: https://github.com/insin/newforms/raw/react/dist/newforms-0.9.0.js
+.. _`newforms 0.9.0 (production version)`: https://github.com/insin/newforms/raw/react/dist/newforms-0.9.0.min.js
 
 Documentation
 =============
@@ -97,7 +97,6 @@ Documentation Contents
 
 .. _`Browserify`: http://browserify.org/
 .. _`Django`: http://www.djangoproject.com
-.. _`Node.js`: http://nodejs.org
 .. _`React`: http://facebook.github.io/react/
 .. _`UglifyJS`: https://github.com/mishoo/UglifyJS2
 .. _`webpack`: http://webpack.github.io/

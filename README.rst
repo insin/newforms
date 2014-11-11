@@ -7,18 +7,16 @@ newforms |travis_status|
 
 An isomorphic JavaScript form-handling library for `React`_.
 
-(Old `Django`_ hands may recognise "newforms" as the former name of its
-`form-handling library`_ - newforms started out as a direct port of
-``django.forms`` to JavaScript)
-
-.. _`React`: http://facebook.github.io/react/
-.. _`Django`: http://www.djangoproject.com
-.. _`form-handling library`: http://docs.djangoproject.com/en/dev/topics/forms/
+(Formerly a direct port of the `Django`_ framework's ``django.forms`` library)
 
 Getting newforms
 ================
 
 Node.js
+
+   Newforms can be used on the server, or bundled for the client using an
+   npm-compatible packaging system such as `Browserify`_ or `webpack`_.
+
    ::
 
       npm install newforms
@@ -27,15 +25,25 @@ Node.js
 
       var forms = require('newforms')
 
+   By default, newforms will be in development mode. To use it in production
+   mode, set the environment variable ``NODE_ENV`` to ``'production'`` when
+   bundling. To completely remove all development mode code, use a minifier
+   that performs dead-code elimination, such as `UglifyJS`_.
+
 Browser bundles
-   Browser bundles include all dependencies except React.
+   Browser bundles expose newforms as a global ``forms`` variable and expect to
+   find a global ``React`` variable to work with.
 
-   They expose newforms as a global ``forms`` variable and expect to find a
-   global ``React`` variable to work with.
+   `newforms 0.9.0 (development version)`_
 
-   Release bundles are available from:
+   Uncompressed, with warnings about potential mistakes.
 
-      * https://github.com/insin/newforms/tree/react/dist
+   `newforms 0.9.0 (production version)`_
+
+   Compressed version for production.
+
+.. _`newforms 0.9.0 (development version)`: https://github.com/insin/newforms/raw/react/dist/newforms-0.9.0.js
+.. _`newforms 0.9.0 (production version)`: https://github.com/insin/newforms/raw/react/dist/newforms-0.9.0.min.js
 
 `Documentation @ ReadTheDocs`_
 ==============================
@@ -48,8 +56,6 @@ Browser bundles
 
 Quick Guide
 ===========
-
-**Note: this guide reflects the API in the current development version -- 0.9**
 
 A quick introduction to defining and using newforms Form objects.
 
@@ -175,3 +181,9 @@ add a ``clean()`` method to the Form definition::
 
 MIT Licensed
 ============
+
+.. _`Browserify`: http://browserify.org/
+.. _`Django`: http://www.djangoproject.com
+.. _`React`: http://facebook.github.io/react/
+.. _`UglifyJS`: https://github.com/mishoo/UglifyJS2
+.. _`webpack`: http://webpack.github.io/
