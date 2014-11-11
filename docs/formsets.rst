@@ -2,15 +2,6 @@
 Formsets
 ========
 
-.. Note::
-
-   Guide documentation for Formsets is currently incomplete.
-
-   In the meantime, for a guide to the features of Formsets, please refer to the
-   Django documentation:
-
-      * `Django documentation -- Formsets <https://docs.djangoproject.com/en/dev/topics/forms/formsets/>`_
-
 A formset is a layer of abstraction to work with multiple forms on the same
 page. It can be best compared to a data grid. Let's say you have the following
 form:
@@ -175,9 +166,9 @@ You may have noticed the additional data (``form-TOTAL_FORMS``,
 ``form-INITIAL_FORMS`` and ``form-MAX_NUM_FORMS``) included in the formset's
 data above. This data is handled by the ``ManagementForm``. This form defines
 hidden fields which are used to submit information about the number of forms in
-the formset. It's primarily intended for use when a FormSet's inputs are being
-used for a regular form submission to be handled on the server-side. When using
-newforms on the server to handle formsets bound to data from an HTTP POST, if
+the formset. It's intended for use when a FormSet's inputs are being used for a
+regular form submission to be handled on the server-side. If you're using
+newforms on the server to handle formsets bound to data from an HTTP POST and
 you don't provide this management data, an Error will be thrown:
 
 .. code-block:: javascript
