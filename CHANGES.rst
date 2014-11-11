@@ -6,12 +6,12 @@ Breaking Changes
 
 * Form mixins must now be specified as a ``__mixins__`` property rather than
   ``__mixin__``.
-* Changed ``form.validate([form])`` to no longer call back to re-render -- this
+* Changed ``form.validate()`` to no longer call back to re-render -- this
   was convenient for single forms, but results in multiple updates when
   processing multiple forms. Re-rendering must now be triggered manually if
   onSubmit validation fails.
-* Changed ``formset.cleanedData()`` to no longer include ``cleanedData`` from
-  unmodified extra forms.
+* ``formset.cleanedData()`` to no longer includes ``cleanedData`` from unmodified
+  extra forms.
 
 New Features
 ------------
@@ -38,7 +38,7 @@ Deprecations
 ------------
 
 * The ``onStateChange`` argument to Form and FormSet constructors -- use
-  ``onChange`` instead.
+  ``onChange`` instead. ``onStateChange`` will be removed in the next version.
 
 Changes
 -------
