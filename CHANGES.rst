@@ -1,3 +1,9 @@
+0.10.0 (in development)
+=======================
+
+* The deprecated ``onStateChange`` argument to Form and FormSet constructors has
+  been removed -- use ``onChange`` instead.
+
 0.9.0 / 2014-11-11
 ==================
 
