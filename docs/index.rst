@@ -10,7 +10,6 @@ Getting newforms
 ================
 
 Node.js
-
    Newforms can be used on the server, or bundled for the client using an
    npm-compatible packaging system such as `Browserify`_ or `webpack`_.
 
