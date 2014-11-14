@@ -12,7 +12,7 @@ QUnit.module("forms (browser)", {
   }
 })
 
-QUnit.test("Validating multiple fields", 26, function() {
+QUnit.test("Validating multiple fields", 29, function() {
   // There are a couple of ways to do multiple-field validation. If you want
   // the validation message to be associated with a particular field,
   // implement the clean_XXX() method on the Form, where XXX is the field
@@ -135,6 +135,14 @@ QUnit.test("Validating multiple fields", 26, function() {
   deepEqual(f.errors('password2').messages(), ['Forbidden value 2.'])
 
   throws(f.addError.bind(f, 'missingField', 'Some error.'))
+
+  // addError() will not add duplicate error messages
+  f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false})
+  strictEqual(f.errors().isPopulated(), false)
+  f.addError('username', 'Error message 1.')
+  deepEqual(f.errors('username').messages(), ['Error message 1.'])
+  f.addError('username', 'Error message 1.')
+  deepEqual(f.errors('username').messages(), ['Error message 1.'])
 })
 
 QUnit.test("Basic form processing", 3, function() {

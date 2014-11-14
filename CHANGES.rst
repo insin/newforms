@@ -1,6 +1,17 @@
 0.10.0 (in development)
 =======================
 
+Changes
+-------
+
+* Changed ``form.addError()`` to no longer add duplicate error messages for the
+  same field. This can happen in onChange validation which runs repeatedly and
+  adds errors to a field other than that which triggered the validation, e.g.
+  ``clean()``.
+
+Removals
+--------
+
 * The deprecated ``onStateChange`` argument to Form and FormSet constructors has
   been removed -- use ``onChange`` instead.
 
