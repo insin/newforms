@@ -1,6 +1,14 @@
 0.10.0 (in development)
 =======================
 
+New Features
+------------
+
+* Custom ``clean<Field>()`` clean methods can now be specified as
+  ``clean<Field>(callback)`` if they need to perform asynchronous validation.
+  The callback is an errback with the signature ``(error, field, validationErrors)``.
+  The non-error arguments will be passed to ``form.addError()`` if provided.
+
 Changes
 -------
 
