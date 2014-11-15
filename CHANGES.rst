@@ -4,6 +4,13 @@
 Changes
 -------
 
+* Changes to when event-based validation fires:
+  * Validation now only fires if the field's data has changed since it was last
+    validated. For ``'auto'`` validation, this prevents the default ``onBlur``
+    event from re-running the same validation as the default ``onChange``.
+  * Special cases for ``onBlur``:
+    * Pending validation is triggered immediately.
+    * Validation is always triggered is the field is required and empty.
 * Changed ``form.addError()`` to no longer add duplicate error messages for the
   same field. This can happen in onChange validation which runs repeatedly and
   adds errors to a field other than that which triggered the validation, e.g.
