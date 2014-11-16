@@ -671,9 +671,8 @@ QUnit.test('Validation - Cleaning a specific field attribute', function() {
 QUnit.test('Validation - Cleaning and validating fields that depend on each other', function() {
   var Option1Form = MultiRecipientContactForm.extend({
     clean: function() {
-      var cleanedData = Option1Form.__super__.clean.call(this)
-      var ccMyself = cleanedData.ccMyself
-      var subject = cleanedData.subject
+      var ccMyself = this.cleanedData.ccMyself
+      var subject = this.cleanedData.subject
       if (ccMyself && subject) {
         if (subject.indexOf('help') == -1) {
           throw forms.ValidationError(
@@ -704,9 +703,8 @@ QUnit.test('Validation - Cleaning and validating fields that depend on each othe
 
   var Option2Form = MultiRecipientContactForm.extend({
     clean: function() {
-      var cleanedData = Option2Form.__super__.clean.call(this)
-      var ccMyself = cleanedData.ccMyself
-      var subject = cleanedData.subject
+      var ccMyself = this.cleanedData.ccMyself
+      var subject = this.cleanedData.subject
       if (ccMyself && subject && subject.indexOf('help') == -1) {
         var message = "Must put 'help' in subject when cc'ing yourself."
         this.addError('ccMyself', message)

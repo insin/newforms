@@ -293,9 +293,8 @@ you can throw a ``ValidationError`` from the ``clean()`` method. For example:
      // ...
 
    , clean: function() {
-       var cleanedData = ContactForm.__super__.clean.call(this)
-       var ccMyself = cleanedData.ccMyself
-       var subject = cleanedData.subject
+       var ccMyself = this.cleanedData.ccMyself
+       var subject = this.cleanedData.subject
 
        if (ccMyself && subject) {
          // Only do something if both fields are valid so far
@@ -319,8 +318,8 @@ rows in the form display:
 
    , clean: function() {
        var cleanedData = ContactForm.__super__.clean.call(this)
-       var ccMyself = cleanedData.ccMyself
-       var subject = cleanedData.subject
+       var ccMyself = this.cleanedData.ccMyself
+       var subject = this.cleanedData.subject
 
        if (ccMyself && subject && subject.indexOf('help') == -1) {
          var message = "Must put 'help' in subject when cc'ing yourself."
