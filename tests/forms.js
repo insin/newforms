@@ -1895,7 +1895,7 @@ QUnit.test("Hidden initial gets id", 1, function() {
 "<tr><th><label for=\"id_field1\">Field1:</label></th><td><div><input maxlength=\"50\" type=\"text\" name=\"field1\" id=\"id_field1\"><input type=\"hidden\" name=\"initial-field1\" id=\"initial-id_field1\" value=\"\"></div></td></tr>")
 })
 
-QUnit.test("Row/error/required HTML classes", 3, function() {
+QUnit.test("CSS classes", 3, function() {
   var Person = forms.Form.extend({
     name: forms.CharField()
   , is_cool: forms.NullBooleanField()
@@ -1907,6 +1907,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
   p.rowCssClass = "row"
   p.errorCssClass = "error"
   p.requiredCssClass = "required"
+  p.optionalCssClass = "optional"
   reactHTMLEqual(p.asUl.bind(p),
 "<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></li>" +
 "<li class=\"row required\"><label for=\"id_is_cool\">Is cool:</label> <select name=\"is_cool\" id=\"id_is_cool\">" +
@@ -1914,7 +1915,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select></li>" +
-"<li class=\"row\"><label for=\"id_email\">Email:</label> <input type=\"email\" name=\"email\" id=\"id_email\"></li>" +
+"<li class=\"row optional\"><label for=\"id_email\">Email:</label> <input type=\"email\" name=\"email\" id=\"id_email\"></li>" +
 "<li class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_age\">Age:</label> <input type=\"number\" name=\"age\" id=\"id_age\"></li>")
   reactHTMLEqual(p.asDiv.bind(p),
 "<div class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_name\">Name:</label> <input type=\"text\" name=\"name\" id=\"id_name\"></div>" +
@@ -1923,7 +1924,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select></div>" +
-"<div class=\"row\"><label for=\"id_email\">Email:</label> <input type=\"email\" name=\"email\" id=\"id_email\"></div>" +
+"<div class=\"row optional\"><label for=\"id_email\">Email:</label> <input type=\"email\" name=\"email\" id=\"id_email\"></div>" +
 "<div class=\"row error required\"><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_age\">Age:</label> <input type=\"number\" name=\"age\" id=\"id_age\"></div>")
   reactHTMLEqual(p.asTable.bind(p),
 "<tr class=\"row error required\"><th><label for=\"id_name\">Name:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"text\" name=\"name\" id=\"id_name\"></td></tr>" +
@@ -1932,7 +1933,7 @@ QUnit.test("Row/error/required HTML classes", 3, function() {
 "<option value=\"2\">Yes</option>" +
 "<option value=\"3\">No</option>" +
 "</select></td></tr>" +
-"<tr class=\"row\"><th><label for=\"id_email\">Email:</label></th><td><input type=\"email\" name=\"email\" id=\"id_email\"></td></tr>" +
+"<tr class=\"row optional\"><th><label for=\"id_email\">Email:</label></th><td><input type=\"email\" name=\"email\" id=\"id_email\"></td></tr>" +
 "<tr class=\"row error required\"><th><label for=\"id_age\">Age:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"number\" name=\"age\" id=\"id_age\"></td></tr>")
 })
 

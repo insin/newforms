@@ -514,10 +514,13 @@ When defining a Form, there are a few hooks you can use to add ``class``
 attributes to form rows in the default rendering:
 
 * ``rowCssClass`` -- applied to every form row
-* ``errorCssClass`` -- applied to form rows of fields which have errors
 * ``requiredCssClass`` -- applied to form rows for required fields
+* ``optionalCssClass`` -- applied to form rows for optional fields
+* ``errorCssClass`` -- applied to form rows for fields which have errors
 * ``validCssClass`` -- applied to form rows for fields which have a
   corresponding value present in ``cleanedData``
+* ``pendingCssClass`` -- applied to form rows for fields which have a pending
+  asynchronous valdation.
 
 To use these hooks, ensure your form has them as prototype or instance
 properties, e.g. to set them up as protoype properties:
@@ -526,8 +529,9 @@ properties, e.g. to set them up as protoype properties:
 
    var ContactForm = forms.Form.extend({
      rowCssClass: 'row'
-   , errorCssClass: 'error'
    , requiredCssClass: 'required'
+   , optionalCssClass: 'optional'
+   , errorCssClass: 'error'
    , validCssClass: 'valid'
    // ...and the rest of your fields here
    })
@@ -548,7 +552,7 @@ Once you've done that, the generated markup will look something like:
    <tr class="row valid required"><th><label for="id_subject">Subject:</label> ...
    <tr class="row valid required"><th><label for="id_message">Message:</label> ...
    <tr class="row error required"><th><label for="id_sender">Sender:</label> ...
-   <tr class="row valid"><th><label for="id_ccMyself">Cc myself:</label> ...
+   <tr class="row valid optional"><th><label for="id_ccMyself">Cc myself:</label> ...
    */
 
 The ``className`` string generated for each field when you configure the available

@@ -200,6 +200,7 @@ QUnit.test('Forms - Styling form rows', function() {
   var CssContactForm = forms.Form.extend({
     rowCssClass: 'row'
   , requiredCssClass: 'required'
+  , optionalCssClass: 'optional'
   , errorCssClass: 'error'
   , validCssClass: 'valid'
   , subject: forms.CharField({maxLength: 100})
@@ -218,7 +219,7 @@ QUnit.test('Forms - Styling form rows', function() {
 "<tr class=\"row valid required\"><th><label for=\"id_subject\">Subject:</label></th><td><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\" value=\"hello\"></td></tr>\
 <tr class=\"row valid required\"><th><label for=\"id_message\">Message:</label></th><td><input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></td></tr>\
 <tr class=\"row error required\"><th><label for=\"id_sender\">Sender:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"email\" name=\"sender\" id=\"id_sender\"></td></tr>\
-<tr class=\"row valid\"><th><label for=\"id_ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></td></tr>",
+<tr class=\"row valid optional\"><th><label for=\"id_ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></td></tr>",
   "Form CSS hooks")
 })
 

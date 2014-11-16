@@ -4,6 +4,9 @@
 New Features
 ------------
 
+* Added more conditional CSS classes which will be used if available in a Form:
+  * ``optionalCssClass`` -- used for optional fields
+  * ``pendingCssClass`` -- used for fields with pending async validation
 * ``<progress>`` indicators are now displayed for fields with pending async
   validation by the default rendering methods.
 * New API related to async validation:
