@@ -4,6 +4,10 @@
 New Features
 ------------
 
+* ``<progress>`` indicators are now displayed for fields with pending async
+  validation by the default rendering methods.
+* New API related to async validation:
+  * ``BoundField.isPending()`` -- does a field have a pending async validation?
 * Custom ``clean()`` and ``clean<Field>()`` validation methods can now be
   specified with the signature ``(callback)`` if they need to perform
   asynchronous validation. The callback is an errback with the signature
