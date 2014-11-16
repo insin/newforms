@@ -50,7 +50,7 @@ Browser bundles
 `Newforms Examples @ GitHub`_
 =============================
 
-.. _`Documentation @ ReadTheDocs`: http://newforms.readthedocs.org
+.. _`Documentation @ ReadTheDocs`: http://newforms.readthedocs.org/en/v0.9.0/
 .. _`Newforms Examples @ GitHub`: https://github.com/insin/newforms-examples
 
 Quick Guide
