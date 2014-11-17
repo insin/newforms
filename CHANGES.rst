@@ -7,10 +7,14 @@ New Features
 * Added more conditional CSS classes which will be used if available in a Form:
   * ``optionalCssClass`` -- used for optional fields
   * ``pendingCssClass`` -- used for fields with pending async validation
-* ``<progress>`` indicators are now displayed for fields with pending async
-  validation by the default rendering methods.
+* ``<progress>`` indicators are now displayed by default rendering methods:
+  * Beside fields with pending async validation.
+  * At the end of the form when cross-field validation is pending.
 * New API related to async validation:
-  * ``BoundField.isPending()`` -- does a field have a pending async validation?
+  * ``form.isPending()`` -- does a form have any pending async validation?
+  * ``form.nonFieldPending()`` -- is validation of a form's ``clean([cb])``
+    method pending?
+  * ``boundField.isPending()`` -- does a field have a pending async validation?
 * Custom ``clean()`` and ``clean<Field>()`` validation methods can now be
   specified with the signature ``(callback)`` if they need to perform
   asynchronous validation. The callback is an errback with the signature
