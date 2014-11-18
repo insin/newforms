@@ -1,6 +1,12 @@
 0.10.0 (in development)
 =======================
 
+Breaking Changes
+----------------
+
+* You can no longer change ``cleanedData`` by returning a value from a
+  synchronous ``clean<Name>()`` or ``clean()`` method.
+
 New Features
 ------------
 
@@ -19,7 +25,8 @@ New Features
   specified with the signature ``(callback)`` if they need to perform
   asynchronous validation. The callback is an errback with the signature
   ``(error, field, validationErrors)``. The non-error arguments will be passed
-  to ``form.addError()`` if provided.
+  to ``form.addError()`` if provided. ``clean()`` will not be called until other
+  fields -- or fields it depends on, if configured -- have been cleaned.
 
 Changes
 -------
