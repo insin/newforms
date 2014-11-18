@@ -76,7 +76,7 @@ seen dozens of times::
 
 A piece of user input data is represented by a ``Field``, groups
 of related Fields are held in a ``Form`` and a form input which will
-be displayed to the user is represented by a ``Widgets`` Every
+be displayed to the user is represented by a ``Widget`` Every
 Field has a default Widget, which can be overridden.
 
 Create a Form instance in a React component

@@ -23,8 +23,8 @@ seen dozens of times:
    })
 
 A piece of user input data is represented by a :doc:`Field <fields>`, groups
-of related Fields are held in a :doc:`Form <forms>` and form inputs which will
-be displayed to the user are represented by :doc:`Widgets <widgets>`. Every
+of related Fields are held in a :doc:`Form <forms>` and a form input which will
+be displayed to the user is represented by a :doc:`Widget <widgets>`. Every
 Field has a default Widget, which can be overridden.
 
 Create a Form instance in a React component
