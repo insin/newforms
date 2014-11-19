@@ -6,31 +6,42 @@ Breaking Changes
 
 * You can no longer change ``cleanedData`` by returning a value from a
   synchronous ``clean<Name>()`` or ``clean()`` method.
+* ``form.validate()`` no longer takes an optional ``<form>`` argument.
 
 New Features
 ------------
 
-* Added more conditional CSS classes which will be used if available in a Form:
+* ``form.validate()``now takes a callback argument, which is *required* if the
+  Form has custom async validation configured -- ``form.validate()`` can be
+  used as normal for forms without async validation.
+  * The new callback is an errback with the signature ``(err, isValid, cleanedData)``.
+* Added more conditional CSS classes which will be used if defined in a Form:
   * ``optionalCssClass`` -- used for optional fields
   * ``pendingCssClass`` -- used for fields with pending async validation
 * ``<progress>`` indicators are now displayed by default rendering methods:
   * Beside fields with pending async validation.
   * At the end of the form when cross-field validation is pending.
 * New API related to async validation:
+  * ``form.isAsync()`` -- does a form have custom async validation configured?
   * ``form.isPending()`` -- does a form have any pending async validation?
-  * ``form.nonFieldPending()`` -- is validation of a form's ``clean([cb])``
+  * ``form.nonFieldPending()`` -- is async validation of a form's ``clean([cb])``
     method pending?
   * ``boundField.isPending()`` -- does a field have a pending async validation?
 * Custom ``clean()`` and ``clean<Field>()`` validation methods can now be
   specified with the signature ``(callback)`` if they need to perform
-  asynchronous validation. The callback is an errback with the signature
-  ``(error, field, validationErrors)``. The non-error arguments will be passed
-  to ``form.addError()`` if provided. ``clean()`` will not be called until other
-  fields -- or fields it depends on, if configured -- have been cleaned.
+  asynchronous validation.
+  * The callback is an errback with the signature ``(err, field, validationErrors)``.
+    The ``field`` and ``validationErrors`` arguments will be passed to
+    ``form.addError()`` if provided.
+  * ``clean()`` will not be called until other fields -- or just fields it
+    depends on, if configured -- have been cleaned, synchronously or
+    asynchronously.
 
 Changes
 -------
 
+* ``form.isComplete()`` is now ``false`` is there is any pending async validation,
+  even if all required fields currently have cleaned data.
 * Changes to when event-based validation fires:
   * Validation now only fires if the field's data has changed since it was last
     validated. For ``'auto'`` validation, this prevents the default ``onBlur``
@@ -42,6 +53,7 @@ Changes
   same field. This can happen in onChange validation which runs repeatedly and
   adds errors to a field other than that which triggered the validation, e.g.
   ``clean()``.
+* Error messages now make use of a ``displayName`` property if a Form has one.
 
 Removals
 --------
