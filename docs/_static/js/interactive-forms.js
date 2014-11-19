@@ -191,7 +191,6 @@ var PeopleEditor = React.createClass({
 React.render(
   React.createElement(FormRenderer, {
     form: SignupForm
-  , args: {validation: 'auto'}
   , submitButton: 'Sign Up'
   }),
   document.getElementById('example-auto-form-validation')
