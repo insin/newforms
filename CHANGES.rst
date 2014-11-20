@@ -4,16 +4,21 @@
 Breaking Changes
 ----------------
 
-* You can no longer change ``cleanedData`` by returning a value from a
+* You can no longer change ``cleanedData`` by returning a value from a Form's
   synchronous ``clean<Name>()`` or ``clean()`` method.
 * ``form.validate()`` no longer takes an optional ``<form>`` argument.
+* Removed ``formset.asUl()`` - it never appeared properly due to the management
+  Form.
+* ``formset.cleanedData()`` to no longer includes ``cleanedData`` from
+  incomplete extra forms.
 
 New Features
 ------------
 
-* ``form.validate()``now takes a callback argument, which is *required* if the
-  Form has custom async validation configured -- ``form.validate()`` can be
-  used as normal for forms without async validation.
+* ``form.validate()`` and ``formset.validate()`` now take a callback argument,
+  which is *required* if the Form or Formset has custom async validation
+  configured -- ``validate()`` can be used as normal for Form and Formsets
+  without async validation.
   * The new callback is an errback with the signature ``(err, isValid, cleanedData)``.
 * Added more conditional CSS classes which will be used if defined in a Form:
   * ``optionalCssClass`` -- used for optional fields
@@ -22,9 +27,9 @@ New Features
   * Beside fields with pending async validation.
   * At the end of the form when cross-field validation is pending.
 * New API related to async validation:
-  * ``form.isAsync()`` -- does a form have custom async validation configured?
-  * ``form.isPending()`` -- does a form have any pending async validation?
-  * ``form.nonFieldPending()`` -- is async validation of a form's ``clean([cb])``
+  * ``form.isAsync()`` / ``formset.isAsync()``-- does a form/formset have custom async validation configured?
+  * ``form.isPending()`` / ``formset.isPending()`` -- does a form/formset have any pending async validation?
+  * ``form.nonFieldPending()`` / ``formset.nonFieldPending()`` -- is async validation of a form's/formset's ``clean([cb])``
     method pending?
   * ``boundField.isPending()`` -- does a field have a pending async validation?
 * Custom ``clean()`` and ``clean<Field>()`` validation methods can now be
@@ -36,6 +41,8 @@ New Features
   * ``clean()`` will not be called until other fields -- or just fields it
     depends on, if configured -- have been cleaned, synchronously or
     asynchronously.
+* Added ``isFormAsync()`` to test if a Form constructor's prototype defines
+  async validation.
 
 Changes
 -------

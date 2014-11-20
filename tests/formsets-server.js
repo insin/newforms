@@ -806,21 +806,14 @@ QUnit.test("FormSet asTable", 1, function() {
 "<tr><th>Votes:</th><td><input type=\"number\" name=\"choices-0-votes\" value=\"100\"></td></tr>")
 })
 
-QUnit.test("FormSet asP", 1, function() {
+QUnit.test("FormSet asDiv", 1, function() {
   reactHTMLEqual(new ChoiceFormSet({data: renderTestData, autoId: false, prefix: "choices"}).asDiv(),
 "<div><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></div>" +
 "<div>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></div>" +
 "<div>Votes: <input type=\"number\" name=\"choices-0-votes\" value=\"100\"></div>")
 })
 
-QUnit.test("FormSet asUl", 1, function() {
-  reactHTMLEqual(new ChoiceFormSet({data: renderTestData, autoId: false, prefix: "choices"}).asUl(),
-"<li><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></li>" +
-"<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
-"<li>Votes: <input type=\"number\" name=\"choices-0-votes\" value=\"100\"></li>")
-})
-
-QUnit.test("Management form CSS class", 3, function() {
+QUnit.test("Management form CSS class", 2, function() {
   var formset = new ChoiceFormSet({data: renderTestData, autoId: false, prefix: "choices", managementFormCssClass: "managementForm"})
   reactHTMLEqual(formset.asTable(),
 "<tr class=\"managementForm\"><td colspan=\"2\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></td></tr>" +
@@ -830,10 +823,6 @@ QUnit.test("Management form CSS class", 3, function() {
 "<div class=\"managementForm\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></div>" +
 "<div>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></div>" +
 "<div>Votes: <input type=\"number\" name=\"choices-0-votes\" value=\"100\"></div>")
-  reactHTMLEqual(formset.asUl(),
-"<li class=\"managementForm\"><input type=\"hidden\" name=\"choices-TOTAL_FORMS\" value=\"1\"><input type=\"hidden\" name=\"choices-INITIAL_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MIN_NUM_FORMS\" value=\"0\"><input type=\"hidden\" name=\"choices-MAX_NUM_FORMS\" value=\"0\"></li>" +
-"<li>Choice: <input type=\"text\" name=\"choices-0-choice\" value=\"Calexico\"></li>" +
-"<li>Votes: <input type=\"number\" name=\"choices-0-votes\" value=\"100\"></li>")
 })
 
 // 3 Regression tests for Django issue #11418
