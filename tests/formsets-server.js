@@ -897,9 +897,10 @@ QUnit.test("Empty forms are unbound", 3, function() {
 })
 
 QUnit.test("Empty formset is valid", 2, function() {
+  // Test that an empty formset still calls clean()
   var EmptyFsetWontValidate = forms.BaseFormSet.extend()
   EmptyFsetWontValidate.prototype.clean = function() {
-      throw forms.ValidationError("Clean method called")
+    throw forms.ValidationError("Clean method called")
   }
 
   var EmptyFsetWontValidateFormset = forms.formsetFactory(FavouriteDrinkForm, {
