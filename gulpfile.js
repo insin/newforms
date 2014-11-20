@@ -40,11 +40,11 @@ function buildJS(watch) {
   , packageCache: {}
   , fullPaths: true
   })
-  if (watch) {
-    b = watchify(b)
-  }
+  // if (watch) {
+  //   b = watchify(b)
+  // }
   b.transform('browserify-shim')
-  b.on('update', rebundle)
+  // b.on('update', rebundle)
 
   function rebundle() {
     var stream = b.bundle()
