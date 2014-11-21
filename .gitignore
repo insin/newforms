@@ -1,6 +1,8 @@
-*.pyc
+.idea
 build
 docs/_build
+docs/_static/js/newforms.js
 docs/_static/js/react.js
+docs/node_modules
 node_modules
 scratch

@@ -7,7 +7,6 @@ var concat = require('gulp-concat')
 var header = require('gulp-header')
 var jshint = require('gulp-jshint')
 var rename = require('gulp-rename')
-var shell = require('gulp-shell')
 var streamify = require('gulp-streamify')
 var uglify = require('gulp-uglify')
 var gutil = require('gulp-util')
@@ -84,12 +83,6 @@ gulp.task('dist', ['browserify-js'], function() {
        path.basename = path.basename.replace(/(newforms)/, '$1-' + pkg.version)
      }))
     .pipe(gulp.dest('./dist'))
-})
-
-gulp.task('build-docs', shell.task('make html', {cwd: './docs'}))
-
-gulp.task('docs', ['build-docs'], function() {
-  gulp.watch(['./docs/*.rst', './docs/*.py'], ['build-docs'])
 })
 
 gulp.task('watch', function() {

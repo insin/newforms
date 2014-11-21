@@ -1,0 +1,30 @@
+{
+  "browser": true,
+  "node": true,
+
+  "curly": true,
+  "devel": true,
+  "globals": {
+    "forms": true,
+    "FormRenderer": true,
+    "React": true,
+    "renderField": true,
+    "resizeIFrame": true
+  },
+  "noempty": true,
+  "newcap": false,
+  "undef": true,
+  "unused": "vars",
+
+  "asi": true,
+  "boss": true,
+  "eqnull": true,
+  "expr": true,
+  "funcscope": true,
+  "globalstrict": true,
+  "laxbreak": true,
+  "laxcomma": true,
+  "loopfunc": true,
+  "sub": true,
+  "strict": false
+}
