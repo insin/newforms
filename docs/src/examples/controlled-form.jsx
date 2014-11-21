@@ -1,6 +1,10 @@
-void function() {
-
 'use strict';
+
+var React = require('react')
+var forms = require('newforms')
+
+var renderField = require('../renderField')
+var resizeIFrame = require('../resizeIFrame')
 
 var PersonForm = forms.Form.extend({
   name: forms.CharField({maxLength: 100}),
@@ -97,5 +101,3 @@ var PeopleEditor = React.createClass({
 })
 
 React.render(<PeopleEditor/>, document.body, resizeIFrame)
-
-}()

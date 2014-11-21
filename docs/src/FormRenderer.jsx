@@ -1,38 +1,15 @@
-void function() {
-
 'use strict';
 
-function extend(dest, src) {
-  for (var prop in src) {
-    if (src.hasOwnProperty(prop)) {
-      dest[prop] = src[prop]
-    }
-  }
-  return dest
-}
+var React = require('react')
 
-var renderField = window.renderField = function(bf) {
-  var className = bf.cssClasses('form-field')
-  if (bf.field instanceof forms.BooleanField) {
-    return <div className={className}>
-      <label>bf.render() {bf.label}</label>{' '}
-      {bf.errors().messages()[0]}
-    </div>
-  }
-  else {
-    return <div className={className}>
-      {bf.labelTag()}
-      {bf.render()}{' '}
-      {bf.errors().messages()[0]}
-    </div>
-  }
-}
+var extend = require('./extend')
+var renderField = require('./renderField')
 
 /**
  * Generic form-rendering component for demo forms which just need to be wrapped
  * and rendered.
  */
-window.FormRenderer = React.createClass({
+var FormRenderer = React.createClass({
   getInitialState() {
     return {
       form: this.createForm()
@@ -81,4 +58,4 @@ window.FormRenderer = React.createClass({
   }
 })
 
-}()
+module.exports = FormRenderer
