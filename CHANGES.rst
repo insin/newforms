@@ -35,9 +35,7 @@ New Features
 * Custom ``clean()`` and ``clean<Field>()`` validation methods can now be
   specified with the signature ``(callback)`` if they need to perform
   asynchronous validation.
-  * The callback is an errback with the signature ``(err, field, validationErrors)``.
-    The ``field`` and ``validationErrors`` arguments will be passed to
-    ``form.addError()`` if provided.
+  * The callback is an errback with the signature ``(err, validationError)``.
   * ``clean()`` will not be called until other fields -- or just fields it
     depends on, if configured -- have been cleaned, synchronously or
     asynchronously.
