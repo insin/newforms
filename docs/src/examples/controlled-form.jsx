@@ -3,6 +3,8 @@
 var React = require('react')
 var forms = require('newforms')
 
+var Collapsible = require('../Collapsible')
+var FormInspector = require('../FormInspector')
 var IFrameMixin = require('../IFrameMixin')
 
 var renderField = require('../renderField')
@@ -63,14 +65,20 @@ var PeopleEditor = React.createClass({
     return <div>
       {this.renderPeople()}
       <hr/>
-      {this.state.editing !== null && <form onSubmit={this.handleSubmit}>
+      {this.state.editing !== null && <div>
+        <form onSubmit={this.handleSubmit}>
         {this.state.form.boundFields().map(renderField)}
         <div>
           <button type="button" onClick={this.handleCancel}>Cancel</button>{' '}
           <button type="button" onClick={this.handleReset}>Reset</button>{' '}
           <button type="submit">Save</button>
         </div>
-      </form>}
+        </form>
+        <hr/>
+        <Collapsible name="inspect form" defaultCollapsed>
+          <FormInspector form={this.state.form}/>
+        </Collapsible>
+      </div>}
     </div>
   },
 

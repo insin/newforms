@@ -6,16 +6,17 @@ var forms = require('newforms')
 function renderField(bf) {
   var className = bf.cssClasses('form-field')
   if (bf.field instanceof forms.BooleanField) {
-    return <div className={className}>
+    return <div key={bf.htmlName} className={className}>
       <label>{bf.render()} {bf.label}</label>{' '}
-      {bf.errors().messages()[0]}
+      {bf.errorMessage() && <div className="error-message">{bf.errorMessage()}</div>}
     </div>
   }
   else {
-    return <div className={className}>
+    return <div key={bf.htmlName} className={className}>
       {bf.labelTag()}
-      {bf.render()}{' '}
-      {bf.errors().messages()[0]}
+      {bf.render({attrs: {className: 'form-control'}})}{' '}
+      {bf.errorMessage() && <div className="error-message">{bf.errorMessage()}</div>}
+      {bf.helpText && <div className="help-text">{bf.helpText}</div>}
     </div>
   }
 }

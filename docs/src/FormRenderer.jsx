@@ -2,6 +2,8 @@
 
 var React = require('react')
 
+var Collapsible = require('./Collapsible')
+var FormInspector = require('./FormInspector')
 var IFrameMixin = require('./IFrameMixin')
 
 var extend = require('./extend')
@@ -55,20 +57,10 @@ var FormRenderer = React.createClass({
           <button type="submit">{this.props.submitButton}</button>
         </div>
       </form>
-      <div style={{display: 'inline-block', verticalAlign: 'top'}}>
-        <strong>form.cleanedData</strong>
-        <pre>
-          {JSON.stringify(form.cleanedData, null, 2)}
-        </pre>
-      </div>
-      {/*
-      {form.errors().isPopulated() && <div style={{display: 'inline-block', verticalAlign: 'top', marginLeft: 12}}>
-        <strong>form.errors().asText()</strong>
-        <pre>
-          {form.errors().asText()}
-        </pre>
-      </div>}
-      */}
+      <hr/>
+      <Collapsible name="inspect form" collapsed>
+        <FormInspector form={form}/>
+      </Collapsible>
     </div>
   }
 })
