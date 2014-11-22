@@ -1,9 +1,9 @@
 'use strict';
 
-var forms = require('newforms')
 var React = require('react')
+var forms = require('newforms')
 
-var resizeIFrame = require('../resizeIFrame')
+var IFrameMixin = require('../IFrameMixin')
 
 var SignupForm = forms.Form.extend({
   username: forms.CharField(),
@@ -21,16 +21,14 @@ var SignupForm = forms.Form.extend({
 })
 
 var Signup = React.createClass({
+  mixins: [IFrameMixin],
+
   propTypes: {
      onSubmitSignup: React.PropTypes.func.isRequired
   },
 
   getInitialState() {
-    return {form: new SignupForm({onChange: this.onFormChange})}
-  },
-
-  onFormChange() {
-    this.forceUpdate(resizeIFrame)
+    return {form: new SignupForm({onChange: this.forceUpdate.bind(this)})}
   },
 
   render() {
@@ -59,6 +57,8 @@ var Signup = React.createClass({
 })
 
 var QuickstartExample = React.createClass({
+  mixins: [IFrameMixin],
+
   getInitialState() {
     return {submittedData: null}
   },
@@ -78,4 +78,4 @@ var QuickstartExample = React.createClass({
   }
 })
 
-React.render(<QuickstartExample/>, document.body, resizeIFrame)
+React.render(<QuickstartExample/>, document.body)

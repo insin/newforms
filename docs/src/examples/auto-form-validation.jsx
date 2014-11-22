@@ -5,8 +5,6 @@ var forms = require('newforms')
 
 var FormRenderer = require('../FormRenderer')
 
-var resizeIFrame = require('../resizeIFrame')
-
 var SignupForm = forms.Form.extend({
   errorCssClass: 'example-error',
   requiredCssClass: 'example-required',
@@ -28,6 +26,4 @@ var SignupForm = forms.Form.extend({
   }]
 })
 
-React.render(<FormRenderer form={SignupForm} submitButton="Sign Up"/>,
-             document.body,
-             resizeIFrame)
+React.render(<FormRenderer form={SignupForm} submitButton="Sign Up"/>, document.body)

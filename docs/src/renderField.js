@@ -1,12 +1,13 @@
 'use strict';
 
 var React = require('react')
+var forms = require('newforms')
 
 function renderField(bf) {
   var className = bf.cssClasses('form-field')
   if (bf.field instanceof forms.BooleanField) {
     return <div className={className}>
-      <label>bf.render() {bf.label}</label>{' '}
+      <label>{bf.render()} {bf.label}</label>{' '}
       {bf.errors().messages()[0]}
     </div>
   }

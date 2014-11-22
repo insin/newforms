@@ -3,8 +3,9 @@
 var React = require('react')
 var forms = require('newforms')
 
+var IFrameMixin = require('../IFrameMixin')
+
 var renderField = require('../renderField')
-var resizeIFrame = require('../resizeIFrame')
 
 var PersonForm = forms.Form.extend({
   name: forms.CharField({maxLength: 100}),
@@ -13,12 +14,14 @@ var PersonForm = forms.Form.extend({
 })
 
 var PeopleEditor = React.createClass({
+  mixins: [IFrameMixin],
+
   getInitialState() {
     return {
       editing: null
     , form: new PersonForm({
         controlled: true
-      , onChange: this.onFormChange
+      , onChange: this.forceUpdate.bind(this)
       })
     , people: [
         {name: 'Alan', age: 43, bio: 'Some guy off the TV'}
@@ -29,10 +32,6 @@ var PeopleEditor = React.createClass({
     }
   },
 
-  onFormChange() {
-    this.forceUpdate(resizeIFrame)
-  },
-
   handleEdit(i) {
     this.state.form.reset(this.state.people[i])
     this.setState({editing: i})
@@ -40,10 +39,11 @@ var PeopleEditor = React.createClass({
 
   handleSubmit(e) {
     e.preventDefault()
-    var isValid = this.state.form.validate()
+    var form = this.state.form
+    var isValid = form.validate()
     if (isValid) {
-      this.state.people[this.state.editing] = this.state.form.cleanedData
-      delete this.state.form.cleanedData
+      this.state.people[this.state.editing] = form.cleanedData
+      form.reset({})
       this.setState({editing: null})
     }
     else {
@@ -100,4 +100,4 @@ var PeopleEditor = React.createClass({
   }
 })
 
-React.render(<PeopleEditor/>, document.body, resizeIFrame)
+React.render(<PeopleEditor/>, document.body)
