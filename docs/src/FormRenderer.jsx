@@ -50,7 +50,7 @@ var FormRenderer = React.createClass({
   render() {
     var form = this.state.form
     return <div className="example-container">
-      <form onSubmit={this.onSubmit}>
+      <form onSubmit={this.onSubmit} autoComplete="off" noValidate>
         {form.nonFieldErrors().render()}
         {form.boundFields().map(renderField)}
         <div>

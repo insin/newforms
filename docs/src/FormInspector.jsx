@@ -23,7 +23,7 @@ var FormInspector = React.createClass({
         <Bool name="valid" value={form.isValid()}/>
       </Collapsible>
       {form.isAsync() && <Collapsible name="async states">
-        <Bool name="pending validation" value={form.isPending()}/>}
+        <Bool name="pending validation" value={form.isPending()}/>
         <Bool name="pending cross-field validation" value={form.nonFieldPending()}/>
       </Collapsible>}
     </div>
