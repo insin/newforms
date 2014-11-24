@@ -290,8 +290,8 @@ Server-side example of using a form with dynamic choices:
 
 .. _ref-built-in-field-types:
 
-Built-in ``Field`` types (A-Z)
-==============================
+Built-in Field types
+====================
 
 newforms comes with a set of ``Field`` types that represent common validation
 eeds. This section documents each built-in field.
@@ -299,6 +299,51 @@ eeds. This section documents each built-in field.
 For each field, we describe the default widget used if you don't specify
 ``widget``. We also specify the value returned when you provide an empty value
 (see the section on ``required`` above to understand what that means).
+
+Built-in Field type hierarchy
+-----------------------------
+
+* Field
+
+  * BaseTemporalField
+
+    * :ref:`DateField <ref-fields-DateField>`
+    * :ref:`DateTimeField <ref-fields-DateTimeField>`
+    * :ref:`TimeField <ref-fields-TimeField>`
+  * :ref:`BooleanField <ref-fields-BooleanField>`
+
+    * :ref:`NullBooleanField <ref-fields-NullBooleanField>`
+  * :ref:`CharField <ref-fields-CharField>`
+
+    * :ref:`EmailField <ref-fields-EmailField>`
+    * :ref:`GenericIPAddressField <ref-fields-GenericIPAddressField>`
+    * :ref:`IPAddressField <ref-fields-IPAddressField>`
+    * :ref:`RegexField <ref-fields-RegexField>`
+    * :ref:`SlugField <ref-fields-SlugField>`
+    * :ref:`URLField <ref-fields-URLField>`
+  * :ref:`ChoiceField <ref-fields-ChoiceField>`
+
+    * :ref:`FilePathField <ref-fields-FilePathField>`
+    * :ref:`MultipleChoiceField <ref-fields-MultipleChoiceField>`
+
+      * :ref:`TypedMultipleChoiceField <ref-fields-TypedMultipleChoiceField>`
+    * :ref:`TypedChoiceField <ref-fields-TypedChoiceField>`
+  * :ref:`ComboField <ref-fields-ComboField>`
+  * :ref:`IntegerField <ref-fields-IntegerField>`
+
+    * :ref:`DecimalField <ref-fields-DecimalField>`
+    * :ref:`FloatField <ref-fields-FloatField>`
+  * :ref:`FileField <ref-fields-FileField>`
+
+    * :ref:`ImageField <ref-fields-ImageField>`
+  * :ref:`MultiValueField <ref-fields-MultiValueField>`
+
+    * :ref:`SplitDateTimeField <ref-fields-SplitDateTimeField>`
+
+Build-in Fields (A-Z)
+---------------------
+
+.. _ref-fields-BooleanField:
 
 :js:class:`BooleanField`
 ------------------------
@@ -318,6 +363,8 @@ For each field, we describe the default widget used if you don't specify
       unchecked checkbox), you must remember to pass in ``required: false`` when
       creating the ``BooleanField``.
 
+.. _ref-fields-CharField:
+
 :js:class:`CharField`
 ---------------------
 
@@ -335,6 +382,8 @@ For each field, we describe the default widget used if you don't specify
 
    If provided, these arguments ensure that the string is at most or at least
    the given length.
+
+.. _ref-fields-ChoiceField:
 
 :js:class:`ChoiceField`
 -----------------------
@@ -354,6 +403,8 @@ For each field, we describe the default widget used if you don't specify
 
         A list of pairs (2 item lists) to use as choices for this field.
         See `Providing choices`_ for more details.
+
+.. _ref-fields-TypedChoiceField:
 
 :js:class:`TypedChoiceField`
 ----------------------------
@@ -385,6 +436,8 @@ For each field, we describe the default widget used if you don't specify
         coerced by the function given in the ``coerce`` argument, so choose it
         accordingly.
 
+.. _ref-fields-DateField:
+
 :js:class:`DateField`
 ---------------------
 
@@ -415,6 +468,8 @@ For each field, we describe the default widget used if you don't specify
       , '%B %d %Y', '%B %d, %Y' // 'October 25 2006', 'October 25, 2006'
       , '%d %B %Y', '%d %B, %Y' // '25 October 2006', '25 October, 2006'
       ]
+
+.. _ref-fields-DateTimeField:
 
 :js:class:`DateTimeField`
 -------------------------
@@ -448,6 +503,8 @@ For each field, we describe the default widget used if you don't specify
       , '%m/%d/%y %H:%M'    // '10/25/06 14:30'
       , '%m/%d/%y'          // '10/25/06'
       ]
+
+.. _ref-fields-DecimalField:
 
 :js:class:`DecimalField`
 ------------------------
@@ -485,6 +542,8 @@ For each field, we describe the default widget used if you don't specify
 
         The maximum number of decimal places permitted.
 
+.. _ref-fields-EmailField:
+
 :js:class:`EmailField`
 ----------------------
 
@@ -498,6 +557,8 @@ For each field, we describe the default widget used if you don't specify
    Has two optional arguments for validation, ``maxLength`` and ``minLength``.
    If provided, these arguments ensure that the string is at most or at least the
    given length.
+
+.. _ref-fields-FileField:
 
 :js:class:`FileField`
 ---------------------
@@ -521,6 +582,8 @@ For each field, we describe the default widget used if you don't specify
    The ``maxLength`` error refers to the length of the filename. In the error
    message for that key, ``{max}`` will be replaced with the maximum filename
    length and ``{length}`` will be replaced with the current filename length.
+
+.. _ref-fields-FilePathField:
 
 :js:class:`FilePathField`
 -------------------------
@@ -563,6 +626,8 @@ For each field, we describe the default widget used if you don't specify
         this or ``allowFiles`` must be ``true``.
 
 
+.. _ref-fields-FloatField:
+
 :js:class:`FloatField`
 ----------------------
 
@@ -576,6 +641,8 @@ For each field, we describe the default widget used if you don't specify
 
    Takes two optional arguments for validation, ``maxValue`` and ``minValue``.
    These control the range of values permitted in the field.
+
+.. _ref-fields-ImageField:
 
 :js:class:`ImageField`
 ----------------------
@@ -595,6 +662,8 @@ For each field, we describe the default widget used if you don't specify
 
    When you use a ``ImageField`` in a form, you must also remember to
    :ref:`bind the file data to the form <binding-uploaded-files>`.
+
+.. _ref-fields-IntegerField:
 
 :js:class:`IntegerField`
 ------------------------
@@ -617,6 +686,8 @@ For each field, we describe the default widget used if you don't specify
 
         These control the range of values permitted in the field.
 
+.. _ref-fields-IPAddressField:
+
 :js:class:`IPAddressField`
 --------------------------
 
@@ -630,6 +701,8 @@ For each field, we describe the default widget used if you don't specify
     * Validates that the given value is a valid IPv4 address, using a regular
       expression.
     * Error message keys: ``required``, ``invalid``
+
+.. _ref-fields-GenericIPAddressField:
 
 :js:class:`GenericIPAddressField`
 ---------------------------------
@@ -662,6 +735,8 @@ For each field, we describe the default widget used if you don't specify
         ``192.0.2.1``. Default is disabled. Can only be used
         when ``protocol`` is set to ``'both'``.
 
+.. _ref-fields-MultipleChoiceField:
+
 :js:class:`MultipleChoiceField`
 -------------------------------
 
@@ -676,6 +751,8 @@ For each field, we describe the default widget used if you don't specify
    replaced with the selected choice.
 
    Takes one extra required argument, ``choices``, as for ``ChoiceField``.
+
+.. _ref-fields-TypedMultipleChoiceField:
 
 :js:class:`TypedMultipleChoiceField`
 ------------------------------------
@@ -698,6 +775,8 @@ For each field, we describe the default widget used if you don't specify
    Takes two extra arguments, ``coerce`` and ``emptyValue``, as for
    ``TypedChoiceField``.
 
+.. _ref-fields-NullBooleanField:
+
 :js:class:`NullBooleanField`
 ----------------------------
 
@@ -705,6 +784,8 @@ For each field, we describe the default widget used if you don't specify
    * Empty value: ``null``
    * Normalises to: A JavaScript ``true``, ``false`` or ``null`` value.
    * Validates nothing (i.e., it never raises a ``ValidationError``).
+
+.. _ref-fields-RegexField:
 
 :js:class:`RegexField`
 ----------------------
@@ -726,6 +807,8 @@ For each field, we describe the default widget used if you don't specify
     Also takes ``maxLength`` and ``minLength``, which work just as they do for
     ``CharField``.
 
+.. _ref-fields-SlugField:
+
 :js:class:`SlugField`
 ---------------------
 
@@ -735,6 +818,8 @@ For each field, we describe the default widget used if you don't specify
    * Validates that the given value contains only letters, numbers,
      underscores, and hyphens.
    * Error messages: ``required``, ``invalid``
+
+.. _ref-fields-TimeField:
 
 :js:class:`TimeField`
 ---------------------
@@ -763,6 +848,8 @@ For each field, we describe the default widget used if you don't specify
       , '%H:%M'    // '14:30'
       ]
 
+.. _ref-fields-URLField:
+
 :js:class:`URLField`
 --------------------
 
@@ -782,6 +869,8 @@ For each field, we describe the default widget used if you don't specify
 
 Slightly complex built-in ``Field`` types
 =========================================
+
+.. _ref-fields-ComboField:
 
 :js:class:`ComboField`
 ----------------------
@@ -815,6 +904,8 @@ Slightly complex built-in ``Field`` types
              print(e.messages())
            }
            // => ['Ensure this value has at most 20 characters (it has 28).']
+
+.. _ref-fields-MultiValueField:
 
 :js:class:`MultiValueField`
 ---------------------------
@@ -902,6 +993,8 @@ Slightly complex built-in ``Field`` types
         field into a ``Date`` object.
 
         This method must be implemented in the Field extending MultiValueField.
+
+.. _ref-fields-SplitDateTimeField:
 
 :js:class:`SplitDateTimeField`
 ------------------------------
