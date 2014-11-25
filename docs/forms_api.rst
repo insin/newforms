@@ -26,7 +26,7 @@ Forms API
       :param Object constructorProps:
          properties to be set directly on the new constructor function.
 
-.. js:function:: DeclarativeFieldsMeta(prototypeProps[, constructorProps])
+.. js:function:: DeclarativeFieldsMeta(prototypeProps)
 
    This mixin function is responsible for setting up form fields when a new Form
    constructor is being created.
