@@ -64,6 +64,10 @@
 * The deprecated `onStateChange` argument to Form and FormSet constructors has
   been removed - use `onChange` instead.
 
+# 0.9.1 / 2014-11-25
+
+* The object given to `Form.extend()` is no longer mutated.
+
 # 0.9.0 / 2014-11-11
 
 ## Breaking Changes

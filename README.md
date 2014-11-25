@@ -30,11 +30,11 @@ dead-code elimination, such as [UglifyJS](https://github.com/mishoo/UglifyJS2).
 Browser bundles expose newforms as a global `forms` variable and expect to
 find a global `React` variable to work with.
 
-[newforms 0.9.0 (development version)](https://github.com/insin/newforms/raw/react/dist/newforms-0.9.0.js)
+[newforms 0.9.1 (development version)](https://github.com/insin/newforms/raw/react/dist/newforms-0.9.1.js)
 
 Uncompressed, with warnings about potential mistakes.
 
-[newforms 0.9.0 (production version)](https://github.com/insin/newforms/raw/react/dist/newforms-0.9.0.min.js)
+[newforms 0.9.1 (production version)](https://github.com/insin/newforms/raw/react/dist/newforms-0.9.1.min.js)
 
 Compressed version for production.
 
