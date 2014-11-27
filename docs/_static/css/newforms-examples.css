@@ -1,3 +1,15 @@
+body {
+  font-family: helvetica, arial, sans-serif;
+  background: #fff;
+  border: 1px solid #E1E4E5;
+  margin: 0;
+  padding: 12px;
+}
+
+pre {
+  margin: 0;
+}
+
 ul.errorlist {
   margin: 0 !important;
   padding: 0 !important;
@@ -14,32 +26,37 @@ tbody th {
   padding-right: .5em;
 }
 
-.newforms-example {
-  background: none repeat scroll 0 0 #FFFFFF;
-  border: 1px solid #E1E4E5;
-  margin: 1px 0 24px;
-  padding: 12px;
-}
-.newforms-example label { color: #404040; }
-.newforms-example .example-container form {
+label { color: #404040; }
+.example-container form {
   margin-bottom: 16px;
 }
-.newforms-example .example-container .cleaned-data {
-}
 
-.newforms-example .form-field {
+.form-field {
   margin-bottom: 6px;
 }
 
-.newforms-example .form-field.example-required label:after {
+.form-field.example-required label:after {
   content: " *";
   color: #e32;
 }
 
-.newforms-example .form-field.example-error input {
+.form-field.example-error input {
   background-color: #ecc;
 }
 
-.newforms-example .form-field.example-valid input {
+.form-field.example-valid input {
   background-color: #cec;
+}
+
+.form-control {
+  display: block;
+}
+
+.error-message {
+  font-weight: bold;
+  color: #f00;
+}
+
+.help-text {
+  color: #999;
 }

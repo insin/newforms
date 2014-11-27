@@ -143,7 +143,7 @@ user input.
 
 .. raw:: html
 
-   <div id="example-auto-form-validation" class="newforms-example"></div>
+   <iframe src="_static/html/auto-form-validation.html" style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0"></iframe>
 
 Field validation
 ================
@@ -317,7 +317,7 @@ initial state, with new initial data:
 
 .. raw:: html
 
-   <div id="example-controlled-form" class="newforms-example"></div>
+   <iframe src="_static/html/controlled-form.html" style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0"></iframe>
 
 .. _`uncontrolled React components`: http://facebook.github.io/react/docs/forms.html#uncontrolled-components
 .. _`controlled React components`: http://facebook.github.io/react/docs/forms.html#controlled-components
@@ -339,9 +339,3 @@ use in your react components.
 BoundFields, their most useful properties and examples of their use are covered
 in :doc:`custom_display` and the complete :ref:`BoundField API <ref-api-boundfield>`
 is documented.
-
-.. raw:: html
-
-   <script src="_static/js/react.min.js"></script>
-   <script src="_static/js/newforms.min.js"></script>
-   <script src="_static/js/interactive-forms.js"></script>

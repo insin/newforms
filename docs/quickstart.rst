@@ -139,10 +139,4 @@ which displays successfully submitted data:
 
 .. raw:: html
 
-   <div id="example-quickstart" class="newforms-example"></div>
-
-.. raw:: html
-
-   <script src="_static/js/react.min.js"></script>
-   <script src="_static/js/newforms.min.js"></script>
-   <script src="_static/js/quickstart.js"></script>
+   <iframe src="_static/html/quickstart.html" style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0"></iframe>

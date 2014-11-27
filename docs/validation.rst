@@ -355,6 +355,12 @@ performed if one of the fields it uses is affected.
      }]
    })
 
+.. raw:: html
+
+   <iframe src="_static/html/specifying-clean-fields.html"
+           style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0">
+   </iframe>
+
 Asynchronous validation
 =======================
 
@@ -377,7 +383,7 @@ signature. It doesn't matter what this is called, but it's conventionally called
 
 When your custom cleaning method is finished whatever async operation it needs
 to perform, it *must* call the callback function to let the form know it can
-proceed with validation.
+finish the validation process.
 
 The callback has the following signature:
 
@@ -387,7 +393,8 @@ The callback has the following signature:
 
 * ``error`` -- an ``Error`` indicating that something went wrong with the async
   operation. Any falsy value can be passed if there was no error, but it's
-  conventional to pass ``null`` in that case.
+  conventional to pass ``null`` in that case. This style of error reporting is
+  known as an "errback".
 
 * ``validationError`` -- an error message if the field's value was invalid, this
   can be a simple string or a ``ValidationError``.
@@ -409,7 +416,7 @@ a signup form:
 .. code-block:: javascript
 
    cleanUsername: function(callback) {
-     post('/checkuser', {username: this.cleanedData.username}, function(err, res) {
+     http.post('/checkuser', {username: this.cleanedData.username}, function(err, res) {
        // There was an error during the HTTP request
        if (err) {
          return callback(err)
@@ -423,4 +430,79 @@ a signup form:
        // The username is available
        callback()
      })
+   }
+
+In this live example, someone has registered every possible username containing
+a vowel from the English alphabet, which will randomly take between 1 and 2
+seconds to validate:
+
+.. raw:: html
+
+   <iframe src="_static/html/async-field-validation.html"
+           style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0">
+   </iframe>
+
+Cancelling async validation
+---------------------------
+
+Asynchronous validation will be cancelled if the user is able to make a change
+which re-triggers validation while their last change is still being validated.
+
+From the newforms side of things, this effectivly involves ignoring calls to the
+callback which was handed to async validation function.
+
+.. Tip::
+   In order to support cancelling asyncronous validation, you should always call
+   the given callback with validation results, rather than modifying the form
+   directly via ``this``. This allows newforms to ignore your eventual callback
+   if the data is was validating is stale.
+
+If an async validation involves a potentially long-running or (in some way)
+expensive which you'd like to cancel should this happen, you can give newforms
+a callback to call by returning an object with an ``onCancel()`` function, after
+your async validation has started:
+
+.. code-block:: javascript
+
+   cleanExpensiveField: function(callback) {
+     var request = http.post(
+       // ...
+     )
+
+     return {
+       onCancel: function() {
+         request.cancel()
+       }
+     }
+   }
+
+Combining sync and async validation
+-----------------------------------
+
+If you have custom validation which can be performed locally, as well as async
+validation, you can combine the two in the same custom cleaning method.
+
+If validation fails before it reaches the asynchronous part, throwing a
+``ValidationError`` or explicitly returning ``false`` will let newforms know
+that asynchronous validation wes never initiated:
+
+.. code-block:: javascript
+
+   cleanUsername: function(callback) {
+     var username = this.cleanedData.username
+
+     // Throwing a ValidationError skips remaining validation for this field
+     if (username != esrever.reverse(username)) {
+       throw forms.ValidationError('Usernames must be palindromes.')
+     }
+
+     // Returning false explicitly lets newforms know not to wait for a callback
+     if (/[aeiou].test(username)) {
+       this.addError('useranme', 'Usernames must not contain vowels.')
+       return false
+     }
+
+     http.post(
+       // ...
+     )
    }
