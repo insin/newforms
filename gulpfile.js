@@ -1,7 +1,6 @@
 var browserify = require('browserify')
 var gulp = require('gulp')
 var source = require('vinyl-source-stream')
-var watchify = require('watchify')
 
 var concat = require('gulp-concat')
 var header = require('gulp-header')
@@ -31,46 +30,31 @@ gulp.task('lint', function() {
 })
 
 function buildJS(watch) {
+
+}
+
+gulp.task('browserify-js', ['lint'], function() {
   var b = browserify(jsEntryPoint, {
     debug: !gutil.env.production
   , standalone: 'forms'
   , detectGlobals: false
-  , cache: {}
-  , packageCache: {}
-  , fullPaths: true
   })
-  // if (watch) {
-  //   b = watchify(b)
-  // }
   b.transform('browserify-shim')
-  // b.on('update', rebundle)
 
-  function rebundle() {
-    var stream = b.bundle()
-      .pipe(source('newforms.js'))
+  var stream = b.bundle()
+    .pipe(source('newforms.js'))
+    .pipe(streamify(header(srcHeader, {pkg: pkg, dev: dev})))
+    .pipe(gulp.dest('./build'))
+
+  if (gutil.env.production) {
+    stream = stream
+      .pipe(rename('newforms.min.js'))
+      .pipe(streamify(uglify()))
       .pipe(streamify(header(srcHeader, {pkg: pkg, dev: dev})))
       .pipe(gulp.dest('./build'))
-
-    if (gutil.env.production) {
-      stream = stream
-        .pipe(rename('newforms.min.js'))
-        .pipe(streamify(uglify()))
-        .pipe(streamify(header(srcHeader, {pkg: pkg, dev: dev})))
-        .pipe(gulp.dest('./build'))
-    }
-
-    return stream
   }
 
-  return rebundle()
-}
-
-gulp.task('browserify-js', ['lint'], function() {
-  return buildJS(false)
-})
-
-gulp.task('watchify-js', ['lint'], function() {
-  return buildJS(true)
+  return stream
 })
 
 // Copies browser build to ./dist, renaming to include a version number suffix
@@ -86,7 +70,7 @@ gulp.task('dist', ['browserify-js'], function() {
 })
 
 gulp.task('watch', function() {
-  gulp.watch(jsPath, ['watchify-js'])
+  gulp.watch(jsPath, ['browserify-js'])
 })
 
 gulp.task('default', ['browserify-js', 'watch'])
