@@ -458,9 +458,9 @@ callback which was handed to async validation function.
    if the data is was validating is stale.
 
 If an async validation involves a potentially long-running or (in some way)
-expensive which you'd like to cancel should this happen, you can give newforms
-a callback to call by returning an object with an ``onCancel()`` function, after
-your async validation has started:
+expensive operation which you'd like to cancel should this happen, you can give
+newforms a callback to call by returning an object with an ``onCancel()``
+function, after your async validation has started:
 
 .. code-block:: javascript
 
