@@ -46,6 +46,7 @@
 
 ## Changes
 
+* The default `rows` attribute for a `Textarea` changed from 10 to 3.
 * `form.isComplete()` is now `false` is there is any pending async validation,
   even if all required fields currently have cleaned data.
 * Changes to when event-based validation fires:

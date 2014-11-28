@@ -421,14 +421,14 @@ QUnit.test("Widget output", 10, function() {
   reactHTMLEqual(f.boundField("subject").render(),
         "<input type=\"text\" name=\"subject\">")
   reactHTMLEqual(f.boundField("message").render(),
-        "<textarea rows=\"10\" cols=\"40\" name=\"message\"></textarea>")
+        "<textarea rows=\"3\" cols=\"40\" name=\"message\"></textarea>")
 
   // asTextarea(), asText() and asHidden() are shortcuts for changing the
   // output widget type
   reactHTMLEqual(f.boundField("subject").asText(),
         "<input type=\"text\" name=\"subject\">")
   reactHTMLEqual(f.boundField("subject").asTextarea(),
-        "<textarea rows=\"10\" cols=\"40\" name=\"subject\"></textarea>")
+        "<textarea rows=\"3\" cols=\"40\" name=\"subject\"></textarea>")
   reactHTMLEqual(f.boundField("subject").asHidden(),
         "<input type=\"hidden\" name=\"subject\" value=\"\">")
 
@@ -449,7 +449,7 @@ QUnit.test("Widget output", 10, function() {
         "<input type=\"text\" name=\"message\">")
   f = new ContactForm({data: {subject: "Hello", message: "I love you."}, autoId: false})
   reactHTMLEqual(f.boundField("subject").asTextarea(),
-        "<textarea rows=\"10\" cols=\"40\" name=\"subject\">Hello</textarea>")
+        "<textarea rows=\"3\" cols=\"40\" name=\"subject\">Hello</textarea>")
   reactHTMLEqual(f.boundField("message").asText(),
         "<input type=\"text\" name=\"message\" value=\"I love you.\">")
   reactHTMLEqual(f.boundField("message").asHidden(),
