@@ -528,7 +528,7 @@ Forms API
 
 .. js:class:: BoundField(form, field, name)
 
-   A field and its associated data.
+   A helper for rendering a field.
 
    This is the primary means of generating components such as labels and input
    fields in the default form rendering methods.
@@ -537,33 +537,21 @@ Forms API
    form layout and rndering.
 
    :param Form form:
-      a form.
+      the form instance the field is a part of.
 
    :param Field field:
-      one of the form's fields.
+      the field to be rendered.
 
    :param String name:
-      the name the field is given by the form.
+      the name name associated with the field in the form.
 
    **Instance Attributes**
 
    .. js:attribute:: boundField.form
 
-      The form this BoundField wraps a field from.
-
-      :type: Form
-
    .. js:attribute:: boundField.field
 
-      The field this BoundField wraps.
-
-      :type: Field
-
    .. js:attribute:: boundField.name
-
-      The name associated with the field in the form.
-
-      :type: String
 
    .. js:attribute:: boundField.htmlName
 
@@ -585,43 +573,48 @@ Forms API
 
    .. js:attribute:: boundField.helpText
 
-      Help text the field is configured with, othewise an empty string.
+      Help text the field is configured with, otherwise an empty string.
 
       :type: String
 
    **Prototype Functions**
 
-   .. js:function:: BoundField#errors()
+   **Status**: methods for determining the field's status.
 
-      :returns:
-         validation errors for the field - if there were none, an empty error
-         list object will be returned.
+   .. js:function:: BoundField#status()
 
-      :type: :js:class:`ErrorList` (by default, but configurable via :js:class:`BaseForm` ``kwargs.errorConstructor``)
+      Returns a string representign the field's curent status.
 
-   .. js:function:: BoundField#errorMessage()
+      Statuses are determined by checking the following conditions in order:
 
-      Convenience method for getting the first error message for the field, as
-      a single error message is the most common error scenario for a field.
-
-      :returns:
-         the first validation error message for the field - if there were none,
-         returns undefined.
-
-   .. js:function:: BoundField#errorMessages()
-
-      :returns:
-         all validation error messages for the field - if there were none,
-         returns an empty list.
+      * ``'pending'`` -- the field has a pending async validation.
+      * ``'error'`` -- the field has a validation error.
+      * ``'valid'`` -- the field has a value in form.cleanedData.
+      * ``'default'`` -- the field meets none of the above criteria, i.e. it
+        hasn't been interacted with yet, or the whole form hasn't been validated
+        yet.
 
    .. js:function:: BoundField#isCleaned()
 
       :returns:
          ``true`` if the field has some data in its form's ``cleanedData``.
 
+   .. js:function:: BoundField#isEmpty()
+
+      :returns:
+         ``true`` true if the value which will be displayed in the field's
+         widget is empty.
+
+   .. js:function:: BoundField#isPending()
+
+      :returns:
+         ``true`` if the field has a pending asynchronous validation.
+
    .. js:function:: BoundField#isHidden()
 
       :returns: ``true`` if the field is configured with a hidden widget.
+
+   **Field data**: methods for accessing data related to the field.
 
    .. js:function:: BoundField#autoId()
 
@@ -633,19 +626,47 @@ Forms API
 
       :returns: Raw input data for the field or ``null`` if it wasn't given.
 
+   .. js:function:: BoundField#errors()
+
+      :returns:
+         validation errors for the field - if there were none, an empty error
+         list object will be returned.
+
+      :type:
+         :js:class:`ErrorList` (by default, but configurable via
+         :js:class:`BaseForm` ``kwargs.errorConstructor``)
+
+   .. js:function:: BoundField#errorMessage()
+
+      Convenience method for getting the first error message for the field, as
+      a single error message is the most common error scenario for a field.
+
+      :returns:
+         the first validation error message for the field - if there were none,
+         returns ``undefined``.
+
+   .. js:function:: BoundField#errorMessages()
+
+      :returns:
+         all validation error messages for the field - if there were none,
+         returns an empty list.
+
    .. js:function:: BoundField#idForLabel()
 
       Wrapper around the field widget's :js:func:`Widget#idForLabel`. Useful,
       for example, for focusing on this field regardless of whether it has a
       single widget or a :js:class:`MutiWidget`.
 
-   .. js:function:: BoundField#render([kwargs])
+   .. js:function:: BoundField#initialValue()
 
-      Default rendering method - if the field has ``showHiddenInitial`` set,
-      renders the default widget and a hidden version, otherwise just renders
-      the default widget for the field.
+      Returns the initial value for the field, will be null if none was
+      configured on the field or given to the form.
 
-      :param Object kwargs: widget options as per :js:func:`BoundField#asWidget`.
+   .. js:function:: BoundField#value()
+
+      Returns the value to be displayed in the field's widget.
+
+   **Rendering:**: methods for, and related to, rendering a widget for the field.
 
    .. js:function:: BoundField#asWidget([kwargs])
 
@@ -660,13 +681,14 @@ Forms API
       :param Object kwargs.attrs:
          additional HTML attributes to be added to the field's widget.
 
-   .. js:function:: BoundField#subWidgets()
+   .. js:function:: BoundField#asHidden([kwargs])
 
-      :returns:
-         a list of :js:class:`SubWidget` objects that comprise all widgets in
-         this BoundField. This really is only useful for :js:class:`RadioSelect`
-         and :js:class:`CheckboxSelectMultiple` widgets, so that you can iterate
-         over individual inputs when rendering.
+      Renders the field as a hidden field.
+
+      :param Object kwargs: widget options, which are as follows
+
+      :param Object kwargs.attrs:
+         additional HTML attributes to be added to the field's widget.
 
    .. js:function:: BoundField#asText([kwargs])
 
@@ -686,26 +708,20 @@ Forms API
       :param Object kwargs.attrs:
          additional HTML attributes to be added to the field's widget.
 
-   .. js:function:: BoundField#asHidden([kwargs])
+   .. js:function:: BoundField#cssClasses([extraClasses])
 
-      Renders the field as a hidden field.
+      Returns a string of space-separated CSS classes to be applied to the
+      field.
 
-      :param Object kwargs: widget options, which are as follows
-
-      :param Object kwargs.attrs:
-         additional HTML attributes to be added to the field's widget.
-
-   .. js:function:: BoundField#value()
-
-      Returns the raw value to display for this BoundField, using data if the
-      form is bound, or the initial value otherwise
+      :param String extraClasses:
+         additional CSS classes to be applied to the field
 
    .. js:function:: BoundField#labelTag([kwargs])
 
       Creates a ``<label>`` for the field if it has an ``id`` attribute,
       otherwise generates a text label.
 
-      :param Object kwargs: label customisation options, which are as follows:
+      :param Object kwargs: label options, which are as follows:
 
       :param String kwargs.contents:
          custom contents for the label -- if not provided, label contents will
@@ -717,25 +733,20 @@ Forms API
       :param String kwargs.labelSuffix:
          a custom suffix for the label.
 
-   .. js:function:: BoundField#cssClasses([extraClasses])
+   .. js:function:: BoundField#render([kwargs])
 
-      Returns a string of space-separated CSS classes to be applied to the
-      field.
+      Default rendering method - if the field has ``showHiddenInitial`` set,
+      renders the default widget and a hidden version, otherwise just renders
+      the default widget for the field.
 
-      :param String extraClasses:
-         additional CSS classes to be applied to the field
+      :param Object kwargs: widget options as per :js:func:`BoundField#asWidget`.
 
-   .. js:function:: BoundField#status()
+   .. js:function:: BoundField#subWidgets()
 
-      Returns a string representign the field's curent status.
-
-      Statuses are determined by checking the following conditions in order:
-
-      * ``'pending'`` -- the field has a pending async validation.
-      * ``'error'`` -- the field has a validation error.
-      * ``'valid'`` -- the field has a value in form.cleanedData.
-      * ``'default'`` -- the field meets none of the above criteria, i.e. it
-        hasn't been interacted with yet, or the whole form hasn't been validated
-        yet.
+      :returns:
+         a list of :js:class:`SubWidget` objects that comprise all widgets in
+         this BoundField. This really is only useful for :js:class:`RadioSelect`
+         and :js:class:`CheckboxSelectMultiple` widgets, so that you can iterate
+         over individual inputs when rendering.
 
 .. _`Concur`: https://github.com/insin/concur#api
