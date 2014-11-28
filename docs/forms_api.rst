@@ -614,6 +614,11 @@ Forms API
          all validation error messages for the field - if there were none,
          returns an empty list.
 
+   .. js:function:: BoundField#isCleaned()
+
+      :returns:
+         ``true`` if the field has some data in its form's ``cleanedData``.
+
    .. js:function:: BoundField#isHidden()
 
       :returns: ``true`` if the field is configured with a hidden widget.
@@ -719,5 +724,18 @@ Forms API
 
       :param String extraClasses:
          additional CSS classes to be applied to the field
+
+   .. js:function:: BoundField#status()
+
+      Returns a string representign the field's curent status.
+
+      Statuses are determined by checking the following conditions in order:
+
+      * ``'pending'`` -- the field has a pending async validation.
+      * ``'error'`` -- the field has a validation error.
+      * ``'valid'`` -- the field has a value in form.cleanedData.
+      * ``'default'`` -- the field meets none of the above criteria, i.e. it
+        hasn't been interacted with yet, or the whole form hasn't been validated
+        yet.
 
 .. _`Concur`: https://github.com/insin/concur#api

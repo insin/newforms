@@ -20,6 +20,8 @@
 * Added more conditional CSS classes which will be used if defined in a Form:
   * `optionalCssClass` - used for optional fields
   * `pendingCssClass` - used for fields with pending async validation
+* Added `boundField.status()` to get a field's status as a string
+  (pending/error/valid/default).
 * `<progress>` indicators are now displayed by default rendering methods:
   * Beside fields with pending async validation.
   * At the end of the form when cross-field validation is pending.
