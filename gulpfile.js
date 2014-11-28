@@ -29,10 +29,6 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter('jshint-stylish'))
 })
 
-function buildJS(watch) {
-
-}
-
 gulp.task('browserify-js', ['lint'], function() {
   var b = browserify(jsEntryPoint, {
     debug: !gutil.env.production
