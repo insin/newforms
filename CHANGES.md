@@ -40,6 +40,8 @@
 * Added more conditional CSS classes which will be used if defined in a Form:
   * `optionalCssClass` - used for optional fields
   * `pendingCssClass` - used for fields with pending async validation
+* Added `boundField.helpTextTag()` to expose the mechanism for rendering raw
+  HTML.
 * Added `boundField.status()` to get a field's status as a string
   (pending/error/valid/default).
 

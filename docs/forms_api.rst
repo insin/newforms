@@ -716,6 +716,31 @@ Forms API
       :param String extraClasses:
          additional CSS classes to be applied to the field
 
+   .. js:function:: BoundField#helpTextTag([kwargs])
+
+      Renders a tag containing help text for the field.
+
+      :param Object kwargs: help text tag options, which are as follows:
+
+      :param String kwargs.tagName:
+         allows overriding the type of tag -- defaults to ``'span'``.
+
+      :param String|Object kwargs.contents:
+         help text contents -- if not provided, contents will be taken from the
+         field itself.
+
+         To render raw HTML in help text, it should be specified using the
+         `React convention for raw HTML <http://facebook.github.io/react/docs/jsx-gotchas.html#html-entities>`_,
+         which is to provide an object with a ``__html`` property:
+
+         .. code-block:: javascript
+
+            {__html: 'But <strong>be careful</strong>!'}
+
+      :param Object kwargs.attrs:
+         additional attributes to be added to the tag -- by default it will get a
+         ``className`` of ``'helpText'``.
+
    .. js:function:: BoundField#labelTag([kwargs])
 
       Creates a ``<label>`` for the field if it has an ``id`` attribute,
