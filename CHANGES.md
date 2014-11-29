@@ -2,38 +2,16 @@
 
 ## Breaking Changes
 
-* You can no longer change `cleanedData` by returning a value from a Form's
-  synchronous `clean<Name>()` or `clean()` method.
 * `form.validate()` no longer takes an optional `<form>` argument.
 * Removed `formset.asUl()` - it never appeared properly due to the management
   Form.
-* `formset.cleanedData()` to no longer includes `cleanedData` from
-  incomplete extra forms.
+* `formset.cleanedData()` to no longer includes `cleanedData` from incomplete
+  extra forms.
+* You can no longer change `cleanedData` by returning a value from a Form's
+  `clean<Name>()` or `clean()` method.
 
 ## New Features
 
-* `form.validate()` and `formset.validate()` now take a callback argument,
-  which is *required* if the Form or Formset has custom async validation
-  configured - `validate()` can be used as normal for Form and Formsets
-  without async validation.
-  * The new callback is an errback with the signature `(err, isValid, cleanedData)`.
-* Added more conditional CSS classes which will be used if defined in a Form:
-  * `optionalCssClass` - used for optional fields
-  * `pendingCssClass` - used for fields with pending async validation
-* Added `boundField.status()` to get a field's status as a string
-  (pending/error/valid/default).
-* `<progress>` indicators are now displayed by default rendering methods:
-  * Beside fields with pending async validation.
-  * At the end of the form when cross-field validation is pending.
-* New API related to async validation:
-  * `form.isAsync()` / `formset.isAsync()`-- does a form/formset have custom
-    async validation configured?
-  * `form.isPending()` / `formset.isPending()` - does a form/formset have any
-    pending async validation?
-  * `form.nonFieldPending()` / `formset.nonFieldPending()` - is async validation
-    of a form's/formset's `clean([cb])`
-    method pending?
-  * `boundField.isPending()` - does a field have a pending async validation?
 * Custom `clean()` and `clean<Field>()` validation methods can now be
   specified with the signature `(callback)` if they need to perform
   asynchronous validation.
@@ -41,12 +19,33 @@
   * `clean()` will not be called until other fields - or just fields it
     depends on, if configured - have been cleaned, synchronously or
     asynchronously.
-* Added `isFormAsync()` to test if a Form constructor's prototype defines
-  async validation.
+* `form.validate()` and `formset.validate()` now take a callback argument,
+  which is *required* if the Form or Formset has custom async validation
+  configured - `validate()` can be used as normal for Form and Formsets
+  without async validation.
+  * The callback is an errback with the signature `(err, isValid, cleanedData)`.
+* New API related to async validation:
+  * `form.isAsync()` / `formset.isAsync()` - `true` if a form/formset has custom
+    async validation.
+  * `form.isPending()` / `formset.isPending()` - `true` if a form/formset has
+    pending async validation.
+  * `form.nonFieldPending()` / `formset.nonFieldPending()` - `true` if async
+    validation of a form/formset's `clean(cb)` method is pending.
+  * `boundField.isPending()` - `true` if a field has a pending async validation.
+  * `isFormAsync(Form)` - `true` if a Form constructor's prototype has async
+    validation methods.
+* `<progress>` indicators are now displayed by default rendering methods:
+  * Beside fields with pending async validation.
+  * At the end of the form when cross-field validation is pending.
+* Added more conditional CSS classes which will be used if defined in a Form:
+  * `optionalCssClass` - used for optional fields
+  * `pendingCssClass` - used for fields with pending async validation
+* Added `boundField.status()` to get a field's status as a string
+  (pending/error/valid/default).
 
 ## Changes
 
-* The default `rows` attribute for a `Textarea` changed from 10 to 3.
+
 * `form.isComplete()` is now `false` is there is any pending async validation,
   even if all required fields currently have cleaned data.
 * Changes to when event-based validation fires:
@@ -55,11 +54,12 @@
     event from re-running the same validation as the default `onChange`.
   * Special cases for `onBlur`:
     * Pending validation is triggered immediately.
-    * Validation is always triggered is the field is required and empty.
+    * Validation is always triggered if the field is required and empty.
 * Changed `form.addError()` to no longer add duplicate error messages for the
-  same field. This can happen in onChange validation which runs repeatedly and
-  adds errors to a field other than that which triggered the validation, e.g.
-  `clean()`.
+  same field. This can happen if `onChange` validation which runs repeatedly
+  adds errors to a field other than that which triggered the validation, using
+  `addError()`.
+* The default `rows` attribute for a `Textarea` changed from 10 to 3.
 * Error messages now make use of a `displayName` property if a Form has one.
 
 ## Removals
