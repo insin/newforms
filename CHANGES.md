@@ -47,8 +47,7 @@
 
 ## Changes
 
-
-* `form.isComplete()` is now `false` is there is any pending async validation,
+* `form.isComplete()` is now `false` if there is any pending async validation,
   even if all required fields currently have cleaned data.
 * Changes to when event-based validation fires:
   * Validation now only fires if the field's data has changed since it was last
