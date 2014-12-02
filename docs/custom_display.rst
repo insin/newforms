@@ -45,6 +45,23 @@ custom field rendering are listed below. For complete details, see the
 Useful BoundField properties
 ============================
 
+``bf.name``
+   The name of the field in the form.
+
+``bf.htmlName``
+   The name the field will be represented by when rendered. If each Form and
+   FormSet being used to render user inputs has a unique prefix, this is
+   guaranteed to be a unique name.
+
+   As such, it's a good candidate if you need a unique ``key`` prop for a React
+   component related to each field.
+
+``bf.label``
+   The label text for the field, e.g. ``'Email address'``.
+
+``bf.helpText``
+   Any help text that has been associated with the field.
+
 ``bf.field``
    The :js:class:`Field` instance from the form, that this :js:class:`BoundField`
    wraps. You can use it to access field properties directly.
@@ -53,15 +70,6 @@ Useful BoundField properties
    Field API -- you can pass this argument when creating a field to store any
    additional, custom metadata you want to associate with the field for later
    use.
-
-``bf.helpText``
-   Any help text that has been associated with the field.
-
-``bf.label``
-   The label text for the field, e.g. ``'Email address'``.
-
-``bf.name``
-   The name of the field in the form.
 
 Useful BoundField methods
 =========================
@@ -80,17 +88,23 @@ Useful BoundField methods
    in lieu of ``labelTag()`` if you are constructing the label manually.
 
 ``bf.labelTag()``
-   Generates a a ``<label>`` containing the field's label text.
+   Generates a ``<label>`` containing the field's label text, with the
+   appropriate ``htmlFor`` property.
+
+``bf.helpTextTag()``
+   By default, generates a ``<span className="helpText">`` containing the
+   field's help text if it has some configured, but this can be configured with
+   arguments.
 
 ``bf.value()``
-   Gets the value to be displayed in the field.
+   Gets the value which will be displayed in the field's user input.
 
 ``boundFields()`` example
 =========================
 
 Using these, let's customise rendering of our ContactForm. Rendering things in
 React is just a case of creating ``ReactElement`` objects, so the full power of
-JavaScript and, should you need them, custom React components are available to you.
+JavaScript and custom React components are available to you.
 
 For example, let's customise rendering to add a CSS class to our form field rows
 and to put the checkbox for the ``ccMyself`` field inside its ``<label>``:
@@ -101,12 +115,14 @@ and to put the checkbox for the ``ccMyself`` field inside its ``<label>``:
      var className = 'form-field'
      if (bf.field instanceof forms.BooleanField) {
        return <div className={className}>
-         <label>{bf.render()} {bf.label}</label> {bf.errorMessage()}
+         <label>{bf.render()} {bf.label}</label>
+         {bf.helpTextTag()} {bf.errors().render()}
        </div>
      }
      else {
        return <div className={className}>
-         {bf.labelTag()} {bf.render()} {bf.errorMessage()}
+         {bf.labelTag()} {bf.render()}
+         {bf.helpTextTag()} {bf.errors().render()}
        </div>
      }
    }
@@ -154,7 +170,7 @@ to be cooked:
    var ItemFormSet = forms.formsetFactory(ItemForm, {extra: 3})
 
 The list of item forms will be presented as a ``<table>`` for alignment and
-compactness. We could use ``boundFields()`` as above and loop over eaach form's
+compactness. We could use ``boundFields()`` as above and loop over each form's
 fields, creating a ``<td>`` for each one, but what if we wanted to display a
 unit label alongside the "time" field and dynamically display some extra content
 alongside the "tend" field?
@@ -173,7 +189,7 @@ way to access the form's BoundFields by field name:
          <td>{fields.time.render()} mins</td>
          <td>
            {fields.tend.render()}
-           {fields.tend.data() && ' halfway'}
+           {fields.tend.value() && ' halfway'}
          </td>
        </tr>
      })}
