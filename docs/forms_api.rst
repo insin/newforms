@@ -50,6 +50,15 @@ Forms API
    that you use ``null`` as the value when shadowing to make this intent more
    explicit.
 
+.. js:function:: isFormAsync(Form)
+
+   :params Form Form: a Form constructor
+
+   :returns:
+      ``true`` if the given Form constructor's prototype defines any custom
+      cleaning methods which have an arity of 1 (which is assumed to mean they
+      have defined an async callback parameter).
+
 ``BaseForm``
 ============
 
@@ -204,28 +213,63 @@ Forms API
 
    **Prototype Functions**
 
-   Prototype functions for validating and getting information about the results
-   of validation:
+   **Validation:** Methods for validating and getting information about the
+   results of validation:
 
-   .. js:function:: BaseForm#validate([form])
+   .. js:function:: BaseForm#validate([callback(err, isValid, cleanedData)])
 
-      Forces the form to revalidate from scratch. If a ``<form>`` is given, data
-      from it will be set on this form first. Otherwise, validation will be done
-      with this form's current input data.
+      Forces the form to revalidate from scratch using its current input data.
 
-      :param form:
-        a ``<form>`` DOM node -- if React's representation of the ``<form>``
-        is given, its ``getDOMNode()`` function will be called to get the real
-        DOM node.
+      :param function(Error, Boolean, Object) callback:
+         Callback for asynchronous validation.
+
+         This argument is required if the form uses asynchronous validation - an
+         Error will be thrown if it's not given in this case.
+
+         The callback should be an erroback with the signature
+         ``(err, isValid, cleanedData)``.
 
       :return:
-         ``true`` if the form's data is valid, ``false`` otherwise.
+         ``true`` if the form only has synchronous validation and is valid.
 
       .. versionadded:: 0.6
 
-      .. versionchanged:: 0.9
-         The ``form`` argument is now optional, to allow forcing validation of
-         the form's current input data.
+      .. versionchanged:: 0.10
+         Replaced the former ``form`` argument with a ``callback`` argument for
+         async validation. Return value behaviour now depends on whether the
+         form uses ascynchronous validation.
+
+   .. js:function:: BaseForm#fullClean()
+
+      Validates and cleans ``forms.data`` and populates errors and ``cleanedData``.
+
+      You shouldn't need to call this function directly in general use, as it's
+      called for you when necessary by :js:func:`BaseForm#isValid` and
+      :js:func:`BaseForm#errors`.
+
+   .. js:function:: BaseForm#partialClean(fieldNames)
+
+      Validates and cleans ``form.data`` for the given field names and triggers
+      cross-form cleaning in case any ``form.cleanedData`` it uses has changed.
+
+      :param Array fieldNames: a list of unprefixed field names.
+
+   .. js:function:: BaseForm#clean([callback(err, validationError)])
+
+      Hook for doing any extra form-wide cleaning after each Field's
+      :js:func:`Field#clean` has been called. Any :js:class:`ValidationError`
+      thrown by this method will not be associated with a particular field; it
+      will have a special-case association with the field named ``'__all__'``.
+
+      :param function(Error, String|ValidationError) callback:
+         Optional callback for asynchronous validation.
+
+      .. versionchanged:: 0.10
+         This method can now be defined with a ``callback`` parameter if it
+         needs to perform async validation. The form will provide a callback
+         function and wait for it to be called before finishing validation.
+
+   **Data mutability:** Methods for programmatically changing the form's data.
 
    .. js:function:: BaseForm#reset([initialData])
 
@@ -311,159 +355,8 @@ Forms API
 
       .. versionadded:: 0.6
 
-   .. js:function:: BaseForm#isComplete()
-
-      Determines whether or not the form has errors and valid input data for all
-      required fields, triggering cleaning of the form first if necessary.
-
-      This can be used to indicate to the user that a form which is being
-      validated as they fill it in is ready for submission.
-
-      The distinction between ``isComplete()`` and :js:func:`BaseForm#isValid()`
-      is that a form which has had, for example, a single field filled in and
-      validated is valid according to the partial validation which has been
-      performed so far (i.e. it doesn't have any error messages) but isn't yet
-      complete.
-
-      :return:
-         ``true`` if the form has input data and has no errors, and there is
-         cleanedData present for every required field on the form.
-
-      .. versionadded:: 0.6
-
-   .. js:function:: BaseForm#isValid()
-
-      Determines whether or not the form has errors, triggering cleaning of the
-      form first if necessary.
-
-      When user input is being incrementally validated as it's given, this
-      function gives you the current state of validation (i.e. whether or not
-      there are any errors). It will not reflect the validity of the whole form
-      until a method which performs whole-form validation
-      (:js:func:`BaseForm#validate` or :js:func:`setData`) has been called.
-
-      :return:
-         ``true`` if the form is has input data and has no errors, ``false``
-         otherwise. If errors are being ignored, returns ``false``.
-
-   .. js:function:: BaseForm#errors()
-
-      Getter for validation errors which first cleans the form if there are no
-      errors defined yet.
-
-      :returns: validation errors for the form, as an :js:class:`ErrorObject`
-
-   .. js:function:: BaseForm#nonFieldErrors()
-
-      :returns:
-         errors that aren't associated with a particular field - i.e., errors
-         generated by :js:func:`BaseForm#clean`, or by calling
-         :js:func:`BaseForm#addError` and passing ``null`` instead of a field
-         name. Will be an empty error list object if there are none.
-
-   .. js:function:: BaseForm#hasChanged()
-
-      :returns: ``true`` if data differs from initial, ``false`` otherwise.
-
-   .. js:function:: BaseForm#notEmpty()
-
-      Determines if a form which is an extra form in a FormSet has changed from
-      its initial values. Extra forms are allowed to be empty, so required fields
-      in them do not become truly required until the form has been modified.
-
-      :returns:
-         ``true`` if a form has ``emptyPermitted`` and has changed from its
-         initial values.
-
-      .. versionadded:: 0.9
-
-   .. js:function:: BaseForm#changedData()
-
-      :returns:
-         a list of the names of fields which have differences between their
-         initial and currently bound values.
-
-   .. js:function:: BaseForm#fullClean()
-
-      Validates and cleans ``forms.data`` and populates errors and ``cleanedData``.
-
-      You shouldn't need to call this function directly in general use, as it's
-      called for you when necessary by :js:func:`BaseForm#isValid` and
-      :js:func:`BaseForm#errors`.
-
-   .. js:function:: BaseForm#partialClean(fieldNames)
-
-      Validates and cleans ``form.data`` for the given field names and triggers
-      cross-form cleaning in case any ``form.cleanedData`` it uses has changed.
-
-      :param Array fieldNames: a list of unprefixed field names.
-
-   .. js:function:: BaseForm#clean()
-
-      Hook for doing any extra form-wide cleaning after each Field's
-      :js:func:`Field#clean` has been called. Any :js:class:`ValidationError`
-      thrown by this method will not be associated with a particular field; it
-      will have a special-case association with the field named ``'__all__'``.
-
-      If you override this method and return something from it, the returned
-      value will be used as the new ``cleanedData``.
-
-   .. js:function:: BaseForm#addError(field, error)
-
-      This function allows adding errors to specific fields from within the
-      ``form.clean()`` method, or from outside the form altogether. This is a
-      better alternative to fiddling directly with ``form._errors``, which we
-      shouldn't even be *mentioning* in here, whoops...
-
-      The ``field`` argument is the name of the field to which the errors should
-      be added. If its value is ``null`` the error will be treated as a
-      non-field error as returned by ``form.nonFieldErrors()``.
-
-      The ``error`` argument can be a simple string, or preferably an instance
-      of :js:class:`ValidationError`.
-
-      Note that ``form.addError()`` automatically removes the relevant field
-      from :js:attr:`form.cleanedData`.
-
-      .. versionadded:: 0.5
-
-   A number of default rendering functions are provided to generate
-   ``ReactElement`` representations of a Form's fields.
-
-   These are general-purpose in that they attempt to handle all form rendering
-   scenarios and edge cases, ensuring that valid markup is always produced.
-
-   For flexibility, the output does not include a ``<form>`` or a submit
-   button, just field labels and inputs.
-
-   .. js:function:: BaseForm#render()
-
-      Default rendering method, which calls :js:func:`BaseForm#asTable`
-
-      .. versionadded:: 0.5
-
-   .. js:function:: BaseForm#asTable()
-
-      Renders the form as a series of ``<tr>`` tags, with ``<th>`` and ``<td>``
-      tags containing field labels and inputs, respectively.
-
-      You're responsible for ensuring the generated rows are placed in a
-      containing ``<table>`` and ``<tbody>``.
-
-   .. js:function:: BaseForm#asUl()
-
-      Renders the form as a series of ``<li>`` tags, with each ``<li>``
-      containing one field. It does not include the ``<ul>`` so that you can
-      specify any HTML attributes on the ``<ul>`` for flexibility.
-
-   .. js:function:: BaseForm#asDiv()
-
-      Renders the form as a series of ``<div>`` tags, with each ``<div>``
-      containing one field.
-
-      .. versionadded:: 0.5
-
-   Prototype functions for use in rendering form fields.
+   **BoundFields:** Methods which create BoundField helpers for rendering the
+   form's fields.
 
    .. js:function:: BaseForm#boundFields([test])
 
@@ -499,12 +392,150 @@ Forms API
          hidden fields. The opposite of the :js:func:`BaseForm#hiddenFields`
          function.
 
+   **Error:** Methods for wokring with the form's validation errors.
+
+   .. js:function:: BaseForm#addError(field, error)
+
+      This function allows adding errors to specific fields from within the
+      ``form.clean()`` method, or from outside the form altogether.
+
+      :param String field:
+         the name of the field to which the error(s) should be added. If its
+         value is ``null`` the error will be treated as a non-field error as
+         returned by ``form.nonFieldErrors()``.
+
+      :param String|Array|ValidationError|Object error:
+         the error argument can be a single error, a list of errors, or an
+         object that maps field names to lists of errors. A single error can be
+         given as a String or an instance of a :js:class:`ValidationError`.
+
+         Multiple errors can be given as an Array, an Object which maps field
+         names to validation errors, or a ValidationError created with an Array
+         or Object.
+
+      If the ``error`` argument is an Object, the ``field`` argument *must* be
+      ``null`` -- errors will be added to the fields that correspond to the
+      properties of the object.
+
+      .. Note::
+          Using ``form.addError()`` automatically removes the relevant field
+          from :js:attr:`form.cleanedData`.
+
+      .. versionadded:: 0.5
+
+      .. versionchanged:: 0.10
+         ``addErrpr()`` will no longer add a duplicated error message for the
+         same field. This can happen if event-based validation which runs
+         repeatedly adds errors to a field other than that which triggered the
+         validation, such as in a custom ``clean()`` method.
+
+   .. js:function:: BaseForm#errors()
+
+      Getter for validation errors which first cleans the form if there are no
+      errors defined yet.
+
+      :returns: validation errors for the form, as an :js:class:`ErrorObject`
+
+   .. js:function:: BaseForm#nonFieldErrors()
+
+      :returns:
+         errors that aren't associated with a particular field - i.e., errors
+         generated by :js:func:`BaseForm#clean`, or by calling
+         :js:func:`BaseForm#addError` and passing ``null`` instead of a field
+         name. Will be an empty error list object if there are none.
+
+   **Changes:** methods for working with changed data.
+
+   .. js:function:: BaseForm#changedData()
+
+      :returns:
+         a list of the names of fields which have differences between their
+         initial and currently bound values.
+
+   .. js:function:: BaseForm#hasChanged()
+
+      :returns: ``true`` if data differs from initial, ``false`` otherwise.
+
+   **Status**: methods for determining the form's status:
+
+   .. js:function:: BaseForm#isAsync()
+
+      :returns:
+         ``true`` if the form's prototype defines any custom cleaning methods
+         which have an arity of 1 (which is assumed to mean they have defined an
+         async callback parameter).
+
+      .. versionadded:: 0.10
+
+   .. js:function:: BaseForm#isComplete()
+
+      Determines whether or not the form has valid input data for all required
+      fields. This can be used to indicate to the user that a form which is
+      being validated as they fill it in is ready for submission.
+
+      A form which has any errors or is pending async validation will not be
+      considered complete.
+
+      The distinction between ``isComplete()`` and :js:func:`BaseForm#isValid()`
+      is that a form which has had, for example, a single field filled in and
+      validated is valid according to the partial validation which has been
+      performed so far (i.e. it doesn't have any error messages) but isn't yet
+      complete.
+
+      .. versionadded:: 0.6
+
+      .. versionchanged:: 0.10
+         A form which ``isPending()`` will not be considered complete.
+
    .. js:function:: BaseForm#isMultipart()
 
       Determines if the form needs to be multipart-encoded in other words, if it
       has a :js:class:`FileInput`.
 
       :returns: ``true`` if the form needs to be multipart-encoded.
+
+   .. js:function:: BaseForm#isPending()
+
+      :returns:
+         ``true`` if true if the form is waiting for async validation to
+         complete.
+
+   .. js:function:: BaseForm#isValid()
+
+      Determines whether or not the form has errors, triggering cleaning of the
+      form first if necessary.
+
+      When user input is being incrementally validated as it's given, this
+      function gives you the current state of validation (i.e. whether or not
+      there are any errors). It will not reflect the validity of the whole form
+      until a method which performs whole-form validation
+      (:js:func:`BaseForm#validate` or :js:func:`setData`) has been called.
+
+      :return:
+         ``true`` if the form is has input data and has no errors, ``false``
+         otherwise. If errors are being ignored, returns ``false``.
+
+   .. js:function:: BaseForm#nonFieldPending()
+
+      :return:
+         `true`` if the form is waiting for async validation of its
+         ``clean(callback)`` method to complete.
+
+      .. versionadded:: 0.10
+
+   .. js:function:: BaseForm#notEmpty()
+
+      Determines if a form which is an extra form in a FormSet has changed from
+      its initial values. Extra forms are allowed to be empty, so required fields
+      in them do not become truly required until the form has been modified.
+
+      :returns:
+         ``true`` if a form has ``emptyPermitted`` and has changed from its
+         initial values.
+
+      .. versionadded:: 0.9
+
+   **Prefixes:** Methods for working with form prefixes.
 
    .. js:function:: BaseForm#addPrefix(fieldName)
 
@@ -514,6 +545,54 @@ Forms API
    .. js:function:: BaseForm#addInitialPrefix(fieldName)
 
       Adds an initial prefix for checking dynamic initial values.
+
+   .. js:function:: BaseForm#removePrefix(fieldName)
+
+      :returns:
+         the given field name with a prefix-size chunk chopped off the start
+         if this form has a prefix set and the field name starts with it.
+
+   **Default rendering:** A number of default rendering methods are provided
+   to generate ``ReactElement`` representations of a Form's fields.
+
+   These are general-purpose in that they attempt to handle all form rendering
+   scenarios and edge cases, ensuring that valid markup is always produced.
+
+   For flexibility, the output does not include a ``<form>`` or a submit
+   button, just field row containers, labels, inputs, error messages, help text
+   and async progress indicators.
+
+   .. versionchanged:: 0.10
+      Default rendering methods now create ``<progress>`` indicators for fields
+      which are pending async validation, and to the end of the form if its
+      ``clean(callback)`` method is pending async validation.
+
+   .. js:function:: BaseForm#render()
+
+      Default rendering method, which calls :js:func:`BaseForm#asTable`
+
+      .. versionadded:: 0.5
+
+   .. js:function:: BaseForm#asTable()
+
+      Renders the form as a series of ``<tr>`` tags, with ``<th>`` and ``<td>``
+      tags containing field labels and inputs, respectively.
+
+      You're responsible for ensuring the generated rows are placed in a
+      containing ``<table>`` and ``<tbody>``.
+
+   .. js:function:: BaseForm#asUl()
+
+      Renders the form as a series of ``<li>`` tags, with each ``<li>``
+      containing one field. It does not include the ``<ul>`` so that you can
+      specify any HTML attributes on the ``<ul>`` for flexibility.
+
+   .. js:function:: BaseForm#asDiv()
+
+      Renders the form as a series of ``<div>`` tags, with each ``<div>``
+      containing one field.
+
+      .. versionadded:: 0.5
 
 .. _ref-api-boundfield:
 
