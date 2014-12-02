@@ -8,8 +8,7 @@ concise way.
 
 However, this API is more typical of using newforms on the server or as a
 standalone validator. When working with Forms in the client, user input is more
-often taken one field at a time using its ``onChange`` event, or as an update to
-an existing form instance's data.
+often taken one field at a time using its ``onChange`` event.
 
 This section focuses on API and patterns of usage that are applicable to using
 newforms to create interactive forms in a React component in the browser.
@@ -21,7 +20,7 @@ Provide a containing ``<form>``
    You **must** provide a ``<form>`` to contain fields you’re rendering with
    newforms.
 
-At the time of documenting (version 0.9), you **must** provide a ``<form>`` to
+At the time of documenting (version 0.10), you **must** provide a ``<form>`` to
 contain fields you're rendering with newforms. It's likely that you'll want one
 anyway to make use of its ``onSubmit`` event for `Final Form validation`_.
 
@@ -79,30 +78,29 @@ of what that entails and how to configure it.
 Interactive Form validation
 ===========================
 
-To validate individual form fields as the user interacts with them, you can pass
-a ``validation`` argument when instantiating a Form or Field.
-
-Passing a ``validation`` argument when instantiating a form sets up interactive
-validation for every field on the form.
+To validate individual input fields as the user interacts with them, you can pass
+a ``validation`` argument when instantiating a Form or Field; passing a
+``validation`` argument when instantiating a Form sets up interactive validation
+for every Field in it.
 
 .. _ref-form-auto-validation:
 
 Form ``'auto'`` validation
 --------------------------
 
-When you pass an ``onChange`` callback to a form, its validation setting is
+When you pass an ``onChange`` callback to a Form, its validation mode is
 automatically implied to be ``'auto'``:
 
 .. code-block:: javascript
 
    var form = new SignupForm({onChange: this.onFormChange})
 
-When the form's validation mode is ``'auto'``:
+When the validation mode is ``'auto'``:
 
 * Text fields are validated using the ``onChange`` and ``onBlur`` events, with a
   debounce delay of 369ms applied to ``onChange`` between the last change being
   made and validation being performed.
-* Other fields are validated as soon as the user interacts with them.
+* Other input fields are validated as soon as the user interacts with them.
 
 .. note::
 
@@ -117,15 +115,15 @@ Let's use a standard signup form as an example:
 .. code-block:: javascript
 
    var SignupForm = forms.Form.extend({
-     email: forms.EmailField()
-   , password: forms.CharField({widget: forms.PasswordInput})
-   , confirm: forms.CharField({label: 'Confirm password', widget: forms.PasswordInput})
-   , terms: forms.BooleanField({
-       label: 'I have read and agree to the Terms and Conditions'
-     , errorMessages: {required: 'You must accept the terms to continue'}
-     })
+     email: forms.EmailField(),
+     password: forms.CharField({widget: forms.PasswordInput}),
+     confirm: forms.CharField({label: 'Confirm password', widget: forms.PasswordInput}),
+     terms: forms.BooleanField({
+       label: 'I have read and agree to the Terms and Conditions',
+       errorMessages: {required: 'You must accept the terms to continue'}
+     }),
 
-   , clean: function() {
+     clean: function() {
        if (this.cleanedData.password && this.cleanedData.confirm &&
            this.cleanedData.password != this.cleanedData.confirm) {
          throw forms.ValidationError('Passwords do not match.')
@@ -133,9 +131,9 @@ Let's use a standard signup form as an example:
      }
    })
 
-Note that this form defines a :ref:`clean() function <ref-validation-form-clean>`
+Note that this Form defines a :ref:`clean() function <ref-validation-form-clean>`
 for cross-field validation. In addition to validating the field which just changed,
-user input will also trigger form-wide validation by calling ``clean()``. This
+user input will also trigger cross-field validation by calling ``clean()``. This
 function must always be written defensively regardless of whether full or partial
 validation is being run, as it can't assume that any of the ``cleanedData`` it
 validates against will be present due to the possibility of missing or invalid
@@ -151,7 +149,7 @@ Field validation
 Fields also accept a ``validation`` argument -- validation defined at the field
 level overrides any configured at the Form level, so if you want to use interaction
 validation only for certain fields, or to opt fields out when validation has been
-configured at the form level, use the ``validation`` argument when defining those
+configured at the Form level, use the ``validation`` argument when defining those
 fields.
 
 ``validation`` options
@@ -210,19 +208,18 @@ to be an event name, so the following lines are equivalent:
 Final Form validation
 =====================
 
-Whether or not you've given your form an ``onChange`` callback, Forms will still
+Whether or not you've given your Form an ``onChange`` callback, Forms will still
 automatically update their ``data`` object with user input as the user interacts
-with each form field. Even if all fields have been used and are valid, the user
-still has to signal their intent to submit the form before final validation can
-be performed.
+with each input field. Even if all fields have been used and are valid, the user
+still has to signal their intent to submit before any final validation can be
+performed.
 
 Validating final form submission is left in your hands, as newforms doesn't know
 (or care, sorry!) what you ultimatey want to do with the ``cleanedData`` it
 creates for you.
 
 This is typically implemented by hooking into a ``<form>``'s ``onSubmit`` event
-and calling ``form.validate()`` to validate the entire form using current user
-input:
+and calling ``form.validate()`` to validate the entire user input.
 
 .. code-block:: javascript
 
@@ -238,25 +235,27 @@ input:
      }
    }
 
-Something to note is that re-rendering after unsuccessful final validation must
-be done manually -- this is to avoid needlessly re-rendering when there are
-multiple Forms or FormSets in use, as is often the case when there are multiple
-logical sections or entities being edited.
+.. Note::
+   Re-rendering after an unsuccessful call to  ``form.validate()`` must be done
+   manually -- this is to avoid needlessly re-rendering when there are multiple
+   Forms or FormSets in use, as is often the case when there are multiple
+   logical sections or entities being edited.
 
-Remember that Forms represent groups of related Fields and don't necessarily
-have to model the content of the entire ``<form>``. Use as many as you like, but
-don't forget to use :ref:`prefixes <ref-form-prefixes>` when necessary to avoid
-field ``name`` and ``id`` clashes.
+.. Tip::
+   Forms represent groups of related Fields and don't necessarily have to model
+   the content of the entire ``<form>``. Use as many as you like, but don't
+   forget to use :ref:`prefixes <ref-form-prefixes>` when necessary to avoid
+   input field ``name`` and ``id`` clashes.
 
-Controlled forms
-================
+Controlled user inputs
+======================
 
-By default, newforms generates `uncontrolled React components`_, which can
-provide initial values for form inputs but require manual updating via the DOM
-should you wish to change the displayed values via code.
+By default, newforms generates `uncontrolled React components`_ for user inputs,
+which can provide initial values but require manual updating via the DOM should
+you wish to change the displayed values from code.
 
-If you need to programatically update the values displayed in a form after its
-initial display, you will need to use `controlled React components`_.
+If you need to programatically update the values displayed in user inputs after
+their initial display, you will need to use `controlled React components`_.
 
 You can do this by passing a ``controlled`` argument when constructing the Form
 or individual Fields you wish to have control over:
@@ -330,12 +329,12 @@ JavaScript. Reusable pieces can be extracted into functions, or React components
 or a configurable object of some sort or... whatever your programmery heart
 desires.
 
-Newforms gives you a rendering helper -- called a BoundField -- for each field,
-which has access to the Field, its Widget and its Form, which collectively have
-access to all the metadata and user input data it needs to render the field. It
-uses these to implement rendering helper methods, which are available for you to
-use in your react components.
+Newforms gives you a rendering helper -- called a ``BoundField`` -- for each
+field, which has access to the Field, its Widget and its Form, which
+collectively have access to all the metadata and user input data it needs to
+render the field. It uses these to implement rendering helper methods, which are
+available for you to use in your react components.
 
 BoundFields, their most useful properties and examples of their use are covered
 in :doc:`custom_display` and the complete :ref:`BoundField API <ref-api-boundfield>`
-is documented.
+is also documented.
