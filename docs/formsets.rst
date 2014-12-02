@@ -9,8 +9,8 @@ form:
 .. code-block:: javascript
 
    var ArticleForm = forms.Form.extend({
-     title: forms.CharField()
-   , pubDate: forms.DateField()
+     title: forms.CharField(),
+     pubDate: forms.DateField()
    })
 
 You might want to allow the user to create several articles at once. To create
@@ -301,17 +301,18 @@ how we could avoid field names for ``Article`` and ``Book`` forms clashing:
 
    var PublicationManager = React.createClass({
      getInitialState: function() {
-       articleFormset: new ArticleFormSet({prefix: 'articles'})
-     , bookFormset: new BookFormSet({prefix: 'books'})
-     }
+       return {
+         articleFormset: new ArticleFormSet({prefix: 'articles'})
+       , bookFormset: new BookFormSet({prefix: 'books'})
+       }
+     },
 
      // ...rendering implemented as normal...
 
-   , onSubmit: function(e) {
+     onSubmit: function(e) {
        e.preventDefault()
-       var data = forms.formData(this.refs.form.getDOMNode())
-       var articlesValid = this.state.articleFormset.setData(data)
-       var booksValid = this.state.bookFormset.setData(data)
+       var articlesValid = this.state.articleFormset.validate()
+       var booksValid = this.state.bookFormset.validate()
        if (articlesValid && booksValid) {
          // Do something with cleanedData() on the formsets
        }

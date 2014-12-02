@@ -30,9 +30,9 @@ just use the ``widget`` argument on the field definition. For example:
 .. code-block:: javascript
 
    var CommentForm = forms.Form.extend({
-     name: forms.CharField()
-   , url: forms.URLField()
-   , comment: forms.CharField({widget: forms.Textarea})
+     name: forms.CharField(),
+     url: forms.URLField(),
+     comment: forms.CharField({widget: forms.Textarea})
    })
 
 This would specify a form with a comment that uses a larger :js:class:`Textarea`
@@ -48,9 +48,9 @@ to be added to the ``TextArea`` to control its display:
 .. code-block:: javascript
 
    var CommentForm = forms.Form.extend({
-     name: forms.CharField()
-   , url: forms.URLField()
-   , comment: forms.CharField({
+     name: forms.CharField(),
+      url: forms.URLField(),
+      comment: forms.CharField({
        widget: forms.Textarea({attrs: {rows: 6, cols: 60}})
      })
    })
@@ -113,9 +113,9 @@ For example, take the following simple form:
 .. code-block:: javascript
 
    var CommentForm = forms.Form.extend({
-     name: forms.CharField()
-   , url: forms.URLField()
-   , comment: forms.CharField()
+     name: forms.CharField(),
+     url: forms.URLField(),
+     comment: forms.CharField()
    })
 
 This form will include three default :js:class:`TextInput` widgets, with default
@@ -143,9 +143,9 @@ this, you use the ``Widget.attrs`` argument when creating the widget:
    var CommentForm = forms.Form.extend({
      name: forms.CharField({
        widget: forms.TextInput({attrs: {className: 'special'}})
-     })
-   , url: forms.URLField()
-   , comment: forms.CharField({widget: forms.TextInput({attrs: {size: '40'}})
+     }),
+     url: forms.URLField(),
+     comment: forms.CharField({widget: forms.TextInput({attrs: {size: '40'}})
    })
 
 .. Note::
@@ -290,22 +290,22 @@ a :js:class:`MultiValueField`, so we've implemented
        , forms.Select({choices: range(2012, 2017), attrs: kwargs.attrs})
        ]
        forms.MultiWidget.call(this, widgets, kwargs)
-     }
+     },
 
-   , decompress: function(value) {
+     decompress: function(value) {
        if (value instanceof Date) {
          return [value.getDate(),
                  value.getMonth() + 1, // Make month 1-based for display
                  value.getFullYear()]
        }
        return [null, null, null]
-     }
+     },
 
-   , formatOutput: function(renderedWidgets) {
+     formatOutput: function(renderedWidgets) {
        return React.createElement('div', null, renderedWidgets)
-     }
+     },
 
-   , valueFromData: function(data, files, name) {
+     valueFromData: function(data, files, name) {
        var parts = this.widgets.map(function(widget, i) {
          return widget.valueFromData(data, files, name + '_' + i)
        })

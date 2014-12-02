@@ -50,8 +50,8 @@ Useful BoundField properties
 
 ``bf.htmlName``
    The name the field will be represented by when rendered. If each Form and
-   FormSet being used to render user inputs has a unique prefix, this is
-   guaranteed to be a unique name.
+   FormSet being used to render user inputs has a unique
+   :ref:`prefix <ref-form-prefixes>`, this is guaranteed to be a unique name.
 
    As such, it's a good candidate if you need a unique ``key`` prop for a React
    component related to each field.
@@ -96,14 +96,19 @@ Useful BoundField methods
    field's help text if it has some configured, but this can be configured with
    arguments.
 
+   .. versionadded:: 0.10
+
 ``bf.status()``
    Gets the current validation status of the field as a string, one of:
 
-   * ``'pending'`` -- has a pending async validation
-   * ``'error'`` -- has validation errors
-   * ``'valid'`` -- has neither of the above and data in ``form.cleanedData``
-   * ``'default'`` -- none of the above (hasn't been interacted with or
-     validated yet)
+   * ``'pending'`` -- has a pending async validation.
+   * ``'error'`` -- has validation errors.
+   * ``'valid'`` -- has neither of the above and data present in
+     ``form.cleanedData``.
+   * ``'default'`` -- none of the above (likely hasn't been interacted with or
+     validated yet).
+
+   .. versionadded:: 0.10
 
 ``bf.value()``
    Gets the value which will be displayed in the field's user input.

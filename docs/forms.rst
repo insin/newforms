@@ -557,7 +557,7 @@ Once you've done that, the generated markup will look something like:
 
 The ``className`` string generated for each field when you configure the available
 CSS properties is also available for use in custom rendering, via a BoundField's
-:js:func:`cssClasses() <BoundField#cssClasses>` method.
+:js:func:`cssClasses() method<BoundField#cssClasses>`.
 
 .. _ref-forms-configuring-label:
 

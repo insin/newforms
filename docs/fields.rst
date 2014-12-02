@@ -73,7 +73,10 @@ helpText
 
 The ``helpText`` argument lets you specify descriptive text for this Field. If
 you provide ``helpText``, it will be displayed next to the Field when the Field
-is rendered by one of the convenience ``Form`` methods (e.g., ``asUJl()``).
+is rendered by one of the convenience ``Form`` methods (e.g., ``asUl()``).
+
+To render raw HTML in help text, specify it using the React convention for raw
+HTML, which is as an object with an ``__html`` property.
 
 errorMessages
 -------------
@@ -230,15 +233,15 @@ choice pairs from a list of objects using named properties:
 .. code-block:: javascript
 
    var ProjectBookingForm = forms.Form.extend({
-     project: forms.ChoiceField()
-   , hours: forms.DecimalField({minValue: 0, maxValue: 24, maxdigits: 4, decimalPlaces: 2})
-   , date: forms.DateField()
+     project: forms.ChoiceField(),
+     hours: forms.DecimalField({minValue: 0, maxValue: 24, maxdigits: 4, decimalPlaces: 2}),
+     date: forms.DateField(),
 
-   , constructor: function(projects, kwargs) {
+     constructor: function(projects, kwargs) {
        // Call the constructor of whichever form you're extending so that the
        // forms.Form constructor eventually gets called - this.fields doesn't
        // exist until this happens.
-       ProjectBookingForm.__super__.constructor.call(this, kwargs)
+       forms.Form.call(this, kwargs)
 
        // Now that this.fields is a thing, make whatever changes you need to -
        // in this case, we're going to creata a list of pairs of project ids
