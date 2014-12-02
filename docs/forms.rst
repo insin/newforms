@@ -152,7 +152,7 @@ On the client-side, the user's input is held in form DOM inputs, not a tidy
 JavaScript object as in the above examples (whereas if you're handling a request
 on the server, the request body serves this purpose).
 
-Regardless of whether or not you're using interactive validation, the form's
+Regardless of whether or not you're using event-based validation, the form's
 input data will be updated as the user fills it in. To force the form to fully
 validate, call ``form.validate()``:
 

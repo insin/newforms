@@ -370,10 +370,10 @@ For some validation you may need to access an external data source, such as a
 web service, database or filesystem. In JavaScript, these tend to be
 asynchronous operations.
 
-You can let newforms know that a custom field -- or cross-field -- validation
-method will be async by defining it with a single parameter in its function
-signature. It doesn't matter what this is called, but it's conventionally called
-``callback`` or ``cb``:
+You can let newforms know that a custom field -- or cross-field ``clean()`` --
+validation method will be async by defining it with a single parameter in its
+function signature. It doesn't matter what this is called, but it's
+conventionally called ``callback`` or ``cb``:
 
 .. code-block:: javascript
 

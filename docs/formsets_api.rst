@@ -190,6 +190,9 @@ Formsets API
          No longer returns cleaned data for extra forms which haven't been
          modified.
 
+      .. versionchanged:: 0.10
+         No longer includes cleaned data from incomplete extra forms.
+
    .. js:function:: BaseFormSet#deletedForms()
 
       Returns a list of forms that have been marked for deletion.
