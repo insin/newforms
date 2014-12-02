@@ -71,7 +71,7 @@ of what that entails and how to configure it.
 
 .. Note::
    Due to the way controlled components work in React, if you are using
-   `Controlled forms`_ and you do not pass an ``onChange()`` callback, your form
+   `Controlled user inputs`_ and you do not pass an ``onChange()`` callback, your form
    inputs will be read-only! The development version of newforms will warn you
    if this happens.
 
@@ -336,5 +336,4 @@ render the field. It uses these to implement rendering helper methods, which are
 available for you to use in your react components.
 
 BoundFields, their most useful properties and examples of their use are covered
-in :doc:`custom_display` and the complete :ref:`BoundField API <ref-api-boundfield>`
-is also documented.
+in :doc:`custom_display` and the complete :doc:`boundfield_api` is documented.

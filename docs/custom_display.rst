@@ -40,7 +40,7 @@ is configured with.
 
 A selection of the properties and methods of a BoundField which are useful for
 custom field rendering are listed below. For complete details, see the
-:ref:`BoundField API docs <ref-api-boundfield>`.
+:doc:`boundfield_api`.
 
 Useful BoundField properties
 ============================
@@ -95,6 +95,15 @@ Useful BoundField methods
    By default, generates a ``<span className="helpText">`` containing the
    field's help text if it has some configured, but this can be configured with
    arguments.
+
+``bf.status()``
+   Gets the current validation status of the field as a string, one of:
+
+   * ``'pending'`` -- has a pending async validation
+   * ``'error'`` -- has validation errors
+   * ``'valid'`` -- has neither of the above and data in ``form.cleanedData``
+   * ``'default'`` -- none of the above (hasn't been interacted with or
+     validated yet)
 
 ``bf.value()``
    Gets the value which will be displayed in the field's user input.

@@ -19,6 +19,7 @@ This section documents the public newforms API.
    :maxdepth: 2
 
    forms_api
+   boundfield_api
    fields_api
    validation_api
    widgets_api
