@@ -22,7 +22,6 @@
     "Concur": "~0.3.0",
     "envify": "^3.0.0",
     "isomorph": "~0.3.0",
-    "react": ">=0.12.0",
     "validators": "~0.3.1"
   },
   "devDependencies": {
@@ -39,6 +38,7 @@
     "gulp-util": "^3.0.1",
     "jshint-stylish": "^1.0.0",
     "qqunit": "~0.6.0",
+    "react": ">=0.12.0",
     "vinyl-source-stream": "^1.0.0"
   },
   "peerDependencies": {
