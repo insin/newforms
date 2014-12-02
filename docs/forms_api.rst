@@ -130,12 +130,6 @@ Forms API
       .. versionadded:: 0.9
          Replaces ``kwargs.onStateChange``
 
-   :param Function kwargs.onStateChange:
-      .. versionadded:: 0.6
-
-      .. deprecated:: 0.9
-         Pass ``kwargs.onChange`` instead
-
    :param String kwargs.autoId:
       a template for use when automatically generating ``id`` attributes for
       fields, which should contain a ``{name}`` placeholder for the field name

@@ -37,12 +37,6 @@ Formsets API
       .. versionadded:: 0.9
          Replaces ``kwargs.onStateChange``
 
-   :param Function kwargs.onStateChange:
-      .. versionadded:: 0.6
-
-      .. deprecated:: 0.9
-         Pass ``kwargs.onChange`` instead
-
    :param Array.<Object> kwargs.initial:
       a list of initial form data objects, where property names are field names
       -- if a field's value is not specified in ``data``, these values will be
