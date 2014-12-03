@@ -520,10 +520,10 @@ var util = require('./util')
 var widgets = require('./widgets')
 
 /**
- * A field and its associated data.
- * @param {Form} form a form.
- * @param {Field} field one of the form's fields.
- * @param {string} name the name under which the field is held in the form.
+ * A helper for rendering a field.
+ * @param {Form} form the form instance which the field is a part of.
+ * @param {Field} field the field to be rendered.
+ * @param {string} name the name associated with the field in the form.
  * @constructor
  */
 var BoundField = Concur.extend({
@@ -540,25 +540,55 @@ var BoundField = Concur.extend({
   }
 })
 
+// ================================================================== Status ===
+
+/**
+ * @return {boolean} true if the value which will be displayed in the field's
+ *   widget is empty.
+ */
+BoundField.prototype.isEmpty = function() {
+  return this.field.isEmptyValue(this.value())
+}
+
+/**
+ * @return {boolean} true if the field has a pending async validation.
+ */
 BoundField.prototype.isPending = function() {
   return typeof this.form._pendingAsyncValidation[this.name] != 'undefined'
 }
 
-BoundField.prototype.errors = function() {
-  return this.form.errors(this.name) || new this.form.errorConstructor()
+/**
+ * @return {boolean} true if the field has some data in its form's cleanedData.
+ */
+BoundField.prototype.isCleaned = function() {
+  return typeof this.form.cleanedData[this.name] != 'undefined'
 }
 
-BoundField.prototype.errorMessage = function() {
-  return this.errors().first()
-}
-
-BoundField.prototype.errorMessages = function() {
-  return this.errors().messages()
-}
-
+/**
+ * @return {boolean} true if the field's widget will render hidden field(s).
+ */
 BoundField.prototype.isHidden = function() {
   return this.field.widget.isHidden
 }
+
+/**
+ * Determines the field's curent status in the form. Statuses are determined in
+ * the following order:
+ * * 'pending' - the field has a pending async validation.
+ * * 'error' - the field has a validation error.
+ * * 'valid' - the field has a value in form.cleanedData.
+ * * 'default' - the field meets none of the above criteria, e.g. it's been
+ *   rendered but hasn't been interacted with or validated yet.
+ * @return {string}
+ */
+BoundField.prototype.status = function() {
+  if (this.isPending()) { return 'pending' }
+  if (this.errors().isPopulated()) { return 'error' }
+  if (this.isCleaned()) { return 'valid' }
+  return 'default'
+}
+
+// ============================================================== Field Data ===
 
 /**
  * Calculates and returns the id attribute for this BoundField if the associated
@@ -577,7 +607,7 @@ BoundField.prototype.autoId = function() {
 }
 
 /**
- * Returns the data for this BoundField, or null if it wasn't given.
+ * @return {*} user input data for the field, or null if none has been given.
  */
 BoundField.prototype.data = function() {
   return this.field.widget.valueFromData(this.form.data,
@@ -586,9 +616,31 @@ BoundField.prototype.data = function() {
 }
 
 /**
- * Wrapper around the field widget's idForLabel method. Useful, for example, for
- * focusing on this field regardless of whether it has a single widget or a
- * MultiWidget.
+ * @return {ErrorObject} errors for the field, which may be empty.
+ */
+BoundField.prototype.errors = function() {
+  return this.form.errors(this.name) || new this.form.errorConstructor()
+}
+
+/**
+ * @return {string=} the first error message for the field, or undefined if
+ *   there were none.
+ */
+BoundField.prototype.errorMessage = function() {
+  return this.errors().first()
+}
+
+/**
+ * @return {Array.<string>} all error messages for the field, will be empty if
+ *   there were none.
+ */
+BoundField.prototype.errorMessages = function() {
+  return this.errors().messages()
+}
+
+/**
+ * Gets or generates an id for the field's <label>.
+ * @return {string}
  */
 BoundField.prototype.idForLabel = function() {
   var widget = this.field.widget
@@ -596,35 +648,45 @@ BoundField.prototype.idForLabel = function() {
   return widget.idForLabel(id)
 }
 
-BoundField.prototype.render = function(kwargs) {
-  if (this.field.showHiddenInitial) {
-    return React.createElement('div', null, this.asWidget(kwargs),
-                               this.asHidden({onlyInitial: true}))
+/**
+ * @return {*} the value to be displayed in the field's widget.
+ */
+BoundField.prototype.value = function() {
+  var data
+  if (this.form.isInitialRender) {
+    data = this.initialValue()
   }
-  return this.asWidget(kwargs)
+  else {
+    data = this.field.boundData(this.data(),
+                                object.get(this.form.initial,
+                                           this.name,
+                                           this.field.initial))
+  }
+  return this.field.prepareValue(data)
 }
 
 /**
- * Returns a list of SubWidgets that comprise all widgets in this BoundField.
- * This really is only useful for RadioSelect and CheckboxSelectMultiple
- * widgets, so that you can iterate over individual inputs when rendering.
+ * @return {*} the initial value for the field, will be null if none was
+ *   configured on the field or given to the form.
  */
-BoundField.prototype.subWidgets = function() {
-  var id = this.field.widget.attrs.id || this.autoId()
-  var kwargs = {attrs: {}}
-  if (id) {
-    kwargs.attrs.id = id
+BoundField.prototype.initialValue = function() {
+  var value = object.get(this.form.initial, this.name, this.field.initial)
+  if (is.Function(value)) {
+    value = value()
   }
-  return this.field.widget.subWidgets(this.htmlName, this.value(), kwargs)
+  return value
 }
+
+// =============================================================== Rendering ===
 
 /**
  * Renders a widget for the field.
- * @param {Object=} kwargs configuration options
+ * @param {Object=} kwargs widgets options.
  * @param {Widget} kwargs.widget an override for the widget used to render the
- *   field - if not provided, the field's configured widget will be used
+ *   field - if not provided, the field's configured widget will be used.
  * @param {Object} kwargs.attrs additional attributes to be added to the field's
  *   widget.
+ * @return {ReactElement}
  */
 BoundField.prototype.asWidget = function(kwargs) {
   kwargs = object.extend({
@@ -642,8 +704,8 @@ BoundField.prototype.asWidget = function(kwargs) {
   if (typeof attrs.key == 'undefined') {
     attrs.key = name
   }
-  var controlled = this.controlled(widget)
-  var validation = this.validation(widget)
+  var controlled = this._isControlled(widget)
+  var validation = this._validation(widget)
 
   // Always Add an onChange event handler to update form.data when the field is
   // changed.
@@ -671,10 +733,167 @@ BoundField.prototype.asWidget = function(kwargs) {
 }
 
 /**
+ * Renders the field as a hidden field.
+ * @param {Object=} kwargs widget options.
+ * @return {ReactElement}
+ */
+BoundField.prototype.asHidden = function(kwargs) {
+  kwargs = object.extend({}, kwargs, {widget: new this.field.hiddenWidget()})
+  return this.asWidget(kwargs)
+}
+
+/**
+ * Renders the field as a text input.
+ * @param {Object=} kwargs widget options.
+ * @return {ReactElement}
+ */
+BoundField.prototype.asText = function(kwargs) {
+  kwargs = object.extend({}, kwargs, {widget: widgets.TextInput()})
+  return this.asWidget(kwargs)
+}
+
+/**
+ * Renders the field as a textarea.
+ * @param {Object=} kwargs widget options.
+ * @return {ReactElement}
+ */
+BoundField.prototype.asTextarea = function(kwargs) {
+  kwargs = object.extend({}, kwargs, {widget: widgets.Textarea()})
+  return this.asWidget(kwargs)
+}
+
+/**
+ * Determines CSS classes for this field based on what's configured in the field
+ * and form, and the field's current status.
+ * @param {string=} extraCssClasses additional CSS classes for the field.
+ * @return {string} space-separated CSS classes for this field.
+ */
+BoundField.prototype.cssClasses = function(extraCssClasses) {
+  var cssClasses = (extraCssClasses ? [extraCssClasses] : [])
+
+  // Field/row classes
+  if (this.field.cssClass !== null) {
+    cssClasses.push(this.field.cssClass)
+  }
+  if (typeof this.form.rowCssClass != 'undefined') {
+    cssClasses.push(this.form.rowCssClass)
+  }
+
+  // Status class
+  var status = this.status()
+  if (typeof this.form[status + 'CssClass'] != 'undefined') {
+    cssClasses.push(this.form[status + 'CssClass'])
+  }
+
+  // Required-ness classes
+  if (this.field.required) {
+    if (typeof this.form.requiredCssClass != 'undefined') {
+      cssClasses.push(this.form.requiredCssClass)
+    }
+  }
+  else if (typeof this.form.optionalCssClass != 'undefined') {
+    cssClasses.push(this.form.optionalCssClass)
+  }
+
+  return cssClasses.join(' ')
+}
+
+/**
+ * Renders a tag containing help text for the field.
+ * @param {Object=} kwargs configuration options.
+ * @param {string} kwargs.tagName allows overriding the type of tag - defaults
+ *   to 'span'.
+ * @param {string} kwargs.contents help text contents - if not provided,
+ *   contents will be taken from the field itself. To render raw HTML in help
+ *   text, it should be specified using the React convention for raw HTML,
+ *   which is to provide an object with a __html property.
+ * @param {Object} kwargs.attrs additional attributes to be added to the tag -
+ *   by default it will get a className of 'helpText'
+ * @return {ReactElement}
+ */
+BoundField.prototype.helpTextTag = function(kwargs) {
+  kwargs = object.extend({
+    tagName: 'span', attrs: null, contents: this.helpText
+  }, kwargs)
+  if (kwargs.contents) {
+    var attrs = object.extend({className: 'helpText'}, kwargs.attrs)
+    var contents = kwargs.contents
+    if (is.Object(contents) && object.hasOwn(contents, '__html')) {
+      attrs.dangerouslySetInnerHTML = contents
+      return React.createElement(kwargs.tagName, attrs)
+    }
+    return React.createElement(kwargs.tagName, attrs, contents)
+  }
+}
+
+/**
+ * Wraps the given contents in a <label> if the field has an id attribute. If
+ * contents aren't given, uses the field's label.
+ * If attrs are given, they're used as HTML attributes on the <label> tag.
+ * @param {Object=} kwargs configuration options.
+ * @param {string} kwargs.contents contents for the label - if not provided,
+ *   label contents will be generated from the field itself.
+ * @param {Object} kwargs.attrs additional attributes to be added to the label.
+ * @param {string} kwargs.labelSuffix allows overriding the form's labelSuffix.
+ * @return {ReactElement}
+ */
+BoundField.prototype.labelTag = function(kwargs) {
+  kwargs = object.extend({
+    contents: this.label, attrs: null, labelSuffix: this.form.labelSuffix
+  }, kwargs)
+  var contents = this._addLabelSuffix(kwargs.contents, kwargs.labelSuffix)
+  var widget = this.field.widget
+  var id = object.get(widget.attrs, 'id', this.autoId())
+  if (id) {
+    var attrs = object.extend(kwargs.attrs || {}, {htmlFor: widget.idForLabel(id)})
+    contents = React.createElement('label', attrs, contents)
+  }
+  return contents
+}
+
+/**
+ * @return {ReactElement}
+ */
+BoundField.prototype.render = function(kwargs) {
+  if (this.field.showHiddenInitial) {
+    return React.createElement('div', null, this.asWidget(kwargs),
+                               this.asHidden({onlyInitial: true}))
+  }
+  return this.asWidget(kwargs)
+}
+
+/**
+ * Returns a list of SubWidgets that comprise all widgets in this BoundField.
+ * This really is only useful for RadioSelect and CheckboxSelectMultiple
+ * widgets, so that you can iterate over individual inputs when rendering.
+ * @return {Array.<SubWidget>}
+ */
+BoundField.prototype.subWidgets = function() {
+  var id = this.field.widget.attrs.id || this.autoId()
+  var kwargs = {attrs: {}}
+  if (id) {
+    kwargs.attrs.id = id
+  }
+  return this.field.widget.subWidgets(this.htmlName, this.value(), kwargs)
+}
+
+/**
+ * @return {string}
+ */
+BoundField.prototype._addLabelSuffix = function(label, labelSuffix) {
+  // Only add the suffix if the label does not end in punctuation
+  if (labelSuffix && ':?.!'.indexOf(label.charAt(label.length - 1)) == -1) {
+    return label + labelSuffix
+  }
+  return label
+}
+
+/**
  * Determines if the widget should be a controlled or uncontrolled React
  * component.
+ * @return {boolean}
  */
-BoundField.prototype.controlled = function(widget) {
+BoundField.prototype._isControlled = function(widget) {
   if (arguments.length === 0) {
     widget = this.field.widget
   }
@@ -692,8 +911,10 @@ BoundField.prototype.controlled = function(widget) {
 /**
  * Gets the configured validation for the field or form, allowing the widget
  * which is going to be rendered to override it if necessary.
+ * @param {Widget=} widget
+ * @return {?(Object|string)}
  */
-BoundField.prototype.validation = function(widget) {
+BoundField.prototype._validation = function(widget) {
   if (arguments.length === 0) {
     widget = this.field.widget
   }
@@ -708,147 +929,7 @@ BoundField.prototype.validation = function(widget) {
   return validation
 }
 
-/**
- * Renders the field as a text input.
- * @param {Object=} kwargs widget options.
- */
-BoundField.prototype.asText = function(kwargs) {
-  kwargs = object.extend({}, kwargs, {widget: widgets.TextInput()})
-  return this.asWidget(kwargs)
-}
-
-/**
- * Renders the field as a textarea.
- * @param {Object=} kwargs widget options.
- */
-BoundField.prototype.asTextarea = function(kwargs) {
-  kwargs = object.extend({}, kwargs, {widget: widgets.Textarea()})
-  return this.asWidget(kwargs)
-}
-
-/**
- * Renders the field as a hidden field.
- * @param {Object=} kwargs widget options.
- */
-BoundField.prototype.asHidden = function(kwargs) {
-  kwargs = object.extend({}, kwargs, {widget: new this.field.hiddenWidget()})
-  return this.asWidget(kwargs)
-}
-
-/**
- * Returns the value to be displayed for this BoundField, using the initial
- * value if the form is not bound or the data otherwise.
- */
-BoundField.prototype.value = function() {
-  var data
-  if (this.form.isInitialRender) {
-    data = this.initialValue()
-  }
-  else {
-    data = this.field.boundData(this.data(),
-                                object.get(this.form.initial,
-                                           this.name,
-                                           this.field.initial))
-  }
-  return this.field.prepareValue(data)
-}
-
-/**
- * Returns the initial value for this BoundField from the form or field's
- * configured initial values - the field's default initial value of null will
- * be returned if none was configured.
- */
-BoundField.prototype.initialValue = function() {
-  var value = object.get(this.form.initial, this.name, this.field.initial)
-  if (is.Function(value)) {
-    value = value()
-  }
-  return value
-}
-
-BoundField.prototype._addLabelSuffix = function(label, labelSuffix) {
-  // Only add the suffix if the label does not end in punctuation
-  if (labelSuffix && ':?.!'.indexOf(label.charAt(label.length - 1)) == -1) {
-    return label + labelSuffix
-  }
-  return label
-}
-
-/**
- * Wraps the given contents in a <label> if the field has an id attribute. If
- * contents aren't given, uses the field's label.
- *
- * If attrs are given, they're used as HTML attributes on the <label> tag.
- *
- * @param {Object=} kwargs configuration options.
- * @param {string} kwargs.contents contents for the label - if not provided,
- *   label  contents will be generated from the field itself.
- * @param {Object} kwargs.attrs additional attributes to be added to the label.
- * @param {string} kwargs.labelSuffix allows overriding the form's labelSuffix.
- */
-BoundField.prototype.labelTag = function(kwargs) {
-  kwargs = object.extend({
-    contents: this.label, attrs: null, labelSuffix: this.form.labelSuffix
-  }, kwargs)
-  var contents = this._addLabelSuffix(kwargs.contents, kwargs.labelSuffix)
-  var widget = this.field.widget
-  var id = object.get(widget.attrs, 'id', this.autoId())
-  if (id) {
-    var attrs = object.extend(kwargs.attrs || {}, {htmlFor: widget.idForLabel(id)})
-    contents = React.createElement('label', attrs, contents)
-  }
-  return contents
-}
-
-/**
- * Puts together additional CSS classes for this field based on the field, the
- * form and whether or not the field has errors.
- * @param {string=} extraCssClasses CSS classes for the field.
- * @return {string} space-separated CSS classes for this field.
- */
-BoundField.prototype.cssClasses = function(extraCssClasses) {
-  var cssClasses = (extraCssClasses ? [extraCssClasses] : [])
-
-  // Field/row classes
-  if (this.field.cssClass !== null) {
-    cssClasses.push(this.field.cssClass)
-  }
-  if (typeof this.form.rowCssClass != 'undefined') {
-    cssClasses.push(this.form.rowCssClass)
-  }
-
-  // Validation status class
-  if (this.isPending()) {
-    if (typeof this.form.pendingCssClass != 'undefined') {
-      cssClasses.push(this.form.pendingCssClass)
-    }
-  }
-  else if (typeof this.form.cleanedData[this.name] != 'undefined') {
-    if (typeof this.form.validCssClass != 'undefined') {
-      cssClasses.push(this.form.validCssClass)
-    }
-  }
-  else if (this.errors().isPopulated()) {
-    if (typeof this.form.errorCssClass != 'undefined') {
-      cssClasses.push(this.form.errorCssClass)
-    }
-  }
-
-  // Required-ness classes
-  if (this.field.required) {
-    if (typeof this.form.requiredCssClass != 'undefined') {
-      cssClasses.push(this.form.requiredCssClass)
-    }
-  }
-  else if (typeof this.form.optionalCssClass != 'undefined') {
-    cssClasses.push(this.form.optionalCssClass)
-  }
-
-  return cssClasses.join(' ')
-}
-
 module.exports = BoundField
-
 },{"./util":11,"./widgets":12,"Concur":13,"isomorph/format":15,"isomorph/is":16,"isomorph/object":17,"react":undefined}],3:[function(require,module,exports){
 'use strict';
 
@@ -2856,7 +2937,7 @@ var BaseForm = Concur.extend({
       data: null, files: null, autoId: 'id_{name}', prefix: null,
       initial: null, errorConstructor: ErrorList, labelSuffix: ':',
       emptyPermitted: false, validation: null, controlled: false,
-      onStateChange: null, onChange: null
+      onChange: null
     }, kwargs)
     this.isInitialRender = (kwargs.data === null && kwargs.files === null)
     this.data = kwargs.data || {}
@@ -3038,6 +3119,8 @@ BaseForm.prototype._validateSync = function() {
     this.isInitialRender = false
   }
   this.fullClean()
+  // Display changes to valid/invalid state
+  this._stateChanged()
   return this.isValid()
 }
 
@@ -4074,12 +4157,7 @@ BaseForm.prototype._htmlOutput = function(normalRow, errorRow) {
     errors = (bfErrors.isPopulated() ? bfErrors.render() : null)
     label = (bf.label ? bf.labelTag() : null)
     pending = (bf.isPending() ? React.createElement('progress', null, '...') : null)
-    helpText = bf.helpText
-    if (helpText) {
-      helpText = ((is.Object(helpText) && object.hasOwn(helpText, '__html'))
-                  ? React.createElement('span', {className: 'helpText', dangerouslySetInnerHTML: helpText})
-                  : React.createElement('span', {className: 'helpText'}, helpText))
-    }
+    helpText = bf.helpTextTag()
     // If this is the last row, it should include any hidden fields
     extraContent = (i == l - 1 && hiddenFields.length > 0 ? hiddenFields : null)
 
@@ -4358,7 +4436,7 @@ var BaseFormSet = Concur.extend({
     kwargs = object.extend({
       data: null, files: null, autoId: 'id_{name}', prefix: null,
       initial: null, errorConstructor: ErrorList, managementFormCssClass: null,
-      validation: null, controlled: false, onStateChange: null, onChange: null
+      validation: null, controlled: false, onChange: null
     }, kwargs)
     this.isInitialRender = (kwargs.data === null && kwargs.files === null)
     this.prefix = kwargs.prefix || this.getDefaultPrefix()
@@ -4434,6 +4512,8 @@ BaseFormSet.prototype._validateSync = function() {
     this.isInitialRender = false
   }
   this.fullClean()
+  // Display changes to valid/invalid state
+  this._stateChanged()
   return this.isValid()
 }
 
@@ -6260,7 +6340,7 @@ var Textarea = Widget.extend({
     // Ensure we have something in attrs
     kwargs = object.extend({attrs: null}, kwargs)
     // Provide default 'cols' and 'rows' attributes
-    kwargs.attrs = object.extend({rows: '10', cols: '40'}, kwargs.attrs)
+    kwargs.attrs = object.extend({rows: '3', cols: '40'}, kwargs.attrs)
     Widget.call(this, kwargs)
   }
 })
@@ -28854,11 +28934,13 @@ var locales = require('./locales')
 var util = require('./util')
 var widgets = require('./widgets')
 
+var BoundField = require('./BoundField')
 var ErrorList = require('./ErrorList')
 var ErrorObject = require('./ErrorObject')
 
 module.exports = object.extend({
   addLocale: locales.addLocale
+, BoundField: BoundField
 , env: env
 , ErrorList: ErrorList
 , ErrorObject: ErrorObject
@@ -28872,7 +28954,7 @@ module.exports = object.extend({
 , validators: validators
 }, fields, forms, formsets, widgets)
 
-},{"./ErrorList":3,"./ErrorObject":4,"./env":5,"./fields":6,"./formats":7,"./forms":8,"./formsets":9,"./locales":10,"./util":11,"./widgets":12,"isomorph/object":17,"validators":181}],"react/addons":[function(require,module,exports){
+},{"./BoundField":2,"./ErrorList":3,"./ErrorObject":4,"./env":5,"./fields":6,"./formats":7,"./forms":8,"./formsets":9,"./locales":10,"./util":11,"./widgets":12,"isomorph/object":17,"validators":181}],"react/addons":[function(require,module,exports){
 module.exports = require('./lib/ReactWithAddons');
 
 },{"./lib/ReactWithAddons":110}],"react":[function(require,module,exports){

@@ -230,16 +230,7 @@ and calling ``form.validate()`` to validate the entire user input.
      if (isValid) {
        this.props.processContactData(form.cleanedData)
      }
-     else {
-       this.forceUpdate()
-     }
    }
-
-.. Note::
-   Re-rendering after an unsuccessful call to  ``form.validate()`` must be done
-   manually -- this is to avoid needlessly re-rendering when there are multiple
-   Forms or FormSets in use, as is often the case when there are multiple
-   logical sections or entities being edited.
 
 .. Tip::
    Forms represent groups of related Fields and don't necessarily have to model

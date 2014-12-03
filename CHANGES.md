@@ -47,6 +47,9 @@
 
 ## Changes
 
+* Reverted a change from 0.9. Synchronous calls to `form/formset.validate()`
+  will trigger a re-render, as it looks like `forceUpdate()` just enqueues a
+  future re-render.
 * `form.isComplete()` is now `false` if there is any pending async validation,
   even if all required fields currently have cleaned data.
 * Changes to when event-based validation fires:

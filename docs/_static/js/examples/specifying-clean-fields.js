@@ -130,13 +130,10 @@ var FormRenderer = React.createClass({displayName: 'FormRenderer',
     e.preventDefault()
     var form = this.state.form
     if (form.isAsync()) {
-      form.validate(function(err)  {
-        this.forceUpdate()
-      }.bind(this))
+      form.validate(function(err)  {})
     }
     else {
       form.validate()
-      this.forceUpdate()
     }
   },
 

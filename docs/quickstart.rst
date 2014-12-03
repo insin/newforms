@@ -106,9 +106,6 @@ data, coerced to the appropriate JavaScript data type when appropriate:
        if (isValid) {
          this.props.onSubmitSignup(this.state.form.cleanedData)
        }
-       else {
-         this.forceUpdate()
-       }
      }
    })
 

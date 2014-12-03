@@ -67,9 +67,6 @@ var Signup = React.createClass({displayName: 'Signup',
     if (isValid) {
       this.props.onSubmitSignup(this.state.form.cleanedData)
     }
-    else {
-      this.forceUpdate()
-    }
   }
 })
 

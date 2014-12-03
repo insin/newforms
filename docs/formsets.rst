@@ -316,10 +316,6 @@ how we could avoid field names for ``Article`` and ``Book`` forms clashing:
        if (articlesValid && booksValid) {
          // Do something with cleanedData() on the formsets
        }
-       else {
-         // Re-render to display validation errors
-         this.forceUpdate()
-       }
      }
    })
 

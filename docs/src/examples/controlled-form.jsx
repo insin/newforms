@@ -48,9 +48,6 @@ var PeopleEditor = React.createClass({
       form.reset({})
       this.setState({editing: null})
     }
-    else {
-      this.forceUpdate()
-    }
   },
 
   handleCancel(i) {
