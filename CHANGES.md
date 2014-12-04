@@ -12,6 +12,8 @@
 
 ## New Features
 
+* Added `RenderForm`, `FormRow` and `RenderFormset` components for default
+  rendering.
 * Custom `clean()` and `clean<Field>()` validation methods can now be
   specified with the signature `(callback)` if they need to perform
   asynchronous validation.
