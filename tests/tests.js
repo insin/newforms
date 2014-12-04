@@ -33,6 +33,7 @@ var tests = [ 'util.js'
             , 'docs.js'
             , 'docs-server.js'
             , 'dom-initial.js'
+            , 'components.js'
             ].map(function(t) { return path.join(__dirname, t) })
 
 qqunit.Runner.run(tests, function(stats) {
