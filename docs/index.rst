@@ -82,6 +82,7 @@ Guide Documentation
 
    quickstart
    overview
+   react_components
    react_client
    custom_display
    forms

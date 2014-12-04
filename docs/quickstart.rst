@@ -116,4 +116,6 @@ which passes an ``onSignup()`` callback to receive and display submitted data:
 
 .. raw:: html
 
-   <iframe src="_static/html/quickstart.html" style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0"></iframe>
+   <iframe src="_static/html/quickstart.html"
+           style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0">
+   </iframe>

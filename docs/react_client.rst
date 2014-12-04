@@ -39,6 +39,8 @@ There are a number of client-specific options available when creating an instanc
 of a Form to use in a React component. The same options apply when creating
 FormSets, as they use them to handle creation of Form instances for you.
 
+.. _ref-form-state-onchange:
+
 Form state and ``onChange()``
 =============================
 
@@ -141,7 +143,9 @@ user input.
 
 .. raw:: html
 
-   <iframe src="_static/html/auto-form-validation.html" style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0"></iframe>
+   <iframe src="_static/html/auto-form-validation.html"
+           style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0">
+   </iframe>
 
 Field validation
 ================
@@ -307,7 +311,9 @@ initial state, with new initial data:
 
 .. raw:: html
 
-   <iframe src="_static/html/controlled-form.html" style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0"></iframe>
+   <iframe src="_static/html/controlled-form.html"
+           style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0">
+   </iframe>
 
 .. _`uncontrolled React components`: http://facebook.github.io/react/docs/forms.html#uncontrolled-components
 .. _`controlled React components`: http://facebook.github.io/react/docs/forms.html#controlled-components
