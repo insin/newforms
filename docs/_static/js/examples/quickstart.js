@@ -10,6 +10,14 @@ var IFrameMixin = {
 
   componentDidUpdate: function(prevProps, prevState) {
     resizeIFrame()
+  },
+
+  /**
+   * Forces an update to rezise the iframe - required for demos which use the
+   * components newforms provides, to hook into state changes.
+   */
+  forceResizeIFrame: function() {
+    this.forceUpdate()
   }
 }
 
@@ -41,31 +49,22 @@ var Signup = React.createClass({displayName: 'Signup',
   mixins: [IFrameMixin],
 
   propTypes: {
-     onSubmitSignup: React.PropTypes.func.isRequired
-  },
-
-  getInitialState:function() {
-    return {form: new SignupForm({onChange: this.forceUpdate.bind(this)})}
+     onSignup: React.PropTypes.func.isRequired
   },
 
   render:function() {
     return React.createElement("form", {onSubmit: this.onSubmit}, 
-      React.createElement("table", null, 
-        React.createElement("tbody", null, 
-          this.state.form.asTable()
-        )
-      ), 
-      React.createElement("div", {className: "controls"}, 
-        React.createElement("input", {type: "submit", value: "Submit"})
-      )
+      React.createElement(forms.RenderForm, {form: SignupForm, ref: "form", onChange: this.forceResizeIFrame}), 
+      React.createElement("button", null, "Sign Up")
     )
   },
 
   onSubmit:function(e) {
     e.preventDefault()
-    var isValid = this.state.form.validate()
+    var form = this.refs.form.getForm()
+    var isValid = form.validate()
     if (isValid) {
-      this.props.onSubmitSignup(this.state.form.cleanedData)
+      this.props.onSignup(form.cleanedData)
     }
   }
 })
@@ -77,13 +76,13 @@ var QuickstartExample = React.createClass({displayName: 'QuickstartExample',
     return {submittedData: null}
   },
 
-  handleSubmitSignup:function(data) {
+  _onSignup:function(data) {
     this.setState({submittedData: data})
   },
 
   render:function() {
     return React.createElement("div", null, 
-      React.createElement(Signup, {onSubmitSignup: this.handleSubmitSignup}), 
+      React.createElement(Signup, {onSignup: this._onSignup}), 
       React.createElement("strong", null, "Submitted Data:"), 
       this.state.submittedData && React.createElement("pre", null, 
         JSON.stringify(this.state.submittedData, null, 2)

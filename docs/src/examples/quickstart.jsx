@@ -24,31 +24,22 @@ var Signup = React.createClass({
   mixins: [IFrameMixin],
 
   propTypes: {
-     onSubmitSignup: React.PropTypes.func.isRequired
-  },
-
-  getInitialState() {
-    return {form: new SignupForm({onChange: this.forceUpdate.bind(this)})}
+     onSignup: React.PropTypes.func.isRequired
   },
 
   render() {
     return <form onSubmit={this.onSubmit}>
-      <table>
-        <tbody>
-          {this.state.form.asTable()}
-        </tbody>
-      </table>
-      <div className="controls">
-        <input type="submit" value="Submit"/>
-      </div>
+      <forms.RenderForm form={SignupForm} ref="form" onChange={this.forceResizeIFrame}/>
+      <button>Sign Up</button>
     </form>
   },
 
   onSubmit(e) {
     e.preventDefault()
-    var isValid = this.state.form.validate()
+    var form = this.refs.form.getForm()
+    var isValid = form.validate()
     if (isValid) {
-      this.props.onSubmitSignup(this.state.form.cleanedData)
+      this.props.onSignup(form.cleanedData)
     }
   }
 })
@@ -60,13 +51,13 @@ var QuickstartExample = React.createClass({
     return {submittedData: null}
   },
 
-  handleSubmitSignup(data) {
+  _onSignup(data) {
     this.setState({submittedData: data})
   },
 
   render() {
     return <div>
-      <Signup onSubmitSignup={this.handleSubmitSignup}/>
+      <Signup onSignup={this._onSignup}/>
       <strong>Submitted Data:</strong>
       {this.state.submittedData && <pre>
         {JSON.stringify(this.state.submittedData, null, 2)}

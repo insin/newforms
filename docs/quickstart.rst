@@ -4,7 +4,7 @@ Quickstart
 
 A quick introduction to defining and using newforms Form objects.
 
-Design your form
+Design your Form
 ================
 
 The starting point for defining your own forms is :js:func:`Form.extend()`.
@@ -27,68 +27,47 @@ of related Fields are held in a :doc:`Form <forms>` and a form input which will
 be displayed to the user is represented by a :doc:`Widget <widgets>`. Every
 Field has a default Widget, which can be overridden.
 
-Create a Form instance in a React component
-===========================================
-
-Form instances hold the state of a Form's user input and validation results.
-Since a Form is managing some state for you, you may wish to keep it in your
-component's state.
-
-To let the Form let your component know that the state it manages has changed,
-pass it an ``onChange`` callback:
-
-.. code-block:: javascript
-
-   var SignupComponent = React.createClass({
-     getInitialState: function() {
-       return {
-         form: new SignupForm({onChange: this.forceUpdate.bind(this)})
-       }
-     },
-
-     // ...
-
-Rendering a Form instance
-=========================
+Rendering a Form
+================
 
 Forms provide helpers for rendering labels, user inputs and validation errors
-for their fields. They also have convenience rendering methods to get you
-started quickly by surrounding these with some basic structure.
+for their fields. To get you started quickly, newforms provides React components
+which use these helpers to render a basic form structure.
 
-At the very least, you must wrap these form-rendered contents in a ``<form>``,
+At the very least, you must wrap rendered form contents in a ``<form>``,
 provide form controls such as a submit button and hook up handling of form
 submission:
 
 .. code-block:: javascript
 
-   render: function() {
-     return <form onSubmit={this.onSubmit}>
-       <table>
-         <tbody>
-           {this.state.form.asTable()}
-         </tbody>
-       </table>
-       <div className="controls">
-         <input type="submit" value="Submit"/>
-       </div>
-     </form>
-   },
+   var Signup = React.createClass({
+     render: function() {
+       return <form onSubmit={this._onSubmit}>
+         <forms.RenderForm form={SignupForm} ref="form"/>
+         <button>Sign Up</button>
+       </form>
+     },
 
-   // ...
+     // ...
 
-Forms attach event handlers to the inputs they render, so getting user input
-data is handled for you.
+Rendering helpers attach event handlers to the inputs they render, so getting
+user input data is handled for you.
 
-If you gave your Form an ``onChange`` callback, it will also automatically
-validate user input as it's given and let your component know when to re-render,
-to display any resulting state changes (such as new validation errors).
+The ``RenderForm`` component handles creating a form instance for you, and
+setting up automatic validation of user input as it's given.
+
+To access this form instance later, make sure the component has a ``ref`` name.
 
 Handling form submission
 ========================
 
-The final step in using a Form is validating the entire form when the user
-attempts to submit it. Calling its ``validate()`` method validates every field
-in the form with its current user input.
+The final step in using a Form is validating when the user attempts to submit.
+
+First, use the ``ref`` name you defined earlier to get the form instance via the
+``RenderForm`` component's ``getForm()`` method.
+
+Then call the form's ``validate()`` method to ensure every field in the form is
+validated against its current user input.
 
 If a Form is valid, it will have a ``cleanedData`` object containing validated
 data, coerced to the appropriate JavaScript data type when appropriate:
@@ -96,15 +75,16 @@ data, coerced to the appropriate JavaScript data type when appropriate:
 .. code-block:: javascript
 
      propTypes: {
-      onSubmitSignup: React.PropTypes.func.isRequired
+       onSignup: React.PropTypes.func.isRequired
      },
 
-     onSubmit: function(e) {
+     _onSubmit: function(e) {
        e.preventDefault()
 
-       var isValid = this.state.form.validate()
+       var form = this.refs.form.getForm()
+       var isValid = form.validate()
        if (isValid) {
-         this.props.onSubmitSignup(this.state.form.cleanedData)
+         this.props.onSignup(form.cleanedData)
        }
      }
    })
@@ -132,7 +112,7 @@ Live demo
 =========
 
 This is the React component we defined above being used by another component
-which displays successfully submitted data:
+which passes an ``onSignup()`` callback to receive and display submitted data:
 
 .. raw:: html
 

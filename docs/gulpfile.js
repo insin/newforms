@@ -34,8 +34,7 @@ gulp.task('bundle-deps', function() {
   var b = browserify({
     detectGlobals: false
   })
-  b.require('react/addons')
-  b.require('react/addons', {expose: 'react'})
+  b.require('react')
   b.require('../lib/newforms', {expose: 'newforms'})
   b.transform('envify')
 
