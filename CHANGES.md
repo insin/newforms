@@ -14,6 +14,8 @@
 
 * Added `RenderForm`, `FormRow` and `RenderFormset` components for default
   rendering.
+  * The browser build requires the react-with-addons build of React in order to
+    use `RenderForm`'s custom rendering support.
 * Custom `clean()` and `clean<Field>()` validation methods can now be
   specified with the signature `(callback)` if they need to perform
   asynchronous validation.

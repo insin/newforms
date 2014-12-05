@@ -54,6 +54,7 @@
     ]
   },
   "browserify-shim": {
-    "react": "global:React"
+    "react": "global:React",
+    "react/addons": "global:React"
   }
 }
