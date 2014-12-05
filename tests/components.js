@@ -1,6 +1,8 @@
 void function() { 'use strict';
 
-QUnit.test('basic component rendering', function() {
+QUnit.module('components')
+
+QUnit.test('basic component rendering', 2, function() {
   var PersonForm = forms.Form.extend({
     name: forms.CharField(),
     dob: forms.DateField()
