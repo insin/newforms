@@ -109,5 +109,45 @@ Props
 ``FormRow``
 ===========
 
+This component handles rendering a single form "row". ``RenderForm`` uses this
+to render rows by default; it will either:
+
+1. Wrap some given content as a row, or:
+2. Use a field's :ref:`rendering helper <ref-custom-display-boundfield>` to
+   generate a row for the field, with a label, user input, error messages and
+   help text, as necessary.
+
+Props
+-----
+
+``FormRow`` expects the following props:
+
+``content``
+   :type: Any
+
+   If given, will be used for the entire contents of the row.
+
+``bf``
+   :type: :js:class:`BoundField`
+
+   If given and ``content`` is not given, this Field rendering helper will be
+   used to create contents for a Field row.
+
+``component``
+   :type: ``ReactCompositeComponent`` or ``String`` (an HTML tag name)
+
+   The component used to wrap the row contents. Defaults to ``'div'``.
+
+``className``
+   :type: String
+
+   If provided, this prop will be passed to the wrapper component for the row.
+
+``hidden``
+   :type: Boolean
+
+   If ``true``, the row container ReactElement will be given a ``display: none``
+   style -- defaults to ``false``.
+
 ``RenderFormset``
 =================
