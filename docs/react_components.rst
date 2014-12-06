@@ -224,15 +224,15 @@ For example, this is how `newforms-gridforms`_ implements a custom grid layout:
 
 .. code-block:: html
 
-   <RenderForm form={PersonForm}>
-     <GridLayout>
-       <Section name="Person">
+   <RenderForm form={ParentForm}>
+     <GridForm>
+       <Section name="Parent">
          <Row>
            <Field name="name"/>
            <Field name="dob"/>
          </Row>
        </Section>
-     </GridLayout>
+     </GridForm>
    </RenderForm>
 
 .. _`context feature`: http://www.tildedave.com/2014/11/15/introduction-to-contexts-in-react-js.html
