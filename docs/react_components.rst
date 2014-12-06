@@ -161,10 +161,10 @@ FormRow props
    If ``true``, the row container ReactElement will be given a ``display: none``
    style -- defaults to ``false``.
 
-RenderFormset
+RenderFormSet
 =============
 
-RenderFormset props
+RenderFormSet props
 -------------------
 
 Custom rendering with props

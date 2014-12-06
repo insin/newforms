@@ -8,7 +8,7 @@ QUnit.test('basic component rendering', 2, function() {
     dob: forms.DateField()
   })
 
-  var PersonFormset = forms.formsetFactory(PersonForm, {extra: 1})
+  var PersonFormSet = forms.formsetFactory(PersonForm, {extra: 1})
 
   var formProps ={
     form: PersonForm
@@ -17,7 +17,7 @@ QUnit.test('basic component rendering', 2, function() {
   }
 
   var formsetProps ={
-    formset: PersonFormset
+    formset: PersonFormSet
   , autoId: false
   , className: 'test'
   }
@@ -28,7 +28,7 @@ QUnit.test('basic component rendering', 2, function() {
 <div>Dob: <input type="text" name="dob"></div>\
 </div>')
 
-  reactHTMLEqual(React.createElement(forms.RenderFormset, formsetProps),
+  reactHTMLEqual(React.createElement(forms.RenderFormSet, formsetProps),
 '<div class="test"><div>\
 <div>Name: <input type="text" name="form-0-name"></div>\
 <div>Dob: <input type="text" name="form-0-dob"></div>\
