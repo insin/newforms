@@ -28,13 +28,13 @@ re-rendering when the form's state changes for you.
 Form options
 ------------
 
-If props other than those documented below are passed to a ``RenderForm``, they
-will be passed on to the Form constructror when creating an instance. This
-allows you to pass all the usual :js:class:`form constructor options <BaseForm>`
-via the component.
+If :js:class:`form construction options <BaseForm>` are passed as props to
+``RenderForm``, they will be passed on to the Form constructor when creating an
+instance.
 
 For example, if you need to display more than one of the same Form, you need to
-specify a prefix to give them a unique namespace:
+specify a prefix to give them a unique namespace, so pass a ``prefix`` prop as
+well:
 
 .. code-block:: javascript
 
@@ -112,6 +112,11 @@ RenderForm props
    The component used to wrap each row. Defaults to ``'div'``.
 
    This is passed as a ``component`` prop to the component in the ``row`` prop.
+
+Form construction options
+   All the :js:class:`options which be passed when instantiating a Form <BaseForm>`
+   can be passed as props to ``RenderForm`` for use when you pass a Form
+   constructor as the ``form`` prop.
 
 .. _ref-components-formrow:
 
