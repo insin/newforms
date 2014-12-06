@@ -113,10 +113,11 @@ QUnit.test('React Components - Custom rendering with props', function() {
   , component: "ul"
   , className: "parent"
   , rowComponent: "li"
+  , autoId: false
   }),
 '<ul class="parent">\
-<li><label for="id_name">Name:</label> <input type="text" name="name" id="id_name"></li>\
-<li><label for="id_dob">Date of birth:</label> <input type="text" name="dob" id="id_dob"></li>\
+<li>Name: <input type="text" name="name"></li>\
+<li>Date of birth: <input type="text" name="dob"></li>\
 </ul>')
 })
 
