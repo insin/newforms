@@ -2,12 +2,21 @@
 React Components
 ================
 
+.. versionadded:: 0.10
+
+To help you get started quickly, newforms provides some React components to
+handle instantation and rendering of Forms and Formsets.
+
+For the basic scenario of displaying form fields in the order they were defined,
+these may be all you need to handle rendering your forms.
+
 ``RenderForm``
 ==============
 
-This component handles rendering a Form as a list of "rows". Each field in the
-form gets its own row, while other rows are rendered as necessary (e.g.
-displaying whole-form errors on top).
+This handles the generic use case for form rendering:
+
+* Whole-form error messages are displayed at the top.
+* Each visible field in the form is displayed in the order fields were defined.
 
 It can also take care of some of the details of creating a Form instance and
 re-rendering when the form's state changes for you.
@@ -15,11 +24,6 @@ re-rendering when the form's state changes for you.
 .. code-block:: html
 
    <RenderForm form={MyForm} ref="myForm"/>
-
-``RenderForm`` handles the generic use case for form rendering:
-
-* Whole-form error messages are displayed at the top.
-* Each visible field in the form is displayed in the order fields were defined.
 
 Form options
 ------------
@@ -61,25 +65,14 @@ Other rendering scenarios
 Props
 -----
 
-``RenderForm`` expects the following prop arguments:
+``RenderForm`` expects the following props:
 
 .. Note::
    A ``ReactCompositeComponent`` is what you get back when you call
    ``React.createClass()``
 
-``className``
-   :type: ``String``
-
-   If provided, this prop will be passed to the wrapper component containing all
-   the form's rows.
-
-``component``
-   :type: ``ReactCompositeComponent`` or ``String`` (an HTML tag name)
-
-   The component used to wrap all the form's rows. Defaults to ``'div'``.
-
 ``form``
-   :type: ``Form`` or ``Function`` (a Form constructor)
+   :type: ``Form`` or ``Function`` (a ``Form`` constructor)
 
    The Form to be rendered -- can be a constructor or an instance.
 
@@ -91,10 +84,21 @@ Props
    instance's :ref:`onChange() <ref-form-state-onchange>` in such a way that it
    will re-render the ``<RenderForm/>`` when the form changes.
 
+``component``
+   :type: ``ReactCompositeComponent`` or ``String`` (an HTML tag name)
+
+   The component used to wrap all the form's rows -- defaults to ``'div'``.
+
+``className``
+   :type: ``String``
+
+   If provided, this prop will be passed to the wrapper component containing all
+   the form's rows.
+
 ``row``
    :type: ``ReactCompositeComponent``
 
-   The component used to render each form row. Defaults to
+   The component used to render each form row -- defaults to
    :ref:`FormRow <ref-components-formrow>`.
 
 ``rowComponent``
