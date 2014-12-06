@@ -1,6 +1,6 @@
-QUnit.module('docs')
+void function() { 'use strict';
 
-void function() {
+QUnit.module('docs')
 
 var ContactForm = forms.Form.extend({
   subject: forms.CharField({maxLength: 100})
@@ -15,6 +15,11 @@ var CommentForm = forms.Form.extend({
 , comment: forms.CharField()
 })
 
+var ParentForm = forms.Form.extend({
+  name: forms.CharField(),
+  dob: forms.DateField({label: 'Date of birth'})
+})
+
 function repr(o) {
   if (o instanceof forms.Field) {
     return '[object ' + o.constructor.name + ']'
@@ -22,7 +27,6 @@ function repr(o) {
 }
 
 // ================================================================ overview ===
-
 
 QUnit.test('Overview - Customising form display', function() {
   var Contact = React.createClass({displayName: 'Contact',
@@ -99,6 +103,21 @@ QUnit.test("Overview - Looping over the Form's Fields", function() {
 <div class=\"fieldWrapper\"><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
 <div><input type=\"submit\" value=\"Send message\"></div>\
 </form>")
+})
+
+// ======================================================== react_components ===
+
+QUnit.test('React Components - Custom rendering with props', function() {
+  reactHTMLEqual(React.createElement(forms.RenderForm, {
+    form: ParentForm
+  , component: "ul"
+  , className: "parent"
+  , rowComponent: "li"
+  }),
+'<ul class="parent">\
+<li><label for="id_name">Name:</label> <input type="text" name="name" id="id_name"></li>\
+<li><label for="id_dob">Date of birth:</label> <input type="text" name="dob" id="id_dob"></li>\
+</ul>')
 })
 
 // =================================================================== forms ===
