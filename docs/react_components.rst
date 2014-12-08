@@ -82,12 +82,12 @@ RenderForm props
 
    The Form to be rendered -- can be a constructor or an instance.
 
-   If you pass a Form constructor, the component will instantiate it for you. Any
-   additional props you pass to ``RenderForm`` will be passed as options when
-   creating the form instance.
+   If you pass a Form constructor, the component will instantiate it for you.
+   :js:class:`Form construction options <BaseForm>` may also be passed to
+   ``RenderForm`` as additional props.
 
-   You can also pass a Form instance. When doing so, make sure you set up the
-   instance's :ref:`onChange() <ref-form-state-onchange>` in such a way that it
+   If you pass a Form instance, make sure you set up its
+   :ref:`onChange() <ref-form-state-onchange>` in such a way that it
    will also re-render the ``<RenderForm/>`` component when the form changes.
 
 ``component``
@@ -100,6 +100,8 @@ RenderForm props
 
    If provided, this prop will be passed to the wrapper component containing all
    the form's rows.
+
+.. _ref-renderform-row:
 
 ``row``
    :type: ``ReactCompositeComponent``
@@ -166,6 +168,64 @@ RenderFormSet
 
 RenderFormSet props
 -------------------
+
+``form``
+   :type: ``Function`` (a ``Form`` constructor)
+
+   If you pass a Form constructor, the component will create a new FormSet
+   constructor and instantiate it for you.
+
+   Options for the call to :js:func:`formsetFactory() <formsetFactory>` to
+   create the new ``FormSet`` constructor may be passed as additional props to
+   ``RenderFormSet``.
+
+   .. Note::
+      When a ``form`` prop is passed, use of the ``formset`` prop changes. If
+      also provided, it must be a FormSet constructor to be extended from.
+
+``formset``
+   :type: ``FormSet`` or ``Function`` (a ``FormSet`` constructor)
+
+   The FormSet to be rendered -- can be a constructor or an instance.
+
+   If you pass a FormSet constructor, the component will instantiate it for you.
+   :js:class:`FormSet construction options <BaseFormSet>` may also be passed to
+   ``RenderFormSet`` as additional props.
+
+   If you pass a FormSet instance, make sure you set up its
+   :ref:`onChange() <ref-form-state-onchange>` in such a way that it will also
+   re-render the ``<RenderFormSet/>`` component when one of its forms changes.
+
+``component``
+   :type: ``ReactCompositeComponent`` or ``String`` (an HTML tag name)
+
+   The component used to wrap the formset's contents. Defaults to ``'div'``.
+
+``className``
+   :type: String
+
+   If provided, this prop will be passed to the wrapper component for the
+   formset.
+
+``formComponent``
+   :type: ``ReactCompositeComponent`` or ``String`` (an HTML tag name)
+
+   The component used to wrap each form. Defaults to ``'div'``.
+
+   This is passed as a ``component`` prop to `RenderForm`_.
+
+``row`` & ``rowComponent``
+   These are :ref:`as defined above <ref-renderform-row>` for RenderForm, which
+   they are passed to.
+
+``useManagementForm``
+  :type: Boolean
+
+   If ``true``, hidden fields from the FormSet's management form will be
+   rendered. Defaults to ``false``.
+
+   These fields are usually only required if you will be performing a regular
+   form submission which will be processed by newforms on the server.
 
 Custom rendering with props
 ===========================
