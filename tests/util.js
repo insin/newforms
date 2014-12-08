@@ -51,3 +51,7 @@ QUnit.test('makeChoices', 2, function() {
 })
 
 // TODO Test normaliseValidation()
+
+QUnit.test('getProps', 1, function() {
+  deepEqual(forms.util.getProps({a:1, b:2, c:3, d: 4}, ['a', 'd']), {a:1, d: 4})
+})
