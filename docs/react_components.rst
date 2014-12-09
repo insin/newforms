@@ -60,6 +60,32 @@ well:
            style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0">
    </iframe>
 
+Getting the Form instance
+-------------------------
+
+Make sure you give RenderForm a ``ref`` prop so you can access the Form instance
+it manages for you when needed.
+
+For example, when handling submission of a form:
+
+.. code-block:: javascript
+
+   render: function() {
+     return <form onSubmit={this._onSubmit}>
+       <forms.RenderForm form={MyForm} ref="myForm"/>
+       <button>Submit</button>
+     </form>
+   }.
+
+   _onSubmit: function(e) {
+     e.preventDefault()
+     var form = this.refs.form.getForm()
+     var isValid = form.validate()
+     if (isValid) {
+       // ..
+     }
+   }
+
 Other rendering scenarios
 -------------------------
 
@@ -121,6 +147,12 @@ Form construction options
    constructor as the ``form`` prop.
 
 .. _ref-components-formrow:
+
+RenderForm methods
+------------------
+
+``getForm()``
+   Returns the Form instance being rendered by the component.
 
 FormRow
 =======
