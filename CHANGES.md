@@ -12,7 +12,7 @@
 
 ## New Features
 
-* Added `RenderForm`, `FormRow` and `RenderFormset` components for default
+* Added `RenderForm`, `FormRow` and `RenderFormSet` components for default
   rendering.
   * The browser build requires the react-with-addons build of React in order to
     use `RenderForm`'s custom rendering support.
