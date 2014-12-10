@@ -198,6 +198,18 @@ FormRow props
 RenderFormSet
 =============
 
+This component handles the generic use case for formset rendering, using
+``RenderForm`` to render each form in the formset one after the other.
+
+It can also take care of some of the details of creating a FormSet and
+re-rendering when form state changes.
+
+.. code-block:: html
+
+   <RenderFormSet form={MyForm} extra="3" ref="myFormset"/>
+
+   <RenderFormSet formset={MyFormSet} ref="myFormset"/>
+
 RenderFormSet props
 -------------------
 
@@ -258,6 +270,12 @@ RenderFormSet props
 
    These fields are usually only required if you will be performing a regular
    form submission which will be processed by newforms on the server.
+
+RenderFormSet methods
+---------------------
+
+``getFormset()``
+   Returns the FormSet instance being rendered by the component.
 
 Custom rendering with props
 ===========================
