@@ -52,6 +52,10 @@ In order to update display of its containing React component, a Form will call
 a given ``onChange()`` callback each time user input is taken or validation is
 performed in response to a user changing input data.
 
+.. Note::
+   The details of setting up ``onChange`` are handled for you when rendering a
+   Form by passing its constructor to a ``<RenderForm/>`` component.
+
 Typically, this function will just force its React component to update, for
 example:
 
