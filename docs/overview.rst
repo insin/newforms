@@ -87,18 +87,17 @@ such as ``IntegerField`` and ``DateField`` convert values to a JavaScript
 Displaying a Form
 -----------------
 
-Rather than newforms providing its own custom React components, ``Form`` objects
-create ``ReactElement`` objects to be included in the ``render()`` of a React
-component.
+Newforms provides a React component which implements default rendering of
+``Form`` objects.
 
-A form also only outputs its own fields; it's up to you to provide the
-surrounding ``<form>`` element, submit buttons etc:
+This only provides rendering of the form's own fields; it's up to you to provide
+the surrounding ``<form>`` element, submit buttons etc:
 
 .. code-block:: javascript
 
    render: function() {
      return <form action="/contact" method="POST" onSubmit={this.onSubmit}>
-       {this.state.form.asDiv()}
+       <forms.RenderForm form={ContactForm}/>
        <div>
          <input type="submit" value="Submit"/>{' '}
          <input type="button" value="Cancel" onClick={this.onCancel}/>
@@ -106,16 +105,18 @@ surrounding ``<form>`` element, submit buttons etc:
      </form>
    }
 
-``form.asDiv()`` will output the form with each form field and accompanying
-label wrapped in a ``<div>``. Here's the output for our example component:
+``RenderForm`` will output each form field and accompanying label wrapped in a
+``<div>``. Here's the output for our example component:
 
 .. code-block:: html
 
    <form action="/contact" method="POST">
-     <div><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"></div>
-     <div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message"></div>
-     <div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender"></div>
-     <div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself"></div>
+     <div>
+       <div><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"></div>
+       <div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message"></div>
+       <div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender"></div>
+       <div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself"></div>
+     </div>
      <div><input type="submit" value="Submit"> <input type="button" value="Cancel"></div>
    </form>
 
@@ -123,10 +124,12 @@ Note that each form field has an ``id`` attribute set to ``id_<field-name>``,
 which is referenced by the accompanying label tag. You can
 :ref:`customise the way in which labels and ids are generated <ref-forms-configuring-label>`.
 
-You can also use ``form.asTable()`` to output table rows (you'll need to provide
-your own ``<table>`` and ``<tbody>``) and ``form.asUl()`` to output list items.
-Forms also have a default ``form.render()`` method which calls
-``form.asTable()``.
+You can customise the output of ``RenderForm`` by passing certain props or a
+child React component. See the :ref:`documentation for custom rendering <ref-custom-rendering>`
+for more info.
+
+You can also :doc:`completely customise form display <custom_display>` using
+rendering helpers for each field.
 
 "Isomorphic"
 ============

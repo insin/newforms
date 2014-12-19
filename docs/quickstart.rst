@@ -31,8 +31,8 @@ Rendering a Form
 ================
 
 Forms provide helpers for rendering labels, user inputs and validation errors
-for their fields. To get you started quickly, newforms provides React components
-which use these helpers to render a basic form structure.
+for their fields. To get you started quickly, newforms provides a React
+component which use these helpers to render a basic form structure.
 
 At the very least, you must wrap rendered form contents in a ``<form>``,
 provide form controls such as a submit button and hook up handling of form

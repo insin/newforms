@@ -277,6 +277,8 @@ RenderFormSet methods
 ``getFormset()``
    Returns the FormSet instance being rendered by the component.
 
+.. _ref-custom-rendering:
+
 Custom rendering with props
 ===========================
 
