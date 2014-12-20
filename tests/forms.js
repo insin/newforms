@@ -2115,7 +2115,7 @@ QUnit.test('Boundfield labels', 9, function() {
   reactHTMLEqual(f.boundField('empty').labelTag(), "<label>Empty:</label>")
 })
 
-QUnit.test('ErrorObject', 4, function() {
+QUnit.test('ErrorObject', 5, function() {
   var MyForm = forms.Form.extend({
     foo: forms.CharField()
   , bar: forms.CharField()
@@ -2145,9 +2145,12 @@ QUnit.test('ErrorObject', 4, function() {
   , bar: [{code: 'required', message: 'This field is required.'}]
   , __all__: [{code: 'secret', message: 'Non-field error.'}]
   })
+
+  deepEqual(forms.ErrorObject.fromJSON(errors.toJSON()).toJSON(),
+            errors.toJSON())
 })
 
-QUnit.test('ErrorList', function() {
+QUnit.test('ErrorList', 4, function() {
   var e = forms.ErrorList()
   e.extend(['Foo',
     forms.ValidationError('Foo{bar}', {code: 'foobar', params: {bar: 'bar'}})
@@ -2164,6 +2167,9 @@ QUnit.test('ErrorList', function() {
     {message: 'Foo', code: ''}
   , {message: 'Foobar', code: 'foobar'}
   ])
+
+  deepEqual(forms.ErrorList.fromJSON(e.toJSON()).toJSON(),
+            e.toJSON())
 })
 
 }()

@@ -48,6 +48,10 @@
   HTML.
 * Added `boundField.status()` to get a field's status as a string
   (pending/error/valid/default).
+* Added `fromJSON()` factory functions to `ErrorList` and `ErrorObject`
+  constructors and `fromJSON()` instance methods. These can be used to rehydrate
+  an `ErrorObject` on the receiving end when `form.errors()` is transferred as
+  JSON. This assumes the structure created by these objects' `toJSON()` methods.
 
 ## Changes
 

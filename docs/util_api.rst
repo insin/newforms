@@ -86,6 +86,13 @@ for customisation purposes.
    A collection of field errors that knows how to display itself in various
    formats.
 
+   **Static Functions**
+
+   .. js:function:: ErrorObject.fromJSON(jsonObj, errorConstructor)
+
+      Creates a new ErrorObject and populates it from an object with the same
+      structure as that produced by this object's ``toJSON()`` method.
+
    **Prototype Functions**
 
    .. js:function:: ErrorObject#set(field, error)
@@ -132,9 +139,21 @@ for customisation purposes.
       serialisation, to be called by ``JSON.stringify()`` if this object is
       passed to it.
 
+   .. js:function:: ErrorObject#fromJSON(jsonObj, errorConestructor)
+
+      Populates this ErrorObject from an object with the same structure as that
+      produced by this object's ``toJSON()`` method.
+
 .. js:class:: ErrorList(list)
 
    A list of errors which knows how to display itself in various formats.
+
+   **Static Functions**
+
+   .. js:function:: ErrorList.fromJSON(jsonList)
+
+      Creates a new ErrorList and populates it from a list with the same
+      structure as that produced by this object's ``toJSON()`` method.
 
    **Prototype Functions**
 
@@ -185,3 +204,8 @@ for customisation purposes.
       Creates a representation of all the contents of the ErrorList for
       serialisation, to be called by ``JSON.stringify()`` if this object is
       passed to it.
+
+   .. js:function:: ErrorList#fromJSON(jsonList)
+
+      Populates this ErrorList from a list with the same structure as that
+      produced by this object's ``toJSON()`` method.
