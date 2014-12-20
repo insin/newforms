@@ -76,6 +76,19 @@ Forms API
    :param Object kwargs.files:
       input file data.
 
+   :param ErrorObject kwargs.errors:
+      initial errors to be displayed.
+
+      .. Note::
+         Passing initial errors will prevent validation from firing if a form
+         has input ``data`` and ``isValid()`` or ``errors()`` are called during
+         rendering.
+
+      This argument is intended for redisplaying a form with the user's input
+      and errors received from another source, such as an API call.
+
+      This is more typical of server-side usage.
+
    :param kwargs.validation:
       .. _ref-form-kwargs-validation:
 
