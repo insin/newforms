@@ -457,6 +457,14 @@ Forms API
          :js:func:`BaseForm#addError` and passing ``null`` instead of a field
          name. Will be an empty error list object if there are none.
 
+   .. js:function:: BaseForm#setErrors(errors)
+
+      This method's intended use is replacing a Form's errors with those
+      received from another source, such as an API call which performs
+      additional validation.
+
+      :param ErrorObject errors:
+
    **Changes:** methods for working with changed data.
 
    .. js:function:: BaseForm#changedData()

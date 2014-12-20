@@ -51,6 +51,8 @@
   constructors and `fromJSON()` instance methods. These can be used to rehydrate
   an `ErrorObject` on the receiving end when `form.errors()` is transferred as
   JSON. This assumes the structure created by these objects' `toJSON()` methods.
+* Added `form.setErrors()` to set an `ErrorObject` with errors from another
+  source.
 * An `ErrorObject` can now be passed as `errors` option when creating a form
   instance, to redisplay a form with errors from another source. This prevents
   the form's own validation from running if the form has input `data` and
