@@ -2,7 +2,6 @@
 
 ## Breaking Changes
 
-* `form.validate()` no longer takes an optional `<form>` argument.
 * Removed `formset.asUl()` - it never appeared properly due to the management
   Form.
 * `formset.cleanedData()` to no longer includes `cleanedData` from incomplete
