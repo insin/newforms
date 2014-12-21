@@ -144,7 +144,7 @@ Formsets API
    Prototype functions for validating and getting information about the results
    of validation, and for retrieving forms based on submitted data:
 
-   .. js:function:: BaseFormSet#validate([form])
+   .. js:function:: BaseFormSet#validate([form[, callback(err, isValid, cleanedData)]])
 
       Forces the formset to revalidate from scratch. If a ``<form>`` is given,
       data from it will be set on the formset's forms. Otherwise, validation
@@ -155,10 +155,22 @@ Formsets API
         is given, its ``getDOMNode()`` function will be called to get the real
         DOM node.
 
+      :param function(Error, Boolean, Object) callback:
+         Callback for asynchronous validation.
+
+         This argument is required if the formdet or its form uses asynchronous
+         validation - an Error will be thrown if it's not given in this case.
+
+         The callback should be an errback with the signature
+         ``(err, isValid, cleanedData)``.
+
       :return:
          ``true`` if the formset's forms' data is valid, ``false`` otherwise.
 
       .. versionadded:: 0.9
+
+      .. versionchanged:: 0.10
+         Added callback argument for async validation.
 
    .. js:function:: BaseFormSet#setData(data)
 

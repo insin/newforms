@@ -229,9 +229,16 @@ Forms API
    **Validation:** Methods for validating and getting information about the
    results of validation:
 
-   .. js:function:: BaseForm#validate([callback(err, isValid, cleanedData)])
+   .. js:function:: BaseForm#validate([form[, callback(err, isValid, cleanedData)]])
 
-      Forces the form to revalidate from scratch using its current input data.
+      Forces the form to revalidate from scratch. If a ``<form>`` is given, data
+      from it will be set on this form first. Otherwise, validation will be done
+      with this form's current input data.
+
+      :param form:
+        a ``<form>`` DOM node -- if React's representation of the ``<form>``
+        is given, its ``getDOMNode()`` function will be called to get the real
+        DOM node.
 
       :param function(Error, Boolean, Object) callback:
          Callback for asynchronous validation.
@@ -239,7 +246,7 @@ Forms API
          This argument is required if the form uses asynchronous validation - an
          Error will be thrown if it's not given in this case.
 
-         The callback should be an erroback with the signature
+         The callback should be an errback with the signature
          ``(err, isValid, cleanedData)``.
 
       :return:
@@ -248,9 +255,7 @@ Forms API
       .. versionadded:: 0.6
 
       .. versionchanged:: 0.10
-         Replaced the former ``form`` argument with a ``callback`` argument for
-         async validation. Return value behaviour now depends on whether the
-         form uses ascynchronous validation.
+         Added callback argument for async validation.
 
    .. js:function:: BaseForm#fullClean()
 
