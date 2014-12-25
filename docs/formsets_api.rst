@@ -270,21 +270,24 @@ Formsets API
    For flexibility, the output does not include a ``<form>`` or a submit
    button, just field labels and inputs.
 
+   .. deprecated:: 0.10
+      Default rendering methods are deprecated in favour of providing
+      :doc:`react_components` for default rendering.
+
    .. js:function:: BaseFormSet#render()
 
       Default rendering method, which calls :js:func:`BaseFormSet#asTable`
 
       .. versionadded:: 0.5
 
+      .. deprecated:: 0.10
+
    .. js:function:: BaseFormSet#asTable()
 
       Renders the formset's forms as a series of ``<tr>`` tags, with ``<th>``
       and ``<td>`` tags containing field labels and inputs, respectively.
 
-   .. js:function:: BaseFormSet#asUl()
-
-      Renders the formset's forms as a series of ``<li>`` tags, with each
-      ``<li>`` containing one field.
+      .. deprecated:: 0.10
 
    .. js:function:: BaseFormSet#asDiv()
 
@@ -292,6 +295,8 @@ Formsets API
       ``<div>`` containing one field.
 
       .. versionadded:: 0.5
+
+      .. deprecated:: 0.10
 
    Prototype functions for use in rendering forms.
 

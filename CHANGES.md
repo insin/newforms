@@ -62,7 +62,10 @@
 
 * Form rendering methods (`render()`, `asTable()`, `asDiv()` and `asUl()`) are
   deprecated in favour of using React components for rendering - `RenderForm`
-  now provides a default rendering implementation.
+  now provides default rendering.
+* FormSet rendering methods (`render()`, `asTable()` and `asDiv()`) are
+  deprecated in favour of using React components for rendering - `RenderFormSet`
+  now provides default rendering.
 
 ## Changes
 
