@@ -593,11 +593,17 @@ Forms API
       which are pending async validation, and to the end of the form if its
       ``clean(callback)`` method is pending async validation.
 
+   .. deprecated:: 0.10
+      Default rendering methods are deprecated in favour of providing
+      :doc:`react_components` for default rendering.
+
    .. js:function:: BaseForm#render()
 
       Default rendering method, which calls :js:func:`BaseForm#asTable`
 
       .. versionadded:: 0.5
+
+      .. deprecated:: 0.10
 
    .. js:function:: BaseForm#asTable()
 
@@ -607,11 +613,15 @@ Forms API
       You're responsible for ensuring the generated rows are placed in a
       containing ``<table>`` and ``<tbody>``.
 
+      .. deprecated:: 0.10
+
    .. js:function:: BaseForm#asUl()
 
       Renders the form as a series of ``<li>`` tags, with each ``<li>``
       containing one field. It does not include the ``<ul>`` so that you can
       specify any HTML attributes on the ``<ul>`` for flexibility.
+
+      .. deprecated:: 0.10
 
    .. js:function:: BaseForm#asDiv()
 
@@ -619,5 +629,7 @@ Forms API
       containing one field.
 
       .. versionadded:: 0.5
+
+      .. deprecated:: 0.10
 
 .. _`Concur`: https://github.com/insin/concur#api

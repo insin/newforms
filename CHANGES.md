@@ -58,6 +58,12 @@
   the form's own validation from running if the form has input `data` and
   `isValid()` or `errors()` are called during rendering.
 
+## Deprecations
+
+* Form rendering methods (`render()`, `asTable()`, `asDiv()` and `asUl()`) are
+  deprecated in favour of using React components for rendering - `RenderForm`
+  now provides a default rendering implementation.
+
 ## Changes
 
 * Reverted a change from 0.9. Synchronous calls to `form/formset.validate()`
