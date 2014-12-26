@@ -141,6 +141,14 @@ RenderForm props
 
    This is passed as a ``component`` prop to the component in the ``row`` prop.
 
+``progress``
+   :type: ``ReactCompositeComponent`` or ``Function``
+
+   Used to render what's displayed if the form has an async ``clean()`` method
+   which is pending completion.
+
+   This will also be passed to the component in the ``row`` prop when rendering.
+
 Form construction options
    All the :js:class:`options which be passed when instantiating a Form <BaseForm>`
    can be passed as props to ``RenderForm`` for use when you pass a Form
@@ -194,6 +202,12 @@ FormRow props
 
    If ``true``, the row container ReactElement will be given a ``display: none``
    style -- defaults to ``false``.
+
+``progress``
+   :type: ``ReactCompositeComponent`` or ``Function``
+
+   Used to render what's displayed if the form has async ``clean<Field>()``
+   method which is pending completion.
 
 RenderFormSet
 =============
@@ -261,6 +275,14 @@ RenderFormSet props
 ``row`` & ``rowComponent``
    These are :ref:`as defined above <ref-renderform-row>` for RenderForm, which
    they are passed to.
+
+``progress``
+   :type: ``ReactCompositeComponent`` or ``Function``
+
+   Used to render what's displayed if the formset has an async ``clean()``
+   method which is pending completion.
+
+   This will also be passed to `RenderForm`_.
 
 ``useManagementForm``
   :type: Boolean
@@ -354,3 +376,34 @@ For example, this is how `newforms-gridforms`_ implements a custom grid layout:
 
 .. _`context feature`: http://www.tildedave.com/2014/11/15/introduction-to-contexts-in-react-js.html
 .. _`newforms-gridforms`: https://github.com/insin/newforms-gridforms
+
+Custom async progress rendering
+===============================
+
+By default, when an async validation is running, each of the React components
+newforms provides will render a ``<progress>`` element with fallback
+"Validating..." text. However, the ``<progress>`` element doesn't currently lend
+itself to extensive customisation via CSS, especially cross-browser.
+
+To customise this, each component takes a ``progress`` prop which
+can take a function or React component which will be used to indicate an
+in-progress async validation.
+
+For example, either of the following could be passed as the ``progress`` prop
+to display a spinner image instead:
+
+.. code-block:: javascript
+
+   var InProgress = React.createClass({
+     render() {
+       return <span>
+         <img src="/img/spinner.gif" alt=""/> Validating&hellip;
+       </span>
+     }
+   })
+
+   function inProgress() {
+     return <span>
+       <img src="/img/spinner.gif" alt=""/> Validating&hellip;
+     </span>
+   }
