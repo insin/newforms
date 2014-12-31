@@ -91,15 +91,19 @@ field's validation errors are (by default) held im an ``ErrorList``.
 
       Returns true if any fields have error details set.
 
-   .. js:function:: ErrorObject#render()
+   .. js:function:: ErrorObject#render([kwargs])
 
-      Default rendering is as a list.
+      Default rendering is as a ``<ul>``. See below for arguments.
 
-   .. js:function:: ErrorObject#asUl()
+   .. js:function:: ErrorObject#asUl([kwargs])
 
-      Displays error details as a list. Returns ``undefined`` if this object
+      Displays error details as a ``<ul>``. Returns ``undefined`` if this object
       isn't populated with any errors.
 
+      :param Object kwargs: rendering options, which are as follows:
+
+      :param Object kwargs.className:
+         CSS class name(s) for the ``<ul>``, defaults to ``'errorlist'``.
    .. js:function:: ErrorObject#asText()
 
       Displays error details as text.
