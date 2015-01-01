@@ -55,12 +55,10 @@ Errors
 Validation errors for a whole form are held in an ``ErrorObject``, while each
 field's validation errors are (by default) held im an ``ErrorList``.
 
-.. js:class:: ErrorObject([errors])
+.. js:class:: ErrorObject()
 
    A collection of field errors that knows how to display itself in various
    formats.
-
-   :param Object errors:
 
    **Static Functions**
 
@@ -69,19 +67,43 @@ field's validation errors are (by default) held im an ``ErrorList``.
       Creates a new ErrorObject and populates it from an object with the same
       structure as that produced by this object's ``toJSON()`` method.
 
+      :param Object jsonObj:
+      :param Function errorCostructor:
+         Constructor for creating field errors - defaults to
+         :js:class:`ErrorList`.
+
    **Prototype Functions**
 
-   .. js:function:: ErrorObject#set(field, error)
+   .. js:function:: ErrorObject#set(fieldName, errors)
 
       Sets a field's errors.
 
-   .. js:function:: ErrorObject#get(field)
+      :param String fieldName:
+      :param ErrorList errors: validation errors for the field.
 
-      Gets errors for the given field.
+   .. js:function:: ErrorObject#get(fieldName)
 
-   .. js:function:: ErrorObject#hasField(field)
+      Gets a field's errors.
 
-      Returns ``true`` if errors have been set for the given field.
+      :param String fieldName:
+
+   .. js:function:: ErrorObject#remove(fieldName)
+
+      Removes errors for a field.
+
+      :param String fieldName:
+      :returns Boolean: ``true`` if there were errors for the field.
+
+   .. js:function:: ErrorObject#removeAll(fieldNames)
+
+      Removes errors for multiple fields.
+
+      :param Array fieldNames:
+
+   .. js:function:: ErrorObject#hasField(fieldName)
+
+      :param String fieldName:
+      :returns Boolean: ``true`` if errors have been set for the given field.
 
    .. js:function:: ErrorObject#length()
 
@@ -89,7 +111,7 @@ field's validation errors are (by default) held im an ``ErrorList``.
 
    .. js:function:: ErrorObject#isPopulated()
 
-      Returns true if any fields have error details set.
+      :returns Boolean: ``true`` if any fields have validation errors set.
 
    .. js:function:: ErrorObject#render([kwargs])
 
@@ -104,6 +126,7 @@ field's validation errors are (by default) held im an ``ErrorList``.
 
       :param Object kwargs.className:
          CSS class name(s) for the ``<ul>``, defaults to ``'errorlist'``.
+
    .. js:function:: ErrorObject#asText()
 
       Displays error details as text.
@@ -123,6 +146,11 @@ field's validation errors are (by default) held im an ``ErrorList``.
 
       Populates this ErrorObject from an object with the same structure as that
       produced by this object's ``toJSON()`` method.
+
+      :param Object jsonObj:
+      :param Function errorCostructor:
+         Constructor for creating field errors - defaults to
+         :js:class:`ErrorList`.
 
 .. js:class:: ErrorList(list)
 
