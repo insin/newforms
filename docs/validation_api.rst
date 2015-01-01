@@ -68,7 +68,7 @@ field's validation errors are (by default) held im an ``ErrorList``.
       structure as that produced by this object's ``toJSON()`` method.
 
       :param Object jsonObj:
-      :param Function errorCostructor:
+      :param Function errorConstructor:
          Constructor for creating field errors - defaults to
          :js:class:`ErrorList`.
 
@@ -142,13 +142,13 @@ field's validation errors are (by default) held im an ``ErrorList``.
       serialisation, to be called by ``JSON.stringify()`` if this object is
       passed to it.
 
-   .. js:function:: ErrorObject#fromJSON(jsonObj[, errorConestructor])
+   .. js:function:: ErrorObject#fromJSON(jsonObj[, errorConstructor])
 
       Populates this ErrorObject from an object with the same structure as that
       produced by this object's ``toJSON()`` method.
 
       :param Object jsonObj:
-      :param Function errorCostructor:
+      :param Function errorConstructor:
          Constructor for creating field errors - defaults to
          :js:class:`ErrorList`.
 
@@ -189,14 +189,42 @@ field's validation errors are (by default) held im an ``ErrorList``.
 
       Returns ``true`` if the list contains any errors.
 
-   .. js:function:: ErrorList#render()
+   .. js:function:: ErrorList#first()
 
-      Default rendering is as a list.
+      Returns the first error message in the list.
 
-   .. js:function:: ErrorList#asUl()
+   .. js:function:: ErrorList#messages()
 
-      Displays errors as a list. Returns ``undefined`` if this list isn't
+      Returns all error message in the list.
+
+   .. js:function:: ErrorObject#render([kwargs])
+
+      Default rendering is as a ``<ul>``. See below for arguments.
+
+   .. js:function:: ErrorObject#asUl([kwargs])
+
+      Displays error details as a ``<ul>``. Returns ``undefined`` if this object
+      isn't populated with any errors.
+
+      :param Object kwargs: rendering options, which are as follows:
+
+      :param Object kwargs.className:
+         CSS class name(s) for the ``<ul>``, defaults to ``'errorlist'``.
+
+
+   .. js:function:: ErrorList#render([kwargs])
+
+      Default rendering is as a ``<ul>``. See below for arguments.
+
+   .. js:function:: ErrorList#asUl([kwargs])
+
+      Displays errors as a ``<ul>``. Returns ``undefined`` if this list isn't
       populated with any errors.
+
+      :param Object kwargs: rendering options, which are as follows:
+
+      :param Object kwargs.className:
+         CSS class name(s) for the ``<ul>``, defaults to ``'errorlist'``.
 
    .. js:function:: ErrorList#asText()
 
