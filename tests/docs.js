@@ -923,34 +923,49 @@ QUnit.test('Formsets - intro', function() {
   var ArticleFormSet = forms.formsetFactory(ArticleForm)
   var formset = new ArticleFormSet()
   reactHTMLEqual(function() {
-    return formset.forms().map(function(form) { return form.asTable() })
+    return formset.forms().map(function(form) {
+      return React.createElement(forms.RenderForm, {form: form})
+    })
   },
-"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></td></tr>\
-<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></td></tr>",
-  "<3 My first formset <3")
+'<div>\
+<div><label for=\"id_form-0-title\">Title:</label> <input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></div>\
+<div><label for=\"id_form-0-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></div>\
+</div>')
 
   var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2})
   var formset = new ArticleFormSet({initial: [
     {title: "Django's docs are open source!", pubDate: new Date(2014, 1, 28)}
   ]})
   reactHTMLEqual(function() {
-    return formset.forms().map(function(form) { return form.asTable() })
+    return formset.forms().map(function(form) {
+      return React.createElement(forms.RenderForm, {form: form})
+    })
   },
-"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\" value=\"Django&#x27;s docs are open source!\"></td></tr>\
-<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\" value=\"2014-02-28\"></td></tr>\
-<tr><th><label for=\"id_form-1-title\">Title:</label></th><td><input type=\"text\" name=\"form-1-title\" id=\"id_form-1-title\"></td></tr>\
-<tr><th><label for=\"id_form-1-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-1-pubDate\" id=\"id_form-1-pubDate\"></td></tr>\
-<tr><th><label for=\"id_form-2-title\">Title:</label></th><td><input type=\"text\" name=\"form-2-title\" id=\"id_form-2-title\"></td></tr>\
-<tr><th><label for=\"id_form-2-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-2-pubDate\" id=\"id_form-2-pubDate\"></td></tr>",
+'<div>\
+<div><label for=\"id_form-0-title\">Title:</label> <input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\" value=\"Django&#x27;s docs are open source!\"></div>\
+<div><label for=\"id_form-0-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\" value=\"2014-02-28\"></div>\
+</div>\
+<div>\
+<div><label for=\"id_form-1-title\">Title:</label> <input type=\"text\" name=\"form-1-title\" id=\"id_form-1-title\"></div>\
+<div><label for=\"id_form-1-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-1-pubDate\" id=\"id_form-1-pubDate\"></div>\
+</div>\
+<div>\
+<div><label for=\"id_form-2-title\">Title:</label> <input type=\"text\" name=\"form-2-title\" id=\"id_form-2-title\"></div>\
+<div><label for=\"id_form-2-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-2-pubDate\" id=\"id_form-2-pubDate\"></div>\
+</div>',
   "Initial data display + 2 extras")
 
   var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2, maxNum: 1})
   var formset = new ArticleFormSet()
   reactHTMLEqual(function() {
-    return formset.forms().map(function(form) { return form.asTable() })
+    return formset.forms().map(function(form) {
+      return React.createElement(forms.RenderForm, {form: form})
+    })
   },
-"<tr><th><label for=\"id_form-0-title\">Title:</label></th><td><input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></td></tr>\
-<tr><th><label for=\"id_form-0-pubDate\">Pub date:</label></th><td><input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></td></tr>",
+'<div>\
+<div><label for=\"id_form-0-title\">Title:</label> <input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></div>\
+<div><label for=\"id_form-0-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></div>\
+</div>',
   "maxNum vs. extra")
 })
 

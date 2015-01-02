@@ -29,11 +29,13 @@ would with a regular form:
 
    var formset = new ArticleFormSet()
    formset.forms().forEach(function(form) {
-     print(reactHTML(form.asTable()))
+     print(reactHTML(<RenderForm form={form}/>))
    })
    /* =>
-   <tr><th><label for="id_form-0-title">Title:</label></th><td><input type="text" name="form-0-title" id="id_form-0-title"></td></tr>
-   <tr><th><label for="id_form-0-pubDate">Pub date:</label></th><td><input type="text" name="form-0-pubDate" id="id_form-0-pubDate"></td></tr>
+   <div>
+     <div><label for="id_form-0-title">Title:</label> <input type="text" name="form-0-title" id="id_form-0-title"></div>
+     <div><label for="id_form-0-pubDate">Pub date:</label> <input type="text" name="form-0-pubDate" id="id_form-0-pubDate"></div>
+   </div>
    */
 
 As you can see it only displayed one empty form. The number of empty forms
@@ -60,15 +62,21 @@ generates from the initial data. Let's take a look at an example:
      {title: "Django's docs are open source!", pubDate: new Date()}
    ]})
    formset.forms().forEach(function(form) {
-     print(reactHTML(form.asTable()))
+     print(reactHTML(<RenderForm form={form}/>))
    })
    /* =>
-   <tr><th><label for="id_form-0-title">Title:</label></th><td><input type="text" name="form-0-title" id="id_form-0-title" value="Django's docs are open source!"></td></tr>
-   <tr><th><label for="id_form-0-pubDate">Pub date:</label></th><td><input type="text" name="form-0-pubDate" id="id_form-0-pubDate" value="2014-02-28"></td></tr>
-   <tr><th><label for="id_form-1-title">Title:</label></th><td><input type="text" name="form-1-title" id="id_form-1-title"></td></tr>
-   <tr><th><label for="id_form-1-pubDate">Pub date:</label></th><td><input type="text" name="form-1-pubDate" id="id_form-1-pubDate"></td></tr>
-   <tr><th><label for="id_form-2-title">Title:</label></th><td><input type="text" name="form-2-title" id="id_form-2-title"></td></tr>
-   <tr><th><label for="id_form-2-pubDate">Pub date:</label></th><td><input type="text" name="form-2-pubDate" id="id_form-2-pubDate"></td></tr>"
+   <div>
+     <div><label for="id_form-0-title">Title:</label> <input type="text" name="form-0-title" id="id_form-0-title" value="Django's docs are open source!"></div>
+     <div><label for="id_form-0-pubDate">Pub date:</label> <input type="text" name="form-0-pubDate" id="id_form-0-pubDate" value="2014-02-28"></div>
+   </div>
+   <div>
+     <div><label for="id_form-1-title">Title:</label> <input type="text" name="form-1-title" id="id_form-1-title"></div>
+     <div><label for="id_form-1-pubDate">Pub date:</label> <input type="text" name="form-1-pubDate" id="id_form-1-pubDate"></div>
+   </div>
+   <div>
+     <div><label for="id_form-2-title">Title:</label> <input type="text" name="form-2-title" id="id_form-2-title"></div>
+     <div><label for="id_form-2-pubDate">Pub date:</label> <input type="text" name="form-2-pubDate" id="id_form-2-pubDate"></div>
+   </div>
    */
 
 There are now a total of three forms showing above. One for the initial data
@@ -86,11 +94,13 @@ limit the maximum number of empty forms the formset will display:
    var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2, maxNum: 1})
    var formset = new ArticleFormSet()
    formset.forms().forEach(function(form) {
-     print(reactHTML(form.asTable()))
+     print(reactHTML(<RenderForm form={form}/>))
    })
    /* =>
-   <tr><th><label for="id_form-0-title">Title:</label></th><td><input type="text" name="form-0-title" id="id_form-0-title"></td></tr>
-   <tr><th><label for="id_form-0-pubDate">Pub date:</label></th><td><input type="text" name="form-0-pubDate" id="id_form-0-pubDate"></td></tr>
+   <div>
+     <div><label for="id_form-0-title">Title:</label> <input type="text" name="form-0-title" id="id_form-0-title"></div>
+     <div><label for="id_form-0-pubDate">Pub date:</label> <input type="text" name="form-0-pubDate" id="id_form-0-pubDate"></div>
+   </div>
    */
 
 If the value of ``maxNum`` is greater than the number of existing objects, up to
