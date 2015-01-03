@@ -5,7 +5,7 @@ React Components
 .. versionadded:: 0.10
 
 To help you get started quickly, newforms provides some React components to
-handle instantation and rendering of Forms and Formsets.
+handle instantation and rendering of Forms and FormSets.
 
 For the basic scenario of displaying form fields in the order they were defined,
 these may be all you need to handle rendering your forms.
@@ -13,7 +13,10 @@ these may be all you need to handle rendering your forms.
 RenderForm
 ==========
 
-This handles the generic use case for form rendering:
+This component renders a :doc:`Form <forms>` as a list of "rows" -- one for each
+field.
+
+It handles the generic use case for form rendering:
 
 * Whole-form error messages are displayed at the top.
 * Each visible field in the form is displayed in the order fields were defined.
@@ -33,8 +36,8 @@ If :js:class:`form construction options <BaseForm>` are passed as props to
 instance.
 
 For example, if you need to display more than one of the same Form, you need to
-specify a prefix to give them a unique namespace, so pass a ``prefix`` prop as
-well:
+specify a :ref:`prefix <ref-form-prefixes>` to give them a unique namespace, so
+pass a ``prefix`` prop like so:
 
 .. code-block:: javascript
 
@@ -63,8 +66,8 @@ well:
 Getting the Form instance
 -------------------------
 
-Make sure you give RenderForm a ``ref`` prop so you can access the Form instance
-it manages for you when needed.
+When passing RenderForm a Form constructor, give it a ``ref`` prop so you can
+use its ``getForm()`` method to access the Form instance it manages for you.
 
 For example, when handling submission of a form:
 
@@ -75,7 +78,7 @@ For example, when handling submission of a form:
        <forms.RenderForm form={MyForm} ref="myForm"/>
        <button>Submit</button>
      </form>
-   }.
+   },
 
    _onSubmit: function(e) {
      e.preventDefault()
@@ -89,6 +92,7 @@ For example, when handling submission of a form:
 Other rendering scenarios
 -------------------------
 
+For the sake of being a complete default rendering implementation,
 ``RenderForm`` also handles some less common scenarios:
 
 * Displaying error messages related to hidden fields.
@@ -137,7 +141,7 @@ RenderForm props
 ``rowComponent``
    :type: ``ReactCompositeComponent`` or ``String`` (an HTML tag name)
 
-   The component used to wrap each row. Defaults to ``'div'``.
+   The tag name or component used to wrap each form row. Defaults to ``'div'``.
 
    This is passed as a ``component`` prop to the component in the ``row`` prop.
 
@@ -168,7 +172,7 @@ FormRow
 This component handles rendering a single form "row". `RenderForm`_ uses this
 to render rows by default; it will either:
 
-1. Wrap some given content as a row, or:
+1. Wrap some given content (such as a list of error messages) as a row, or:
 2. Use a field's :ref:`rendering helper <ref-custom-display-boundfield>` to
    generate a row for the field, with a label, user input, error messages and
    help text, as necessary.
@@ -212,8 +216,9 @@ FormRow props
 RenderFormSet
 =============
 
-This component handles the generic use case for formset rendering, using
-``RenderForm`` to render each form in the formset one after the other.
+This component handles the generic use case for :doc:`FormSet <formsets>`
+rendering, using ``RenderForm`` to render each form in a formset one after the
+other.
 
 It can also take care of some of the details of creating a FormSet and
 re-rendering when form state changes.
@@ -336,7 +341,7 @@ component to the ``row`` prop.
 
 .. Note::
    Keep in mind when implementing a custom row component that it will receive
-   props as per those described for :ref:`FormRow <ref-components-formrow>`
+   props as per those described for :ref:`FormRow <ref-components-formrow>`.
 
 Custom rendering with a child component
 =======================================
@@ -348,7 +353,7 @@ automatic validation and redisplay, pass a component as the only child of
 
 .. Warning::
    Passing more than one child component to ``RenderForm`` will result in an
-   ``Error``
+   ``Error``.
 
 RenderForm wil then clone your component and pass the Form instance it manages
 as a ``form`` prop.
@@ -380,10 +385,11 @@ For example, this is how `newforms-gridforms`_ implements a custom grid layout:
 Custom async progress rendering
 ===============================
 
-By default, when an async validation is running, each of the React components
-newforms provides will render a ``<progress>`` element with fallback
-"Validating..." text. However, the ``<progress>`` element doesn't currently lend
-itself to extensive customisation via CSS, especially cross-browser.
+By default, when :ref:`async validation <ref-async-validation>` is in progress,
+each of the React components newforms provides will render a ``<progress>``
+element with fallback "Validating..." text. However, the ``<progress>`` element
+doesn't currently lend itself to extensive customisation via CSS, especially
+cross-browser.
 
 To customise this, each component takes a ``progress`` prop which
 can take a function or React component which will be used to indicate an
@@ -407,3 +413,7 @@ to display a spinner image instead:
        <img src="/img/spinner.gif" alt=""/> Validating&hellip;
      </span>
    }
+
+.. code-block:: html
+
+   <<RenderForm form={MyForm} ref="myForm" progress={InProgress}/>

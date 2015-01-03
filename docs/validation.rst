@@ -361,6 +361,8 @@ performed if one of the fields it uses is affected.
            style="box-sizing: border-box; width: 100%; overflow: hidden; border: 0">
    </iframe>
 
+.. _ref-async-validation:
+
 Asynchronous validation
 =======================
 
