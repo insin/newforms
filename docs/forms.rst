@@ -549,10 +549,10 @@ If ``autoId`` is ``false``, then the form output will include neither
    print(reactHTML(<RenderForm form={f}/>))
    /* =>
    <div>
-     <div><span>Subject:</span><span> </span><input maxlength="100" type="text" name="subject"></div>
-     <div><span>Message:</span><span> </span><input type="text" name="message"></div>
-     <div><span>Sender:</span><span> </span><input type="email" name="sender"></div>
-     <div><span>Cc myself:</span><span> </span><input type="checkbox" name="ccMyself"></div>
+     <divSubject: <input maxlength="100" type="text" name="subject"></div>
+     <divMessage: <input type="text" name="message"></div>
+     <divSender: <input type="email" name="sender"></div>
+     <divCc myself: <input type="checkbox" name="ccMyself"></div>
    </div>
    */
 
@@ -565,10 +565,10 @@ tags and will simply use the field name as its ``id`` for each form field:
    print(reactHTML(<RenderForm form={f}/>))
    /* =>
    <div>
-     <div><label for="subject">Subject:</label><span> </span><input maxlength="100" type="text" name="subject" id="subject"></div>
-     <div><label for="message">Message:</label><span> </span><input type="text" name="message" id="message"></div>
-     <div><label for="sender">Sender:</label><span> </span><input type="email" name="sender" id="sender"></div>
-     <div><label for="ccMyself">Cc myself:</label><span> </span><input type="checkbox" name="ccMyself" id="ccMyself"></div>
+     <div><label for="subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="subject"></div>
+     <div><label for="message">Message:</label> <input type="text" name="message" id="message"></div>
+     <div><label for="sender">Sender:</label> <input type="email" name="sender" id="sender"></div>
+     <div><label for="ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="ccMyself"></div>
    </div>
    */
 
@@ -582,10 +582,10 @@ attributes based on the format string:
    print(reactHTML(<RenderForm form={f}/>))
    /* =>
    <div>
-     <div><label for="id_for_subject">Subject:</label><span> </span><input maxlength="100" type="text" name="subject" id="id_for_subject"></div>
-     <div><label for="id_for_message">Message:</label><span> </span><input type="text" name="message" id="id_for_message"></div>
-     <div><label for="id_for_sender">Sender:</label><span> </span><input type="email" name="sender" id="id_for_sender"></div>
-     <div><label for="id_for_ccMyself">Cc myself:</label><span> </span><input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>
+     <div><label for="id_for_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"></div>
+     <div><label for="id_for_message">Message:</label> <input type="text" name="message" id="id_for_message"></div>
+     <div><label for="id_for_sender">Sender:</label> <input type="email" name="sender" id="id_for_sender"></div>
+     <div><label for="id_for_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>
    </div>
    */
 
@@ -600,10 +600,10 @@ It's possible to customise the suffix character appended to generated labels
    print(reactHTML(<RenderForm form={f}/>))
    /* =>
    <div>
-     <div><label for="id_for_subject">Subject</label><span> </span><input maxlength="100" type="text" name="subject" id="id_for_subject"></div>
-     <div><label for="id_for_message">Message</label><span> </span><input type="text" name="message" id="id_for_message"></div>
-     <div><label for="id_for_sender">Sender</label><span> </span><input type="email" name="sender" id="id_for_sender"></div>
-     <div><label for="id_for_ccMyself">Cc myself</label><span> </span><input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>
+     <div><label for="id_for_subject">Subject</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"></div>
+     <div><label for="id_for_message">Message</label> <input type="text" name="message" id="id_for_message"></div>
+     <div><label for="id_for_sender">Sender</label> <input type="email" name="sender" id="id_for_sender"></div>
+     <div><label for="id_for_ccMyself">Cc myself</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>
    </div>
    */
 
@@ -613,10 +613,10 @@ It's possible to customise the suffix character appended to generated labels
    print(reactHTML(<RenderForm form={f}/>))
    /* =>
    <div>
-     <div><label for="id_for_subject">Subject -&gt;</label><span> </span><input maxlength="100" type="text" name="subject" id="id_for_subject"></div>
-     <div><label for="id_for_message">Message -&gt;</label><span> </span><input type="text" name="message" id="id_for_message"></div>
-     <div><label for="id_for_sender">Sender -&gt;</label><span> </span><input type="email" name="sender" id="id_for_sender"></div>
-     <div><label for="id_for_ccMyself">Cc myself -&gt;</label><span> </span><input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>
+     <div><label for="id_for_subject">Subject -&gt;</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"></div>
+     <div><label for="id_for_message">Message -&gt;</label> <input type="text" name="message" id="id_for_message"></div>
+     <div><label for="id_for_sender">Sender -&gt;</label> <input type="email" name="sender" id="id_for_sender"></div>
+     <div><label for="id_for_ccMyself">Cc myself -&gt;</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>
    </div>
    */
 
@@ -655,10 +655,10 @@ field:
    print(reactHTML(<RenderForm form={f}/>))
    /* =>
    <div>
-     <div><ul class="errorlist"><li>This field is required.</li></ul><label for="id_subject">Subject:</label><span> </span><input maxlength="100" type="text" name="subject" id="id_subject"></div>
-     <div><label for="id_message">Message:</label><span> </span><input type="text" name="message" id="id_message" value="Hi there"></div>
-     <div><ul class="errorlist"><li>Enter a valid email address.</li></ul><label for="id_sender">Sender:</label><span> </span><input type="email" name="sender" id="id_sender" value="invalid email address"></div>
-     <div><label for="id_ccMyself">Cc myself:</label><span> </span><input type="checkbox" name="ccMyself" id="id_ccMyself" checked></div>
+     <div><ul class="errorlist"><li>This field is required.</li></ul><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"></div>
+     <div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message" value="Hi there"></div>
+     <div><ul class="errorlist"><li>Enter a valid email address.</li></ul><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender" value="invalid email address"></div>
+     <div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself" checked></div>
    </div>
    */
 
@@ -682,10 +682,10 @@ pass an alternate constructor for displaying errors at form construction time:
    print(reactHTML(<RenderForm form={f}/>))
    /* =>
    <div>
-     <div><div class="errorlist"><div>This field is required.</div></div><span>Subject:</span><span> </span><input maxlength="100" type="text" name="subject"></div>
-     <div><span>Message:</span><span> </span><input type="text" name="message" value="Hi there"></div>
-     <div><div class="errorlist"><div>Enter a valid email address.</div></div><span>Sender:</span><span> </span><input type="email" name="sender" value="invalid email address"></div>
-     <div><span>Cc myself:</span><span> </span><input type="checkbox" name="ccMyself" checked></div>
+     <div><div class="errorlist"><div>This field is required.</div></div>Subject: <input maxlength="100" type="text" name="subject"></div>
+     <div>Message: <input type="text" name="message" value="Hi there"></div>
+     <div><div class="errorlist"><div>Enter a valid email address.</div></div>Sender: <input type="email" name="sender" value="invalid email address"></div>
+     <div>Cc myself: <input type="checkbox" name="ccMyself" checked></div>
    </div>
    */
 
@@ -838,10 +838,10 @@ its field list includes their fields:
    print(reactHTML(<RenderForm form={b}/>))
    /* =>
    <div>
-     <div><span>First name:</span><span> </span><input type="text" name="first_name"></div>
-     <div><span>Last name:</span><span> </span><input type="text" name="last_name"></div>
-     <div><span>Instrument:</span><span> </span><input type="text" name="instrument"></div>
-     <div><span>Haircut type:</span><span> </span><input type="text" name="haircut_type"></div>
+     <div>First name: <input type="text" name="first_name"></div>
+     <div>Last name: <input type="text" name="last_name"></div>
+     <div>Instrument: <input type="text" name="instrument"></div>
+     <div>Haircut type: <input type="text" name="haircut_type"></div>
    </div>
    */
 
@@ -860,15 +860,15 @@ form its own namespace, use the ``prefix`` argument:
    print(reactHTML(<RenderForm form={mother}/>))
    /* =>
    <div>
-     <div><label for="id_mother-first_name">First name:</label><span> </span><input type="text" name="mother-first_name" id="id_mother-first_name"></div>
-     <div><label for="id_mother-last_name">Last name:</label><span> </span><input type="text" name="mother-last_name" id="id_mother-last_name"></div>
+     <div><label for="id_mother-first_name">First name:</label> <input type="text" name="mother-first_name" id="id_mother-first_name"></div>
+     <div><label for="id_mother-last_name">Last name:</label> <input type="text" name="mother-last_name" id="id_mother-last_name"></div>
    </div>
    */
    print(reactHTML(<RenderForm form={father}/>))
    /* =>
    <div>
-     <div><label for="id_father-first_name">First name:</label><span> </span><input type="text" name="father-first_name" id="id_father-first_name"></div>
-     <div><label for="id_father-last_name">Last name:</label><span> </span><input type="text" name="father-last_name" id="id_father-last_name"></div>
+     <div><label for="id_father-first_name">First name:</label> <input type="text" name="father-first_name" id="id_father-first_name"></div>
+     <div><label for="id_father-last_name">Last name:</label> <input type="text" name="father-last_name" id="id_father-last_name"></div>
    </div>
    */
 

@@ -513,16 +513,16 @@ Selector and checkbox widgets
    .. code-block:: html
 
       <div class="myRadio">
-        <label for="id_beatles_0"><input id="id_beatles_0" type="radio" name="beatles" value="john"><span> </span><span>John</span></label>
+        <label for="id_beatles_0"><input id="id_beatles_0" type="radio" name="beatles" value="john"> John</label>
       </div>
       <div class="myRadio">
-        <label for="id_beatles_1"><input id="id_beatles_1" type="radio" name="beatles" value="paul"><span> </span><span>Paul</span></label>
+        <label for="id_beatles_1"><input id="id_beatles_1" type="radio" name="beatles" value="paul"> Paul</label>
       </div>
       <div class="myRadio">
-        <label for="id_beatles_2"><input id="id_beatles_2" type="radio" name="beatles" value="george"><span> </span><span>George</span></label>
+        <label for="id_beatles_2"><input id="id_beatles_2" type="radio" name="beatles" value="george"> George</label>
       </div>
       <div class="myRadio">
-        <label for="id_beatles_3"><input id="id_beatles_3" type="radio" name="beatles" value="ringo"><span> </span><span>Ringo</span></label>
+        <label for="id_beatles_3"><input id="id_beatles_3" type="radio" name="beatles" value="ringo"> Ringo</label>
       </div>
 
    That included the ``<label>`` tags. To get more granular, you can use each
@@ -541,19 +541,19 @@ Selector and checkbox widgets
    .. code-block:: html
 
       <label for="id_beatles_0">
-        <span>John</span>
+        John
         <span class="radio"><input id="id_beatles_0" type="radio" name="beatles" value="john"></span>
       </label>
       <label for="id_beatles_1">
-        <span>Paul</span>
+        Paul
         <span class="radio"><input id="id_beatles_1" type="radio" name="beatles" value="paul"></span>
       </label>
       <label for="id_beatles_2">
-        <span>George</span>
+        George
         <span class="radio"><input id="id_beatles_2" type="radio" name="beatles" value="george"></span>
       </label>
       <label for="id_beatles_3">
-        <span>Ringo</span>
+        Ringo
         <span class="radio"><input id="id_beatles_3" type="radio" name="beatles" value="ringo"></span>
       </label>
 
