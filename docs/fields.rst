@@ -895,8 +895,8 @@ Slightly complex built-in ``Field`` types
         .. code-block:: javascript
 
            var f = forms.ComboField({fields: [
-             forms.CharField({maxLength: 20})
-           , forms.EmailField()
+             forms.CharField({maxLength: 20}),
+             forms.EmailField()
            ]})
            print(f.clean('test@example.com'))
            // => test@example.com
@@ -970,11 +970,11 @@ Slightly complex built-in ``Field`` types
                kwargs.fields = [
                  forms.CharField({errorMessages: {incomplete: 'Enter a country code.'}, validators: [
                    RegexValidator({regex: /^\d+$/, message: 'Enter a valid country code.'})
-                 ]})
-               , forms.CharField({errorMessages: {incomplete: 'Enter a phone number.'}, validators: [
+                 ]}),
+                 forms.CharField({errorMessages: {incomplete: 'Enter a phone number.'}, validators: [
                    RegexValidator({regex: /^\d+$/, message: 'Enter a valid phone number.'})
-                 ]})
-               , forms.CharField({required: false, validators: [
+                 ]}),
+                 forms.CharField({required: false, validators: [
                    RegexValidator({regex: /^\d+$/, message: 'Enter a valid extension.'})
                  ]})
                ]

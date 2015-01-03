@@ -294,11 +294,11 @@ When creating the form in our example React component, we're passing
    getInitialState: function() {
      return {
        form: new PersonForm({
-         controlled: true
-       , onChange: this.forceUpdate.bind(this)
-       })
-     , editing: null
-     , people: [/* ... */]
+         controlled: true,
+         onChange: this.forceUpdate.bind(this)
+       }),
+       editing: null,
+       people: [/* ... */]
      }
    }
 

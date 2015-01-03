@@ -285,9 +285,9 @@ a :js:class:`MultiValueField`, so we've implemented
      constructor: function(kwargs) {
        kwargs = extend({attrs: {}}, kwargs)
        widgets = [
-         forms.Select({choices: range(1, 32), attrs: kwargs.attrs})
-       , forms.Select({choices: range(1, 13), attrs: kwargs.attrs})
-       , forms.Select({choices: range(2012, 2017), attrs: kwargs.attrs})
+         forms.Select({choices: range(1, 32), attrs: kwargs.attrs}),
+         forms.Select({choices: range(1, 13), attrs: kwargs.attrs}),
+         forms.Select({choices: range(2012, 2017), attrs: kwargs.attrs})
        ]
        forms.MultiWidget.call(this, widgets, kwargs)
      },

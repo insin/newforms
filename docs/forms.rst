@@ -307,9 +307,9 @@ fields. In this example, the data object doesn't include a value for the
 .. code-block:: javascript
 
    var OptionalPersonForm = forms.Form.extend({
-     firstName: forms.CharField()
-   , lastName: forms.CharField()
-   , nickName: forms.CharField({required: false})
+     firstName: forms.CharField(),
+     lastName: forms.CharField(),
+     nickName: forms.CharField({required: false})
    })
    var data {firstName: 'Alan', lastName: 'Partridge'}
    var f = new OptionalPersonForm({data: data})
@@ -528,11 +528,11 @@ properties, e.g. to set them up as protoype properties:
 .. code-block:: javascript
 
    var ContactForm = forms.Form.extend({
-     rowCssClass: 'row'
-   , requiredCssClass: 'required'
-   , optionalCssClass: 'optional'
-   , errorCssClass: 'error'
-   , validCssClass: 'valid'
+     rowCssClass: 'row',
+     requiredCssClass: 'required',
+     optionalCssClass: 'optional',
+     errorCssClass: 'error',
+     validCssClass: 'valid',
    // ...and the rest of your fields here
    })
 
@@ -754,8 +754,8 @@ pass an alternate constructor for displaying errors at form construction time:
 
    var DivErrorList = forms.ErrorList.extend({
      render: function() {
-       return React.createElemenr('div', {className: 'errorlist'}
-       , this.messages().map(function(error) {
+       return React.createElemenr('div', {className: 'errorlist'},
+         this.messages().map(function(error) {
            return React.createElemenr('div', null, error)
          })
        )
@@ -990,15 +990,15 @@ its field list includes their fields:
 .. code-block:: javascript
 
    var PersonForm = forms.Form.extend({
-     first_name: forms.CharField()
-   , last_name: forms.CharField()
+     first_name: forms.CharField(),
+     last_name: forms.CharField()
    })
    var InstrumentForm = forms.Form.extend({
      instrument: forms.CharField()
    })
    var BeatleForm = forms.Form.extend({
-     __mixins__: [PersonForm, InstrumentForm]
-   , haircut_type: forms.CharField()
+     __mixins__: [PersonForm, InstrumentForm],
+     haircut_type: forms.CharField()
    })
    var b = new BeatleForm({autoId: false})
    print(reactHTML(b.asUl()))
