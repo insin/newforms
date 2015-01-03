@@ -125,11 +125,13 @@ provided for each widget will be rendered exactly the same:
 .. code-block:: javascript
 
    var f = new CommentForm({autoId: false})
-   print(reactHTML(f.asTable()))
+   print(reactHTML(<RenderForm form={f}/>))
    /* =>
-   <tr><th>Name:</th><td><input type="text" name="name"></td></tr>
-   <tr><th>Url:</th><td><input type="url" name="url"></td></tr>
-   <tr><th>Comment:</th><td><input type="text" name="comment"></td></tr>
+   <div>
+     <div>Name: <input type="text" name="name"></div>
+     <div>Url: <input type="url" name="url"></div>
+     <div>Comment: <input type="text" name="comment"></div>
+   </div>
    */
 
 On a real Web page, you probably don't want every widget to look the same. You
@@ -162,11 +164,13 @@ The extra attributes will then be included in the rendered output:
 .. code-block:: javascript
 
    var f = new CommentForm({autoId: false})
-   print(reactHTML(f.asTable()))
+   print(reactHTML(<RenderForm form={f}/>))
    /* =>
-   <tr><th>Name:</th><td><input class="special" type="text" name="name"></td></tr>
-   <tr><th>Url:</th><td><input type="url" name="url"></td></tr>
-   <tr><th>Comment:</th><td><input size="40" type="text" name="comment"></td></tr>
+   <div>
+     <div>Name: <input class="special" type="text" name="name"></div>
+     <div>Url: <input type="url" name="url"></div>
+     <div>Comment: <input size="40" type="text" name="comment"></div>
+   </div>
    */
 
 You can also set the HTML ``id`` using ``Widget.attrs``.
