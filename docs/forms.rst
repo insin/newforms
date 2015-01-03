@@ -195,9 +195,9 @@ Form-level ``initial`` gets precedence:
    print(reactHTML(<RenderForm form={f}/>))
    /* =>
    <div>
-     <div>Name:</th><td><input type="text" name="name" value="instance"></div>
-     <div>Url:</th><td><input type="url" name="url"></div>
-     <div>Comment:</th><td><input type="text" name="comment"></div>
+     <div>Name: <input type="text" name="name" value="instance"></div>
+     <div>Url: <input type="url" name="url"></div>
+     <div>Comment: <input type="text" name="comment"></div>
    </div>
    */
 
