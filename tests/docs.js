@@ -131,10 +131,12 @@ QUnit.test('Forms - Dynamic initial values', function() {
   })
 
   var f = new CommentForm({initial: {name: 'instance'}, autoId: false})
-  reactHTMLEqual(f.render(),
-"<tr><th>Name:</th><td><input type=\"text\" name=\"name\" value=\"instance\"></td></tr>" +
-"<tr><th>Url:</th><td><input type=\"url\" name=\"url\"></td></tr>" +
-"<tr><th>Comment:</th><td><input type=\"text\" name=\"comment\"></td></tr>",
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div>Name: <input type="text" name="name" value="instance"></div>\
+<div>Url: <input type="url" name="url"></div>\
+<div>Comment: <input type="text" name="comment"></div>\
+</div>',
     'Form-level initial gets precedence')
 })
 
@@ -148,10 +150,12 @@ QUnit.test('Forms - Accessing the fields from the form', function() {
 
   var f = new CommentForm({initial: {name: 'instance'}, autoId: false})
   f.fields.name.label = 'Username'
-  reactHTMLEqual(f.render(),
-"<tr><th>Username:</th><td><input type=\"text\" name=\"name\" value=\"instance\"></td></tr>" +
-"<tr><th>Url:</th><td><input type=\"url\" name=\"url\"></td></tr>" +
-"<tr><th>Comment:</th><td><input type=\"text\" name=\"comment\"></td></tr>",
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div>Username: <input type="text" name="name" value="instance"></div>\
+<div>Url: <input type="url" name="url"></div>\
+<div>Comment: <input type="text" name="comment"></div>\
+</div>',
    'You can alter fields')
 })
 
@@ -180,11 +184,13 @@ QUnit.test("Forms - Updating a form's input data - updateData & isComplete", fun
 
 QUnit.test('Forms - Outputting forms as HTML', function() {
   var f = new ContactForm()
-  reactHTMLEqual(f.render.bind(f),
-"<tr><th><label for=\"id_subject\">Subject:</label></th><td><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></td></tr>\
-<tr><th><label for=\"id_message\">Message:</label></th><td><input type=\"text\" name=\"message\" id=\"id_message\"></td></tr>\
-<tr><th><label for=\"id_sender\">Sender:</label></th><td><input type=\"email\" name=\"sender\" id=\"id_sender\"></td></tr>\
-<tr><th><label for=\"id_ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></td></tr>",
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"></div>\
+<div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message"></div>\
+<div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender"></div>\
+<div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself"></div>\
+</div>',
   "Simply call render()")
 
   var data = {
@@ -194,26 +200,14 @@ QUnit.test('Forms - Outputting forms as HTML', function() {
   , ccMyself: true
   }
   f = new ContactForm({data: data})
-  reactHTMLEqual(f.render.bind(f),
-"<tr><th><label for=\"id_subject\">Subject:</label></th><td><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\" value=\"hello\"></td></tr>\
-<tr><th><label for=\"id_message\">Message:</label></th><td><input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></td></tr>\
-<tr><th><label for=\"id_sender\">Sender:</label></th><td><input type=\"email\" name=\"sender\" id=\"id_sender\" value=\"foo@example.com\"></td></tr>\
-<tr><th><label for=\"id_ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></td></tr>",
-  "If the form is bound to data, the HTML output will include that data appropriately")
-
-  f = new ContactForm()
-  reactHTMLEqual(f.asDiv.bind(f),
-"<div><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
-<div><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></div>\
-<div><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
-<div><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>",
-  "asDiv()")
-  reactHTMLEqual(f.asUl.bind(f),
-"<li><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></li>\
-<li><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></li>\
-<li><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"></li>\
-<li><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></li>",
-  "asUl()")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject" value="hello"></div>\
+<div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message" value="Hi there"></div>\
+<div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender" value="foo@example.com"></div>\
+<div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself" checked></div>\
+</div>',
+  'If the form is bound to data, the HTML output will include that data appropriately')
 })
 
 QUnit.test('Forms - Styling form rows', function() {
@@ -235,90 +229,66 @@ QUnit.test('Forms - Styling form rows', function() {
   , ccMyself: true
   }
   var f = new CssContactForm({data: data})
-  reactHTMLEqual(f.render.bind(f),
-"<tr class=\"row valid required\"><th><label for=\"id_subject\">Subject:</label></th><td><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\" value=\"hello\"></td></tr>\
-<tr class=\"row valid required\"><th><label for=\"id_message\">Message:</label></th><td><input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></td></tr>\
-<tr class=\"row error required\"><th><label for=\"id_sender\">Sender:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input type=\"email\" name=\"sender\" id=\"id_sender\"></td></tr>\
-<tr class=\"row valid optional\"><th><label for=\"id_ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></td></tr>",
-  "Form CSS hooks")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div class="row valid required"><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject" value="hello"></div>\
+<div class="row valid required"><label for="id_message">Message:</label> <input type="text" name="message" id="id_message" value="Hi there"></div>\
+<div class="row error required"><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender"><ul class="errorlist"><li>This field is required.</li></ul></div>\
+<div class="row valid optional"><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself" checked></div>\
+</div>',
+  'Form CSS hooks')
 })
 
 QUnit.test('Forms - Configuring form elements’ HTML id attributes and <label> tags', function() {
   var f = new ContactForm({autoId: false})
-  reactHTMLEqual(f.asTable(),
-"<tr><th>Subject:</th><td><input maxlength=\"100\" type=\"text\" name=\"subject\"></td></tr>\
-<tr><th>Message:</th><td><input type=\"text\" name=\"message\"></td></tr>\
-<tr><th>Sender:</th><td><input type=\"email\" name=\"sender\"></td></tr>\
-<tr><th>Cc myself:</th><td><input type=\"checkbox\" name=\"ccMyself\"></td></tr>",
-  "asTable(), autoId == false")
-  reactHTMLEqual(f.asUl(),
-"<li>Subject: <input maxlength=\"100\" type=\"text\" name=\"subject\"></li>\
-<li>Message: <input type=\"text\" name=\"message\"></li>\
-<li>Sender: <input type=\"email\" name=\"sender\"></li>\
-<li>Cc myself: <input type=\"checkbox\" name=\"ccMyself\"></li>",
-  "asUl(), autoId == false")
-  reactHTMLEqual(f.asDiv(),
-"<div>Subject: <input maxlength=\"100\" type=\"text\" name=\"subject\"></div>\
-<div>Message: <input type=\"text\" name=\"message\"></div>\
-<div>Sender: <input type=\"email\" name=\"sender\"></div>\
-<div>Cc myself: <input type=\"checkbox\" name=\"ccMyself\"></div>",
-  "asDiv(), autoId == false")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div>Subject: <input maxlength="100" type="text" name="subject"></div>\
+<div>Message: <input type="text" name="message"></div>\
+<div>Sender: <input type="email" name="sender"></div>\
+<div>Cc myself: <input type="checkbox" name="ccMyself"></div>\
+</div>',
+  'autoId == false')
 
   f = new ContactForm({autoId: true})
-  reactHTMLEqual(f.asTable.bind(f),
-"<tr><th><label for=\"subject\">Subject:</label></th><td><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"subject\"></td></tr>\
-<tr><th><label for=\"message\">Message:</label></th><td><input type=\"text\" name=\"message\" id=\"message\"></td></tr>\
-<tr><th><label for=\"sender\">Sender:</label></th><td><input type=\"email\" name=\"sender\" id=\"sender\"></td></tr>\
-<tr><th><label for=\"ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"ccMyself\"></td></tr>",
-  "asTable(), autoId == true")
-  reactHTMLEqual(f.asUl.bind(f),
-"<li><label for=\"subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"subject\"></li>\
-<li><label for=\"message\">Message:</label> <input type=\"text\" name=\"message\" id=\"message\"></li>\
-<li><label for=\"sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"sender\"></li>\
-<li><label for=\"ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"ccMyself\"></li>",
-  "asUl(), autoId == true")
-  reactHTMLEqual(f.asDiv.bind(f),
-"<div><label for=\"subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"subject\"></div>\
-<div><label for=\"message\">Message:</label> <input type=\"text\" name=\"message\" id=\"message\"></div>\
-<div><label for=\"sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"sender\"></div>\
-<div><label for=\"ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"ccMyself\"></div>",
-  "asDiv(), autoId == true")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div><label for="subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="subject"></div>\
+<div><label for="message">Message:</label> <input type="text" name="message" id="message"></div>\
+<div><label for="sender">Sender:</label> <input type="email" name="sender" id="sender"></div>\
+<div><label for="ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="ccMyself"></div>\
+</div>',
+  'autoId == true')
 
   f = new ContactForm({autoId: 'id_for_{name}'})
-  reactHTMLEqual(f.asTable.bind(f),
-"<tr><th><label for=\"id_for_subject\">Subject:</label></th><td><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></td></tr>\
-<tr><th><label for=\"id_for_message\">Message:</label></th><td><input type=\"text\" name=\"message\" id=\"id_for_message\"></td></tr>\
-<tr><th><label for=\"id_for_sender\">Sender:</label></th><td><input type=\"email\" name=\"sender\" id=\"id_for_sender\"></td></tr>\
-<tr><th><label for=\"id_for_ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></td></tr>",
-  "asTable(), autoId == 'id_for_{name}'")
-  reactHTMLEqual(f.asUl.bind(f),
-"<li><label for=\"id_for_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></li>\
-<li><label for=\"id_for_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_for_message\"></li>\
-<li><label for=\"id_for_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_for_sender\"></li>\
-<li><label for=\"id_for_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></li>",
-  "asUl(), autoId == 'id_for_{name}'")
-  reactHTMLEqual(f.asDiv.bind(f),
-"<div><label for=\"id_for_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></div>\
-<div><label for=\"id_for_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_for_message\"></div>\
-<div><label for=\"id_for_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_for_sender\"></div>\
-<div><label for=\"id_for_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></div>",
-  "asDiv(), autoId == 'id_for_{name}'")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div><label for="id_for_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"></div>\
+<div><label for="id_for_message">Message:</label> <input type="text" name="message" id="id_for_message"></div>\
+<div><label for="id_for_sender">Sender:</label> <input type="email" name="sender" id="id_for_sender"></div>\
+<div><label for="id_for_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>\
+</div>',
+  'autoId == "id_for_{name}"')
 
   f = new ContactForm({autoId: 'id_for_{name}', labelSuffix: ''})
-  reactHTMLEqual(f.asUl.bind(f),
-"<li><label for=\"id_for_subject\">Subject</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></li>\
-<li><label for=\"id_for_message\">Message</label> <input type=\"text\" name=\"message\" id=\"id_for_message\"></li>\
-<li><label for=\"id_for_sender\">Sender</label> <input type=\"email\" name=\"sender\" id=\"id_for_sender\"></li>\
-<li><label for=\"id_for_ccMyself\">Cc myself</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></li>",
-  "labelSuffix == ''")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div><label for="id_for_subject">Subject</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"></div>\
+<div><label for="id_for_message">Message</label> <input type="text" name="message" id="id_for_message"></div>\
+<div><label for="id_for_sender">Sender</label> <input type="email" name="sender" id="id_for_sender"></div>\
+<div><label for="id_for_ccMyself">Cc myself</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>\
+</div>',
+  'labelSuffix == ""')
 
   f = new ContactForm({autoId: 'id_for_{name}', labelSuffix: ' ->'})
-  reactHTMLEqual(f.asUl.bind(f),
-"<li><label for=\"id_for_subject\">Subject -&gt;</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_for_subject\"></li>\
-<li><label for=\"id_for_message\">Message -&gt;</label> <input type=\"text\" name=\"message\" id=\"id_for_message\"></li>\
-<li><label for=\"id_for_sender\">Sender -&gt;</label> <input type=\"email\" name=\"sender\" id=\"id_for_sender\"></li>\
-<li><label for=\"id_for_ccMyself\">Cc myself -&gt;</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_for_ccMyself\"></li>",
-  "labelSuffix == ' ->'")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div><label for="id_for_subject">Subject -&gt;</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"></div>\
+<div><label for="id_for_message">Message -&gt;</label> <input type="text" name="message" id="id_for_message"></div>\
+<div><label for="id_for_sender">Sender -&gt;</label> <input type="email" name="sender" id="id_for_sender"></div>\
+<div><label for="id_for_ccMyself">Cc myself -&gt;</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>\
+</div>',
+  'labelSuffix == " ->"')
 })
 
 QUnit.test('Forms - How errors are displayed', function() {
@@ -329,24 +299,14 @@ QUnit.test('Forms - How errors are displayed', function() {
   , ccMyself: true
   }
   var f = new ContactForm({data: data})
-  reactHTMLEqual(f.asTable.bind(f),
-"<tr><th><label for=\"id_subject\">Subject:</label></th><td><ul class=\"errorlist\"><li>This field is required.</li></ul><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></td></tr>\
-<tr><th><label for=\"id_message\">Message:</label></th><td><input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></td></tr>\
-<tr><th><label for=\"id_sender\">Sender:</label></th><td><ul class=\"errorlist\"><li>Enter a valid email address.</li></ul><input type=\"email\" name=\"sender\" id=\"id_sender\" value=\"invalid email address\"></td></tr>\
-<tr><th><label for=\"id_ccMyself\">Cc myself:</label></th><td><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></td></tr>",
-  "asTable() error display")
-  reactHTMLEqual(f.asUl.bind(f),
-"<li><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></li>\
-<li><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></li>\
-<li><ul class=\"errorlist\"><li>Enter a valid email address.</li></ul><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\" value=\"invalid email address\"></li>\
-<li><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></li>",
- "asUl() error display")
-  reactHTMLEqual(f.asDiv.bind(f),
-"<div><ul class=\"errorlist\"><li>This field is required.</li></ul><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
-<div><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\" value=\"Hi there\"></div>\
-<div><ul class=\"errorlist\"><li>Enter a valid email address.</li></ul><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\" value=\"invalid email address\"></div>\
-<div><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\" checked></div>",
-  "asDiv() error display")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"><ul class="errorlist"><li>This field is required.</li></ul></div>\
+<div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message" value="Hi there"></div>\
+<div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender" value="invalid email address"><ul class="errorlist"><li>Enter a valid email address.</li></ul></div>\
+<div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself" checked></div>\
+</div>',
+  'asDiv() error display')
 
   var DivErrorList = forms.ErrorList.extend({
     render: function() {
@@ -358,12 +318,14 @@ QUnit.test('Forms - How errors are displayed', function() {
     }
   })
   f = new ContactForm({data: data, errorConstructor: DivErrorList, autoId: false})
-  reactHTMLEqual(f.asDiv(),
-"<div><div class=\"errorlist\"><div>This field is required.</div></div>Subject: <input maxlength=\"100\" type=\"text\" name=\"subject\"></div>\
-<div>Message: <input type=\"text\" name=\"message\" value=\"Hi there\"></div>\
-<div><div class=\"errorlist\"><div>Enter a valid email address.</div></div>Sender: <input type=\"email\" name=\"sender\" value=\"invalid email address\"></div>\
-<div>Cc myself: <input type=\"checkbox\" name=\"ccMyself\" checked></div>",
-  "Customising the error list format")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div>Subject: <input maxlength="100" type="text" name="subject"><div class="errorlist"><div>This field is required.</div></div></div>\
+<div>Message: <input type="text" name="message" value="Hi there"><div class="errorlist"></div></div>\
+<div>Sender: <input type="email" name="sender" value="invalid email address"><div class="errorlist"><div>Enter a valid email address.</div></div></div>\
+<div>Cc myself: <input type="checkbox" name="ccMyself" checked><div class="errorlist"></div></div>\
+</div>',
+  'Customising the error list format')
 })
 
 QUnit.test('Forms - BoundFields', function() {
@@ -433,12 +395,14 @@ QUnit.test("Forms - Extending forms", function() {
     priority: forms.CharField()
   })
   var f = new ContactFormWithPrority({autoId: false})
-  reactHTMLEqual(f.render(),
-"<tr><th>Subject:</th><td><input maxlength=\"100\" type=\"text\" name=\"subject\"></td></tr>\
-<tr><th>Message:</th><td><input type=\"text\" name=\"message\"></td></tr>\
-<tr><th>Sender:</th><td><input type=\"email\" name=\"sender\"></td></tr>\
-<tr><th>Cc myself:</th><td><input type=\"checkbox\" name=\"ccMyself\"></td></tr>\
-<tr><th>Priority:</th><td><input type=\"text\" name=\"priority\"></td></tr>")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div>Subject: <input maxlength="100" type="text" name="subject"></div>\
+<div>Message: <input type="text" name="message"></div>\
+<div>Sender: <input type="email" name="sender"></div>\
+<div>Cc myself: <input type="checkbox" name="ccMyself"></div>\
+<div>Priority: <input type="text" name="priority"></div>\
+</div>')
 
   var InstrumentForm = forms.Form.extend({
     instrument: forms.CharField()
@@ -448,23 +412,29 @@ QUnit.test("Forms - Extending forms", function() {
   , haircut_type: forms.CharField()
   })
   var b = new BeatleForm({autoId: false})
-  reactHTMLEqual(b.asUl(),
-"<li>First name: <input type=\"text\" name=\"first_name\"></li>\
-<li>Last name: <input type=\"text\" name=\"last_name\"></li>\
-<li>Instrument: <input type=\"text\" name=\"instrument\"></li>\
-<li>Haircut type: <input type=\"text\" name=\"haircut_type\"></li>",
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: b}),
+'<div>\
+<div>First name: <input type="text" name="first_name"></div>\
+<div>Last name: <input type="text" name="last_name"></div>\
+<div>Instrument: <input type="text" name="instrument"></div>\
+<div>Haircut type: <input type="text" name="haircut_type"></div>\
+</div>',
   "Using forms as mixins")
 })
 
 QUnit.test('Forms - Prefixes for forms', function() {
   var mother = new PersonForm({prefix: 'mother'})
   var father = new PersonForm({prefix: 'father'})
-  reactHTMLEqual(mother.asUl.bind(mother),
-"<li><label for=\"id_mother-first_name\">First name:</label> <input type=\"text\" name=\"mother-first_name\" id=\"id_mother-first_name\"></li>\
-<li><label for=\"id_mother-last_name\">Last name:</label> <input type=\"text\" name=\"mother-last_name\" id=\"id_mother-last_name\"></li>" )
-  reactHTMLEqual(father.asUl.bind(father),
-"<li><label for=\"id_father-first_name\">First name:</label> <input type=\"text\" name=\"father-first_name\" id=\"id_father-first_name\"></li>\
-<li><label for=\"id_father-last_name\">Last name:</label> <input type=\"text\" name=\"father-last_name\" id=\"id_father-last_name\"></li>")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: mother}),
+'<div>\
+<div><label for="id_mother-first_name">First name:</label> <input type="text" name="mother-first_name" id="id_mother-first_name"></div>\
+<div><label for="id_mother-last_name">Last name:</label> <input type="text" name="mother-last_name" id="id_mother-last_name"></div>\
+</div>')
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: father}),
+'<div>\
+<div><label for="id_father-first_name">First name:</label> <input type="text" name="father-first_name" id="id_father-first_name"></div>\
+<div><label for="id_father-last_name">Last name:</label> <input type="text" name="father-last_name" id="id_father-last_name"></div>\
+</div>')
 })
 
 QUnit.test('Fields - Field.clean()', function() {
@@ -778,10 +748,12 @@ QUnit.test('Widgets - Styling widget instances', function() {
   , comment: forms.CharField()
   })
   var f = new CommentForm({autoId: false})
-  reactHTMLEqual(f.asTable(),
-"<tr><th>Name:</th><td><input type=\"text\" name=\"name\"></td></tr>\
-<tr><th>Url:</th><td><input type=\"url\" name=\"url\"></td></tr>\
-<tr><th>Comment:</th><td><input type=\"text\" name=\"comment\"></td></tr>")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div>Name: <input type="text" name="name"></div>\
+<div>Url: <input type="url" name="url"></div>\
+<div>Comment: <input type="text" name="comment"></div>\
+</div>')
 
   CommentForm = forms.Form.extend({
     name: forms.CharField({
@@ -791,10 +763,12 @@ QUnit.test('Widgets - Styling widget instances', function() {
   , comment: forms.CharField({widget: forms.TextInput({attrs: {size: '40'}})})
   })
   f = new CommentForm({autoId: false})
-  reactHTMLEqual(f.asTable(),
-"<tr><th>Name:</th><td><input class=\"special\" type=\"text\" name=\"name\"></td></tr>\
-<tr><th>Url:</th><td><input type=\"url\" name=\"url\"></td></tr>\
-<tr><th>Comment:</th><td><input size=\"40\" type=\"text\" name=\"comment\"></td></tr>")
+  reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
+'<div>\
+<div>Name: <input class="special" type="text" name="name"></div>\
+<div>Url: <input type="url" name="url"></div>\
+<div>Comment: <input size="40" type="text" name="comment"></div>\
+</div>')
 })
 
 QUnit.test('Widgets - widget.attrs', function() {
