@@ -1,6 +1,8 @@
 ============================
 Interactive Forms with React
 ============================
+This section focuses on API and patterns of usage that are applicable to using
+newforms to create interactive forms in a React component in the browser.
 
 Other documentation sections use the API for providing user input when creating
 a Form instance, to demonstrate behaviour and features based on user input in a
@@ -8,10 +10,7 @@ concise way.
 
 However, this API is more typical of using newforms on the server or as a
 standalone validator. When working with Forms in the client, user input is more
-often taken one field at a time using its ``onChange`` event.
-
-This section focuses on API and patterns of usage that are applicable to using
-newforms to create interactive forms in a React component in the browser.
+often taken one field at a time using the ``onChange`` event.
 
 Provide a containing ``<form>``
 ===============================
@@ -46,7 +45,7 @@ Form state and ``onChange()``
 
 While a Form is not itself a React component, it is stateful. Its ``data``,
 ``errors()`` and ``cleanedData`` properties will be changed when the user makes
-changes and their input is taken and validated.
+changes and their input is stored and validated.
 
 In order to update display of its containing React component, a Form will call
 a given ``onChange()`` callback each time user input is taken or validation is
@@ -75,7 +74,7 @@ Passing an ``onChange`` callback will also automatically configure interactive
 validation of each form input as it's updated by the user. See below for details
 of what that entails and how to configure it.
 
-.. Note::
+.. Warning::
    Due to the way controlled components work in React, if you are using
    `Controlled user inputs`_ and you do not pass an ``onChange()`` callback, your form
    inputs will be read-only! The development version of newforms will warn you
@@ -94,12 +93,14 @@ for every Field in it.
 Form ``'auto'`` validation
 --------------------------
 
-When you pass an ``onChange`` callback to a Form, its validation mode is
-automatically implied to be ``'auto'``:
+.. Important::
 
-.. code-block:: javascript
+   When you pass an ``onChange`` callback to a Form, its ``validation`` mode is
+   automatically implied to be ``'auto'``:
 
-   var form = new SignupForm({onChange: this.onFormChange})
+   .. code-block:: javascript
+
+      var form = new SignupForm({onChange: this.onFormChange})
 
 When the validation mode is ``'auto'``:
 
@@ -223,7 +224,7 @@ still has to signal their intent to submit before any final validation can be
 performed.
 
 Validating final form submission is left in your hands, as newforms doesn't know
-(or care, sorry!) what you ultimatey want to do with the ``cleanedData`` it
+(or care, sorry!) what you ultimately want to do with the ``cleanedData`` it
 creates for you.
 
 This is typically implemented by hooking into a ``<form>``'s ``onSubmit`` event
@@ -242,9 +243,10 @@ and calling ``form.validate()`` to validate the entire user input.
 
 .. Tip::
    Forms represent groups of related Fields and don't necessarily have to model
-   the content of the entire ``<form>``. Use as many as you like, but don't
-   forget to use :ref:`prefixes <ref-form-prefixes>` when necessary to avoid
-   input field ``name`` and ``id`` clashes.
+   the content of the entire ``<form>``.
+
+   Use as many as you like, but don't forget to use :ref:`prefixes <ref-form-prefixes>`
+   when necessary to avoid input field ``name`` and ``id`` clashes.
 
 Controlled user inputs
 ======================
