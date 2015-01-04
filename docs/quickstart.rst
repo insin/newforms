@@ -43,7 +43,7 @@ submission:
    var Signup = React.createClass({
      render: function() {
        return <form onSubmit={this._onSubmit}>
-         <forms.RenderForm form={SignupForm} ref="form"/>
+         <forms.RenderForm form={SignupForm} ref="signupForm"/>
          <button>Sign Up</button>
        </form>
      },
@@ -81,7 +81,7 @@ data, coerced to the appropriate JavaScript data type when appropriate:
      _onSubmit: function(e) {
        e.preventDefault()
 
-       var form = this.refs.form.getForm()
+       var form = this.refs.signupForm.getForm()
        var isValid = form.validate()
        if (isValid) {
          this.props.onSignup(form.cleanedData)
