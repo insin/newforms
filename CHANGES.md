@@ -1,4 +1,4 @@
-# 0.10.0 (in development)
+# 0.10.0 / 2015-01-04
 
 ## Breaking Changes
 
@@ -53,7 +53,7 @@
   JSON. This assumes the structure created by these objects' `toJSON()` methods.
 * Added `form.setErrors()` to set an `ErrorObject` with errors from another
   source.
-* An `ErrorObject` can now be passed as `errors` option when creating a form
+* An `ErrorObject` can now be passed as an `errors` option when creating a form
   instance, to redisplay a form with errors from another source. This prevents
   the form's own validation from running if the form has input `data` and
   `isValid()` or `errors()` are called during rendering.
