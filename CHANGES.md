@@ -1,3 +1,7 @@
+# 0.10.1 / 2015-01-08
+
+* Version bump to fix tags -> keywords in package.json.
+
 # 0.10.0 / 2015-01-04
 
 ## Breaking Changes

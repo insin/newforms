@@ -1,9 +1,9 @@
 {
   "name": "newforms",
   "description": "An isomorphic form-handling library for React",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "author": "Jonny Buchanan <jonathan.buchanan@gmail.com> (https://github.com/insin)",
-  "tags": [
+  "keywords": [
     "isomorphic",
     "form-handling",
     "forms",
@@ -11,7 +11,8 @@
     "validation",
     "conversion",
     "coercion",
-    "react"
+    "react",
+    "react-component"
   ],
   "main": "./lib/newforms.js",
   "repository": {
