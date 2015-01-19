@@ -22,6 +22,7 @@
   "dependencies": {
     "Concur": "~0.3.0",
     "envify": "^3.2.0",
+    "get-form-data": "^1.0.0",
     "isomorph": "~0.3.0",
     "validators": "~0.3.1"
   },

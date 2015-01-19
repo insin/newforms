@@ -30,7 +30,7 @@ QUnit.test('Select', 1, function() {
   , initial: 'N'
   })
   renderField(f, function() {
-    equal('N', forms.util.fieldData(document.getElementById('form'), 'f'))
+    equal('N', document.getElementById('form').elements['f'].value)
   })
 })
 

@@ -6,27 +6,10 @@ Newforms exposes various utilities you may want to make use of when working with
 forms, as well as some implementation details which you may need to make use of
 for customisation purposes.
 
-.. js:function:: formData(form)
-
-   Creates an object representation of a form's elements' contents.
-
-   :param form:
-      a form DOM node or a String specifying a form's ``id`` or ``name``
-      attribute.
-
-      If a String is given, ``id`` is tried before ``name`` when attempting to
-      find the form in the DOM. An error will be thrown if the form can't be
-      found.
-
-   :returns:
-      an object representing the data present in the form, with input names as
-      properties. Inputs with multiple values or duplicate names will have a
-      list of values set.
-
 .. js:function:: validateAll(form, formsAndFormsets)
 
-   Extracts data from a ``<form>`` using :js:func:`formData` and validates it
-   with a list of Forms and/or FormSets.
+   Extracts data from a ``<form>`` and validates it  with a list of Forms
+   and/or FormSets.
 
    :param form:
       the ``<form>`` into which any given forms and formsets have been rendered

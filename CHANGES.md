@@ -1,3 +1,9 @@
+## Breaking Changes
+
+* Replaced `util.formData()` with the
+  [get-form-data](https://www.npmjs.com/package/get-form-data) module -
+  `formData()` is no longer available as top-level API.
+
 # 0.10.1 / 2015-01-08
 
 * Version bump to fix tags -> keywords in package.json.

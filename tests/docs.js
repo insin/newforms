@@ -598,8 +598,7 @@ QUnit.test('Forms and React - Using a Form in a React component', function() {
 
   , onSubmit: function(e) {
       e.preventDefault()
-      var data = forms.formData(this.refs.form.getDOMNode())
-      var isValid = this.state.form.setData(data)
+      var isValid = this.state.form.validate(this.refs.form)
       if (isValid) {
         this.props.processContactData(this.state.form.cleanedData)
       }
