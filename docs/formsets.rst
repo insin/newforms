@@ -14,12 +14,12 @@ form:
    })
 
 You might want to allow the user to create several articles at once. To create
-a formset out of an ``ArticleForm`` you would use the :js:func:`formsetFactory`
+a formset out of an ``ArticleForm`` you would use the :js:func:`FormSet.extend`
 function:
 
 .. code-block:: javascript
 
-   var ArticleFormSet = forms.formsetFactory(ArticleForm)
+   var ArticleFormSet = forms.FormSet.extend({form: ArticleForm})
 
 You now have created a formset named ``ArticleFormSet``. The formset gives you
 the ability to iterate over the forms in the formset and display them as you
@@ -40,12 +40,12 @@ would with a regular form:
 
 As you can see it only displayed one empty form. The number of empty forms
 that is displayed is controlled by the ``extra`` parameter. By default,
-:js:func:`formsetFactory` defines one extra form; the following example will
+:js:class:`FormSet` defines one extra form; the following example will
 display two blank forms:
 
 .. code-block:: javascript
 
-   var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2})
+   var ArticleFormSet = forms.FormSet.extend({form: ArticleForm, extra: 2})
 
 Using initial data with a formset
 =================================
@@ -57,7 +57,7 @@ generates from the initial data. Let's take a look at an example:
 
 .. code-block:: javascript
 
-   var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2})
+   var ArticleFormSet = forms.FormSet.extend({form: ArticleForm, extra: 2})
    var formset = new ArticleFormSet({initial: [
      {title: "Django's docs are open source!", pubDate: new Date()}
    ]})
@@ -86,12 +86,16 @@ list of objects as the initial data.
 Limiting the maximum number of forms
 ====================================
 
-The ``maxNum`` parameter to :js:func:`formsetFactory` gives you the ability to
+The ``maxNum`` parameter to :js:class:`FormSet` gives you the ability to
 limit the maximum number of empty forms the formset will display:
 
 .. code-block:: javascript
 
-   var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2, maxNum: 1})
+   var ArticleFormSet = forms.FormSet.extend({
+     form: ArticleForm,
+     extra: 2,
+     maxNum: 1
+   })
    var formset = new ArticleFormSet()
    formset.forms().forEach(function(form) {
      print(reactHTML(<RenderForm form={form}/>))
@@ -116,7 +120,6 @@ all forms in the formset:
 
 .. code-block:: javascript
 
-   var ArticleFormSet = forms.formsetFactory(ArticleForm)
    var data = {
      'form-TOTAL_FORMS': '1'
    , 'form-INITIAL_FORMS': '0'
@@ -205,7 +208,7 @@ data. It is expected that all forms are present in the ``POST`` data regardless.
 ``totalFormCount()`` and ``initialFormCount()``
 -----------------------------------------------
 
-``BaseFormSet`` has a couple of methods that are closely related to the
+``FormSet`` has a couple of methods that are closely related to the
 ``ManagementForm``, ``totalFormCount`` and ``initialFormCount``.
 
 ``totalFormCount`` returns the total number of forms in this formset.
@@ -227,9 +230,9 @@ Formsets also have a ``removeForm(index)`` method which takes care of the intern
 details of removing an extra form. *This should only ever be called with the index
 of an extra form in the formset.* To ensure this, if you're displaying a formset
 which contains both initial forms for existing data, and extra forms for new data
-which support deletion, use both :js:func:`BaseFormSet.initialForms` and
-:js:func:`BaseFormSet.extraForms` when rendering instead of looping over
-:js:func:`BaseFormSet.forms`.
+which support deletion, use both :js:func:`FormSet.initialForms` and
+:js:func:`FormSet.extraForms` when rendering instead of looping over
+:js:func:`FormSet.forms`.
 
 If you ever have a need to use FormSets on the client side *and* perform a regular
 HTTP POST request to process the form, you can still render
@@ -259,7 +262,8 @@ is where you define your own validation that works at the formset level:
 
 .. code-block:: javascript
 
-   var BaseArticleFormSet = forms.BaseFormSet.extend({
+   var ArticleFormSet = forms.FormSet.extend({
+     form: ArticleForm,
      /** Checks that no two articles have the same title. */
      clean: function() {
        if (this.totalErrorCount() !== 0) {
@@ -276,7 +280,7 @@ is where you define your own validation that works at the formset level:
        })
      }
    })
-   var ArticleFormSet = forms.formsetFactory(ArticleForm, {formset: BaseArticleFormSet})
+
    var data = {
      'form-TOTAL_FORMS': '2'
    , 'form-INITIAL_FORMS': '0'
@@ -306,8 +310,8 @@ how we could avoid field names for ``Article`` and ``Book`` forms clashing:
 
 .. code-block:: javascript
 
-   var ArticleFormSet = forms.formsetFactory(Article)
-   var BookFormSet = forms.formsetFactory(Book)
+   var ArticleFormSet = forms.FormSet.extend({form: Article})
+   var BookFormSet = forms.FormSet.extend({form: Book})
 
    var PublicationManager = React.createClass({
      getInitialState: function() {

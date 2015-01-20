@@ -7,7 +7,7 @@ var PersonForm = forms.Form.extend({
   dob: forms.DateField()
 })
 
-var PersonFormSet = forms.formsetFactory(PersonForm, {extra: 1})
+var PersonFormSet = forms.FormSet.extend({form: PersonForm, extra: 1})
 
 QUnit.test('RenderForm', function() {
   reactHTMLEqual(React.createElement(forms.RenderForm, {
