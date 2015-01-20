@@ -318,43 +318,6 @@ Formsets API
 
       Returns ``true`` if any form differs from initial.
 
-   A number of default rendering functions are provided to generate
-   ``ReactElement`` representations of a FormSet's fields.
-
-   These are general-purpose in that they attempt to handle all form rendering
-   scenarios and edge cases, ensuring that valid markup is always produced.
-
-   For flexibility, the output does not include a ``<form>`` or a submit
-   button, just field labels and inputs.
-
-   .. deprecated:: 0.10
-      Default rendering methods are deprecated in favour of providing
-      :doc:`react_components` for default rendering.
-
-   .. js:function:: FormSet#render()
-
-      Default rendering method, which calls :js:func:`FormSet#asTable`
-
-      .. versionadded:: 0.5
-
-      .. deprecated:: 0.10
-
-   .. js:function:: FormSet#asTable()
-
-      Renders the formset's forms as a series of ``<tr>`` tags, with ``<th>``
-      and ``<td>`` tags containing field labels and inputs, respectively.
-
-      .. deprecated:: 0.10
-
-   .. js:function:: FormSet#asDiv()
-
-      Renders the formset's forms as a series of ``<div>`` tags, with each
-      ``<div>`` containing one field.
-
-      .. versionadded:: 0.5
-
-      .. deprecated:: 0.10
-
    Prototype functions for use in rendering forms.
 
    .. js:function:: FormSet#getDefaultPrefix()

@@ -73,7 +73,7 @@ helpText
 
 The ``helpText`` argument lets you specify descriptive text for this Field. If
 you provide ``helpText``, it will be displayed next to the Field when the Field
-is rendered by one of the convenience ``Form`` methods (e.g., ``asUl()``).
+is rendered by one the default rending components.
 
 To render raw HTML in help text, specify it using the React convention for raw
 HTML, which is as an object with an ``__html`` property.

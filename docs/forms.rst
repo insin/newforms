@@ -629,11 +629,11 @@ You can also customise the ``labelSuffix`` on a per-field basis using the
 Notes on field ordering
 -----------------------
 
-In the ``asDiv()``, ``asUl()`` and ``asTable()`` shortcuts, the fields are
-displayed in the order in which you define them in your form. For example, in
-the ``ContactForm`` example, the fields are defined in the order ``subject``,
-``message``, ``sender``, ``ccMyself``. To reorder the HTML output, just change
-the order in which those fields are listed in the class.
+In the provided default rendering, fields are displayed in the order in which
+you define them in your form. For example, in the ``ContactForm`` example, the
+fields are defined in the order ``subject``, ``message``, ``sender``,
+``ccMyself``. To reorder the HTML output, just change the order in which those
+fields are listed in the class.
 
 How errors are displayed
 ------------------------
@@ -953,7 +953,7 @@ Here's an example of how you might use this in a React component ``render()``
 method with JSX::
 
    <form enctype={form.isMultipart() && 'multipart/form-data'} method="POST" action="/foo">
-     {form.asDiv()}
+     ...
    </form>
 
 .. _`Concur`: https://github.com/insin/concur#api

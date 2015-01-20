@@ -228,15 +228,15 @@ QUnit.test("Overriding forms.ErrorList", 4, function() {
   // This form should render errors the default way.
   var f = new TestForm({data: {first_name: "John"}})
   reactHTMLEqual(f.boundField("last_name").errors().render(),
-        "<ul class=\"errorlist\"><li>This field is required.</li></ul>")
+        '<ul class="errorlist"><li>This field is required.</li></ul>')
   reactHTMLEqual(f.errors("__all__").render(),
-        "<ul class=\"errorlist\"><li>I like to be awkward.</li></ul>")
+        '<ul class="errorlist"><li>I like to be awkward.</li></ul>')
 
   f = new TestForm({data: {first_name: "John"}, errorConstructor: CustomErrorList})
   reactHTMLEqual(f.boundField("last_name").errors().render(),
-        "<div class=\"error\"><p>This field is required.</p></div>")
+        '<div class="error"><p>This field is required.</p></div>')
   reactHTMLEqual(f.errors("__all__").render(),
-        "<div class=\"error\"><p>I like to be awkward.</p></div>")
+        '<div class="error"><p>I like to be awkward.</p></div>')
 })
 
 QUnit.test('Field validators', 3, function() {

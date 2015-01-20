@@ -19,8 +19,16 @@
 
 ## Deprecations
 
-* `formsetFactory` is deprecated in favour of using `FormSet.extend()` to create
-  a FormSet with defaults for the same options and any custom methods required.
+* `formsetFactory()` is deprecated in favour of using `FormSet.extend()` to
+  create a FormSet with defaults for the same options and any custom methods
+  required.
+
+## Removals
+
+* Removed deprecated `Form` rendering methods (`render()`, `asTable()`, `asDiv()`
+  and `asUl()`).
+* Removed deprecated `FormSet` rendering methods (`render()`, `asTable()` and
+  `asDiv()`).
 
 # 0.10.1 / 2015-01-08
 

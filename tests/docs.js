@@ -65,12 +65,12 @@ QUnit.test('Overview - Customising form display', function() {
     }
   })
   reactHTMLEqual(React.createElement(Contact),
-"<form action=\"/contact\" method=\"POST\">\
-<div class=\"fieldWrapper\"><label for=\"id_subject\">Email subject:</label><input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
-<div class=\"fieldWrapper\"><label for=\"id_message\">Your message:</label><input type=\"text\" name=\"message\" id=\"id_message\"></div>\
-<div class=\"fieldWrapper\"><label for=\"id_sender\">Your email address:</label><input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
-<div class=\"fieldWrapper\"><label for=\"id_ccMyself\">CC yourself?</label><input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
-<div><input type=\"submit\" value=\"Send message\"></div></form>")
+'<form action="/contact" method="POST">\
+<div class="fieldWrapper"><label for="id_subject">Email subject:</label><input maxlength="100" type="text" name="subject" id="id_subject"></div>\
+<div class="fieldWrapper"><label for="id_message">Your message:</label><input type="text" name="message" id="id_message"></div>\
+<div class="fieldWrapper"><label for="id_sender">Your email address:</label><input type="email" name="sender" id="id_sender"></div>\
+<div class="fieldWrapper"><label for="id_ccMyself">CC yourself?</label><input type="checkbox" name="ccMyself" id="id_ccMyself"></div>\
+<div><input type="submit" value="Send message"></div></form>')
 })
 
 QUnit.test("Overview - Looping over the Form's Fields", function() {
@@ -96,13 +96,13 @@ QUnit.test("Overview - Looping over the Form's Fields", function() {
     }
   })
   reactHTMLEqual(React.createElement(Contact),
-"<form action=\"/contact\" method=\"POST\">\
-<div class=\"fieldWrapper\"><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
-<div class=\"fieldWrapper\"><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></div>\
-<div class=\"fieldWrapper\"><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
-<div class=\"fieldWrapper\"><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
-<div><input type=\"submit\" value=\"Send message\"></div>\
-</form>")
+'<form action="/contact" method="POST">\
+<div class="fieldWrapper"><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"></div>\
+<div class="fieldWrapper"><label for="id_message">Message:</label> <input type="text" name="message" id="id_message"></div>\
+<div class="fieldWrapper"><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender"></div>\
+<div class="fieldWrapper"><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself"></div>\
+<div><input type="submit" value="Send message"></div>\
+</form>')
 })
 
 // ======================================================== react_components ===
@@ -306,7 +306,7 @@ QUnit.test('Forms - How errors are displayed', function() {
 <div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender" value="invalid email address"><ul class="errorlist"><li>Enter a valid email address.</li></ul></div>\
 <div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself" checked></div>\
 </div>',
-  'asDiv() error display')
+  'default error display')
 
   var DivErrorList = forms.ErrorList.extend({
     render: function() {
@@ -579,16 +579,11 @@ var MultiRecipientContactForm = forms.Form.extend({
 
 // =================================================================== react ===
 
-
 QUnit.test('Forms and React - Using a Form in a React component', function() {
   var Contact = React.createClass({displayName: 'Contact',
-    getInitialState: function() {
-      return {form: new ContactForm()}
-    }
-
-  , render: function() {
+    render: function() {
       return React.createElement('form', {ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"},
-        this.state.form.asDiv(),
+        React.createElement(forms.RenderForm, {form: ContactForm, ref: 'contactForm'}),
         React.createElement('div', null,
           React.createElement('input', {type:"submit", value:"Submit"}),
           React.createElement('input', {type:"button", value:"Cancel", onClick:this.props.onCancel})
@@ -598,21 +593,21 @@ QUnit.test('Forms and React - Using a Form in a React component', function() {
 
   , onSubmit: function(e) {
       e.preventDefault()
-      var isValid = this.state.form.validate(this.refs.form)
+      var form = this.refs.contactForm.getForm()
+      var isValid = form.validate(this.refs.form)
       if (isValid) {
-        this.props.processContactData(this.state.form.cleanedData)
-      }
-      else {
-        this.forceUpdate()
+        this.props.processContactData(form.cleanedData)
       }
     }
   })
   reactHTMLEqual(React.createElement(Contact),
 "<form action=\"/contact\" method=\"POST\">\
+<div>\
 <div><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
 <div><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></div>\
 <div><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
 <div><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
+</div>\
 <div><input type=\"submit\" value=\"Submit\"><input type=\"button\" value=\"Cancel\"></div>\
 </form>")
 })
