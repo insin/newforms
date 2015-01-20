@@ -1,8 +1,26 @@
+## Changes
+
+* Added former `formsetFactory()` options to `FormSet` proper.
+  * `FormSet` can now be costructed directly, setting all formset-specific
+    options instead of having to extend it.
+  * `FormSet.extend()` can now be used directly to preconfigure a `FormSet`
+    constructor with the `Form` constructor to be used and any other formset
+    options.
+* `FormSet` options can now be overridden when constructing a `FormSet`.
+* An error will now be thrown if a `FormSet` is constructed without a `Form`
+  constructor.
+
 ## Breaking Changes
 
+* Renamed `BaseFormSet` to `FormSet`, changing the top-level API.
 * Replaced `util.formData()` with the
   [get-form-data](https://www.npmjs.com/package/get-form-data) module -
   `formData()` is no longer available as top-level API.
+
+## Deprecations
+
+* `formsetFactory` is deprecated in favour of using `FormSet.extend()` to create
+  a FormSet with defaults for the same options and any custom methods required.
 
 # 0.10.1 / 2015-01-08
 
