@@ -184,7 +184,7 @@ to be cooked:
      tend: Forms.ChoiceField({required: false, choices: ['', 'Flip', 'Rotate']})
    })
 
-   var ItemFormSet = forms.formsetFactory(ItemForm, {extra: 3})
+   var ItemFormSet = forms.FormSet.extend({form: ItemForm, extra: 3})
 
 The list of item forms will be presented as a ``<table>`` for alignment and
 compactness. We could use ``boundFields()`` as above and loop over each form's

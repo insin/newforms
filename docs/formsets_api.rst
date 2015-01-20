@@ -2,14 +2,60 @@
 Formsets API
 ============
 
-``BaseFormSet``
+``FormSet``
 ===============
 
-.. js:class:: BaseFormSet([kwargs])
+.. js:class:: FormSet([kwargs])
 
    A collection of instances of the same Form.
 
    :param Object kwargs: configuration options.
+
+   **FormSet options**
+
+   .. versionadded:: 0.11
+      FormSet options and defaulting from the prototype replace the use of
+      ``formsetFactory``.
+
+   The following options configure the FormSet itself.
+
+   Default values can be pre-configured by extending the FormSet with
+   ``FormSet.extend()`` to set them as prototype props.
+
+   Alternatively the base ``FormSet`` can be used directly, passing all FormSet
+   and Form arguments at the same time.
+
+   :param Function form: the constructor for the Form to be managed.
+
+   :param Number kwargs.extra:
+      the number of extra forms to be displayed -- defaults to ``1``.
+
+   :param Boolean kwargs.canOrder:
+      if ``true``, forms can be ordered -- defaults to ``false``.
+
+   :param Boolean kwargs.canDelete:
+      if ``true``, forms can be deleted -- defaults to ``false``.
+
+   :param Number kwargs.maxNum:
+      the maximum number of forms to be displayed -- defaults to
+      :js:data:`DEFAULT_MAX_NUM`.
+
+   :param Boolean kwargs.validateMax:
+      if ``true``, validation will also check that the number of forms in the
+      data set, minus those marked for deletion, is less than or equal to
+      ``maxNum``.
+
+   :param Number kwargs.minNum:
+      the minimum number of forms to be displayed -- defaults to ``0``.
+
+   :param Boolean kwargs.validateMin:
+      if ``true``, validation will also check that the number of forms in the
+      data set, minus those marked for deletion, is greater than or equal to
+      ``minNum``.
+
+   **Form options**
+
+   Fhe following options are used when constructing forms for the formset.
 
    :param Array.<Object> kwargs.data:
       list of input form data for each form, where property names are field
@@ -55,9 +101,20 @@ Formsets API
 
    :param String kwargs.managementFormCssClass:
       a CSS class to be applied when rendering
-      :js:func:`BaseFormSet#managementForm`, as default rendering methods place
+      :js:func:`FormSet#managementForm`, as default rendering methods place
       its hidden fields in an additonal form row just for hidden fields, to
       ensure valid markup is generated.
+
+   .. js:function:: FormSet.extend(prototypeProps[, constructorProps])
+
+      Creates a new constructor which inherits from FormSet.
+
+      :param Object prototypeProps:
+         Default FormSet options and other prototype properties for the new
+         formset, such as a custom clean method.
+
+      :param Object constructorProps:
+         properties to be set directly on the new constructor function.
 
    **Instance Properties**
 
@@ -79,7 +136,7 @@ Formsets API
    Prototype functions for retrieving forms and information about forms which
    will be displayed.
 
-   .. js:function:: BaseFormSet#managementForm()
+   .. js:function:: FormSet#managementForm()
 
       Creates and returns the ManagementForm instance for this formset.
 
@@ -90,7 +147,7 @@ Formsets API
          On the browser, ManagementForms will only ever contain ``initial`` data
          reflecting the formset's own configuration properties.
 
-   .. js:function:: BaseFormSet#totalFormCount()
+   .. js:function:: FormSet#totalFormCount()
 
       Determines the number of form instances this formset contains, based on
       either submitted management data or initial configuration, as appropriate.
@@ -99,7 +156,7 @@ Formsets API
          On the browser, only the formset's own form count configuration will be
          consulted.
 
-   .. js:function:: BaseFormSet#initialFormCount()
+   .. js:function:: FormSet#initialFormCount()
 
       Determines the number of initial form instances this formset contains,
       based on either submitted management data or initial configuration, as
@@ -109,15 +166,15 @@ Formsets API
          On the browser, only the formset's own form count configuration will be
          consulted.
 
-   .. js:function:: BaseFormSet#forms()
+   .. js:function:: FormSet#forms()
 
       Returns a list of this formset's form instances.
 
-   .. js:function:: BaseFormSet#addAnother()
+   .. js:function:: FormSet#addAnother()
 
       Increments ``formset.extra`` and adds another form to the formset.
 
-   .. js:function:: BaseFormSet#removeForm(index)
+   .. js:function:: FormSet#removeForm(index)
 
       Decrements ``formset.extra`` and removes the form at the specified index
       from the formset.
@@ -127,15 +184,15 @@ Formsets API
 
       .. versionadded:: 0.9
 
-   .. js:function:: BaseFormSet#initialForms()
+   .. js:function:: FormSet#initialForms()
 
       Returns a list of all the initial forms in this formset.
 
-   .. js:function:: BaseFormSet#extraForms()
+   .. js:function:: FormSet#extraForms()
 
       Returns a list of all the extra forms in this formset.
 
-   .. js:function:: BaseFormSet#emptyForm()
+   .. js:function:: FormSet#emptyForm()
 
       Creates an empty version of one of this formset's forms which uses a
       placeholder ``'__prefix__'`` prefix -- this is intended for cloning on the
@@ -144,7 +201,7 @@ Formsets API
    Prototype functions for validating and getting information about the results
    of validation, and for retrieving forms based on submitted data:
 
-   .. js:function:: BaseFormSet#validate([form[, callback(err, isValid, cleanedData)]])
+   .. js:function:: FormSet#validate([form[, callback(err, isValid, cleanedData)]])
 
       Forces the formset to revalidate from scratch. If a ``<form>`` is given,
       data from it will be set on the formset's forms. Otherwise, validation
@@ -172,7 +229,7 @@ Formsets API
       .. versionchanged:: 0.10
          Added callback argument for async validation.
 
-   .. js:function:: BaseFormSet#setData(data)
+   .. js:function:: FormSet#setData(data)
 
       Updates the formset's :js:attr:`formset.data` (and
       :js:attr:`formset.isInitialRender`, if necessary) and triggers form
@@ -186,17 +243,17 @@ Formsets API
 
       .. versionadded:: 0.5
 
-   .. js:function:: BaseFormSet#setFormData(formData)
+   .. js:function:: FormSet#setFormData(formData)
 
-      Alias for :js:func:`BaseFormSet#setData`, to keep the FormSet API
+      Alias for :js:func:`FormSet#setData`, to keep the FormSet API
       consistent with the Form API.
 
       .. versionadded:: 0.6
 
-   .. js:function:: BaseFormSet#cleanedData()
+   .. js:function:: FormSet#cleanedData()
 
       Returns a list of :js:attr:`form.cleanedData` objects for every form in
-      :js:func:`BaseFormSet#forms`.
+      :js:func:`FormSet#forms`.
 
       .. versionchanged:: 0.9
          No longer returns cleaned data for extra forms which haven't been
@@ -205,17 +262,17 @@ Formsets API
       .. versionchanged:: 0.10
          No longer includes cleaned data from incomplete extra forms.
 
-   .. js:function:: BaseFormSet#deletedForms()
+   .. js:function:: FormSet#deletedForms()
 
       Returns a list of forms that have been marked for deletion.
 
-   .. js:function:: BaseFormSet#orderedForms()
+   .. js:function:: FormSet#orderedForms()
 
       Returns a list of forms in the order specified by the incoming data.
 
       Throws an Error if ordering is not allowed.
 
-   .. js:function:: BaseFormSet#addError(errpr)
+   .. js:function:: FormSet#addError(errpr)
 
       Adds an error that isn't associated with a particular form.
 
@@ -224,40 +281,40 @@ Formsets API
 
       .. versionadded:: 0.9
 
-   .. js:function:: BaseFormSet#nonFormErrors()
+   .. js:function:: FormSet#nonFormErrors()
 
       Returns an :js:class:`ErrorList` of errors that aren't associated with a
-      particular form -- i.e., from :js:func:`BaseFormSet#clean` or externally
-      via :js:func:`BaseFormSet#addError`.
+      particular form -- i.e., from :js:func:`FormSet#clean` or externally
+      via :js:func:`FormSet#addError`.
 
       Returns an empty :js:class:`ErrorList` if there are none.
 
-   .. js:function:: BaseFormSet#errors()
+   .. js:function:: FormSet#errors()
 
       Returns a list of form error for every form in the formset.
 
-   .. js:function:: BaseFormSet#totalErrorCount()
+   .. js:function:: FormSet#totalErrorCount()
 
       Returns the number of errors across all forms in the formset.
 
-   .. js:function:: BaseFormSet#isValid()
+   .. js:function:: FormSet#isValid()
 
       Returns ``true`` if every form in the formset is valid.
 
-   .. js:function:: BaseFormSet#fullClean()
+   .. js:function:: FormSet#fullClean()
 
       Cleans all of this.data and populates formset error objects.
 
-   .. js:function:: BaseFormSet#clean()
+   .. js:function:: FormSet#clean()
 
       Hook for doing any extra formset-wide cleaning after
       :js:func:`BaseForm.clean` has been called on every form.
 
       Any :js:class:`ValidationError` raised by this method will not be
       associated with a particular form; it will be accesible via
-      :js:func:BaseFormSet#nonFormErrors
+      :js:func:FormSet#nonFormErrors
 
-   .. js:function:: BaseFormSet#hasChanged()
+   .. js:function:: FormSet#hasChanged()
 
       Returns ``true`` if any form differs from initial.
 
@@ -274,22 +331,22 @@ Formsets API
       Default rendering methods are deprecated in favour of providing
       :doc:`react_components` for default rendering.
 
-   .. js:function:: BaseFormSet#render()
+   .. js:function:: FormSet#render()
 
-      Default rendering method, which calls :js:func:`BaseFormSet#asTable`
+      Default rendering method, which calls :js:func:`FormSet#asTable`
 
       .. versionadded:: 0.5
 
       .. deprecated:: 0.10
 
-   .. js:function:: BaseFormSet#asTable()
+   .. js:function:: FormSet#asTable()
 
       Renders the formset's forms as a series of ``<tr>`` tags, with ``<th>``
       and ``<td>`` tags containing field labels and inputs, respectively.
 
       .. deprecated:: 0.10
 
-   .. js:function:: BaseFormSet#asDiv()
+   .. js:function:: FormSet#asDiv()
 
       Renders the formset's forms as a series of ``<div>`` tags, with each
       ``<div>`` containing one field.
@@ -300,24 +357,24 @@ Formsets API
 
    Prototype functions for use in rendering forms.
 
-   .. js:function:: BaseFormSet#getDefaultPrefix()
+   .. js:function:: FormSet#getDefaultPrefix()
 
       Returns the default base prefix for each form: ``'form'``.
 
-   .. js:function:: BaseFormSet#addFields(form, index)
+   .. js:function:: FormSet#addFields(form, index)
 
       A hook for adding extra fields on to a form instance.
 
       :param Form form: the form fields will be added to.
       :param Number index: the index of the given form in the formset.
 
-   .. js:function:: BaseFormSet#addPrefix(index)
+   .. js:function:: FormSet#addPrefix(index)
 
       Returns a formset prefix with the given form index appended.
 
       :param Number index: the index of a form in the formset.
 
-   .. js:function:: BaseFormSet#isMultipart()
+   .. js:function:: FormSet#isMultipart()
 
       Returns ``true`` if the formset needs to be multipart-encoded, i.e. it has
       a :js:class:`FileInput`. Otherwise, ``false``.
@@ -326,6 +383,10 @@ Formsets API
 ==================
 
 .. js:function:: formsetFactory(form, [kwargs])
+
+   .. deprecated:: 0.11
+      formsetFactory is deprecated in favour of using FormSet.extend() directly
+      with the same arguments.
 
    Returns a FormSet constructor for the given Form constructor.
 
@@ -338,8 +399,8 @@ Formsets API
       methods on the resulting formset, such as a custom ``clean`` method.
 
    :param Function kwargs.formset:
-      the constructuer which will provide the prototype for the created FormSet
-      constructor -- defaults to :js:class:`BaseFormSet`.
+      the constructor which will provide the prototype for the created FormSet
+      constructor -- defaults to :js:class:`FormSet`.
 
    :param Number kwargs.extra:
       the number of extra forms to be displayed -- defaults to ``1``.

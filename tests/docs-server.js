@@ -20,7 +20,7 @@ var ArticleForm = forms.Form.extend({
 // ================================================================ formsets ===
 
 QUnit.test('Formsets - validation', function() {
-  var ArticleFormSet = forms.formsetFactory(ArticleForm)
+  var ArticleFormSet = forms.FormSet.extend({form: ArticleForm})
   var data = {
     'form-TOTAL_FORMS': '1'
   , 'form-INITIAL_FORMS': '0'
@@ -56,7 +56,8 @@ QUnit.test('Formsets - validation', function() {
   var formset = new ArticleFormSet({data: data})
   strictEqual(formset.hasChanged(), false)
 
-  var BaseArticleFormSet = forms.BaseFormSet.extend({
+  var ArticleFormSet = forms.FormSet.extend({
+    form: ArticleForm,
     /** Checks that no two articles have the same title. */
     clean: function() {
       if (this.totalErrorCount() !== 0) {
@@ -73,7 +74,7 @@ QUnit.test('Formsets - validation', function() {
       })
     }
   })
-  var ArticleFormSet = forms.formsetFactory(ArticleForm, {formset: BaseArticleFormSet})
+
   var data = {
     'form-TOTAL_FORMS': '2'
   , 'form-INITIAL_FORMS': '0'

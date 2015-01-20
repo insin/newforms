@@ -235,11 +235,10 @@ RenderFormSet props
 ``form``
    :type: ``Function`` (a ``Form`` constructor)
 
-   If you pass a Form constructor, the component will create a new FormSet
-   constructor and instantiate it for you.
+   If you pass a Form constructor, the component will instantiate a FormSet
+   for you.
 
-   Options for the call to :js:func:`formsetFactory() <formsetFactory>` to
-   create the new ``FormSet`` constructor may be passed as additional props to
+   ``FormSet`` constructor options may be passed as additional props to
    ``RenderFormSet``.
 
    .. Note::
@@ -252,7 +251,7 @@ RenderFormSet props
    The FormSet to be rendered -- can be a constructor or an instance.
 
    If you pass a FormSet constructor, the component will instantiate it for you.
-   :js:class:`FormSet construction options <BaseFormSet>` may also be passed to
+   :js:class:`FormSet construction options <FormSet>` may also be passed to
    ``RenderFormSet`` as additional props.
 
    If you pass a FormSet instance, make sure you set up its

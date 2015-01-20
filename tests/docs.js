@@ -893,7 +893,7 @@ Ringo\
 // ================================================================ formsets ===
 
 QUnit.test('Formsets - intro', function() {
-  var ArticleFormSet = forms.formsetFactory(ArticleForm)
+  var ArticleFormSet = forms.FormSet.extend({form: ArticleForm})
   var formset = new ArticleFormSet()
   reactHTMLEqual(function() {
     return formset.forms().map(function(form) {
@@ -905,8 +905,7 @@ QUnit.test('Formsets - intro', function() {
 <div><label for=\"id_form-0-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></div>\
 </div>')
 
-  var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2})
-  var formset = new ArticleFormSet({initial: [
+  formset = new ArticleFormSet({extra: 2, initial: [
     {title: "Django's docs are open source!", pubDate: new Date(2014, 1, 28)}
   ]})
   reactHTMLEqual(function() {
@@ -928,8 +927,7 @@ QUnit.test('Formsets - intro', function() {
 </div>',
   "Initial data display + 2 extras")
 
-  var ArticleFormSet = forms.formsetFactory(ArticleForm, {extra: 2, maxNum: 1})
-  var formset = new ArticleFormSet()
+  formset = new ArticleFormSet({extra: 2, maxNum: 1})
   reactHTMLEqual(function() {
     return formset.forms().map(function(form) {
       return React.createElement(forms.RenderForm, {form: form})
