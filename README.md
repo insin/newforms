@@ -42,6 +42,14 @@ Compressed version for production.
 
 ## [Newforms Examples @ GitHub](https://github.com/insin/newforms-examples)
 
+## Related Projects
+
+* [newforms-bootstrap](https://github.com/insin/newforms-bootstrap) - Bootstrap 3
+  integration & grid form form layout components.
+
+* [newforms-gridform](https://github.com/insin/newforms-gridforms) -
+  [Grid Forms](http://kumailht.com/gridforms/) form layout components.
+
 ## Quick Guide
 
 A quick introduction to defining and using newforms Form objects.
