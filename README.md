@@ -47,7 +47,7 @@ Compressed version for production.
 * [newforms-bootstrap](https://github.com/insin/newforms-bootstrap) - Bootstrap 3
   integration & grid form form layout components.
 
-* [newforms-gridform](https://github.com/insin/newforms-gridforms) -
+* [newforms-gridforms](https://github.com/insin/newforms-gridforms) -
   [Grid Forms](http://kumailht.com/gridforms/) form layout components.
 
 ## Quick Guide
