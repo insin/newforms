@@ -74,7 +74,7 @@ overridden:
   associated with any field in particular. They go into a special "field"
   (called ``__all__``), which you can access via the ``nonFieldErrors()`` method
   if you need to. If you want to attach errors to a specific field in the form,
-  you need to call :js:func:`form.addError() <BaseForm#addError>`.
+  you need to call :js:func:`form.addError() <Form#addError>`.
 
 These methods are run in the order given above, one field at a time. That is,
 for each field in the form (in the order they are declared in the form

@@ -113,7 +113,7 @@ BoundField API
 
       :type:
          :js:class:`ErrorList` (by default, but configurable via
-         :js:class:`BaseForm` ``kwargs.errorConstructor``)
+         :js:class:`Form` ``kwargs.errorConstructor``)
 
    .. js:function:: BoundField#errorMessage()
 

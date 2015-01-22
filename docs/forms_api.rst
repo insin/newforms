@@ -5,64 +5,23 @@ Forms API
 ``Form``
 ========
 
+.. js:function:: Form.extend(prototypeProps[, constructorProps])
+
+   This is the entry point for defining your own forms.
+
+   Creates a new constructor which inherits from Form.
+
+   :param Object prototypeProps:
+      form Fields and other prototype properties for the new form, such as a
+      custom constructor and validation methods.
+
+      See :js:func:`DeclarativeFieldsMeta` for details of how Fields passed as
+      `prototypeProps` are handled.
+
+   :param Object constructorProps:
+      properties to be set directly on the new constructor function.
+
 .. js:class:: Form([kwargs])
-
-   Extends :js:class:`BaseForm` and registers :js:func:`DeclarativeFieldsMeta`
-   as a mixin to be used to set up Fields when this constructor is extended.
-
-   This is intended to be used as the entry point for defining your own forms.
-
-   You can do this using its static ``extend()`` function, which is provided by
-   `Concur`_.
-
-   .. js:function:: Form.extend(prototypeProps[, constructorProps])
-
-      Creates a new constructor which inherits from Form.
-
-      :param Object prototypeProps:
-         form Fields and other prototype properties for the new form, such as a
-         custom constructor and validation methods.
-
-      :param Object constructorProps:
-         properties to be set directly on the new constructor function.
-
-.. js:function:: DeclarativeFieldsMeta(prototypeProps)
-
-   This mixin function is responsible for setting up form fields when a new Form
-   constructor is being created.
-
-   It pops any Fields it finds off the form's prototype properties object,
-   determines if any forms are also being mixed-in via a ``__mixins__`` property
-   and handles inheritance of Fields from any form which is being directly
-   extended, such that fields will be given the following order of precedence
-   should there be a naming conflict with any of these three sources:
-
-   1. Fields specified in ``prototypeProps``
-   2. Fields from a mixed-in form
-   3. Fields from the Form being inherited from
-
-   If multiple forms are provided via ``__mixins__``, they will be processed from
-   left to right in order of precedence for mixing in fields and prototype
-   properties.
-
-   Forms can prevent fields from being inherited or mixed in by adding a
-   same-named property to their prototype, which isn't a Field. It's suggested
-   that you use ``null`` as the value when shadowing to make this intent more
-   explicit.
-
-.. js:function:: isFormAsync(Form)
-
-   :params Form Form: a Form constructor
-
-   :returns:
-      ``true`` if the given Form constructor's prototype defines any custom
-      cleaning methods which have an arity of 1 (which is assumed to mean they
-      have defined an async callback parameter).
-
-``BaseForm``
-============
-
-.. js:class:: BaseForm([kwargs])
 
    A collection of Fields that knows how to validate and display itself.
 
@@ -198,7 +157,7 @@ Forms API
 
       .. Note::
 
-         ``fields`` does not exist until the ``BaseForm`` constructor has been
+         ``fields`` does not exist until the ``Form`` constructor has been
          called on the form instance that's being constructed.
 
          This is important to note when you intend to dynamically modify
@@ -229,7 +188,7 @@ Forms API
    **Validation:** Methods for validating and getting information about the
    results of validation:
 
-   .. js:function:: BaseForm#validate([form[, callback(err, isValid, cleanedData)]])
+   .. js:function:: Form#validate([form[, callback(err, isValid, cleanedData)]])
 
       Forces the form to revalidate from scratch. If a ``<form>`` is given, data
       from it will be set on this form first. Otherwise, validation will be done
@@ -257,22 +216,22 @@ Forms API
       .. versionchanged:: 0.10
          Added callback argument for async validation.
 
-   .. js:function:: BaseForm#fullClean()
+   .. js:function:: Form#fullClean()
 
       Validates and cleans ``forms.data`` and populates errors and ``cleanedData``.
 
       You shouldn't need to call this function directly in general use, as it's
-      called for you when necessary by :js:func:`BaseForm#isValid` and
-      :js:func:`BaseForm#errors`.
+      called for you when necessary by :js:func:`Form#isValid` and
+      :js:func:`Form#errors`.
 
-   .. js:function:: BaseForm#partialClean(fieldNames)
+   .. js:function:: Form#partialClean(fieldNames)
 
       Validates and cleans ``form.data`` for the given field names and triggers
       cross-form cleaning in case any ``form.cleanedData`` it uses has changed.
 
       :param Array fieldNames: a list of unprefixed field names.
 
-   .. js:function:: BaseForm#clean([callback(err, validationError)])
+   .. js:function:: Form#clean([callback(err, validationError)])
 
       Hook for doing any extra form-wide cleaning after each Field's
       :js:func:`Field#clean` has been called. Any :js:class:`ValidationError`
@@ -289,7 +248,7 @@ Forms API
 
    **Data mutability:** Methods for programmatically changing the form's data.
 
-   .. js:function:: BaseForm#reset([initialData])
+   .. js:function:: Form#reset([initialData])
 
       Resets the form to its initial render state, optionally giving it new
       initial data.
@@ -299,7 +258,7 @@ Forms API
 
       .. versionadded:: 0.6
 
-   .. js:function:: BaseForm#setData(data[, kwargs])
+   .. js:function:: Form#setData(data[, kwargs])
 
       Replaces the form's :js:attr:`form.data` with the given data (and flips
       :js:attr:`form.isInitialRender` to ``false``, if necessary) and triggers
@@ -321,7 +280,7 @@ Forms API
 
       .. versionadded:: 0.5
 
-   .. js:function:: BaseForm#setFormData(formData)
+   .. js:function:: Form#setFormData(formData)
 
       Replaces with form's input data with data extracted from a ``<form>`` (i.e.
       with :js:func:`formData`).
@@ -336,7 +295,7 @@ Forms API
 
        .. versionadded:: 0.6
 
-   .. js:function:: BaseForm#updateData(data[, kwargs])
+   .. js:function:: Form#updateData(data[, kwargs])
 
       Updates the form's :js:attr:`form.data` (and flips
       :js:attr:`form.isInitialRender` to ``false``, if necessary).
@@ -376,7 +335,7 @@ Forms API
    **BoundFields:** Methods which create BoundField helpers for rendering the
    form's fields.
 
-   .. js:function:: BaseForm#boundFields([test])
+   .. js:function:: Form#boundFields([test])
 
       Creates a :js:class:`BoundField` for each field in the form, in the order
       in which the fields were created.
@@ -387,32 +346,32 @@ Forms API
          arguments - BoundFields will only be generated for fields for which
          ``true`` is returned.
 
-   .. js:function:: BaseForm#boundFieldsObj([test])
+   .. js:function:: Form#boundFieldsObj([test])
 
-      A version of :js:func:`BaseForm#boundFields` which returns an Object with
+      A version of :js:func:`Form#boundFields` which returns an Object with
       field names as property names and BoundFields as properties.
 
-   .. js:function:: BaseForm#boundField(name)
+   .. js:function:: Form#boundField(name)
 
       Creates a :js:class:`BoundField` for the field with the given name.
 
       :param String name: the name of a field in the form.
 
-   .. js:function:: BaseForm#hiddenFields()
+   .. js:function:: Form#hiddenFields()
 
       :returns: a list of :js:class:`BoundField` objects that correspond to
          hidden fields. Useful for manual form layout.
 
-   .. js:function:: BaseForm#visibleFields()
+   .. js:function:: Form#visibleFields()
 
       :returns:
          a list of :js:class:`BoundField` objects that do not correspond to
-         hidden fields. The opposite of the :js:func:`BaseForm#hiddenFields`
+         hidden fields. The opposite of the :js:func:`Form#hiddenFields`
          function.
 
    **Error:** Methods for wokring with the form's validation errors.
 
-   .. js:function:: BaseForm#addError(field, error)
+   .. js:function:: Form#addError(field, error)
 
       This function allows adding errors to specific fields from within the
       ``form.clean()`` method, or from outside the form altogether.
@@ -447,22 +406,22 @@ Forms API
          repeatedly adds errors to a field other than that which triggered the
          validation, such as in a custom ``clean()`` method.
 
-   .. js:function:: BaseForm#errors()
+   .. js:function:: Form#errors()
 
       Getter for validation errors which first cleans the form if there are no
       errors defined yet.
 
       :returns: validation errors for the form, as an :js:class:`ErrorObject`
 
-   .. js:function:: BaseForm#nonFieldErrors()
+   .. js:function:: Form#nonFieldErrors()
 
       :returns:
          errors that aren't associated with a particular field - i.e., errors
-         generated by :js:func:`BaseForm#clean`, or by calling
-         :js:func:`BaseForm#addError` and passing ``null`` instead of a field
+         generated by :js:func:`Form#clean`, or by calling
+         :js:func:`Form#addError` and passing ``null`` instead of a field
          name. Will be an empty error list object if there are none.
 
-   .. js:function:: BaseForm#setErrors(errors)
+   .. js:function:: Form#setErrors(errors)
 
       This method's intended use is replacing a Form's errors with those
       received from another source, such as an API call which performs
@@ -472,19 +431,19 @@ Forms API
 
    **Changes:** methods for working with changed data.
 
-   .. js:function:: BaseForm#changedData()
+   .. js:function:: Form#changedData()
 
       :returns:
          a list of the names of fields which have differences between their
          initial and currently bound values.
 
-   .. js:function:: BaseForm#hasChanged()
+   .. js:function:: Form#hasChanged()
 
       :returns: ``true`` if data differs from initial, ``false`` otherwise.
 
    **Status**: methods for determining the form's status:
 
-   .. js:function:: BaseForm#isAsync()
+   .. js:function:: Form#isAsync()
 
       :returns:
          ``true`` if the form's prototype defines any custom cleaning methods
@@ -493,7 +452,7 @@ Forms API
 
       .. versionadded:: 0.10
 
-   .. js:function:: BaseForm#isComplete()
+   .. js:function:: Form#isComplete()
 
       Determines whether or not the form has valid input data for all required
       fields. This can be used to indicate to the user that a form which is
@@ -502,7 +461,7 @@ Forms API
       A form which has any errors or is pending async validation will not be
       considered complete.
 
-      The distinction between ``isComplete()`` and :js:func:`BaseForm#isValid()`
+      The distinction between ``isComplete()`` and :js:func:`Form#isValid()`
       is that a form which has had, for example, a single field filled in and
       validated is valid according to the partial validation which has been
       performed so far (i.e. it doesn't have any error messages) but isn't yet
@@ -513,20 +472,20 @@ Forms API
       .. versionchanged:: 0.10
          A form which ``isPending()`` will not be considered complete.
 
-   .. js:function:: BaseForm#isMultipart()
+   .. js:function:: Form#isMultipart()
 
       Determines if the form needs to be multipart-encoded in other words, if it
       has a :js:class:`FileInput`.
 
       :returns: ``true`` if the form needs to be multipart-encoded.
 
-   .. js:function:: BaseForm#isPending()
+   .. js:function:: Form#isPending()
 
       :returns:
          ``true`` if true if the form is waiting for async validation to
          complete.
 
-   .. js:function:: BaseForm#isValid()
+   .. js:function:: Form#isValid()
 
       Determines whether or not the form has errors, triggering cleaning of the
       form first if necessary.
@@ -535,13 +494,13 @@ Forms API
       function gives you the current state of validation (i.e. whether or not
       there are any errors). It will not reflect the validity of the whole form
       until a method which performs whole-form validation
-      (:js:func:`BaseForm#validate` or :js:func:`setData`) has been called.
+      (:js:func:`Form#validate` or :js:func:`setData`) has been called.
 
       :return:
          ``true`` if the form is has input data and has no errors, ``false``
          otherwise. If errors are being ignored, returns ``false``.
 
-   .. js:function:: BaseForm#nonFieldPending()
+   .. js:function:: Form#nonFieldPending()
 
       :return:
          `true`` if the form is waiting for async validation of its
@@ -549,7 +508,7 @@ Forms API
 
       .. versionadded:: 0.10
 
-   .. js:function:: BaseForm#notEmpty()
+   .. js:function:: Form#notEmpty()
 
       Determines if a form which is an extra form in a FormSet has changed from
       its initial values. Extra forms are allowed to be empty, so required fields
@@ -563,19 +522,53 @@ Forms API
 
    **Prefixes:** Methods for working with form prefixes.
 
-   .. js:function:: BaseForm#addPrefix(fieldName)
+   .. js:function:: Form#addPrefix(fieldName)
 
       :returns:
          the given field name with a prefix added, if this Form has a prefix.
 
-   .. js:function:: BaseForm#addInitialPrefix(fieldName)
+   .. js:function:: Form#addInitialPrefix(fieldName)
 
       Adds an initial prefix for checking dynamic initial values.
 
-   .. js:function:: BaseForm#removePrefix(fieldName)
+   .. js:function:: Form#removePrefix(fieldName)
 
       :returns:
          the given field name with a prefix-size chunk chopped off the start
          if this form has a prefix set and the field name starts with it.
 
-.. _`Concur`: https://github.com/insin/concur#api
+Utilities
+=========
+
+.. js:function:: DeclarativeFieldsMeta(prototypeProps)
+
+   This mixin function is responsible for setting up form fields when a new Form
+   constructor is being created.
+
+   It pops any Fields it finds off the form's prototype properties object,
+   determines if any forms are also being mixed-in via a ``__mixins__`` property
+   and handles inheritance of Fields from any form which is being directly
+   extended, such that fields will be given the following order of precedence
+   should there be a naming conflict with any of these three sources:
+
+   1. Fields specified in ``prototypeProps``
+   2. Fields from a mixed-in form
+   3. Fields from the Form being inherited from
+
+   If multiple forms are provided via ``__mixins__``, they will be processed from
+   left to right in order of precedence for mixing in fields and prototype
+   properties.
+
+   Forms can prevent fields from being inherited or mixed in by adding a
+   same-named property to their prototype, which isn't a Field. It's suggested
+   that you use ``null`` as the value when shadowing to make this intent more
+   explicit.
+
+.. js:function:: isFormAsync(Form)
+
+   :params Form Form: a Form constructor
+
+   :returns:
+      ``true`` if the given Form constructor's prototype defines any custom
+      cleaning methods which have an arity of 1 (which is assumed to mean they
+      have defined an async callback parameter).

@@ -91,7 +91,7 @@ Server or standalone validation
 -------------------------------
 
 The primary task of a ``Form`` object is to validate data. With a bound
-``Form`` instance, call the :js:func:`BaseForm#isValid` method to run validation
+``Form`` instance, call the :js:func:`Form#isValid` method to run validation
 and return a boolean designating whether the data was valid:
 
 .. code-block:: javascript
@@ -376,7 +376,7 @@ of a subset of fields doesn't tell you whether or not the entire form is valid.
 If you're peforming partial updates of user input (which is the case if
 individual fields are being validated ``onChange``) and need to check if the
 entire form is valid *without* triggering validation errors on fields the user
-may not have reached yet, use :js:func:`BaseForm#isComplete`:
+may not have reached yet, use :js:func:`Form#isComplete`:
 
 .. code-block:: javascript
 
@@ -693,7 +693,7 @@ More granular output
 --------------------
 
 To retrieve a single :js:class:`BoundField`, use the
-:js:func:`BaseForm#boundField` method on your form, passing the field's name:
+:js:func:`Form#boundField` method on your form, passing the field's name:
 
 .. code-block:: javascript
 
@@ -701,7 +701,7 @@ To retrieve a single :js:class:`BoundField`, use the
    print(reactHTML(form.boundField('subject').render()))
    // => <input maxlength="100" type="text" name="subject" id="id_subject">
 
-To retrieve all ``BoundField`` objects, call :js:func:`BaseForm#boundFields`:
+To retrieve all ``BoundField`` objects, call :js:func:`Form#boundFields`:
 
 .. code-block:: javascript
 

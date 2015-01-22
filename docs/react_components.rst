@@ -31,7 +31,7 @@ re-rendering when the form's state changes for you.
 Form options
 ------------
 
-If :js:class:`form construction options <BaseForm>` are passed as props to
+If :js:class:`form construction options <Form>` are passed as props to
 ``RenderForm``, they will be passed on to the Form constructor when creating an
 instance.
 
@@ -113,7 +113,7 @@ RenderForm props
    The Form to be rendered -- can be a constructor or an instance.
 
    If you pass a Form constructor, the component will instantiate it for you.
-   :js:class:`Form construction options <BaseForm>` may also be passed to
+   :js:class:`Form construction options <Form>` may also be passed to
    ``RenderForm`` as additional props.
 
    If you pass a Form instance, make sure you set up its
@@ -154,7 +154,7 @@ RenderForm props
    This will also be passed to the component in the ``row`` prop when rendering.
 
 Form construction options
-   All the :js:class:`options which be passed when instantiating a Form <BaseForm>`
+   All the :js:class:`options which be passed when instantiating a Form <Form>`
    can be passed as props to ``RenderForm`` for use when you pass a Form
    constructor as the ``form`` prop.
 

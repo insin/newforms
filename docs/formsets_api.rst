@@ -308,7 +308,7 @@ Formsets API
    .. js:function:: FormSet#clean()
 
       Hook for doing any extra formset-wide cleaning after
-      :js:func:`BaseForm.clean` has been called on every form.
+      :js:func:`Form.clean` has been called on every form.
 
       Any :js:class:`ValidationError` raised by this method will not be
       associated with a particular form; it will be accesible via

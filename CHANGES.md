@@ -12,6 +12,8 @@
 
 ## Breaking Changes
 
+* Renamed `BaseForm` to `Form`, changing the top-level API - this has the same
+  behaviour as the currently-exported `forms.Form`.
 * Renamed `BaseFormSet` to `FormSet`, changing the top-level API.
 * Replaced `util.formData()` with the
   [get-form-data](https://www.npmjs.com/package/get-form-data) module -
