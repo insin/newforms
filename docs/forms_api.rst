@@ -566,7 +566,7 @@ Utilities
 
 .. js:function:: isFormAsync(Form)
 
-   :params Form Form: a Form constructor
+   :param Form Form: a Form constructor
 
    :returns:
       ``true`` if the given Form constructor's prototype defines any custom
