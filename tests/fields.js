@@ -196,11 +196,17 @@ QUnit.test("FloatField", 39, function() {
   strictEqual(f._hasChanged(n, '4.3500'), false)
 })
 
-QUnit.test("DecimalField", 67, function() {
+QUnit.test("DecimalField", 73, function() {
   var f = forms.DecimalField({maxDigits: 4, decimalPlaces: 2})
   widgetRendersTo(f, "<input step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\">")
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
+  strictEqual(f.clean("0"), "0")
+  strictEqual(f.clean("00"), "0")
+  strictEqual(f.clean("0."), "0")
+  strictEqual(f.clean("00."), "0")
+  strictEqual(f.clean("0.0"), "0.0")
+  strictEqual(f.clean("00.0"), "0.0")
   strictEqual(f.clean("1"), "1")
   strictEqual(f.clean("1."), "1")
   strictEqual(f.clean("001."), "1")

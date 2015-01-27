@@ -19,6 +19,11 @@
   [get-form-data](https://www.npmjs.com/package/get-form-data) module -
   `formData()` is no longer available as top-level API.
 
+## Bug Fixes
+
+* `DecimalField` now handles all-zero inputs correctly - it was cleaning them
+  to an empty string (#57)
+
 ## Deprecations
 
 * `formsetFactory()` is deprecated in favour of using `FormSet.extend()` to
