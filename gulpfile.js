@@ -19,7 +19,7 @@ var srcHeader = '/**\n\
 
 process.env.NODE_ENV = gutil.env.production ? 'production' : 'development'
 
-var jsPath = './lib/*.js'
+var jsPath = './lib/**/*.js'
 var jsEntryPoint = './lib/newforms.js'
 
 // Lints the build modules dir
