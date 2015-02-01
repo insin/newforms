@@ -1,5 +1,9 @@
 ## Changes
 
+* Newforms is now published to NPM as flattened, top-level modules, so
+  individual modules can be required with `require('newforms/<module>')` - this
+  gives you the option of requiring only what you need to use, as a means of
+  reducing the size of your browser bundles.
 * Added former `formsetFactory()` options to `FormSet` proper.
   * `FormSet` can now be costructed directly, setting all formset-specific
     options instead of having to extend it.
