@@ -1,7 +1,7 @@
-build
 dist
 docs
 scratch
+src
 tests
 vendor
 .gitignore

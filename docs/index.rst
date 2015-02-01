@@ -29,24 +29,20 @@ Node.js
       that performs dead-code elimination, such as `UglifyJS`_.
 
 Browser bundles
-   Browser bundles expose newforms as a global ``forms`` variable and expect to
-   find a global ``React`` variable to work with.
+   The browser bundles expose newforms as a global ``forms`` variable and
+   expects to find a global ``React`` variable to work with.
 
-   `newforms 0.10.0 (development version)`_
+   The uncompressed bundle is in development mode, so will log warnings about
+   potential mistakes.
 
-   Uncompressed, with warnings about potential mistakes.
-
-   `newforms 0.10.0 (production version)`_
-
-   Compressed version for production.
+   You can find it in the `dist/ directory`_.
 
 Source
    Newforms source code and issue tracking is on GitHub:
 
       * https://github.com/insin/newforms
 
-.. _`newforms 0.10.0 (development version)`: https://github.com/insin/newforms/raw/react/dist/newforms-0.10.0.js
-.. _`newforms 0.10.0 (production version)`: https://github.com/insin/newforms/raw/react/dist/newforms-0.10.0.min.js
+.. _`dist/ directory`: https://github.com/insin/newforms/tree/v0.10.1/dist
 
 Documentation
 =============
