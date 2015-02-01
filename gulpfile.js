@@ -1,3 +1,5 @@
+var fs = require('fs')
+
 var browserify = require('browserify')
 var gulp = require('gulp')
 var source = require('vinyl-source-stream')
@@ -64,6 +66,19 @@ gulp.task('browserify-js', ['lint'], function() {
   }
 
   return stream
+})
+
+gulp.task('npm-copy', ['lint'], function() {
+  return gulp.src([jsLibPath, './LICENSE.md', './package.json', './README.md'])
+    .pipe(gulp.dest('./npm-newforms'))
+})
+
+gulp.task('npm', ['npm-copy'], function(cb) {
+  var pkg = require('./package.json')
+  pkg.main = './newforms.js'
+  delete pkg.devDependencies
+  delete pkg.scripts
+  fs.writeFile('./npm-newforms/package.json', JSON.stringify(pkg, null, 2), cb)
 })
 
 gulp.task('watch', function() {
