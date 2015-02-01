@@ -27,7 +27,7 @@
 ## Bug Fixes
 
 * `DecimalField` now handles all-zero inputs correctly - it was cleaning them
-  to an empty string (#57)
+  to an empty string ([#57](https://github.com/insin/newforms/issues/57))
 
 ## Deprecations
 
