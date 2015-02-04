@@ -11,7 +11,6 @@ var ProgressMixin = require('./ProgressMixin')
  * error message(s), help text and async pending indicator.
  */
 var FormRow = React.createClass({
-  displayName: 'FormRow',
   mixins: [ProgressMixin],
   propTypes: {
     bf: React.PropTypes.instanceOf(BoundField)
@@ -19,7 +18,7 @@ var FormRow = React.createClass({
   , component: React.PropTypes.any
   , content: React.PropTypes.any
   , hidden: React.PropTypes.bool
-  , __all__: function(props) {
+  , __all__(props) {
       if (!props.bf && !props.content) {
         return new Error(
           'Invalid props supplied to `FormRow`, either `bf` or `content` ' +
@@ -35,13 +34,13 @@ var FormRow = React.createClass({
     }
   },
 
-  getDefaultProps: function() {
+  getDefaultProps() {
     return {
       component: 'div'
     }
   },
 
-  render: function() {
+  render() {
     var attrs = {}
     if (this.props.className) {
       attrs.className = this.props.className
@@ -51,19 +50,19 @@ var FormRow = React.createClass({
     }
     // If content was given, use it
     if (this.props.content) {
-      return React.createElement(this.props.component, attrs, this.props.content)
+      return <this.props.component {...attrs}>{this.props.content}</this.props.component>
     }
     // Otherwise render a BoundField
     var bf = this.props.bf
     var isPending = bf.isPending()
-    return React.createElement(this.props.component, attrs,
-      bf.label && bf.labelTag(), ' ', bf.render(),
-      isPending && ' ',
-      isPending && this.renderProgress(),
-      bf.errors().render(),
-      bf.helpText && ' ',
-      bf.helpTextTag()
-    )
+    return <this.props.component {...attrs}>
+      {bf.label && bf.labelTag()} {bf.render()}
+      {isPending && ' '}
+      {isPending && this.renderProgress()}
+      {bf.errors().render()}
+      {bf.helpText && ' '}
+      {bf.helpTextTag()}
+    </this.props.component>
   }
 })
 

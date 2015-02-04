@@ -3,12 +3,13 @@
 var object = require('isomorph/object')
 var React = require('react')
 
-var constants = require('../constants')
-var util = require('../util')
-
 var FormRow = require('./FormRow')
 var FormSet = require('../FormSet')
+var ProgressMixin = require('./ProgressMixin')
 var RenderForm = require('./RenderForm')
+
+var {NON_FIELD_ERRORS} = require('../constants')
+var {autoIdChecker, getProps} = require('../util')
 
 var formsetProps = {
   canDelete: React.PropTypes.bool
@@ -20,7 +21,7 @@ var formsetProps = {
 , validateMax: React.PropTypes.bool
 , validateMin: React.PropTypes.bool
 
-, autoId: util.autoIdChecker
+, autoId: autoIdChecker
 , controlled: React.PropTypes.bool
 , data: React.PropTypes.object
 , errorConstructor: React.PropTypes.func
@@ -41,8 +42,7 @@ var formsetProps = {
  * options.
  */
 var RenderFormSet = React.createClass({
-  displayName: 'RenderFormSet',
-  mixins: [util.ProgressMixin],
+  mixins: [ProgressMixin],
   propTypes: object.extend({}, formsetProps, {
     className: React.PropTypes.string         // Class for the component wrapping all forms
   , component: React.PropTypes.any            // Component to wrap all forms
@@ -54,7 +54,7 @@ var RenderFormSet = React.createClass({
   , row: React.PropTypes.any                  // Component to render form rows
   , rowComponent: React.PropTypes.any         // Component to wrap each form row
   , useManagementForm: React.PropTypes.bool   // Should ManagementForm hidden fields be rendered?
-  , __all__: function(props) {
+  , __all__(props) {
       if (!props.form && !props.formset) {
         return new Error(
           'Invalid props supplied to `RenderFormSet`, either `form` or ' +
@@ -64,7 +64,7 @@ var RenderFormSet = React.createClass({
     }
   }),
 
-  getDefaultProps: function() {
+  getDefaultProps() {
     return {
       component: 'div'
     , formComponent: 'div'
@@ -75,59 +75,56 @@ var RenderFormSet = React.createClass({
     }
   },
 
-  componentWillMount: function() {
+  componentWillMount() {
     if (this.props.formset instanceof FormSet) {
       this.formset = this.props.formset
     }
     else {
       this.formset = new this.props.formset(object.extend({
         onChange: this.forceUpdate.bind(this)
-      }, util.getProps(this.props, Object.keys(formsetProps))))
+      }, getProps(this.props, Object.keys(formsetProps))))
     }
   },
 
-  getFormset: function() {
+  getFormset() {
     return this.formset
   },
 
-  render: function() {
-    var formset = this.formset
-    var props = this.props
+  render() {
+    var {formset, props} = this
     var attrs = {}
     if (this.props.className) {
       attrs.className = props.className
     }
     var topErrors = formset.nonFormErrors()
 
-    return React.createElement(props.component, attrs,
-      topErrors.isPopulated() && React.createElement(props.row, {
-        className: formset.errorCssClass
-      , content: topErrors.render()
-      , key: formset.addPrefix(constants.NON_FIELD_ERRORS)
-      , rowComponent: props.rowComponent
-      }),
-      formset.forms().map(function(form) {
-        return React.createElement(RenderForm, {
-          form: form
-        , formComponent: props.formComponent
-        , row: props.row
-        , rowComponent: props.rowComponent
-        , progress: props.progress
-        })
-      }),
-      formset.nonFormPending() && React.createElement(props.row, {
-        className: formset.pendingRowCssClass
-      , content: this.renderProgress()
-      , key: formset.addPrefix('__pending__')
-      , rowComponent: props.rowComponent
-      }),
-      props.useManagementForm && React.createElement(RenderForm, {
-        form: formset.managementForm()
-      , formComponent: props.formComponent
-      , row: props.row
-      , rowComponent: props.rowComponent
-      })
-    )
+    return <props.component {...attrs}>
+      {topErrors.isPopulated() && <props.row
+        className={formset.errorCssClass}
+        content={topErrors.render()}
+        key={formset.addPrefix(NON_FIELD_ERRORS)}
+        rowComponent={props.rowComponent}
+      />}
+      {formset.forms().map(form => <RenderForm
+        form={form}
+        formComponent={props.formComponent}
+        progress={props.progress}
+        row={props.row}
+        rowComponent={props.rowComponent}
+      />)}
+      {formset.nonFormPending() && <props.row
+        className={formset.pendingRowCssClass}
+        content={this.renderProgress()}
+        key={formset.addPrefix('__pending__')}
+        rowComponent={props.rowComponent}
+      />}
+      {props.useManagementForm && <RenderForm
+        form={formset.managementForm()}
+        formComponent={props.formComponent}
+        row={props.row}
+        rowComponent={props.rowComponent}
+      />}
+    </props.component>
   }
 })
 
