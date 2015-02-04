@@ -1,12 +1,10 @@
 'use strict';
 
 var object = require('isomorph/object')
-var validators = require('validators')
-
 var Field = require('../Field')
 var NumberInput = require('../widgets/NumberInput')
 
-var ValidationError = validators.ValidationError
+var {MaxValueValidator, MinValueValidator, ValidationError} = require('validators')
 
 /**
  * Validates that its input is a valid integer.
@@ -28,10 +26,10 @@ var IntegerField = Field.extend({
     Field.call(this, kwargs)
 
     if (this.minValue !== null) {
-      this.validators.push(validators.MinValueValidator(this.minValue))
+      this.validators.push(MinValueValidator(this.minValue))
     }
     if (this.maxValue !== null) {
-      this.validators.push(validators.MaxValueValidator(this.maxValue))
+      this.validators.push(MaxValueValidator(this.maxValue))
     }
   }
 })

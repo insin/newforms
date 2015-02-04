@@ -3,9 +3,10 @@
 var object = require('isomorph/object')
 
 var constants = require('../constants')
-var util = require('../util')
 
 var FormSet = require('../FormSet')
+
+var {warning} = require('../util')
 
 if ("production" !== process.env.NODE_ENV) {
   var warnedFormsetFactoryDeprecated = false
@@ -19,7 +20,7 @@ if ("production" !== process.env.NODE_ENV) {
 function formsetFactory(form, kwargs) {
   if ("production" !== process.env.NODE_ENV) {
     if (!warnedFormsetFactoryDeprecated) {
-      util.warning(
+      warning(
         'formsetFactory is deprecated and will be removed in version 0.12 - ' +
         'extend FormSet directly with FormSet.extend() instead'
       )

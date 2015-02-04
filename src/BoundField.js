@@ -6,9 +6,10 @@ var format = require('isomorph/format').formatObj
 var object = require('isomorph/object')
 var React = require('react')
 
-var util = require('./util')
 var TextInput = require('./widgets/TextInput')
 var Textarea = require('./widgets/Textarea')
+
+var {prettyName} = require('./util')
 
 /**
  * A helper for rendering a field.
@@ -26,7 +27,7 @@ var BoundField = Concur.extend({
     this.htmlName = form.addPrefix(name)
     this.htmlInitialName = form.addInitialPrefix(name)
     this.htmlInitialId = form.addInitialPrefix(this.autoId())
-    this.label = this.field.label !== null ? this.field.label : util.prettyName(name)
+    this.label = this.field.label !== null ? this.field.label : prettyName(name)
     this.helpText = field.helpText || ''
   }
 })

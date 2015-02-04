@@ -5,7 +5,8 @@ var React = require('react')
 
 var CheckboxInput = require('./CheckboxInput')
 var FileInput = require('./FileInput')
-var util = require('../util')
+
+var {formatToArray} = require('../util')
 
 var FILE_INPUT_CONTRADICTION = {}
 
@@ -25,13 +26,13 @@ var ClearableFileInput = FileInput.extend({
 , inputText: 'Change'
 , clearCheckboxLabel: 'Clear'
 , templateWithInitial: function(params) {
-    return util.formatToArray(
+    return formatToArray(
       '{initialText}: {initial} {clearTemplate}{br}{inputText}: {input}'
     , object.extend(params, {br: React.createElement('br', null)})
     )
   }
 , templateWithClear: function(params) {
-    return util.formatToArray(
+    return formatToArray(
       '{checkbox} {label}'
     , object.extend(params, {
         label: React.createElement('label', {htmlFor: params.checkboxId}, params.label)

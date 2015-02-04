@@ -1,15 +1,13 @@
 'use strict';
 
 var object = require('isomorph/object')
-var validators = require('validators')
-
-var util = require('../util')
 
 var Field = require('../Field')
 var IntegerField = require('./IntegerField')
 var NumberInput = require('../widgets/NumberInput')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
+var {strip} = require('../util')
 
 /**
  * Validates that its input is a valid float.
@@ -43,7 +41,7 @@ FloatField.prototype.toJavaScript = function(value) {
   if (this.isEmptyValue(value)) {
     return null
   }
-  value = util.strip(value)
+  value = strip(value)
   if (!FloatField.FLOAT_REGEXP.test(value)) {
     throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
   }

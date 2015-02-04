@@ -2,11 +2,9 @@
 
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var validators = require('validators')
-
 var MultipleChoiceField = require('./MultipleChoiceField')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
 
 /**
  * A MultipleChoiceField which returns values coerced by some provided function.

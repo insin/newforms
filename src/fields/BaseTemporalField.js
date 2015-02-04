@@ -3,15 +3,14 @@
 var is = require('isomorph/is')
 var object = require('isomorph/object')
 var time = require('isomorph/time')
-var validators = require('validators')
 
 var formats = require('../formats')
 var locales = require('../locales')
-var util = require('../util')
 
 var Field = require('../Field')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
+var {strip} = require('../util')
 
 /**
  * Base field for fields which validate that their input is a date or time.
@@ -36,7 +35,7 @@ var BaseTemporalField = Field.extend({
  */
 BaseTemporalField.prototype.toJavaScript = function(value) {
   if (!is.Date(value)) {
-    value = util.strip(value)
+    value = strip(value)
   }
   if (is.String(value)) {
     if (this.inputFormats === null) {

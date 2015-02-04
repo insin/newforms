@@ -3,15 +3,13 @@
 var Concur = require('Concur')
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var validators = require('validators')
-
-var util = require('./util')
 
 var HiddenInput = require('./widgets/HiddenInput')
 var Widget = require('./Widget')
 var TextInput = require('./widgets/TextInput')
 
-var ValidationError = validators.ValidationError
+var {EMPTY_VALUES, ValidationError} = require('validators')
+var {normaliseValidation} = require('./util')
 
 /**
  * An object that is responsible for doing validation and normalisation, or
@@ -30,7 +28,7 @@ var Field = Concur.extend({
 , defaultErrorMessages: {
     required: 'This field is required.'
   }
-, emptyValues: validators.EMPTY_VALUES.slice()
+, emptyValues: EMPTY_VALUES.slice()
 , emptyValueArray: true // Should isEmptyValue check for empty Arrays?
 
 , constructor: function Field(kwargs) {
@@ -46,7 +44,7 @@ var Field = Concur.extend({
     this.showHiddenInitial = kwargs.showHiddenInitial
     this.helpText = kwargs.helpText || ''
     this.cssClass = kwargs.cssClass
-    this.validation = util.normaliseValidation(kwargs.validation)
+    this.validation = normaliseValidation(kwargs.validation)
     this.controlled = kwargs.controlled
     this.custom = kwargs.custom
 

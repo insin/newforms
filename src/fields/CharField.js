@@ -1,11 +1,12 @@
 'use strict';
 
 var object = require('isomorph/object')
-var validators = require('validators')
 
 var Field = require('../Field')
 var PasswordInput = require('../widgets/PasswordInput')
 var TextInput = require('../widgets/TextInput')
+
+var {MinLengthValidator, MaxLengthValidator} = require('validators')
 
 /**
  * Validates that its input is a valid String.
@@ -21,10 +22,10 @@ var CharField = Field.extend({
     this.minLength = kwargs.minLength
     Field.call(this, kwargs)
     if (this.minLength !== null) {
-      this.validators.push(validators.MinLengthValidator(this.minLength))
+      this.validators.push(MinLengthValidator(this.minLength))
     }
     if (this.maxLength !== null) {
-      this.validators.push(validators.MaxLengthValidator(this.maxLength))
+      this.validators.push(MaxLengthValidator(this.maxLength))
     }
   }
 })

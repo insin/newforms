@@ -2,14 +2,12 @@
 
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var validators = require('validators')
-
-var util = require('../util')
 
 var Field = require('../Field')
 var Select = require('../widgets/Select')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
+var {normaliseChoices} = require('../util')
 
 /**
  * Validates that its input is one of a valid list of choices.
@@ -34,7 +32,7 @@ var ChoiceField = Field.extend({
 ChoiceField.prototype.choices = function() { return this._choices }
 ChoiceField.prototype.setChoices = function(choices) {
   // Setting choices also sets the choices on the widget
-  this._choices = this.widget.choices = util.normaliseChoices(choices)
+  this._choices = this.widget.choices = normaliseChoices(choices)
 }
 
 ChoiceField.prototype.toJavaScript = function(value) {

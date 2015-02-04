@@ -1,8 +1,8 @@
 'use strict';
 
-var validators = require('validators')
-
 var CharField = require('./CharField')
+
+var {validateIPv4Address} = require('validators')
 
 /**
  * Validates that its input is a valid IPv4 address.
@@ -12,7 +12,7 @@ var CharField = require('./CharField')
  * @deprecated in favour of GenericIPAddressField
  */
 var IPAddressField = CharField.extend({
-  defaultValidators: [validators.validateIPv4Address]
+  defaultValidators: [validateIPv4Address]
 
 , constructor: function IPAddressField(kwargs) {
     if (!(this instanceof IPAddressField)) { return new IPAddressField(kwargs) }

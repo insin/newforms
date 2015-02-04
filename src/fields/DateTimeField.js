@@ -1,12 +1,11 @@
 'use strict';
 
 var is = require('isomorph/is')
-var validators = require('validators')
 
 var BaseTemporalField = require('./BaseTemporalField')
 var DateTimeInput = require('../widgets/DateTimeInput')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
 
 /**
  * Validates that its input is a date/time.

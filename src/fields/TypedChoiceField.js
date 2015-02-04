@@ -1,11 +1,10 @@
 'use strict';
 
 var object = require('isomorph/object')
-var validators = require('validators')
 
 var ChoiceField = require('./ChoiceField')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
 
 /**
  * A ChoiceField which returns a value coerced by some provided function.

@@ -1,11 +1,11 @@
 'use strict';
 
-var validators = require('validators')
-
 var util = require('../util')
 
 var CharField = require('./CharField')
 var EmailInput = require('../widgets/EmailInput')
+
+var {validateEmail} = require('validators')
 
 /**
  * Validates that its input appears to be a valid e-mail address.
@@ -15,7 +15,7 @@ var EmailInput = require('../widgets/EmailInput')
  */
 var EmailField = CharField.extend({
   widget: EmailInput
-, defaultValidators: [validators.validateEmail]
+, defaultValidators: [validateEmail]
 
 , constructor: function EmailField(kwargs) {
     if (!(this instanceof EmailField)) { return new EmailField(kwargs) }

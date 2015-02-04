@@ -2,13 +2,12 @@
 
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var validators = require('validators')
 
 var ChoiceField = require('./ChoiceField')
 var MultipleHiddenInput = require('../widgets/MultipleHiddenInput')
 var SelectMultiple = require('../widgets/SelectMultiple')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
 
 /**
  * Validates that its input is one or more of a valid list of choices.

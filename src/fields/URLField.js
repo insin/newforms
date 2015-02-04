@@ -1,12 +1,12 @@
 'use strict';
 
 var url = require('isomorph/url')
-var validators = require('validators')
-
-var util = require('../util')
 
 var CharField = require('./CharField')
 var URLInput = require('../widgets/URLInput')
+
+var {URLValidator} = require('validators')
+var {strip} = require('../util')
 
 /**
  * Validates that its input appears to be a valid URL.
@@ -19,7 +19,7 @@ var URLField = CharField.extend({
 , defaultErrorMessages: {
     invalid: 'Enter a valid URL.'
   }
-, defaultValidators: [validators.URLValidator()]
+, defaultValidators: [URLValidator()]
 
 , constructor: function URLField(kwargs) {
     if (!(this instanceof URLField)) { return new URLField(kwargs) }
@@ -44,7 +44,7 @@ URLField.prototype.toJavaScript = function(value) {
 }
 
 URLField.prototype.clean = function(value) {
-  value = util.strip(this.toJavaScript(value))
+  value = strip(this.toJavaScript(value))
   return CharField.prototype.clean.call(this, value)
 }
 

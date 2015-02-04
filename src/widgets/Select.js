@@ -4,8 +4,9 @@ var is = require('isomorph/is')
 var object = require('isomorph/object')
 var React = require('react')
 
-var util = require('../util')
 var Widget = require('../Widget')
+
+var {normaliseChoices} = require('../util')
 
 /**
  * An HTML <select> widget.
@@ -18,7 +19,7 @@ var Select = Widget.extend({
     if (!(this instanceof Select)) { return new Select(kwargs) }
     kwargs = object.extend({choices: []}, kwargs)
     Widget.call(this, kwargs)
-    this.choices = util.normaliseChoices(kwargs.choices)
+    this.choices = normaliseChoices(kwargs.choices)
   }
 , allowMultipleSelected: false
 , validation: {onChange: true}
@@ -51,7 +52,7 @@ Select.prototype.render = function(name, selectedValue, kwargs) {
 Select.prototype.renderOptions = function(additionalChoices, selectedValues) {
   var selectedValuesLookup = object.lookup(selectedValues)
   var options = []
-  var choices = this.choices.concat(util.normaliseChoices(additionalChoices))
+  var choices = this.choices.concat(normaliseChoices(additionalChoices))
   for (var i = 0, l = choices.length, choice; i < l; i++) {
     choice = choices[i]
     if (is.Array(choice[1])) {

@@ -1,9 +1,10 @@
 'use strict';
 
 var is = require('isomorph/is')
-var validators = require('validators')
 
 var CharField = require('./CharField')
+
+var {RegexValidator} = require('validators')
 
 /**
  * Validates that its input matches a given regular expression.
@@ -20,7 +21,7 @@ var RegexField = CharField.extend({
       regex = new RegExp(regex)
     }
     this.regex = regex
-    this.validators.push(validators.RegexValidator({regex: this.regex}))
+    this.validators.push(RegexValidator({regex: this.regex}))
   }
 })
 

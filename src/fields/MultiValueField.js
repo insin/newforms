@@ -2,11 +2,10 @@
 
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var validators = require('validators')
 
 var Field = require('../Field')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
 
 /**
  * A Field that aggregates the logic of multiple Fields.

@@ -5,10 +5,8 @@ var getFormData = require('get-form-data')
 var copy = require('isomorph/copy')
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var validators = require('validators')
 
 var constants = require('./constants')
-var util = require('./util')
 
 var BoundField = require('./BoundField')
 var DeclarativeFieldsMeta = require('./forms/DeclarativeFieldsMeta')
@@ -16,7 +14,8 @@ var ErrorList = require('./ErrorList')
 var ErrorObject = require('./ErrorObject')
 var FileField = require('./fields/FileField')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
+var {cancellable, debounce, info, warning, normaliseValidation} = require('./util')
 
 function noop() {}
 var sentinel = {}
@@ -74,9 +73,9 @@ var Form = Concur.extend({
     if (is.Function(kwargs.onChange)) {
       if ('production' !== process.env.NODE_ENV) {
         if (!warnedOnImpliedValidateAuto && kwargs.validation === 'auto') {
-          util.info('Passing onChange to a Form or FormSet constructor also ' +
-                    "implies validation: 'auto' by default - you don't have " +
-                    'to set it manually.')
+          info('Passing onChange to a Form or FormSet constructor also ' +
+               "implies validation: 'auto' by default - you don't have " +
+               'to set it manually.')
           warnedOnImpliedValidateAuto = true
         }
       }
@@ -84,7 +83,7 @@ var Form = Concur.extend({
         kwargs.validation = 'auto'
       }
     }
-    this.validation = util.normaliseValidation(kwargs.validation || 'manual')
+    this.validation = normaliseValidation(kwargs.validation || 'manual')
 
     this._errors = kwargs.errors
 
@@ -114,9 +113,9 @@ var Form = Concur.extend({
       // Now that form.fields exists, we can check if there's any configuration
       // which *needs* onChange on the form or its fields.
       if (!is.Function(kwargs.onChange) && this._needsOnChange()) {
-        util.warning("You didn't provide an onChange callback for a " +
-                     this._formName() + ' which has controlled fields. This ' +
-                     'will result in read-only fields.')
+        warning("You didn't provide an onChange callback for a " +
+                this._formName() + ' which has controlled fields. This ' +
+                'will result in read-only fields.')
       }
     }
 
@@ -437,7 +436,7 @@ Form.prototype._runCustomClean = function(fieldName, customClean) {
     this._fieldCleaned(fieldName, err)
     this._stateChanged()
   }.bind(this)
-  var cancellableCallback = util.cancellable(callback)
+  var cancellableCallback = cancellable(callback)
 
   // An explicit return value of false indicates that async processing is
   // being skipped (e.g. because sync checks in the method failed first)
@@ -640,7 +639,7 @@ Form.prototype._handleFieldEvent = function(validation, e) {
  */
 Form.prototype._delayedFieldValidation = function(fieldName, delay) {
   if (typeof this._pendingEventValidation[fieldName] == 'undefined') {
-    this._pendingEventValidation[fieldName] = util.debounce(function() {
+    this._pendingEventValidation[fieldName] = debounce(function() {
       delete this._pendingEventValidation[fieldName]
       this._immediateFieldValidation(fieldName)
     }.bind(this), delay)

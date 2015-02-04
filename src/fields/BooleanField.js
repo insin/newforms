@@ -1,12 +1,11 @@
 'use strict';
 
 var is = require('isomorph/is')
-var validators = require('validators')
 
 var CheckboxInput = require('../widgets/CheckboxInput')
 var Field = require('../Field')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
 
 /**
  * Normalises its input to a Boolean primitive.

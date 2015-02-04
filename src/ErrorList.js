@@ -3,9 +3,8 @@
 var Concur = require('Concur')
 var object = require('isomorph/object')
 var React = require('react')
-var validators = require('validators')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
 
 /**
  * A list of errors which knows how to display itself in various formats.

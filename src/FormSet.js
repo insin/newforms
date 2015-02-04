@@ -4,11 +4,9 @@ var Concur = require('Concur')
 var getFormData = require('get-form-data')
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var validators = require('validators')
 
 var constants = require('./constants')
 var env = require('./env')
-var util = require('./util')
 
 var BooleanField = require('./fields/BooleanField')
 var ErrorList = require('./ErrorList')
@@ -17,7 +15,8 @@ var HiddenInput = require('./widgets/HiddenInput')
 var IntegerField = require('./fields/IntegerField')
 var isFormAsync = require('./forms/isFormAsync')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
+var {cancellable} = require('./util')
 
 function noop() {}
 
@@ -267,7 +266,7 @@ FormSet.prototype._cleanForm = function(index, form) {
   callback.onCancel = function() {
     form._cancelPendingOperations()
   }
-  this._pendingAsyncValidation[index] = util.cancellable(callback)
+  this._pendingAsyncValidation[index] = cancellable(callback)
   form.validate(callback)
 }
 
@@ -395,7 +394,7 @@ FormSet.prototype._runCustomClean = function(name, customClean) {
     if (returnValue && typeof returnValue.onCancel == 'function') {
       callback.onCancel = returnValue.onCancel
     }
-    this._pendingAsyncValidation[name] = util.cancellable(callback)
+    this._pendingAsyncValidation[name] = cancellable(callback)
     return true
   }
 }

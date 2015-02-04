@@ -2,7 +2,6 @@
 
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var validators = require('validators')
 
 var DateField = require('./DateField')
 var MultiValueField = require('./MultiValueField')
@@ -10,7 +9,7 @@ var SplitDateTimeWidget = require('../widgets/SplitDateTimeWidget')
 var SplitHiddenDateTimeWidget = require('../widgets/SplitHiddenDateTimeWidget')
 var TimeField = require('./TimeField')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
 
 /**
  * A MultiValueField consisting of a DateField and a TimeField.

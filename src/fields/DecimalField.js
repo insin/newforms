@@ -1,15 +1,13 @@
 'use strict';
 
 var object = require('isomorph/object')
-var validators = require('validators')
-
-var util = require('../util')
 
 var Field = require('../Field')
 var IntegerField = require('./IntegerField')
 var NumberInput = require('../widgets/NumberInput')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
+var {strip} = require('../util')
 
 /**
  * Validates that its input is a decimal number.
@@ -55,7 +53,7 @@ DecimalField.prototype.clean = function(value) {
   }
 
   // Coerce to string and validate that it looks Decimal-like
-  value = util.strip(''+value)
+  value = strip(''+value)
   if (!DecimalField.DECIMAL_REGEXP.test(value)) {
     throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
   }

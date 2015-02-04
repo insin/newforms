@@ -1,14 +1,13 @@
 'use strict';
 
 var object = require('isomorph/object')
-var validators = require('validators')
 
 var env = require('../env')
 
 var ClearableFileInput = require('../widgets/ClearableFileInput')
 var Field = require('../Field')
 
-var ValidationError = validators.ValidationError
+var {ValidationError} = require('validators')
 
 /**
  * Validates that its input is a valid uploaded file.

@@ -2,9 +2,9 @@
 
 var validators = require('validators')
 
-var util = require('../util')
-
 var CharField = require('./CharField')
+
+var {strip} = require('../util')
 
 /**
  * Validates that its input is a valid slug.
@@ -21,7 +21,7 @@ var SlugField = CharField.extend({
 })
 
 SlugField.prototype.clean = function(value) {
-  value = util.strip(this.toJavaScript(value))
+  value = strip(this.toJavaScript(value))
   return CharField.prototype.clean.call(this, value)
 }
 
