@@ -445,13 +445,11 @@ Changes in addition to 0.5.0-rc1:
   project and added it as a dependency - as a result, `callValidator()`,
   `isCallable()` and IPv6 functions now
   live under `forms.validators`
-* Extracted URL utility functions out into [ispmorph](https://github.com/insin/isomorph)
+* Extracted URL utility functions out into [isomorph](https://github.com/insin/isomorph)
 * Fixed #11: a validator's error message should take precedence unless the field
   it's validating has defined a custom error message using the same error code
 * Changed `BoundField.protoype.labelTag()` to also include the form's
   `labelSuffix`
-
-.. _`validators`: https://github.com/insin/validators
 
 # 0.3.0 / 2012-02-10
 
@@ -490,5 +488,3 @@ Changes in addition to 0.5.0-rc1:
   [ispmorph](https://github.com/insin/isomorph), which is now a dependency
 * Added extension sugar via [Concur](https://github.com/insin/concur) - all
   newforms constructors now have an `extend()` function
-
-.. _`validators`: https://github.com/insin/validators
