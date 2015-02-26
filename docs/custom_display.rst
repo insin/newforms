@@ -150,7 +150,7 @@ We still don't need to do much work in our component's ``render()`` method:
 
    render: function() {
      return <form action="/contact" method="POST">
-       {this.state.form.boundFields.map(renderField)}
+       {this.state.form.boundFields().map(renderField)}
        <div>
          <input type="submit" value="Submit"/>{' '}
          <input type="button" value="Cancel" onClick={this.onCancel}/>
