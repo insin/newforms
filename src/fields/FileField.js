@@ -27,13 +27,18 @@ var FileField = Field.extend({
 
 , constructor: function FileField(kwargs) {
     if (!(this instanceof FileField)) { return new FileField(kwargs) }
-    kwargs = object.extend({maxLength: null, allowEmptyFile: false}, kwargs)
+    kwargs = object.extend({maxLength: null, allowEmptyFile: false, multiple: false}, kwargs)
     this.maxLength = kwargs.maxLength
     this.allowEmptyFile = kwargs.allowEmptyFile
+    this.multiple = kwargs.multiple
     delete kwargs.maxLength
     Field.call(this, kwargs)
   }
 })
+
+FileField.prototype.widgetAttrs = function(widget) {
+  return {multiple: this.multiple}
+}
 
 FileField.prototype.toJavaScript = function(data, initial) {
   if (this.isEmptyValue(data)) {
