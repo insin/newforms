@@ -46,8 +46,8 @@ CharField.prototype.toJavaScript = function(value) {
  * @param {Widget} widget the widget being used to render this field's value.
  * @return {Object} additional attributes which should be added to the widget.
  */
-CharField.prototype.widgetAttrs = function(widget) {
-  var attrs = {}
+CharField.prototype.getWidgetAttrs = function(widget) {
+  var attrs = Field.prototype.getWidgetAttrs.call(this, widget)
   if (this.maxLength !== null && (widget instanceof TextInput ||
                                   widget instanceof PasswordInput)) {
     attrs.maxLength = ''+this.maxLength

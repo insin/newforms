@@ -74,8 +74,8 @@ FloatField.prototype._hasChanged = function(initial, data) {
   return (parseFloat(''+initialValue) != parseFloat(''+dataValue))
 }
 
-FloatField.prototype.widgetAttrs = function(widget) {
-  var attrs = IntegerField.prototype.widgetAttrs.call(this, widget)
+FloatField.prototype.getWidgetAttrs = function(widget) {
+  var attrs = IntegerField.prototype.getWidgetAttrs.call(this, widget)
   if (widget instanceof NumberInput &&
       !object.hasOwn(widget.attrs, 'step')) {
     object.setDefault(attrs, 'step', 'any')

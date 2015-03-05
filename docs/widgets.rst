@@ -58,6 +58,25 @@ to be added to the ``TextArea`` to control its display:
 See the :ref:`built-in widgets` for more information about which widgets
 are available and which arguments they accept.
 
+Customising widget attributes
+=============================
+
+.. versionadded:: 0.11
+
+Sometimes you just need to add some extra attributes to a field's default
+widget. Instead of completely redefining the widget as shown above, you can
+provide extra attributes using the field's ``widgetAttrs`` argument. For
+example, if we want focus to be given to the ``name`` field when the form is
+first rendered:
+
+.. code-block:: javascript
+
+   var CommentForm = forms.Form.extend({
+     name: forms.CharField({widgetAttrs: {autoFocus: true}}),
+     url: forms.URLField(),
+     comment: forms.CharField({widget: forms.Textarea})
+   })
+
 Widgets inheriting from the Select widget
 =========================================
 

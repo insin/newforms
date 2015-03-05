@@ -36,7 +36,7 @@ var FileField = Field.extend({
   }
 })
 
-FileField.prototype.widgetAttrs = function(widget) {
+FileField.prototype.getWidgetAttrs = function(widget) {
   return {multiple: this.multiple}
 }
 

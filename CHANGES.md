@@ -1,5 +1,20 @@
 # master / in development
 
+## Breaking Changes
+
+* Renamed `BaseForm` to `Form`, changing the top-level API - this has the same
+  behaviour as the currently-exported `forms.Form`.
+* Renamed `BaseFormSet` to `FormSet`, changing the top-level API.
+* Replaced `util.formData()` with the
+  [get-form-data](https://www.npmjs.com/package/get-form-data) module -
+  `formData()` is no longer available as top-level API.
+
+## New Features
+
+* Added new core `Field` argument: `field.widgetAttrs` - this allows you to
+  provide additional widget attributes without having to redefine the entire
+  widget ([#62](https://github.com/insin/newforms/issues/62))
+
 ## Changes
 
 * Newforms is now published to npm as flattened, top-level modules, so
@@ -16,15 +31,6 @@
 * `FormSet` options can now be overridden when constructing a `FormSet`.
 * An error will now be thrown if a `FormSet` is constructed without a `Form`
   constructor.
-
-## Breaking Changes
-
-* Renamed `BaseForm` to `Form`, changing the top-level API - this has the same
-  behaviour as the currently-exported `forms.Form`.
-* Renamed `BaseFormSet` to `FormSet`, changing the top-level API.
-* Replaced `util.formData()` with the
-  [get-form-data](https://www.npmjs.com/package/get-form-data) module -
-  `formData()` is no longer available as top-level API.
 
 ## Bug Fixes
 

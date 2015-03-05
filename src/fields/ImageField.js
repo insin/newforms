@@ -33,8 +33,8 @@ ImageField.prototype.toJavaScript = function(data, initial) {
   return f
 }
 
-ImageField.prototype.widgetAttrs = function(widget) {
-  var attrs = FileField.prototype.widgetAttrs.call(this, widget)
+ImageField.prototype.getWidgetAttrs = function(widget) {
+  var attrs = FileField.prototype.getWidgetAttrs.call(this, widget)
   attrs.accept = 'image/*'
   return attrs
 }

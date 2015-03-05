@@ -43,6 +43,11 @@ Fields API
       list of addtional validators to use - a validator is a function which
       takes a single value and throws a ValidationError if it's invalid.
 
+   :param Object kwargs.widgetAttrs:
+      additional attributes for the field's rendered widget.
+
+      .. versionadded:: 0.11
+
    :param String kwargs.cssClass:
       space-separated CSS classes to be applied to the field's container when
       default rendering fuctions are used.

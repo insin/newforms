@@ -36,7 +36,7 @@ var Field = Concur.extend({
       required: true, widget: null, label: null, initial: null,
       helpText: null, errorMessages: null, showHiddenInitial: false,
       validators: [], cssClass: null, validation: null, controlled: null,
-      custom: null
+      custom: null, widgetAttrs: {}
     }, kwargs)
     this.required = kwargs.required
     this.label = kwargs.label
@@ -47,6 +47,7 @@ var Field = Concur.extend({
     this.validation = normaliseValidation(kwargs.validation)
     this.controlled = kwargs.controlled
     this.custom = kwargs.custom
+    this.widgetAttrs = kwargs.widgetAttrs
 
     var widget = kwargs.widget || this.widget
     if (!(widget instanceof Widget)) {
@@ -55,8 +56,8 @@ var Field = Concur.extend({
     }
     // Let the widget know whether it should display as required
     widget.isRequired = this.required
-    // Hook into this.widgetAttrs() for any Field-specific HTML attributes
-    object.extend(widget.attrs, this.widgetAttrs(widget))
+    // Hook into this.getWidgetAttrs() for any Field-specific HTML attributes
+    object.extend(widget.attrs, this.getWidgetAttrs(widget))
     this.widget = widget
 
     // Increment the creation counter and save our local copy
@@ -165,8 +166,8 @@ Field.prototype.boundData = function(data, initial) {
  * @return {Object} an object specifying HTML attributes that should be added to
  *   the given widget when rendered, based on this field.
  */
-Field.prototype.widgetAttrs = function(widget) {
-  return {}
+Field.prototype.getWidgetAttrs = function(widget) {
+  return object.extend({}, this.widgetAttrs)
 }
 
 /**

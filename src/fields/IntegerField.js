@@ -53,8 +53,8 @@ IntegerField.prototype.toJavaScript = function(value) {
   return value
 }
 
-IntegerField.prototype.widgetAttrs = function(widget) {
-  var attrs = Field.prototype.widgetAttrs.call(this, widget)
+IntegerField.prototype.getWidgetAttrs = function(widget) {
+  var attrs = Field.prototype.getWidgetAttrs.call(this, widget)
   if (widget instanceof NumberInput) {
     if (this.minValue !== null) {
       attrs.min = this.minValue

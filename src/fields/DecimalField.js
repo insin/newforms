@@ -120,8 +120,8 @@ DecimalField.prototype.clean = function(value) {
   return value
 }
 
-DecimalField.prototype.widgetAttrs = function(widget) {
-  var attrs = IntegerField.prototype.widgetAttrs.call(this, widget)
+DecimalField.prototype.getWidgetAttrs = function(widget) {
+  var attrs = IntegerField.prototype.getWidgetAttrs.call(this, widget)
   if (widget instanceof NumberInput &&
       !object.hasOwn(widget.attrs, 'step')) {
     var step = 'any'

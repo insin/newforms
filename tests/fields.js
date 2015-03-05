@@ -11,8 +11,13 @@ QUnit.test("Field sets custom metadata", 2, function() {
   strictEqual(new forms.Field().custom, null)
 })
 
-QUnit.test("CharField", 34, function() {
-  var f = forms.CharField()
+QUnit.test("Field provides given widgetAttrs", 1, function() {
+  deepEqual(new forms.Field({widgetAttrs: {autoFocus: true}}).getWidgetAttrs(), {autoFocus: true})
+})
+
+QUnit.test("CharField", 35, function() {
+  var f = forms.CharField({widgetAttrs: {placeholder: 'test'}})
+  widgetRendersTo(f, '<input placeholder="test" type="text" name="f" id="id_f">')
   strictEqual(f.clean(1), "1")
   equal(f.clean("hello"), "hello")
   cleanErrorEqual(f, "This field is required.", null)
@@ -57,15 +62,15 @@ QUnit.test("CharField", 34, function() {
   // Widget attrs
   // Return an empty object if maxLength is none...
   f = forms.CharField()
-  deepEqual(f.widgetAttrs(forms.TextInput()), {})
+  deepEqual(f.getWidgetAttrs(forms.TextInput()), {})
 
   // ...or if the widget is not TextInput or PasswordInput
   f = forms.CharField({maxLength: 10})
-  deepEqual(f.widgetAttrs(forms.HiddenInput()), {})
+  deepEqual(f.getWidgetAttrs(forms.HiddenInput()), {})
 
   // Otherwise, return a maxLength attribute equal to maxLength
-  deepEqual(f.widgetAttrs(forms.TextInput()), {maxLength: '10'})
-  deepEqual(f.widgetAttrs(forms.PasswordInput()), {maxLength: '10'})
+  deepEqual(f.getWidgetAttrs(forms.TextInput()), {maxLength: '10'})
+  deepEqual(f.getWidgetAttrs(forms.PasswordInput()), {maxLength: '10'})
 })
 
 QUnit.test("IntegerField", 55, function() {
@@ -282,14 +287,14 @@ QUnit.test("DecimalField", 73, function() {
 
   // Widget attrs
   f = forms.DecimalField({maxDigits: 6, decimalPlaces: 2})
-  deepEqual(f.widgetAttrs(forms.Widget()), {})
-  deepEqual(f.widgetAttrs(forms.NumberInput()), {step: '0.01'})
+  deepEqual(f.getWidgetAttrs(forms.Widget()), {})
+  deepEqual(f.getWidgetAttrs(forms.NumberInput()), {step: '0.01'})
   f = forms.DecimalField({maxDigits: 10, decimalPlaces: 0})
-  deepEqual(f.widgetAttrs(forms.NumberInput()), {step: '1'})
+  deepEqual(f.getWidgetAttrs(forms.NumberInput()), {step: '1'})
   f = forms.DecimalField({maxDigits: 19, decimalPlaces: 19})
-  deepEqual(f.widgetAttrs(forms.NumberInput()), {step: '1e-19'})
+  deepEqual(f.getWidgetAttrs(forms.NumberInput()), {step: '1e-19'})
   f = forms.DecimalField({maxDigits: 20})
-  deepEqual(f.widgetAttrs(forms.NumberInput()), {step: 'any'})
+  deepEqual(f.getWidgetAttrs(forms.NumberInput()), {step: 'any'})
   f = forms.DecimalField({maxDigits: 6, widget: forms.NumberInput({attrs: {step: '0.01'}})})
   widgetRendersTo(f, "<input step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\">")
 

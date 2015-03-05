@@ -117,6 +117,18 @@ validators
 The ``validators`` argument lets you provide a list of additional validation
 functions for this field.
 
+widgetAttrs
+-----------
+
+.. versionadded:: 0.11
+
+The ``widgetAttrs`` argument lets you specify additional attributes for the
+field's Widget without having to specify a new Widget from scratch using the
+``widget`` argument.
+
+This provides a more convenient way to add attributes like ``autoFocus``,
+``className`` or  ``data-`` attributes to the field's default Widget.
+
 Providing choices
 =================
 
