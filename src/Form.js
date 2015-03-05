@@ -575,6 +575,10 @@ Form.prototype._handleFieldEvent = function(validation, e) {
   var field = this.fields[fieldName]
   var targetData = getFormData.getNamedFormElementData(e.target.form, htmlName)
   this.data[htmlName] = targetData
+  if (field instanceof FileField) {
+    var files = e.target.files
+    this.files[htmlName] = field.multiple ? Array.prototype.slice.call(files) : files[0]
+  }
   if (this.isInitialRender) {
     this.isInitialRender = false
   }
@@ -609,7 +613,7 @@ Form.prototype._handleFieldEvent = function(validation, e) {
   // Otherwise, validate if data has changed since validation was last performed
   // - this prevents displayed validation errors being cleared unnecessarily.
   if (!validate) {
-    var fieldData = field.widget.valueFromData(this.data, null, this.addPrefix(fieldName))
+    var fieldData = field.widget.valueFromData(this.data, this.files, this.addPrefix(fieldName))
     validate = fieldDataHasChanged(lastValidatedData, fieldData)
   }
 

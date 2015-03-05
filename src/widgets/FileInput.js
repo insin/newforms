@@ -2,7 +2,6 @@
 
 var object = require('isomorph/object')
 
-var env = require('../env')
 var Input = require('./Input')
 
 /**
@@ -27,11 +26,11 @@ FileInput.prototype.render = function(name, value, kwargs) {
 }
 
 /**
- * File widgets take data from file wrappers on the server. On the client, they
- * take it from data so the presence of a .value can be validated when required.
+ * On the client, files will be populated with File objects from the input's
+ * FileList.
  */
 FileInput.prototype.valueFromData = function(data, files, name) {
-  return object.get(env.browser ? data : files, name, null)
+  return object.get(files, name, null)
 }
 
 module.exports = FileInput
