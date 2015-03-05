@@ -47,6 +47,12 @@ You can find it in the [/dist directory](https://github.com/insin/newforms/tree/
 * [newforms-gridforms](https://github.com/insin/newforms-gridforms) -
   [Grid Forms](http://kumailht.com/gridforms/) form layout components.
 
+## Other React Form Libraries
+
+* [React Forms](https://github.com/prometheusresearch/react-forms)
+
+* [tcomb-form](https://github.com/gcanti/tcomb-form)
+
 ## Quick Guide
 
 A quick introduction to defining and using newforms Form objects.
