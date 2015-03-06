@@ -31,6 +31,12 @@
 * `FormSet` options can now be overridden when constructing a `FormSet`.
 * An error will now be thrown if a `FormSet` is constructed without a `Form`
   constructor.
+* `FileField` cleaned data is now a native `File` object, when the browser
+  supports it ([#61](https://github.com/insin/newforms/issues/61))
+  * Added a `multiple` argument for `FileField` - cleaned data will be a list of
+    `File` objects.
+  * Filename length and empty file validation can now be performed on the client
+    when a `File` object is available.
 
 ## Bug Fixes
 
