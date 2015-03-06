@@ -53,7 +53,7 @@ var Signup = React.createClass({displayName: 'Signup',
   },
 
   render:function() {
-    return React.createElement("form", {onSubmit: this.onSubmit}, 
+    return React.createElement("form", {onSubmit: this.onSubmit, noValidate: true}, 
       React.createElement(forms.RenderForm, {form: SignupForm, ref: "form", onChange: this.forceResizeIFrame}), 
       React.createElement("button", null, "Sign Up")
     )

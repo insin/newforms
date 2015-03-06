@@ -11,14 +11,14 @@ pre {
 }
 
 ul.errorlist {
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 3px 0;
+  padding: 0;
 }
 ul.errorlist li {
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
+  padding: 0;
   color: #f33;
-  list-style-type: none !important;
+  list-style-type: none;
 }
 tbody th {
   vertical-align: top;
@@ -26,7 +26,12 @@ tbody th {
   padding-right: .5em;
 }
 
-label { color: #404040; }
+label {
+  color: #404040;
+  display: block;
+  margin: 6px 0;
+}
+
 .example-container form {
   margin-bottom: 16px;
 }

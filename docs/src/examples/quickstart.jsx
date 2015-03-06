@@ -28,7 +28,7 @@ var Signup = React.createClass({
   },
 
   render() {
-    return <form onSubmit={this.onSubmit}>
+    return <form onSubmit={this.onSubmit} noValidate>
       <forms.RenderForm form={SignupForm} ref="form" onChange={this.forceResizeIFrame}/>
       <button>Sign Up</button>
     </form>

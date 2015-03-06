@@ -886,6 +886,8 @@ validation based on file size, type and contents at whichever of the available
 :ref:`validation steps <ref-validation-steps-and-order>` is most appropriate for
 your needs.
 
+.. _ref-binding-uploaded-files:
+
 Server: Binding uploaded files to a form
 ========================================
 

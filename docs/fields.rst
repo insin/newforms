@@ -134,7 +134,7 @@ For example, you can't override an ``Input``-based widget's ``type`` attribute
 using ``widgetAttrs``, as ``type`` is set in that widget's ``render()`` method
 based on the specific widget constructor being used.
 
-However, :js:class:`TextInput` treats the ``type`` attribut specially to allow
+However, :js:class:`TextInput` treats the ``type`` attribute specially, to allow
 you to override the rendered type when creating an instance:
 
 .. code-block:: javascript
@@ -617,7 +617,7 @@ Build-in Fields (A-Z)
    content is empty.
 
    When you use a ``FileField`` in a form, you must also remember to
-   :ref:`bind the file data to the form <binding-uploaded-files>`.
+   :ref:`bind the file data to the form <ref-binding-uploaded-files>`.
 
    The ``maxLength`` error refers to the length of the filename. In the error
    message for that key, ``{max}`` will be replaced with the maximum filename
@@ -701,7 +701,7 @@ Build-in Fields (A-Z)
       Server-side image validation isn't implemented yet.
 
    When you use a ``ImageField`` in a form, you must also remember to
-   :ref:`bind the file data to the form <binding-uploaded-files>`.
+   :ref:`bind the file data to the form <ref-binding-uploaded-files>`.
 
 .. _ref-fields-IntegerField:
 

@@ -415,4 +415,4 @@ to display a spinner image instead:
 
 .. code-block:: html
 
-   <<RenderForm form={MyForm} ref="myForm" progress={InProgress}/>
+   <RenderForm form={MyForm} ref="myForm" progress={InProgress}/>
