@@ -49,30 +49,33 @@ FileField.prototype.toJavaScript = function(data, initial) {
   }
 
   // If the browser doesn't support File objects, we can't do anything more
-  if (env.browser && is.String(data)) {
+  if (env.browser && (is.String(data) || is.Array(data) && is.String(data[0]))) {
     return data
   }
 
-  // File objects should have name and size attributes
-  if (typeof data.name == 'undefined' || typeof data.size == 'undefined') {
-    throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
-  }
+  ;[].concat(data).forEach(function(file) {
+    // File objects should have name and size attributes
+    if (typeof file.name == 'undefined' || typeof file.size == 'undefined') {
+      throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
+    }
 
-  var fileName = data.name
-  var fileSize = Number(data.size)
+    var fileName = file.name
+    var fileSize = Number(file.size)
 
-  if (this.maxLength !== null && fileName.length > this.maxLength) {
-    throw ValidationError(this.errorMessages.maxLength, {
-      code: 'maxLength'
-    , params: {max: this.maxLength, length: fileName.length}
-    })
-  }
-  if (!fileName) {
-    throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
-  }
-  if (!this.allowEmptyFile && fileSize === 0) {
-    throw ValidationError(this.errorMessages.empty, {code: 'empty'})
-  }
+    if (this.maxLength !== null && fileName.length > this.maxLength) {
+      throw ValidationError(this.errorMessages.maxLength, {
+        code: 'maxLength'
+      , params: {max: this.maxLength, length: fileName.length}
+      })
+    }
+    if (!fileName) {
+      throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
+    }
+    if (!this.allowEmptyFile && fileSize === 0) {
+      throw ValidationError(this.errorMessages.empty, {code: 'empty'})
+    }
+  }.bind(this))
+
   return data
 }
 
