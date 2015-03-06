@@ -14,16 +14,15 @@ form:
    })
 
 You might want to allow the user to create several articles at once. To create
-a formset out of an ``ArticleForm`` you would use the :js:func:`FormSet.extend`
-function:
+a formset out of an ``ArticleForm``, use :js:func:`FormSet.extend`:
 
 .. code-block:: javascript
 
    var ArticleFormSet = forms.FormSet.extend({form: ArticleForm})
 
-You now have created a formset named ``ArticleFormSet``. The formset gives you
-the ability to iterate over the forms in the formset and display them as you
-would with a regular form:
+You have now created a formset named ``ArticleFormSet``. The formset gives you
+the ability to iterate over the forms within it and display them as you would
+any other form:
 
 .. code-block:: javascript
 
@@ -39,7 +38,7 @@ would with a regular form:
    */
 
 As you can see it only displayed one empty form. The number of empty forms
-that is displayed is controlled by the ``extra`` parameter. By default,
+displayed is controlled by the ``extra`` parameter. By default,
 :js:class:`FormSet` defines one extra form; the following example will
 display two blank forms:
 
@@ -219,12 +218,12 @@ Client-side FormSets
 ====================
 
 When FormSets are used on the client-side, the ManagementForm isn't necessary.
-The formset's own form management configuration is used whether or not the
-formset is boound.
+The formset's own form management properties are used whether or not the
+formset is bound.
 
 Of particular interest is the formset's ``extra`` property, which can be used to
 implement "add another" functionality -- since this is a common use case,
-formsets have an ``addAnother()`` method does this for you.
+formsets have an ``addAnother()`` method which does this for you.
 
 Formsets also have a ``removeForm(index)`` method which takes care of the internal
 details of removing an extra form. *This should only ever be called with the index
