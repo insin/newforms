@@ -127,7 +127,27 @@ field's Widget without having to specify a new Widget from scratch using the
 ``widget`` argument.
 
 This provides a more convenient way to add attributes like ``autoFocus``,
-``className`` or  ``data-`` attributes to the field's default Widget.
+``className`` or  ``data-`` attributes to the field's default Widget **but** has
+the lowest priority when determining final widget attributes.
+
+For example, you can't override an ``Input``-based widget's ``type`` attribute
+using ``widgetAttrs``, as ``type`` is set in that widget's ``render()`` method
+based on the specific widget constructor being used.
+
+However, :js:class:`TextInput` treats the ``type`` attribut specially to allow
+you to override the rendered type when creating an instance:
+
+.. code-block:: javascript
+
+   TextInput({attrs: {type: 'tel'}})
+
+Or you can extend ``TextInput`` to create your own widget constructor:
+
+.. code-block:: javascript
+
+   var TelInput = TextInput.extend({
+     inputType: 'tel'
+   })
 
 Providing choices
 =================
