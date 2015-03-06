@@ -37,6 +37,10 @@
     `File` objects.
   * Filename length and empty file validation can now be performed on the client
     when a `File` object is available.
+* Widget attribute defaults are now always provided by numeric fields when not
+  already set, regardless of the type of widget being used, to allow custom
+  widgets which don't extend `NumberInput` to make use of them
+  ([#59](https://github.com/insin/newforms/issues/59))
 
 ## Bug Fixes
 

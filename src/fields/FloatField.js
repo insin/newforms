@@ -4,7 +4,6 @@ var object = require('isomorph/object')
 
 var Field = require('../Field')
 var IntegerField = require('./IntegerField')
-var NumberInput = require('../widgets/NumberInput')
 
 var {ValidationError} = require('validators')
 var {strip} = require('../util')
@@ -76,8 +75,7 @@ FloatField.prototype._hasChanged = function(initial, data) {
 
 FloatField.prototype.getWidgetAttrs = function(widget) {
   var attrs = IntegerField.prototype.getWidgetAttrs.call(this, widget)
-  if (widget instanceof NumberInput &&
-      !object.hasOwn(widget.attrs, 'step')) {
+  if (!object.hasOwn(widget.attrs, 'step')) {
     object.setDefault(attrs, 'step', 'any')
   }
   return attrs

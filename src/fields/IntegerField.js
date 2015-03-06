@@ -55,13 +55,11 @@ IntegerField.prototype.toJavaScript = function(value) {
 
 IntegerField.prototype.getWidgetAttrs = function(widget) {
   var attrs = Field.prototype.getWidgetAttrs.call(this, widget)
-  if (widget instanceof NumberInput) {
-    if (this.minValue !== null) {
-      attrs.min = this.minValue
-    }
-    if (this.maxValue !== null) {
-      attrs.max = this.maxValue
-    }
+  if (this.minValue !== null && !object.hasOwn(widget.attrs, 'min')) {
+    object.setDefault(attrs, 'min', this.minValue)
+  }
+  if (this.maxValue !== null && !object.hasOwn(widget.attrs, 'max')) {
+    object.setDefault(attrs, 'max', this.maxValue)
   }
   return attrs
 }

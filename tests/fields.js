@@ -287,7 +287,7 @@ QUnit.test("DecimalField", 73, function() {
 
   // Widget attrs
   f = forms.DecimalField({maxDigits: 6, decimalPlaces: 2})
-  deepEqual(f.getWidgetAttrs(forms.Widget()), {})
+  deepEqual(f.getWidgetAttrs(new forms.Widget()), {step: '0.01'})
   deepEqual(f.getWidgetAttrs(forms.NumberInput()), {step: '0.01'})
   f = forms.DecimalField({maxDigits: 10, decimalPlaces: 0})
   deepEqual(f.getWidgetAttrs(forms.NumberInput()), {step: '1'})
