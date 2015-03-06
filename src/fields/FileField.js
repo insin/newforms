@@ -1,5 +1,6 @@
 'use strict';
 
+var is = require('isomorph/is')
 var object = require('isomorph/object')
 
 var env = require('../env')
@@ -45,17 +46,18 @@ FileField.prototype.toJavaScript = function(data, initial) {
     return null
   }
 
-  if (env.browser) {
+  // If the browser doesn't support File objects, we can't do anything more
+  if (env.browser && is.String(data)) {
     return data
   }
 
-  // UploadedFile objects should have name and size attributes
+  // File objects should have name and size attributes
   if (typeof data.name == 'undefined' || typeof data.size == 'undefined') {
     throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
   }
 
   var fileName = data.name
-  var fileSize = data.size
+  var fileSize = Number(data.size)
 
   if (this.maxLength !== null && fileName.length > this.maxLength) {
     throw ValidationError(this.errorMessages.maxLength, {
@@ -66,7 +68,7 @@ FileField.prototype.toJavaScript = function(data, initial) {
   if (!fileName) {
     throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
   }
-  if (!this.allowEmptyFile && !fileSize) {
+  if (!this.allowEmptyFile && fileSize === 0) {
     throw ValidationError(this.errorMessages.empty, {code: 'empty'})
   }
   return data
