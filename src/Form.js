@@ -13,6 +13,7 @@ var DeclarativeFieldsMeta = require('./forms/DeclarativeFieldsMeta')
 var ErrorList = require('./ErrorList')
 var ErrorObject = require('./ErrorObject')
 var FileField = require('./fields/FileField')
+var MultipleFileField = require('./fields/MultipleFileField')
 
 var {ValidationError} = require('validators')
 var {cancellable, debounce, info, warning, normaliseValidation} = require('./util')
@@ -575,9 +576,11 @@ Form.prototype._handleFieldEvent = function(validation, e) {
   var field = this.fields[fieldName]
   var targetData = getFormData.getNamedFormElementData(e.target.form, htmlName)
   this.data[htmlName] = targetData
-  if (field instanceof FileField) {
+  if (field instanceof FileField && 'files' in e.target) {
     var files = e.target.files
-    this.files[htmlName] = field.multiple ? Array.prototype.slice.call(files) : files[0]
+    this.files[htmlName] = (field instanceof MultipleFileField
+                            ? Array.prototype.slice.call(files)
+                            : files[0])
   }
   if (this.isInitialRender) {
     this.isInitialRender = false

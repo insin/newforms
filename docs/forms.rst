@@ -872,18 +872,34 @@ form its own namespace, use the ``prefix`` argument:
    </div>
    */
 
-.. _binding-uploaded-files:
+Client: Working with files
+==========================
 
-Binding uploaded files to a form
-================================
+If your browser implements the `File API <http://www.w3.org/TR/FileAPI>`_,
+``form.cleanedData`` will contain native
+`File <https://developer.mozilla.org/en-US/docs/Web/API/File>`_ objects for any
+``FileField``, ``MultipleFileField`` and ``ImageField`` fields in your form.
 
-.. Warning::
-   Since handling of file uploads in single page apps is a little bit different
-   than a regular multipart form submission, this section isn't worth much! This
-   subject will be revisited in a future release.
+While these fields are only currently capable of performing limited validation,
+having access to ``File`` objects allows you to more easily implement your own
+validation based on file size, type and contents at whichever of the available
+:ref:`validation steps <ref-validation-steps-and-order>` is most appropriate for
+your needs.
 
-Dealing with forms that have ``FileField`` and ``ImageField`` fields
-is a little more complicated than a normal form.
+Server: Binding uploaded files to a form
+========================================
+
+.. Note::
+   This section deals with a very specific use case: using React to render
+   forms, but performing and subsequently handling regular form submissions.
+
+   This may only be relevant if you're using React purely for server-side
+   rendering, or you're creating an isomorphic app which progressively enhances
+   regular form submissions.
+
+Dealing with forms that have ``FileField``, ``MultipleFileField`` or
+``ImageField`` fields and will be submitted via a regular form POST is a little
+more complicated than a regular form.
 
 Firstly, in order to upload files, you'll need to make sure that your
 ``<form>`` element correctly defines the ``enctype`` as
@@ -896,7 +912,7 @@ Firstly, in order to upload files, you'll need to make sure that your
 Secondly, when you use the form, you need to bind the file data. File
 data is handled separately to normal form data, so when your form
 contains a ``FileField`` and ``ImageField``, you will need to specify
-a ``files`` argument when you bind your form. So if we extend our
+a ``files`` argument when creating a form instance. So if we extend our
 ContactForm to include an ``ImageField`` called ``mugshot``, we
 need to bind the file data containing the mugshot image:
 
@@ -912,9 +928,10 @@ need to bind the file data containing the mugshot image:
    var fileData = {mugshot: {name: 'face.jpg', size: 123456}}
    var f = new ContactFormWithMugshot({data: data, files: fileData})
 
-Assuming that you're using `Express`_ and its ``bodyParser()`` on the server
-side, you will usually specify ``req.files`` as the source of file data (just
-like you'd use ``req.body`` as the source of form data):
+Assuming you're using `Express`_, or a similar library which supports middleware
+for processing file uploads, you will usually specify ``req.files`` as the
+source of file data (just like you'd use ``req.body`` as the source of form
+data):
 
 ..  code-block:: javascript
 

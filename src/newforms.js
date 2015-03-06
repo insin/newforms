@@ -51,6 +51,7 @@ module.exports = {
 , isFormAsync: require('./forms/isFormAsync')
 , locales: locales
 , MultipleChoiceField: require('./fields/MultipleChoiceField')
+, MultipleFileField: require('./fields/MultipleFileField')
 , MultipleHiddenInput: require('./widgets/MultipleHiddenInput')
 , MultiValueField: require('./fields/MultiValueField')
 , MultiWidget: require('./widgets/MultiWidget')

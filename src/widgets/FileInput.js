@@ -4,6 +4,8 @@ var object = require('isomorph/object')
 
 var Input = require('./Input')
 
+var env =require('../env')
+
 /**
  * An HTML <input type="file"> widget.
  * @constructor
@@ -27,10 +29,14 @@ FileInput.prototype.render = function(name, value, kwargs) {
 
 /**
  * On the client, files will be populated with File objects from the input's
- * FileList.
+ * FileList when supported, otherwise its value will be in data as a fallback.
  */
 FileInput.prototype.valueFromData = function(data, files, name) {
-  return object.get(files, name, null)
+  var dataSource = files
+  if (env.browser && !(name in files)) {
+    dataSource = data
+  }
+  return object.get(dataSource, name, null)
 }
 
 module.exports = FileInput

@@ -284,12 +284,19 @@ File fields
 
 .. js:class:: FileField([kwargs])
 
-   Validates that its input is a valid uploaded file -- the behaviour of this
-   field varies depending on the environmnet newforms is running in:
+   Validates that its input is a valid file -- the behaviour of this field
+   varies depending on the environmnet newforms is running in:
 
    **On the client**
 
-      Validates that a file has been selected if the field is ``required``.
+      If the browser supports the `File API <http://www.w3.org/TR/FileAPI/>`_,
+      ``form.files`` will be populated with a
+      `File <https://developer.mozilla.org/en-US/docs/Web/API/File>`_ object and
+      validation will be performed on its name and size. The ``File`` object
+      will be available via ``form.cleanedData`` when valid.
+
+      Otherwise, this field can only validate that a file has been selected at
+      all, if the field is ``required```.
 
    **On the server**
 
@@ -310,6 +317,14 @@ File fields
 
    :param Boolean kwargs.allowEmptyFile:
       if ``true``, empty files will be allowed -- defaults to ``false``.
+
+.. js:class:: MultipleFileField([kwargs])
+
+   A version of FileField which expects to receive a list of files as input and
+   renders to an ``<input type="file" multiple>`` by default.
+
+   :param Object kwargs:
+     field options, as in :js:class:`FileField`
 
 .. js:class:: ImageField([kwargs])
 

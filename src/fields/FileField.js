@@ -28,20 +28,13 @@ var FileField = Field.extend({
 
 , constructor: function FileField(kwargs) {
     if (!(this instanceof FileField)) { return new FileField(kwargs) }
-    kwargs = object.extend({maxLength: null, allowEmptyFile: false, multiple: false}, kwargs)
+    kwargs = object.extend({maxLength: null, allowEmptyFile: false}, kwargs)
     this.maxLength = kwargs.maxLength
     this.allowEmptyFile = kwargs.allowEmptyFile
-    this.multiple = kwargs.multiple
     delete kwargs.maxLength
     Field.call(this, kwargs)
   }
 })
-
-FileField.prototype.getWidgetAttrs = function(widget) {
-  var attrs = Field.prototype.getWidgetAttrs.call(this, widget)
-  attrs.multiple = this.multiple
-  return attrs
-}
 
 FileField.prototype.toJavaScript = function(data, initial) {
   if (this.isEmptyValue(data)) {
@@ -49,32 +42,30 @@ FileField.prototype.toJavaScript = function(data, initial) {
   }
 
   // If the browser doesn't support File objects, we can't do anything more
-  if (env.browser && (is.String(data) || is.Array(data) && is.String(data[0]))) {
+  if (env.browser && is.String(data)) {
     return data
   }
 
-  ;[].concat(data).forEach(function(file) {
-    // File objects should have name and size attributes
-    if (typeof file.name == 'undefined' || typeof file.size == 'undefined') {
-      throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
-    }
+  // File objects should have name and size attributes
+  if (typeof data.name == 'undefined' || typeof data.size == 'undefined') {
+    throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
+  }
 
-    var fileName = file.name
-    var fileSize = Number(file.size)
+  var name = data.name
+  var suze = Number(data.size)
 
-    if (this.maxLength !== null && fileName.length > this.maxLength) {
-      throw ValidationError(this.errorMessages.maxLength, {
-        code: 'maxLength'
-      , params: {max: this.maxLength, length: fileName.length}
-      })
-    }
-    if (!fileName) {
-      throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
-    }
-    if (!this.allowEmptyFile && fileSize === 0) {
-      throw ValidationError(this.errorMessages.empty, {code: 'empty'})
-    }
-  }.bind(this))
+  if (this.maxLength !== null && name.length > this.maxLength) {
+    throw ValidationError(this.errorMessages.maxLength, {
+      code: 'maxLength'
+    , params: {max: this.maxLength, length: name.length}
+    })
+  }
+  if (!name) {
+    throw ValidationError(this.errorMessages.invalid, {code: 'invalid'})
+  }
+  if (!this.allowEmptyFile && suze === 0) {
+    throw ValidationError(this.errorMessages.empty, {code: 'empty'})
+  }
 
   return data
 }

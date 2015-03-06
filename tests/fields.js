@@ -1071,3 +1071,25 @@ QUnit.test('GenericIPAddressField', 58, function() {
   f = forms.GenericIPAddressField({unpackIPv4: true})
   equal(f.clean('::ffff:0a0a:0a0a'), '10.10.10.10')
 })
+
+QUnit.test('MultipleFileField', 9, function() {
+  var f = forms.MultipleFileField({maxLength: 9})
+  widgetRendersTo(f, '<input multiple type="file" name="f" id="id_f">')
+
+  // No data, no initial
+  cleanErrorEqual(f, 'This field is required.', null)
+  cleanErrorEqual(f, 'This field is required.', null, null)
+  // Empty lists count as empty for both data and initial
+  cleanErrorEqual(f, 'This field is required.', [], [])
+  deepEqual(f.clean(null, ['files/test1.pdf']), ['files/test1.pdf'],
+        'Initial data is returned from clean if there is no data')
+
+  // Data isn't a string and doesn't look like a File
+  cleanErrorEqual(f, 'No files were submitted. Check the encoding type on the form.', [{name: 'test.txt'}])
+
+  // File-like objects can be validated in all environments
+  cleanErrorEqual(f, 'test.txt is empty.', [{name: 'test.txt', size: 0}])
+  cleanErrorEqual(f, 'Ensure filenames have at most 9 characters (1234567890 has 10).', [{name: '1234567890', size: 0}])
+  var files = [{name: 'test.txt', size: 123}]
+  strictEqual(f.clean(files), files, 'Valid lists of file-likes are returned as-is')
+})

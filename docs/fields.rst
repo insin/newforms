@@ -351,6 +351,7 @@ Built-in Field type hierarchy
   * :ref:`FileField <ref-fields-FileField>`
 
     * :ref:`ImageField <ref-fields-ImageField>`
+    * :ref:`MultipleFileField <ref-fields-MultipleFileField>`
   * :ref:`MultiValueField <ref-fields-MultiValueField>`
 
     * :ref:`SplitDateTimeField <ref-fields-SplitDateTimeField>`
@@ -580,8 +581,12 @@ Build-in Fields (A-Z)
 
    * Default widget: :js:class:`ClearableFileInput`
    * Empty value: ``null``
-   * Normalises to: The given object in ``files`` - this field just validates
-     what's there and leaves the rest up to you.
+   * Normalises to:
+
+     * Client: a native `File`_ object, when supported by the browser, otherwise
+       the ``value`` of the ``<input type="file">``.
+     * Server: the given object in ``files`` - this field just validates
+       what's there and leaves the rest up to you.
    * Can validate that non-empty file data has been bound to the form.
    * Error message keys: ``required``, ``invalid``, ``missing``, ``empty``,
      ``maxLength``
@@ -766,6 +771,31 @@ Build-in Fields (A-Z)
    replaced with the selected choice.
 
    Takes one extra required argument, ``choices``, as for ``ChoiceField``.
+
+.. _ref-fields-MultipleFileField:
+
+:js:class:`MultipleFileField`
+-----------------------------
+
+.. versionadded:: 0.11
+
+   * Default widget: :js:class:`FileInput` with ``multiple`` attribute
+   * Empty value: ``[]`` (an empty list)
+   * Normalises to:
+
+     * Client: a list of `File`_ objects, when supported by the browser,
+       otherwise the ``value`` of the ``<input type="file" multiple>``.
+     * Server: the given object in ``files`` - this field just validates
+       what's there and leaves the rest up to you.
+   * Can validate that non-empty file data has been bound to the form.
+   * Error message keys: ``required``, ``invalid``, ``missing``, ``empty``,
+     ``maxLength``
+
+   The ``empty`` and ``maxLength`` error messages may contain ``{name}``, which
+   will be replaced with the name of the file which failed validation.
+
+   Has two optional arguments for validation, ``maxLength`` and
+   ``allowEmptyFile`` as for ``FileField``.
 
 .. _ref-fields-TypedMultipleChoiceField:
 
@@ -1050,4 +1080,5 @@ requirements are that it implement a ``clean()`` method and that its
 (``required``, ``label``, ``initial``, ``widget``, ``helpText``) in an argument
 object.
 
+.. _`File`: https://developer.mozilla.org/en-US/docs/Web/API/File
 .. _`format strings`: https://github.com/insin/isomorph#formatting-directives
