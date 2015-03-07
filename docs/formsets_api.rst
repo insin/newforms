@@ -55,7 +55,7 @@ Formsets API
 
    **Form options**
 
-   Fhe following options are used when constructing forms for the formset.
+   The following options are used when constructing forms for the formset.
 
    :param Array.<Object> kwargs.data:
       list of input form data for each form, where property names are field

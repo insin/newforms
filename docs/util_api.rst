@@ -9,7 +9,7 @@ for customisation purposes.
 .. js:function:: getFormData(form)
 
    :param form:
-      a form DOM node or `ReactElement`.
+      a form DOM node or ``ReactElement``.
 
    :returns:
       an object containing the submittable value(s) held in each of the form's
