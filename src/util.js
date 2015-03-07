@@ -289,6 +289,19 @@ function cancellable(func) {
 }
 
 /**
+ * Wrapper for getFormData which allows you to pass a React form ref.
+ * @param {HTMLFormElement|ReactElement} form a form element.
+ * @return {Object.<string,(string|Array.<string>)>} an object containing the
+ *    submittable value(s) held in each of the form's elements.
+ */
+function getMaybeReactFormData(form) {
+  if (typeof form.getDOMNode == 'function') {
+    form = form.getDOMNode()
+  }
+  return getFormData(form)
+}
+
+/**
  * Extracts data from a <form> and validates it with a list of forms and/or
  * formsets.
  * @param form the <form> into which any given forms and formsets have been
@@ -299,10 +312,7 @@ function cancellable(func) {
  *   given forms and formsets.
  */
 function validateAll(form, formsAndFormsets) {
-  if (form && typeof form.getDOMNode == 'function') {
-    form = form.getDOMNode()
-  }
-  var data = getFormData(form)
+  var data = getMaybeReactFormData(form)
   var isValid = true
   for (var i = 0, l = formsAndFormsets.length; i < l; i++) {
     if (!formsAndFormsets[i].setFormData(data)) {
@@ -355,6 +365,7 @@ module.exports = {
 , debounce: debounce
 , info: info
 , formatToArray: formatToArray
+, getFormData: getMaybeReactFormData
 , getProps: getProps
 , makeChoices: makeChoices
 , normaliseChoices: normaliseChoices

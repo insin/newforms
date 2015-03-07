@@ -7,7 +7,7 @@
 * Renamed `BaseFormSet` to `FormSet`, changing the top-level API.
 * Replaced `util.formData()` with the
   [get-form-data](https://www.npmjs.com/package/get-form-data) module -
-  `formData()` is no longer available as top-level API.
+  `formData()` has been renamed to `getFormData()`.
 
 ## New Features
 

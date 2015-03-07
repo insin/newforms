@@ -6,6 +6,15 @@ Newforms exposes various utilities you may want to make use of when working with
 forms, as well as some implementation details which you may need to make use of
 for customisation purposes.
 
+.. js:function:: getFormData(form)
+
+   :param form:
+      a form DOM node or `ReactElement`.
+
+   :returns:
+      an object containing the submittable value(s) held in each of the form's
+      elements, with element names as properties.
+
 .. js:function:: validateAll(form, formsAndFormsets)
 
    Extracts data from a ``<form>`` and validates it  with a list of Forms

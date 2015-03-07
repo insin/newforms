@@ -43,6 +43,7 @@ module.exports = {
 , FormSet: require('./FormSet')
 , formsetFactory: require('./formsets/formsetFactory')
 , GenericIPAddressField: require('./fields/GenericIPAddressField')
+, getFormData: util.getFormData
 , HiddenInput: require('./widgets/HiddenInput')
 , ImageField: require('./fields/ImageField')
 , Input: require('./widgets/Input')
