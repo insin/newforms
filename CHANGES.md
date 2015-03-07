@@ -8,6 +8,11 @@
 * Replaced `util.formData()` with the
   [get-form-data](https://www.npmjs.com/package/get-form-data) module -
   `formData()` has been renamed to `getFormData()`.
+* Newforms is now published to npm as flattened, top-level modules, so
+  individual modules (such as `Form`, `FormSet`, fields, widgets, React
+  components, `ValidationError`...) can be required with
+  `require('newforms/<modulename>')` - this makes it possible to reduce the size
+  of your own browser bundles by requiring only what you use.
 
 ## New Features
 
@@ -17,11 +22,6 @@
 
 ## Changes
 
-* Newforms is now published to npm as flattened, top-level modules, so
-  individual modules (such as `Form`, `FormSet`, fields, widgets, React
-  components, `ValidationError`...) can be required with
-  `require('newforms/<modulename>')` - this makes it possible to reduce the size
-  of your own browser bundles by requiring only what you use.
 * Added former `formsetFactory()` options to `FormSet` proper.
   * `FormSet` can now be costructed directly, setting all formset-specific
     options instead of having to extend it.
