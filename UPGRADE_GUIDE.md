@@ -70,7 +70,7 @@ implementation: `RenderForm` and `RenderFormSet`.
   render: () {
     var form = this.form
     var formset = this.formset
-    <form onSubmit={this._onSubmit}>
+    return <form onSubmit={this._onSubmit}>
       {form.render()}
       {formset.render()}
       <button>Submit</button>
@@ -80,9 +80,9 @@ implementation: `RenderForm` and `RenderFormSet`.
 // 0.11.0
   render: () {
     var form = this.form
-    <form onSubmit={this._onSubmit}>
+    return <form onSubmit={this._onSubmit}>
       <forms.RenderForm form={form}/>
-      <forms.RenderFormSet form={formset}/>
+      <forms.RenderFormSet formset={formset}/>
       <button>Submit</button>
     </form>
   }
