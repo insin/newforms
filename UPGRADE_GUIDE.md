@@ -15,7 +15,7 @@ create a new `FormSet` constructor with defaulted options and custom methods.
 // < 0.12.0
 var DrinksFormSet = forms.formsetFactory(DrinkForm, {
   extra: 3,
-  clean: function() {
+  clean() {
     // ...
   }
 })
@@ -24,7 +24,7 @@ var DrinksFormSet = forms.formsetFactory(DrinkForm, {
 var DrinksFormSet = forms.FormSet.extend({
   forn: DrinkForm,
   extra: 3,
-  clean: function() {
+  clean() {
     // ...
   }
 })
@@ -67,7 +67,7 @@ implementation: `RenderForm` and `RenderFormSet`.
 
 ```javascript
 // < 0.11.0
-  render: () {
+  render() {
     var form = this.form
     var formset = this.formset
     return <form onSubmit={this._onSubmit}>
@@ -78,8 +78,9 @@ implementation: `RenderForm` and `RenderFormSet`.
   }
 
 // 0.11.0
-  render: () {
+  render() {
     var form = this.form
+    var formset = this.formset
     return <form onSubmit={this._onSubmit}>
       <forms.RenderForm form={form}/>
       <forms.RenderFormSet formset={formset}/>
