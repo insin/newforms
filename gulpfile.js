@@ -46,7 +46,7 @@ gulp.task('lint', ['transpile-js'], function() {
 
 gulp.task('browserify-js', ['lint'], function() {
   var b = browserify(jsEntryPoint, {
-    debug: !gutil.env.production
+    debug: !!gutil.env.debug
   , standalone: 'forms'
   , detectGlobals: false
   })
