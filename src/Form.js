@@ -3,6 +3,7 @@
 var Concur = require('Concur')
 var getFormData = require('get-form-data')
 var copy = require('isomorph/copy')
+var {formatObj} = require('isomorph/format')
 var is = require('isomorph/is')
 var object = require('isomorph/object')
 
@@ -48,6 +49,8 @@ if ('production' !== process.env.NODE_ENV) {
  */
 var Form = Concur.extend({
   __meta__: DeclarativeFieldsMeta,
+
+  prefixFormat: '{prefix}-{name}',
 
   constructor: function Form(kwargs) {
     // TODO Perform PropType checks on kwargs in development mode
@@ -738,7 +741,7 @@ Form.prototype.setData = function(data, kwargs) {
 }
 
 /**
- * Sets the form's entire input data wth data extracted from a ``<form>``, which
+ * Sets the form's entire input data wth data extracted from a <form>, which
  * will be prefixed, if prefixes are being used.
  * @param {Object.<strong, *>} formData
  * @param {Object.<string, boolean>} kwargs setData options.
@@ -1154,22 +1157,24 @@ Form.prototype.addInitialPrefix = function(fieldName) {
  */
 Form.prototype.addPrefix = function(fieldName) {
   if (this.prefix !== null) {
-      return this.prefix + '-' + fieldName
+    return formatObj(this.prefixFormat, {prefix: this.prefix, name: fieldName})
   }
   return fieldName
 }
 
 /**
- * Returns the field with a prefix-size chunk chopped off the start if this
- * form has a prefix set and the field name starts with it.
- * @param {string} fieldName a field name.
+ * Extracts a form field name from the name attribute of a rendered form input.
+ * @param {string} htmlName a name attribute from a rendered form input.
  * @return {string}
  */
-Form.prototype.removePrefix = function(fieldName) {
-  if (this.prefix !== null && fieldName.indexOf(this.prefix + '-') === 0) {
-      return fieldName.substring(this.prefix.length + 1)
+Form.prototype.removePrefix = function(htmlName) {
+  if (this.prefix !== null) {
+    var partialPrefix = this.prefixFormat.replace('{prefix}', this.prefix)
+    var startIndex = partialPrefix.indexOf('{name}')
+    var lengthDiff = htmlName.length - partialPrefix.length
+    return htmlName.substr(startIndex, /* length of {name} */ 6 + lengthDiff)
   }
-  return fieldName
+  return htmlName
 }
 
 /**

@@ -1741,20 +1741,14 @@ QUnit.test("Forms with prefixes", 30, function() {
   equal(p2.cleanedData["birthday"].valueOf(), new Date(1943, 11, 8).valueOf())
 
   // By default, forms append a hyphen between the prefix and the field name,
-  // but a form can alter that behavior by implementing the addPrefix()
-  // method. This method takes a field name and returns the prefixed field,
-  // according to this.prefix.
+  // but a form can alter that behaviour by overriding prefixFormat, which
+  // should be a string containing {prefix} and {name} placeholders.
   Person = forms.Form.extend({
-    first_name: forms.CharField()
-  , last_name: forms.CharField()
-  , birthday: forms.DateField()
+    prefixFormat: '{prefix}-prefix-{name}',
 
-  , addPrefix: function(fieldName) {
-      if (this.prefix) {
-        return this.prefix + "-prefix-" + fieldName
-      }
-      return fieldName
-    }
+    first_name: forms.CharField(),
+    last_name: forms.CharField(),
+    birthday: forms.DateField()
   })
   p = new Person({prefix: "foo"})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: p}),
