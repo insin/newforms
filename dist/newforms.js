@@ -1,8 +1,8 @@
 /**
- * newforms 0.11.0 - https://github.com/insin/newforms
+ * newforms 0.12.0 - https://github.com/insin/newforms
  * MIT Licensed
  */
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.forms=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.forms = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
 var validators = require('validators')
@@ -46,7 +46,6 @@ module.exports = {
 , formats: require('./formats')
 , FormRow: require('./FormRow')
 , FormSet: require('./FormSet')
-, formsetFactory: require('./formsetFactory')
 , GenericIPAddressField: require('./GenericIPAddressField')
 , getFormData: util.getFormData
 , HiddenInput: require('./HiddenInput')
@@ -93,7 +92,7 @@ module.exports = {
 , validators: validators
 , Widget: require('./Widget')
 }
-},{"./BaseTemporalField":2,"./BooleanField":3,"./BoundField":4,"./CharField":5,"./CheckboxChoiceInput":6,"./CheckboxFieldRenderer":7,"./CheckboxInput":8,"./CheckboxSelectMultiple":9,"./ChoiceField":10,"./ChoiceFieldRenderer":11,"./ChoiceInput":12,"./ClearableFileInput":13,"./ComboField":14,"./DateField":15,"./DateInput":16,"./DateTimeBaseInput":17,"./DateTimeField":18,"./DateTimeInput":19,"./DecimalField":20,"./EmailField":22,"./EmailInput":23,"./ErrorList":24,"./ErrorObject":25,"./Field":26,"./FileField":27,"./FileInput":28,"./FilePathField":29,"./FloatField":30,"./Form":31,"./FormRow":32,"./FormSet":33,"./GenericIPAddressField":34,"./HiddenInput":35,"./IPAddressField":36,"./ImageField":37,"./Input":38,"./IntegerField":39,"./MultiValueField":40,"./MultiWidget":41,"./MultipleChoiceField":42,"./MultipleFileField":43,"./MultipleHiddenInput":44,"./NullBooleanField":45,"./NullBooleanSelect":46,"./NumberInput":47,"./PasswordInput":48,"./RadioChoiceInput":50,"./RadioFieldRenderer":51,"./RadioSelect":52,"./RegexField":53,"./RenderForm":54,"./RenderFormSet":55,"./RendererMixin":56,"./Select":57,"./SelectMultiple":58,"./SlugField":59,"./SplitDateTimeField":60,"./SplitDateTimeWidget":61,"./SplitHiddenDateTimeWidget":62,"./SubWidget":63,"./TextInput":64,"./Textarea":65,"./TimeField":66,"./TimeInput":67,"./TypedChoiceField":68,"./TypedMultipleChoiceField":69,"./URLField":70,"./Widget":72,"./env":74,"./formats":75,"./formsetFactory":76,"./isFormAsync":77,"./locales":78,"./util":79,"validators":90}],2:[function(require,module,exports){
+},{"./BaseTemporalField":2,"./BooleanField":3,"./BoundField":4,"./CharField":5,"./CheckboxChoiceInput":6,"./CheckboxFieldRenderer":7,"./CheckboxInput":8,"./CheckboxSelectMultiple":9,"./ChoiceField":10,"./ChoiceFieldRenderer":11,"./ChoiceInput":12,"./ClearableFileInput":13,"./ComboField":14,"./DateField":15,"./DateInput":16,"./DateTimeBaseInput":17,"./DateTimeField":18,"./DateTimeInput":19,"./DecimalField":20,"./EmailField":22,"./EmailInput":23,"./ErrorList":24,"./ErrorObject":25,"./Field":26,"./FileField":27,"./FileInput":28,"./FilePathField":29,"./FloatField":30,"./Form":31,"./FormRow":32,"./FormSet":33,"./GenericIPAddressField":34,"./HiddenInput":35,"./IPAddressField":36,"./ImageField":37,"./Input":38,"./IntegerField":39,"./MultiValueField":40,"./MultiWidget":41,"./MultipleChoiceField":42,"./MultipleFileField":43,"./MultipleHiddenInput":44,"./NullBooleanField":45,"./NullBooleanSelect":46,"./NumberInput":47,"./PasswordInput":48,"./RadioChoiceInput":50,"./RadioFieldRenderer":51,"./RadioSelect":52,"./RegexField":53,"./RenderForm":54,"./RenderFormSet":55,"./RendererMixin":56,"./Select":57,"./SelectMultiple":58,"./SlugField":59,"./SplitDateTimeField":60,"./SplitDateTimeWidget":61,"./SplitHiddenDateTimeWidget":62,"./SubWidget":63,"./TextInput":64,"./Textarea":65,"./TimeField":66,"./TimeInput":67,"./TypedChoiceField":68,"./TypedMultipleChoiceField":69,"./URLField":70,"./Widget":72,"./env":74,"./formats":75,"./isFormAsync":76,"./locales":77,"./util":78,"validators":89}],2:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -178,7 +177,7 @@ BaseTemporalField.prototype._hasChanged = function(initial, data) {
 
 
 module.exports = BaseTemporalField
-},{"./Field":26,"./formats":75,"./locales":78,"./util":79,"isomorph/is":85,"isomorph/object":86,"isomorph/time":87,"validators":90}],3:[function(require,module,exports){
+},{"./Field":26,"./formats":75,"./locales":77,"./util":78,"isomorph/is":84,"isomorph/object":85,"isomorph/time":86,"validators":89}],3:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -232,7 +231,7 @@ BooleanField.prototype._hasChanged = function(initial, data) {
 }
 
 module.exports = BooleanField
-},{"./CheckboxInput":8,"./Field":26,"isomorph/is":85,"validators":90}],4:[function(require,module,exports){
+},{"./CheckboxInput":8,"./Field":26,"isomorph/is":84,"validators":89}],4:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -657,7 +656,7 @@ BoundField.prototype._validation = function(widget) {
 }
 
 module.exports = BoundField
-},{"./TextInput":64,"./Textarea":65,"./util":79,"Concur":80,"isomorph/format":84,"isomorph/is":85,"isomorph/object":86}],5:[function(require,module,exports){
+},{"./TextInput":64,"./Textarea":65,"./util":78,"Concur":79,"isomorph/format":83,"isomorph/is":84,"isomorph/object":85}],5:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -716,7 +715,7 @@ CharField.prototype.getWidgetAttrs = function(widget) {
 }
 
 module.exports = CharField
-},{"./Field":26,"./PasswordInput":48,"./TextInput":64,"isomorph/object":86,"validators":90}],6:[function(require,module,exports){
+},{"./Field":26,"./PasswordInput":48,"./TextInput":64,"isomorph/object":85,"validators":89}],6:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -744,7 +743,7 @@ CheckboxChoiceInput.prototype.isChecked = function() {
 }
 
 module.exports = CheckboxChoiceInput
-},{"./ChoiceInput":12,"isomorph/is":85}],7:[function(require,module,exports){
+},{"./ChoiceInput":12,"isomorph/is":84}],7:[function(require,module,exports){
 'use strict';
 
 var CheckboxChoiceInput = require('./CheckboxChoiceInput')
@@ -820,7 +819,7 @@ CheckboxInput.prototype.valueFromData = function(data, files, name) {
 }
 
 module.exports = CheckboxInput
-},{"./Widget":72,"isomorph/is":85,"isomorph/object":86}],9:[function(require,module,exports){
+},{"./Widget":72,"isomorph/is":84,"isomorph/object":85}],9:[function(require,module,exports){
 'use strict';
 
 var CheckboxFieldRenderer = require('./CheckboxFieldRenderer')
@@ -927,7 +926,7 @@ ChoiceField.prototype.validValue = function(value) {
 }
 
 module.exports = ChoiceField
-},{"./Field":26,"./Select":57,"./util":79,"isomorph/is":85,"isomorph/object":86,"validators":90}],11:[function(require,module,exports){
+},{"./Field":26,"./Select":57,"./util":78,"isomorph/is":84,"isomorph/object":85,"validators":89}],11:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -1023,7 +1022,7 @@ ChoiceFieldRenderer.prototype.render = function() {
 }
 
 module.exports = ChoiceFieldRenderer
-},{"Concur":80,"isomorph/is":85,"isomorph/object":86}],12:[function(require,module,exports){
+},{"Concur":79,"isomorph/is":84,"isomorph/object":85}],12:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -1087,7 +1086,7 @@ ChoiceInput.prototype.idForLabel = function() {
 }
 
 module.exports = ChoiceInput
-},{"./SubWidget":63,"./Widget":72,"isomorph/object":86}],13:[function(require,module,exports){
+},{"./SubWidget":63,"./Widget":72,"isomorph/object":85}],13:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -1202,7 +1201,7 @@ ClearableFileInput.prototype.valueFromData = function(data, files, name) {
 }
 
 module.exports = ClearableFileInput
-},{"./CheckboxInput":8,"./FileInput":28,"./util":79,"isomorph/object":86}],14:[function(require,module,exports){
+},{"./CheckboxInput":8,"./FileInput":28,"./util":78,"isomorph/object":85}],14:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -1238,7 +1237,7 @@ ComboField.prototype.clean = function(value) {
 }
 
 module.exports = ComboField
-},{"./Field":26,"isomorph/object":86}],15:[function(require,module,exports){
+},{"./Field":26,"isomorph/object":85}],15:[function(require,module,exports){
 'use strict';
 
 var BaseTemporalField = require('./BaseTemporalField')
@@ -1338,7 +1337,7 @@ DateTimeBaseInput.prototype._formatValue = function(value) {
 }
 
 module.exports = DateTimeBaseInput
-},{"./TextInput":64,"./formats":75,"./locales":78,"isomorph/is":85,"isomorph/object":86,"isomorph/time":87}],18:[function(require,module,exports){
+},{"./TextInput":64,"./formats":75,"./locales":77,"isomorph/is":84,"isomorph/object":85,"isomorph/time":86}],18:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -1395,7 +1394,7 @@ DateTimeField.prototype.toJavaScript = function(value) {
 
 
 module.exports = DateTimeField
-},{"./BaseTemporalField":2,"./DateTimeInput":19,"isomorph/is":85,"validators":90}],19:[function(require,module,exports){
+},{"./BaseTemporalField":2,"./DateTimeInput":19,"isomorph/is":84,"validators":89}],19:[function(require,module,exports){
 'use strict';
 
 var DateTimeBaseInput = require('./DateTimeBaseInput')
@@ -1559,7 +1558,7 @@ DecimalField.prototype.getWidgetAttrs = function(widget) {
 }
 
 module.exports = DecimalField
-},{"./Field":26,"./IntegerField":39,"./util":79,"isomorph/object":86,"validators":90}],21:[function(require,module,exports){
+},{"./Field":26,"./IntegerField":39,"./util":78,"isomorph/object":85,"validators":89}],21:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -1660,7 +1659,7 @@ function DeclarativeFieldsMeta(prototypeProps) {
 }
 
 module.exports = DeclarativeFieldsMeta
-},{"./Field":26,"isomorph/is":85,"isomorph/object":86}],22:[function(require,module,exports){
+},{"./Field":26,"isomorph/is":84,"isomorph/object":85}],22:[function(require,module,exports){
 'use strict';
 
 var util = require('./util')
@@ -1693,7 +1692,7 @@ EmailField.prototype.clean = function(value) {
 
 
 module.exports = EmailField
-},{"./CharField":5,"./EmailInput":23,"./util":79,"validators":90}],23:[function(require,module,exports){
+},{"./CharField":5,"./EmailInput":23,"./util":78,"validators":89}],23:[function(require,module,exports){
 'use strict';
 
 var TextInput = require('./TextInput')
@@ -1858,7 +1857,7 @@ ErrorList.prototype.fromJSON = function(list) {
 
 module.exports = ErrorList
 
-},{"Concur":80,"isomorph/object":86,"validators":90}],25:[function(require,module,exports){
+},{"Concur":79,"isomorph/object":85,"validators":89}],25:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -2021,7 +2020,7 @@ ErrorObject.prototype.fromJSON = function(jsonObj, errorConstructor) {
 
 module.exports = ErrorObject
 
-},{"./ErrorList":24,"Concur":80,"isomorph/object":86}],26:[function(require,module,exports){
+},{"./ErrorList":24,"Concur":79,"isomorph/object":85}],26:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -2217,7 +2216,7 @@ Field.prototype._hasChanged = function(initial, data) {
 }
 
 module.exports = Field
-},{"./HiddenInput":35,"./TextInput":64,"./Widget":72,"./util":79,"Concur":80,"isomorph/is":85,"isomorph/object":86,"validators":90}],27:[function(require,module,exports){
+},{"./HiddenInput":35,"./TextInput":64,"./Widget":72,"./util":78,"Concur":79,"isomorph/is":84,"isomorph/object":85,"validators":89}],27:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -2327,7 +2326,7 @@ FileField.prototype._hasChanged = function(initial, data) {
 }
 
 module.exports = FileField
-},{"./ClearableFileInput":13,"./Field":26,"./env":74,"isomorph/is":85,"isomorph/object":86,"validators":90}],28:[function(require,module,exports){
+},{"./ClearableFileInput":13,"./Field":26,"./env":74,"isomorph/is":84,"isomorph/object":85,"validators":89}],28:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -2370,7 +2369,7 @@ FileInput.prototype.valueFromData = function(data, files, name) {
 }
 
 module.exports = FileInput
-},{"./Input":38,"./env":74,"isomorph/object":86}],29:[function(require,module,exports){
+},{"./Input":38,"./env":74,"isomorph/object":85}],29:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -2422,7 +2421,7 @@ var FilePathField = ChoiceField.extend({
 })
 
 module.exports = FilePathField
-},{"./ChoiceField":10,"isomorph/object":86}],30:[function(require,module,exports){
+},{"./ChoiceField":10,"isomorph/object":85}],30:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -2507,7 +2506,7 @@ FloatField.prototype.getWidgetAttrs = function(widget) {
 }
 
 module.exports = FloatField
-},{"./Field":26,"./IntegerField":39,"./util":79,"isomorph/object":86,"validators":90}],31:[function(require,module,exports){
+},{"./Field":26,"./IntegerField":39,"./util":78,"isomorph/object":85,"validators":89}],31:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -3722,7 +3721,7 @@ Form.prototype._prefixData = function(data) {
 }
 
 module.exports = Form
-},{"./BoundField":4,"./DeclarativeFieldsMeta":21,"./ErrorList":24,"./ErrorObject":25,"./FileField":27,"./MultipleFileField":43,"./constants":73,"./util":79,"Concur":80,"get-form-data":82,"isomorph/copy":83,"isomorph/format":84,"isomorph/is":85,"isomorph/object":86,"validators":90}],32:[function(require,module,exports){
+},{"./BoundField":4,"./DeclarativeFieldsMeta":21,"./ErrorList":24,"./ErrorObject":25,"./FileField":27,"./MultipleFileField":43,"./constants":73,"./util":78,"Concur":79,"get-form-data":81,"isomorph/copy":82,"isomorph/format":83,"isomorph/is":84,"isomorph/object":85,"validators":89}],32:[function(require,module,exports){
 'use strict';
 
 var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
@@ -4703,7 +4702,7 @@ FormSet.prototype.getDefaultPrefix = function() {
 }
 
 module.exports = FormSet
-},{"./BooleanField":3,"./ErrorList":24,"./Form":31,"./HiddenInput":35,"./IntegerField":39,"./constants":73,"./env":74,"./isFormAsync":77,"./util":79,"Concur":80,"get-form-data":82,"isomorph/format":84,"isomorph/is":85,"isomorph/object":86,"validators":90}],34:[function(require,module,exports){
+},{"./BooleanField":3,"./ErrorList":24,"./Form":31,"./HiddenInput":35,"./IntegerField":39,"./constants":73,"./env":74,"./isFormAsync":76,"./util":78,"Concur":79,"get-form-data":81,"isomorph/format":83,"isomorph/is":84,"isomorph/object":85,"validators":89}],34:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -4736,7 +4735,7 @@ GenericIPAddressField.prototype.toJavaScript = function(value) {
 
 
 module.exports = GenericIPAddressField
-},{"./CharField":5,"isomorph/object":86,"validators":90}],35:[function(require,module,exports){
+},{"./CharField":5,"isomorph/object":85,"validators":89}],35:[function(require,module,exports){
 'use strict';
 
 var Input = require('./Input')
@@ -4781,7 +4780,7 @@ var IPAddressField = CharField.extend({
 })
 
 module.exports = IPAddressField
-},{"./CharField":5,"validators":90}],37:[function(require,module,exports){
+},{"./CharField":5,"validators":89}],37:[function(require,module,exports){
 'use strict';
 
 var FileField = require('./FileField')
@@ -4869,7 +4868,7 @@ Input.prototype.render = function(name, value, kwargs) {
 }
 
 module.exports = Input
-},{"./Widget":72,"isomorph/object":86}],39:[function(require,module,exports){
+},{"./Widget":72,"isomorph/object":85}],39:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -4937,7 +4936,7 @@ IntegerField.prototype.getWidgetAttrs = function(widget) {
 }
 
 module.exports = IntegerField
-},{"./Field":26,"./NumberInput":47,"isomorph/object":86,"validators":90}],40:[function(require,module,exports){
+},{"./Field":26,"./NumberInput":47,"isomorph/object":85,"validators":89}],40:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -5111,7 +5110,7 @@ MultiValueField.prototype._hasChanged = function(initial, data) {
 }
 
 module.exports = MultiValueField
-},{"./Field":26,"isomorph/is":85,"isomorph/object":86,"validators":90}],41:[function(require,module,exports){
+},{"./Field":26,"isomorph/is":84,"isomorph/object":85,"validators":89}],41:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -5227,7 +5226,7 @@ MultiWidget.prototype.decompress = function(value) {
 }
 
 module.exports = MultiWidget
-},{"./Widget":72,"isomorph/is":85,"isomorph/object":86}],42:[function(require,module,exports){
+},{"./Widget":72,"isomorph/is":84,"isomorph/object":85}],42:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -5313,7 +5312,7 @@ MultipleChoiceField.prototype._hasChanged = function(initial, data) {
 }
 
 module.exports = MultipleChoiceField
-},{"./ChoiceField":10,"./MultipleHiddenInput":44,"./SelectMultiple":58,"isomorph/is":85,"isomorph/object":86,"validators":90}],43:[function(require,module,exports){
+},{"./ChoiceField":10,"./MultipleHiddenInput":44,"./SelectMultiple":58,"isomorph/is":84,"isomorph/object":85,"validators":89}],43:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -5413,7 +5412,7 @@ MultipleFileField.prototype._hasChanged = function(initial, data) {
 }
 
 module.exports = MultipleFileField
-},{"./Field":26,"./FileField":27,"./FileInput":28,"./env":74,"isomorph/is":85,"validators":90}],44:[function(require,module,exports){
+},{"./Field":26,"./FileField":27,"./FileInput":28,"./env":74,"isomorph/is":84,"validators":89}],44:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -5467,7 +5466,7 @@ MultipleHiddenInput.prototype.valueFromData = function(data, files, name) {
 }
 
 module.exports = MultipleHiddenInput
-},{"./HiddenInput":35,"isomorph/object":86}],45:[function(require,module,exports){
+},{"./HiddenInput":35,"isomorph/object":85}],45:[function(require,module,exports){
 'use strict';
 
 var BooleanField = require('./BooleanField')
@@ -5620,7 +5619,7 @@ PasswordInput.prototype.render = function(name, value, kwargs) {
 }
 
 module.exports = PasswordInput
-},{"./TextInput":64,"./env":74,"isomorph/object":86}],49:[function(require,module,exports){
+},{"./TextInput":64,"./env":74,"isomorph/object":85}],49:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -5643,7 +5642,7 @@ var ProgressMixin = {
 }
 
 module.exports = ProgressMixin
-},{"isomorph/is":85}],50:[function(require,module,exports){
+},{"isomorph/is":84}],50:[function(require,module,exports){
 'use strict';
 
 var ChoiceInput = require('./ChoiceInput')
@@ -5731,7 +5730,7 @@ var RegexField = CharField.extend({
 })
 
 module.exports = RegexField
-},{"./CharField":5,"isomorph/is":85,"validators":90}],54:[function(require,module,exports){
+},{"./CharField":5,"isomorph/is":84,"validators":89}],54:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -5743,7 +5742,7 @@ var FormRow = require('./FormRow')
 var ProgressMixin = require('./ProgressMixin')
 
 var $__0=  require('./constants'),NON_FIELD_ERRORS=$__0.NON_FIELD_ERRORS
-var $__1=    require('./util'),autoIdChecker=$__1.autoIdChecker,getProps=$__1.getProps,warning=$__1.warning
+var $__1=   require('./util'),autoIdChecker=$__1.autoIdChecker,getProps=$__1.getProps
 
 var formProps = {
   autoId: autoIdChecker
@@ -5761,10 +5760,6 @@ var formProps = {
     React.PropTypes.string
   , React.PropTypes.object
   ])
-}
-
-if ("production" !== "development") {
-  var warnedAboutReactAddons = false
 }
 
 /**
@@ -5821,22 +5816,7 @@ var RenderForm = React.createClass({displayName: "RenderForm",
     // will throw an error.
     if (React.Children.count(this.props.children) !== 0) {
       // TODO Cloning should no longer be necessary when facebook/react#2112 lands
-      if (React.addons) {
-        return React.addons.cloneWithProps(React.Children.only(this.props.children), {form: this.form})
-      }
-      else {
-        if ("production" !== "development") {
-          if (!warnedAboutReactAddons) {
-            warning(
-              'Children have been passed to RenderForm but React.addons.' +
-              'cloneWithProps is not available to clone them. ' +
-              'To use custom rendering, you must use the react-with-addons ' +
-              'build of React.'
-            )
-            warnedAboutReactAddons = true
-          }
-        }
-      }
+      return React.cloneElement(React.Children.only(this.props.children), {form: this.form})
     }
 
     // Default rendering
@@ -5888,7 +5868,7 @@ var RenderForm = React.createClass({displayName: "RenderForm",
 })
 
 module.exports =  RenderForm
-},{"./ErrorObject":25,"./Form":31,"./FormRow":32,"./ProgressMixin":49,"./constants":73,"./util":79,"isomorph/object":86}],55:[function(require,module,exports){
+},{"./ErrorObject":25,"./Form":31,"./FormRow":32,"./ProgressMixin":49,"./constants":73,"./util":78,"isomorph/object":85}],55:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -6020,7 +6000,7 @@ var RenderFormSet = React.createClass({displayName: "RenderFormSet",
 })
 
 module.exports = RenderFormSet
-},{"./FormRow":32,"./FormSet":33,"./ProgressMixin":49,"./RenderForm":54,"./constants":73,"./util":79,"isomorph/object":86}],56:[function(require,module,exports){
+},{"./FormRow":32,"./FormSet":33,"./ProgressMixin":49,"./RenderForm":54,"./constants":73,"./util":78,"isomorph/object":85}],56:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -6074,7 +6054,7 @@ RendererMixin.prototype.idForLabel = function(id) {
 }
 
 module.exports = RendererMixin
-},{"Concur":80,"isomorph/object":86}],57:[function(require,module,exports){
+},{"Concur":79,"isomorph/object":85}],57:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -6165,7 +6145,7 @@ Select.prototype.renderOption = function(selectedValuesLookup, optValue, optLabe
 }
 
 module.exports = Select
-},{"./Widget":72,"./util":79,"isomorph/is":85,"isomorph/object":86}],58:[function(require,module,exports){
+},{"./Widget":72,"./util":78,"isomorph/is":84,"isomorph/object":85}],58:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -6229,7 +6209,7 @@ SelectMultiple.prototype.valueFromData = function(data, files, name) {
 }
 
 module.exports = SelectMultiple
-},{"./Select":57,"isomorph/is":85,"isomorph/object":86}],59:[function(require,module,exports){
+},{"./Select":57,"isomorph/is":84,"isomorph/object":85}],59:[function(require,module,exports){
 'use strict';
 
 var validators = require('validators')
@@ -6258,7 +6238,7 @@ SlugField.prototype.clean = function(value) {
 }
 
 module.exports = SlugField
-},{"./CharField":5,"./util":79,"validators":90}],60:[function(require,module,exports){
+},{"./CharField":5,"./util":78,"validators":89}],60:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -6331,7 +6311,7 @@ SplitDateTimeField.prototype.compress = function(dataList) {
 }
 
 module.exports = SplitDateTimeField
-},{"./DateField":15,"./MultiValueField":40,"./SplitDateTimeWidget":61,"./SplitHiddenDateTimeWidget":62,"./TimeField":66,"isomorph/is":85,"isomorph/object":86,"validators":90}],61:[function(require,module,exports){
+},{"./DateField":15,"./MultiValueField":40,"./SplitDateTimeWidget":61,"./SplitHiddenDateTimeWidget":62,"./TimeField":66,"isomorph/is":84,"isomorph/object":85,"validators":89}],61:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -6369,7 +6349,7 @@ SplitDateTimeWidget.prototype.decompress = function(value) {
 }
 
 module.exports = SplitDateTimeWidget
-},{"./DateInput":16,"./MultiWidget":41,"./TimeInput":67,"isomorph/object":86}],62:[function(require,module,exports){
+},{"./DateInput":16,"./MultiWidget":41,"./TimeInput":67,"isomorph/object":85}],62:[function(require,module,exports){
 'use strict';
 
 var SplitDateTimeWidget = require('./SplitDateTimeWidget')
@@ -6427,7 +6407,7 @@ SubWidget.prototype.render = function() {
 }
 
 module.exports = SubWidget
-},{"Concur":80,"isomorph/object":86}],64:[function(require,module,exports){
+},{"Concur":79,"isomorph/object":85}],64:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -6453,7 +6433,7 @@ var TextInput = Input.extend({
 })
 
 module.exports = TextInput
-},{"./Input":38,"isomorph/object":86}],65:[function(require,module,exports){
+},{"./Input":38,"isomorph/object":85}],65:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -6493,7 +6473,7 @@ Textarea.prototype.render = function(name, value, kwargs) {
 }
 
 module.exports = Textarea
-},{"./Widget":72,"isomorph/object":86}],66:[function(require,module,exports){
+},{"./Widget":72,"isomorph/object":85}],66:[function(require,module,exports){
 'use strict';
 
 var time = require('isomorph/time')
@@ -6552,7 +6532,7 @@ TimeField.prototype.strpdate = function(value, format) {
 }
 
 module.exports = TimeField
-},{"./BaseTemporalField":2,"./TimeInput":67,"./locales":78,"isomorph/time":87}],67:[function(require,module,exports){
+},{"./BaseTemporalField":2,"./TimeInput":67,"./locales":77,"isomorph/time":86}],67:[function(require,module,exports){
 'use strict';
 
 var DateTimeBaseInput = require('./DateTimeBaseInput')
@@ -6624,7 +6604,7 @@ TypedChoiceField.prototype.clean = function(value) {
 
 
 module.exports = TypedChoiceField
-},{"./ChoiceField":10,"isomorph/object":86,"validators":90}],69:[function(require,module,exports){
+},{"./ChoiceField":10,"isomorph/object":85,"validators":89}],69:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -6686,7 +6666,7 @@ TypedMultipleChoiceField.prototype.validate = function(value) {
 }
 
 module.exports = TypedMultipleChoiceField
-},{"./MultipleChoiceField":42,"isomorph/is":85,"isomorph/object":86,"validators":90}],70:[function(require,module,exports){
+},{"./MultipleChoiceField":42,"isomorph/is":84,"isomorph/object":85,"validators":89}],70:[function(require,module,exports){
 'use strict';
 
 var url = require('isomorph/url')
@@ -6738,7 +6718,7 @@ URLField.prototype.clean = function(value) {
 }
 
 module.exports = URLField
-},{"./CharField":5,"./URLInput":71,"./util":79,"isomorph/url":88,"validators":90}],71:[function(require,module,exports){
+},{"./CharField":5,"./URLInput":71,"./util":78,"isomorph/url":87,"validators":89}],71:[function(require,module,exports){
 'use strict';
 
 var TextInput = require('./TextInput')
@@ -6841,7 +6821,7 @@ Widget.prototype.idForLabel = function(id) {
 }
 
 module.exports = Widget
-},{"./SubWidget":63,"Concur":80,"isomorph/object":86}],73:[function(require,module,exports){
+},{"./SubWidget":63,"Concur":79,"isomorph/object":85}],73:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -6927,49 +6907,7 @@ module.exports = {
   getFormat: getFormat
 }
 
-},{"./locales":78,"isomorph/object":86}],76:[function(require,module,exports){
-'use strict';
-
-var object = require('isomorph/object')
-
-var constants = require('./constants')
-
-var FormSet = require('./FormSet')
-
-var $__0=  require('./util'),warning=$__0.warning
-
-if ("production" !== "development") {
-  var warnedFormsetFactoryDeprecated = false
-}
-
-/**
- * Creates a FormSet constructor for the given Form constructor.
- * @param {Form} form
- * @param {Object=} kwargs
- */
-function formsetFactory(form, kwargs) {
-  if ("production" !== "development") {
-    if (!warnedFormsetFactoryDeprecated) {
-      warning(
-        'formsetFactory is deprecated and will be removed in version 0.12 - ' +
-        'extend FormSet directly with FormSet.extend() instead'
-      )
-      warnedFormsetFactoryDeprecated = true
-    }
-  }
-
-  kwargs = object.extend({
-    form: form, formset: FormSet,
-    extra: 1, canOrder: false, canDelete: false,
-    maxNum: constants.FORMSET_DEFAULT_MAX_NUM, validateMax: false,
-    minNum: constants.FORMSET_DEFAULT_MIN_NUM, validateMin: false
-  }, kwargs)
-
-  return object.pop(kwargs, 'formset').extend(kwargs)
-}
-
-module.exports = formsetFactory
-},{"./FormSet":33,"./constants":73,"./util":79,"isomorph/object":86}],77:[function(require,module,exports){
+},{"./locales":77,"isomorph/object":85}],76:[function(require,module,exports){
 'use strict';
 
 var is = require('isomorph/is')
@@ -6988,7 +6926,7 @@ function isFormAsync(constructor) {
 }
 
 module.exports = isFormAsync
-},{"isomorph/is":85}],78:[function(require,module,exports){
+},{"isomorph/is":84}],77:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -7122,7 +7060,7 @@ module.exports = {
 , setDefaultLocale: setDefaultLocale
 }
 
-},{"isomorph/object":86,"isomorph/time":87}],79:[function(require,module,exports){
+},{"isomorph/object":85,"isomorph/time":86}],78:[function(require,module,exports){
 'use strict';
 
 var getFormData = require('get-form-data')
@@ -7501,7 +7439,7 @@ module.exports = {
 , warning: warning
 }
 
-},{"get-form-data":82,"isomorph/is":85,"isomorph/object":86}],80:[function(require,module,exports){
+},{"get-form-data":81,"isomorph/is":84,"isomorph/object":85}],79:[function(require,module,exports){
 'use strict';
 
 var hasOwn = Object.prototype.hasOwnProperty
@@ -7652,7 +7590,7 @@ Concur.extend = function(prototypeProps, constructorProps) {
   return childConstructor
 }
 
-},{}],81:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 /*! http://mths.be/punycode v1.2.4 by @mathias */
 ;(function(root) {
 
@@ -8161,7 +8099,7 @@ Concur.extend = function(prototypeProps, constructorProps) {
 
 }(this));
 
-},{}],82:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 'use strict';
 
 var NODE_LIST_CLASSES = {
@@ -8170,10 +8108,11 @@ var NODE_LIST_CLASSES = {
 , '[object RadioNodeList]': true
 }
 
-var BUTTON_INPUT_TYPES = {
+var IGNORED_INPUT_TYPES = {
   'button': true
 , 'reset': true
 , 'submit': true
+, 'fieldset': true
 }
 
 var CHECKED_INPUT_TYPES = {
@@ -8181,6 +8120,9 @@ var CHECKED_INPUT_TYPES = {
 , 'radio': true
 }
 
+var TRIM_RE = /^\s+|\s+$/g
+
+var slice = Array.prototype.slice
 var toString = Object.prototype.toString
 
 /**
@@ -8189,9 +8131,13 @@ var toString = Object.prototype.toString
  *   submittable value(s) held in the form's .elements collection, with
  *   properties named as per element names or ids.
  */
-function getFormData(form) {
+function getFormData(form, options) {
   if (!form) {
     throw new Error('A form is required by getFormData, was given form=' + form)
+  }
+
+  if (!options) {
+    options = {trim: false}
   }
 
   var data = {}
@@ -8199,10 +8145,10 @@ function getFormData(form) {
   var elementNames = []
   var elementNameLookup = {}
 
-  // Get unique element names for the form
+  // Get unique submittable element names for the form
   for (var i = 0, l = form.elements.length; i < l; i++) {
     var element = form.elements[i]
-    if (BUTTON_INPUT_TYPES[element.type] || element.disabled) {
+    if (IGNORED_INPUT_TYPES[element.type] || element.disabled) {
       continue
     }
     elementName = element.name || element.id
@@ -8212,11 +8158,11 @@ function getFormData(form) {
     }
   }
 
-  // Extract data name-by-name for consistent handling of special cases around
-  // elements which contain multiple inputs.
+  // Extract element data name-by-name for consistent handling of special cases
+  // around elements which contain multiple inputs.
   for (i = 0, l = elementNames.length; i < l; i++) {
     elementName = elementNames[i]
-    var value = getNamedFormElementData(form, elementName)
+    var value = getNamedFormElementData(form, elementName, options)
     if (value != null) {
       data[elementName] = value
     }
@@ -8229,10 +8175,10 @@ function getFormData(form) {
  * @param {HTMLFormElement} form
  * @param {string} elementName
  * @return {(string|Array.<string>)} submittable value(s) in the form for a
- *   named element from its .elemnts collection, or null if there was no
+ *   named element from its .elements collection, or null if there was no
  *   element with that name or the element had no submittable value(s).
  */
-function getNamedFormElementData(form, elementName) {
+function getNamedFormElementData(form, elementName, options) {
   if (!form) {
     throw new Error('A form is required by getNamedFormElementData, was given form=' + form)
   }
@@ -8245,45 +8191,54 @@ function getNamedFormElementData(form, elementName) {
     return null
   }
 
+  var trim = !!(options && options.trim)
+
   if (!NODE_LIST_CLASSES[toString.call(element)]) {
-    return getFormElementValue(element)
+    return getFormElementValue(element, trim)
   }
 
   // Deal with multiple form controls which have the same name
   var data = []
   var allRadios = true
   for (var i = 0, l = element.length; i < l; i++) {
-    if (element.disabled) {
+    if (element[i].disabled) {
       continue
     }
     if (allRadios && element[i].type !== 'radio') {
       allRadios = false
     }
-    var value = getFormElementValue(element[i])
+    var value = getFormElementValue(element[i], trim)
     if (value != null) {
       data = data.concat(value)
     }
   }
+
+  // Special case for an element with multiple same-named inputs which were all
+  // radio buttons: if there was a selected value, only return the value.
   if (allRadios && data.length === 1) {
     return data[0]
   }
+
   return (data.length > 0 ? data : null)
 }
 
 /**
  * @param {HTMLElement} element a form element.
- * @return {(string|Array.<string>)} the element's submittable value(s), or null
- *   if it had none.
+ * @param {booleam} trim should values for text entry inputs be trimmed?
+ * @return {(string|Array.<string>|File|Array.<File>)} the element's submittable
+ *   value(s), or null if it had none.
  */
-function getFormElementValue(element) {
+function getFormElementValue(element, trim) {
   var value = null
 
   if (element.type === 'select-one') {
     if (element.options.length) {
       value = element.options[element.selectedIndex].value
     }
+    return value
   }
-  else if (element.type === 'select-multiple') {
+
+  if (element.type === 'select-multiple') {
     value = []
     for (var i = 0, l = element.options.length; i < l; i++) {
       if (element.options[i].selected) {
@@ -8293,8 +8248,29 @@ function getFormElementValue(element) {
     if (value.length === 0) {
       value = null
     }
+    return value
   }
-  else if (!CHECKED_INPUT_TYPES[element.type] || element.checked) {
+
+  // If a file input doesn't have a files attribute, fall through to using its
+  // value attribute.
+  if (element.type === 'file' && 'files' in element) {
+    if (element.multiple) {
+      value = slice.call(element.files)
+      if (value.length === 0) {
+        value = null
+      }
+    }
+    else {
+      // Should be null if not present, according to the spec
+      value = element.files[0]
+    }
+    return value
+  }
+
+  if (!CHECKED_INPUT_TYPES[element.type]) {
+    value = (trim ? element.value.replace(TRIM_RE, '') : element.value)
+  }
+  else if (element.checked) {
     value = element.value
   }
 
@@ -8304,7 +8280,7 @@ function getFormElementValue(element) {
 getFormData.getNamedFormElementData = getNamedFormElementData
 
 module.exports = getFormData
-},{}],83:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 'use strict';
 
 var hasOwn = Object.prototype.hasOwnProperty
@@ -8650,7 +8626,7 @@ module.exports = {
 , deepCopy: deepCopy
 }
 
-},{}],84:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict';
 
 var slice = Array.prototype.slice
@@ -8707,7 +8683,7 @@ module.exports = {
 , fileSize: fileSize
 }
 
-},{}],85:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 'use strict';
 
 var toString = Object.prototype.toString
@@ -8775,7 +8751,7 @@ module.exports = {
 , String: isString
 }
 
-},{}],86:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 'use strict';
 
 /**
@@ -8921,7 +8897,7 @@ module.exports = {
 , setDefault: setDefault
 }
 
-},{}],87:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 'use strict';
 
 var is = require('./is')
@@ -9274,7 +9250,7 @@ time.strftime = function(date, format, locale) {
 
 module.exports = time
 
-},{"./is":85}],88:[function(require,module,exports){
+},{"./is":84}],87:[function(require,module,exports){
 'use strict';
 
 // parseUri 1.2.2
@@ -9365,7 +9341,7 @@ module.exports = {
 , makeUri: makeUri
 }
 
-},{}],89:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -9528,13 +9504,13 @@ module.exports = {
   ValidationError: ValidationError
 }
 
-},{"Concur":80,"isomorph/format":84,"isomorph/is":85,"isomorph/object":86}],90:[function(require,module,exports){
+},{"Concur":79,"isomorph/format":83,"isomorph/is":84,"isomorph/object":85}],89:[function(require,module,exports){
 'use strict';
 
 // HACK: requiring './validators' here makes the circular import in ipv6.js work
 //       after browserification.
 module.exports = require('./validators')
-},{"./validators":92}],91:[function(require,module,exports){
+},{"./validators":91}],90:[function(require,module,exports){
 'use strict';
 
 var object = require('isomorph/object')
@@ -9818,7 +9794,7 @@ module.exports = {
 , isValidIPv6Address: isValidIPv6Address
 }
 
-},{"./errors":89,"./validators":92,"isomorph/object":86}],92:[function(require,module,exports){
+},{"./errors":88,"./validators":91,"isomorph/object":85}],91:[function(require,module,exports){
 'use strict';
 
 var Concur = require('Concur')
@@ -10164,5 +10140,5 @@ module.exports = {
 , ipv6: ipv6
 }
 
-},{"./errors":89,"./ipv6":91,"Concur":80,"isomorph/is":85,"isomorph/object":86,"isomorph/url":88,"punycode":81}]},{},[1])(1)
+},{"./errors":88,"./ipv6":90,"Concur":79,"isomorph/is":84,"isomorph/object":85,"isomorph/url":87,"punycode":80}]},{},[1])(1)
 });

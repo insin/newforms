@@ -3,11 +3,13 @@
 See [CHANGES](https://github.com/insin/newforms/blob/react/CHANGES.md) for the
 full changelog between releases.
 
-## 0.12.0 (next version)
+## 0.12.0
 
-### React 0.13
+### Upgrade to React 0.13
 
-As of this release, newforms depends on React >=0.13.0 as a peer dependency.
+As of this release, newforms depends on React >=0.13.0 as a peer dependency and
+no longer requires `React.addons` to use a custom rendering component with
+`RenderForm`.
 
 ### Removed deprecated `formsetFactory()`
 

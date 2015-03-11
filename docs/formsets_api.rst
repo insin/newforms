@@ -15,7 +15,7 @@ Formsets API
 
    .. versionadded:: 0.11
       FormSet options and defaulting from the prototype replace the use of
-      ``formsetFactory``.
+      ``formsetFactory``, which was removed in version 0.12.
 
    The following options configure the FormSet itself.
 

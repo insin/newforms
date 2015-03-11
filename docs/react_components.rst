@@ -359,7 +359,7 @@ as a ``form`` prop.
 
 .. Note::
    This method of implementing custom rendering by passing a prop is temporary.
-   An upcoming change to React's currently (as of React 0.12) undocumented
+   An upcoming change to React's currently (as of React 0.13) undocumented
    `context feature`_ will remove the need to pass props down the chain of
    components for this sort of scenario.
 
