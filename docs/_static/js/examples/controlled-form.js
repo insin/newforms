@@ -5,7 +5,7 @@ var React = require('react')
 
 var resizeIFrame = require('./resizeIFrame')
 
-var Collapsible = React.createClass({displayName: 'Collapsible',
+var Collapsible = React.createClass({displayName: "Collapsible",
   propTypes: {
     name: React.PropTypes.string.isRequired
   },
@@ -48,7 +48,7 @@ var forms = require('newforms')
 
 var Collapsible = require('./Collapsible')
 
-var FormInspector = React.createClass({displayName: 'FormInspector',
+var FormInspector = React.createClass({displayName: "FormInspector",
   propTypes: {
     form: React.PropTypes.instanceOf(forms.Form).isRequired
   },
@@ -73,7 +73,7 @@ var FormInspector = React.createClass({displayName: 'FormInspector',
   }
 })
 
-var Obj = React.createClass({displayName: 'Obj',
+var Obj = React.createClass({displayName: "Obj",
   render:function() {
     return React.createElement("div", {className: "FormInspector__Obj"}, 
       React.createElement("pre", null, JSON.stringify(this.props.value, null, 2))
@@ -81,7 +81,7 @@ var Obj = React.createClass({displayName: 'Obj',
   }
 })
 
-var Bool = React.createClass({displayName: 'Bool',
+var Bool = React.createClass({displayName: "Bool",
   render:function() {
     return React.createElement("div", {className: "FormInspector__Bool"}, 
       this.props.value ? '\u2714' : '\u2718', " ", this.props.name
@@ -132,7 +132,7 @@ var PersonForm = forms.Form.extend({
   bio: forms.CharField({widget: forms.Textarea})
 })
 
-var PeopleEditor = React.createClass({displayName: 'PeopleEditor',
+var PeopleEditor = React.createClass({displayName: "PeopleEditor",
   mixins: [IFrameMixin],
 
   getInitialState:function() {

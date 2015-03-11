@@ -35,7 +35,7 @@ var ParentForm = Form.extend({
   dob: DateField({label: 'Date of birth'})
 })
 
-var RenderFormProps = React.createClass({displayName: 'RenderFormProps',
+var RenderFormProps = React.createClass({displayName: "RenderFormProps",
   mixins: [IFrameMixin],
   render:function() {
     return React.createElement("form", null, 

@@ -45,7 +45,7 @@ var SignupForm = forms.Form.extend({
   }
 })
 
-var Signup = React.createClass({displayName: 'Signup',
+var Signup = React.createClass({displayName: "Signup",
   mixins: [IFrameMixin],
 
   propTypes: {
@@ -69,7 +69,7 @@ var Signup = React.createClass({displayName: 'Signup',
   }
 })
 
-var QuickstartExample = React.createClass({displayName: 'QuickstartExample',
+var QuickstartExample = React.createClass({displayName: "QuickstartExample",
   mixins: [IFrameMixin],
 
   getInitialState:function() {
