@@ -1,3 +1,15 @@
+# master / in development
+
+## Breaking Changes
+
+* Now depends on React 0.13.
+
+## Changes
+
+* `RenderForm` no longer depends on having `React.addons.cloneWithProps()`
+  available for custom rendering, due to new `React.cloneElement()` top-level
+  API.
+
 # 0.11.0 / 2015-03-11
 
 ## Breaking Changes

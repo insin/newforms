@@ -7,7 +7,7 @@ var object = require('isomorph/object')
 global.navigator = {userAgent: 'fake'}
 
 object.extend(global, require('./customAsserts.js'))
-global.React = window.React = require('./vendor/react-with-addons-0.12.2.js')
+global.React = window.React = require('./vendor/react-0.13.0.js')
 global.isomorph = require('isomorph')
 global.forms = require('../dist/newforms.js')
 

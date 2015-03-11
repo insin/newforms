@@ -9,7 +9,7 @@ var FormRow = require('./FormRow')
 var ProgressMixin = require('./ProgressMixin')
 
 var {NON_FIELD_ERRORS} = require('../constants')
-var {autoIdChecker, getProps, warning} = require('../util')
+var {autoIdChecker, getProps} = require('../util')
 
 var formProps = {
   autoId: autoIdChecker
@@ -27,10 +27,6 @@ var formProps = {
     React.PropTypes.string
   , React.PropTypes.object
   ])
-}
-
-if ("production" !== process.env.NODE_ENV) {
-  var warnedAboutReactAddons = false
 }
 
 /**
@@ -87,22 +83,7 @@ var RenderForm = React.createClass({
     // will throw an error.
     if (React.Children.count(this.props.children) !== 0) {
       // TODO Cloning should no longer be necessary when facebook/react#2112 lands
-      if (React.addons) {
-        return React.addons.cloneWithProps(React.Children.only(this.props.children), {form: this.form})
-      }
-      else {
-        if ("production" !== process.env.NODE_ENV) {
-          if (!warnedAboutReactAddons) {
-            warning(
-              'Children have been passed to RenderForm but React.addons.' +
-              'cloneWithProps is not available to clone them. ' +
-              'To use custom rendering, you must use the react-with-addons ' +
-              'build of React.'
-            )
-            warnedAboutReactAddons = true
-          }
-        }
-      }
+      return React.cloneElement(React.Children.only(this.props.children), {form: this.form})
     }
 
     // Default rendering

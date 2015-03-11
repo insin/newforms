@@ -120,27 +120,27 @@ QUnit.test("FileInput", 7, function() {
 QUnit.test("Textarea", 8, function() {
   var w = forms.Textarea()
   reactHTMLEqual(w.render("msg", ""),
-        "<textarea rows=\"3\" cols=\"40\" name=\"msg\"></textarea>")
+        "<textarea rows=\"3\" cols=\"40\" name=\"msg\">\n</textarea>")
   reactHTMLEqual(w.render("msg", null),
-        "<textarea rows=\"3\" cols=\"40\" name=\"msg\"></textarea>")
+        "<textarea rows=\"3\" cols=\"40\" name=\"msg\">\n</textarea>")
   reactHTMLEqual(w.render("msg", "value"),
-        "<textarea rows=\"3\" cols=\"40\" name=\"msg\">value</textarea>")
+        "<textarea rows=\"3\" cols=\"40\" name=\"msg\">\nvalue</textarea>")
   reactHTMLEqual(w.render("msg", "some \"quoted\" & ampersanded value"),
-        "<textarea rows=\"3\" cols=\"40\" name=\"msg\">some &quot;quoted&quot; &amp; ampersanded value</textarea>")
+        "<textarea rows=\"3\" cols=\"40\" name=\"msg\">\nsome &quot;quoted&quot; &amp; ampersanded value</textarea>")
   reactHTMLEqual(w.render("msg", "value", {attrs: {"className": "pretty", rows: 20}}),
-        "<textarea rows=\"20\" cols=\"40\" name=\"msg\" class=\"pretty\">value</textarea>")
+        "<textarea rows=\"20\" cols=\"40\" name=\"msg\" class=\"pretty\">\nvalue</textarea>")
 
   // You can also pass "attrs" to the constructor
   w = forms.Textarea({attrs: {"className": "pretty"}})
   reactHTMLEqual(w.render("msg", ""),
-        "<textarea rows=\"3\" cols=\"40\" class=\"pretty\" name=\"msg\"></textarea>")
+        "<textarea rows=\"3\" cols=\"40\" class=\"pretty\" name=\"msg\">\n</textarea>")
   reactHTMLEqual(w.render("msg", "example"),
-        "<textarea rows=\"3\" cols=\"40\" class=\"pretty\" name=\"msg\">example</textarea>")
+        "<textarea rows=\"3\" cols=\"40\" class=\"pretty\" name=\"msg\">\nexample</textarea>")
 
   // Attributes passed to render() get precedence over those passed to the constructor
   w = forms.Textarea({attrs: {"className": "pretty"}})
   reactHTMLEqual(w.render("msg", "", {attrs: {"className": "special"}}),
-        "<textarea rows=\"3\" cols=\"40\" class=\"special\" name=\"msg\"></textarea>")
+        "<textarea rows=\"3\" cols=\"40\" class=\"special\" name=\"msg\">\n</textarea>")
 })
 
 QUnit.test("CheckboxInput", 18, function() {

@@ -5,6 +5,10 @@ full changelog between releases.
 
 ## 0.12.0 (next version)
 
+### React 0.13
+
+As of this release, newforms depends on React >=0.13.0 as a peer dependency.
+
 ### Removed deprecated `formsetFactory()`
 
 `formsetFactory()` - deprecated in 0.11 - will be removed. `FormSet.extend()`
