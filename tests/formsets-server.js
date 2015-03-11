@@ -80,6 +80,34 @@ QUnit.test("Basic FormSet", 5, function() {
   strictEqual(formset.hasChanged(), false)
 })
 
+QUnit.test('Custom prefix format', function() {
+  // By default, formsets append a hyphen between the prefix and theform index,
+  // but a formset can alter that behaviour by overriding prefixFormat, which
+  // should be a string containing {prefix} and {index} placeholders.
+  var ChoiceForm = forms.Form.extend({
+    prefixFormat: '{prefix}[{name}]',
+    choice: forms.CharField(),
+    votes: forms.IntegerField()
+  })
+
+  var ChoiceFormSet = forms.FormSet.extend({
+    form: ChoiceForm,
+    prefixFormat: '{prefix}[{index}]'
+  })
+
+  var initial = [{choice: "Calexico", votes: 100}]
+  var formset = new ChoiceFormSet({initial: initial, autoId: false, prefix: 'choices'})
+  reactHTMLEqual(renderAll(formset.forms()),
+'<div>\
+<div>Choice: <input type="text" name="choices[0][choice]" value="Calexico"></div>\
+<div>Votes: <input type="number" name="choices[0][votes]" value="100"></div>\
+</div>\
+<div>\
+<div>Choice: <input type="text" name="choices[1][choice]"></div>\
+<div>Votes: <input type="number" name="choices[1][votes]"></div>\
+</div>')
+})
+
 QUnit.test("Formset validation", 2, function() {
   // FormSet instances can also have an error attribute if validation failed for
   // any of the forms.

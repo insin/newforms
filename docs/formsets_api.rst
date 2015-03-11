@@ -116,6 +116,18 @@ Formsets API
       :param Object constructorProps:
          properties to be set directly on the new constructor function.
 
+   **Prototype Properties**
+
+   .. js:attribute:: FormSet#prefixFormat
+
+      This string defines the format used to generate a ``prefix`` for forms in
+      the formset to ensure they have unique ``name`` attributes. It must
+      contain ``{prefix}`` and ``{index}`` placeholders.
+
+      The default format is ``'{prefix}-{index}'``.
+
+      :type String:
+
    **Instance Properties**
 
    Formset options documented in ``kwargs`` above are set as instance properties.

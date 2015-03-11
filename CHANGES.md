@@ -19,6 +19,11 @@
 * Added new core `Field` argument: `field.widgetAttrs` - this allows you to
   provide additional widget attributes without having to redefine the entire
   widget ([#62](https://github.com/insin/newforms/issues/62))
+* Added `Form.prototype.prefixFormat` (`'{prefix}-{name}'`) and
+  `FormSet.prototype.prefixFormat` (`'{prefix}-{index}'`) to define how prefixes
+  are generated. These can be overridden when extending these components to
+  customise now field names are generated when prefixes are used
+  ([#70](https://github.com/insin/newforms/issues/70))
 
 ## Changes
 

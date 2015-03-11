@@ -3,6 +3,7 @@
 var Concur = require('Concur')
 var getFormData = require('get-form-data')
 var is = require('isomorph/is')
+var {formatObj} = require('isomorph/format')
 var object = require('isomorph/object')
 
 var constants = require('./constants')
@@ -61,6 +62,8 @@ var ManagementForm = (function() {
  * @param {Object=} kwargs
  */
 var FormSet = Concur.extend({
+  prefixFormat: '{prefix}-{index}',
+
   constructor: function FormSet(kwargs) {
     // TODO Perform PropType checks on kwargs in development mode
     kwargs = object.extend({
@@ -897,7 +900,7 @@ FormSet.prototype.nonFormPending = function() {
  * @param {Number} index the index of a form in the formset.
  */
 FormSet.prototype.addPrefix = function(index) {
-  return this.prefix + '-' + index
+  return formatObj(this.prefixFormat, {prefix: this.prefix, index: index})
 }
 
 FormSet.prototype.getDefaultPrefix = function() {

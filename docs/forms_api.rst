@@ -138,6 +138,18 @@ Forms API
    :param Boolean kwargs.emptyPermitted:
       if ``true``, the form is allowed to be empty -- defaults to ``false``.
 
+   **Prototype Properties**
+
+   .. js:attribute:: Form#prefixFormat
+
+      This string defines the format used to generate ``name`` attributes for
+      fields when a form instance is given a ``prefix``. It must contain
+      ``{prefix}`` and ``{name}`` placeholders.
+
+      The default format is ``'{prefix}-{name}'``.
+
+      :type String:
+
    **Instance Properties**
 
    Form options documented in ``kwargs`` above are all set as instance
