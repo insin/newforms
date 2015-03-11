@@ -10,6 +10,10 @@
   available for custom rendering, due to new `React.cloneElement()` top-level
   API.
 
+## Removals
+
+* Removed deprecated `formsetFactory()`.
+
 # 0.11.0 / 2015-03-11
 
 ## Breaking Changes
