@@ -3,7 +3,7 @@
 See [CHANGES](https://github.com/insin/newforms/blob/react/CHANGES.md) for the
 full changelog between releases.
 
-## 0.12.0 (future version)
+## 0.12.0 (next version)
 
 ### Removed deprecated `formsetFactory()`
 
@@ -30,7 +30,7 @@ var DrinksFormSet = forms.FormSet.extend({
 })
 ```
 
-## 0.11.0 (next version)
+## 0.11.0
 
 ### npm publishing changes
 
@@ -61,9 +61,9 @@ var FileField = require('newforms/FileField')
 ### Removed deprecated default rendering methods
 
 Default rendering methods on `Form` and `FormSet` (`render()`, `asTable()`,
-`asDiv()` and `asUl()`) - which were deprecated in 0.10 - have been removed.
-They have been replaced with React components which provide a default rendering
-implementation: `RenderForm` and `RenderFormSet`.
+`asDiv()` and `asUl()`) - deprecated in 0.10 - have been removed. They have been
+replaced with React components which provide a default rendering implementation:
+`RenderForm` and `RenderFormSet`.
 
 ```javascript
 // < 0.11.0

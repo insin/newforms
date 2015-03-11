@@ -1,4 +1,4 @@
-# master / in development
+# 0.11.0 / 2015-03-11
 
 ## Breaking Changes
 
