@@ -354,55 +354,6 @@ Formsets API
       Returns ``true`` if the formset needs to be multipart-encoded, i.e. it has
       a :js:class:`FileInput`. Otherwise, ``false``.
 
-``formsetFactory``
-==================
-
-.. js:function:: formsetFactory(form, [kwargs])
-
-   .. deprecated:: 0.11
-      formsetFactory is deprecated in favour of using FormSet.extend() directly
-      with the same arguments.
-
-   Returns a FormSet constructor for the given Form constructor.
-
-   :param Function form: the constructor for the Form to be managed.
-
-   :param Object kwargs:
-      arguments defining options for the created FormSet constructor - all
-      arguments other than those defined below will be added to the new formset
-      constructor's ``prototype``, so this object can also be used to define new
-      methods on the resulting formset, such as a custom ``clean`` method.
-
-   :param Function kwargs.formset:
-      the constructor which will provide the prototype for the created FormSet
-      constructor -- defaults to :js:class:`FormSet`.
-
-   :param Number kwargs.extra:
-      the number of extra forms to be displayed -- defaults to ``1``.
-
-   :param Boolean kwargs.canOrder:
-      if ``true``, forms can be ordered -- defaults to ``false``.
-
-   :param Boolean kwargs.canDelete:
-      if ``true``, forms can be deleted -- defaults to ``false``.
-
-   :param Number kwargs.maxNum:
-      the maximum number of forms to be displayed -- defaults to
-      :js:data:`DEFAULT_MAX_NUM`.
-
-   :param Boolean kwargs.validateMax:
-      if ``true``, validation will also check that the number of forms in the
-      data set, minus those marked for deletion, is less than or equal to
-      ``maxNum``.
-
-   :param Number kwargs.minNum:
-      the minimum number of forms to be displayed -- defaults to ``0``.
-
-   :param Boolean kwargs.validateMin:
-      if ``true``, validation will also check that the number of forms in the
-      data set, minus those marked for deletion, is greater than or equal to
-      ``minNum``.
-
 .. js:data:: DEFAULT_MAX_NUM
 
    The default maximum number of forms in a formet is ``1000``, to protect
