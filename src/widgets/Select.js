@@ -63,7 +63,7 @@ Select.prototype.renderOptions = function(additionalChoices, selectedValues) {
                                                optgroupChoices[j][0],
                                                optgroupChoices[j][1]))
       }
-      options.push(React.createElement('optgroup', {label: choice[0]}, optgroupOptions))
+      options.push(React.createElement('optgroup', {label: choice[0], key: choice[9]}, optgroupOptions))
     }
     else {
       options.push(this.renderOption(selectedValuesLookup,
@@ -76,7 +76,7 @@ Select.prototype.renderOptions = function(additionalChoices, selectedValues) {
 
 Select.prototype.renderOption = function(selectedValuesLookup, optValue, optLabel) {
   optValue = ''+optValue
-  var attrs = {value: optValue}
+  var attrs = {value: optValue, key: optValue + optLabel}
   if (typeof selectedValuesLookup[optValue] != 'undefined') {
     attrs['selected'] = 'selected'
     if (!this.allowMultipleSelected) {

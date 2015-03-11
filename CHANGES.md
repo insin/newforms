@@ -51,6 +51,8 @@
 
 * `DecimalField` now handles all-zero inputs correctly - it was cleaning them
   to an empty string ([#57](https://github.com/insin/newforms/issues/57))
+* `Select` widgets no longer generate React dev-mode warnings about unique key
+  props ([#68](https://github.com/insin/newforms/issues/68))
 
 ## Deprecations
 
