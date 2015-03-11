@@ -42,7 +42,7 @@ Source
 
       * https://github.com/insin/newforms
 
-.. _`dist/ directory`: https://github.com/insin/newforms/tree/v0.10.1/dist
+.. _`dist/ directory`: https://github.com/insin/newforms/tree/react/dist
 
 Documentation
 =============
