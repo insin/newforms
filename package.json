@@ -28,8 +28,8 @@
   },
   "devDependencies": {
     "browserify": "^9.0.3",
-    "browserify-shim": "^3.8.2",
-    "gulp": "^3.8.10",
+    "browserify-shim": "^3.8.3",
+    "gulp": "^3.8.11",
     "gulp-concat": "^2.4.3",
     "gulp-flatten": "0.0.4",
     "gulp-flatten-requires": "^1.0.0",
