@@ -1,3 +1,13 @@
+# 0.12.1 / 2015-03-11
+
+## Bug Fixes
+
+* Changed method of detecting if we're running in the browser to avoid false
+  positives when browserify/webpack insert `process` shims into browser bundles.
+
+  A false positive can result in an `Error` being thrown when validating a
+  client-side `FormSet` ([#75](https://github.com/insin/newforms/issues/75))
+
 # 0.12.0 / 2015-03-11
 
 ## Breaking Changes

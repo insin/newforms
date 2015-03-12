@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = {
-  browser: typeof process == 'undefined'
+  browser: typeof window != 'undefined'
 }
