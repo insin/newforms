@@ -31,6 +31,39 @@ Forms currently make use of the real DOM's ``form.elements`` collection to
 simplify retrieving values for fields which render as multiple inputs, such
 as a ``MultipleChoiceField`` which uses a ``CheckboxSelectMultiple`` widget.
 
+``noValidate``
+--------------
+
+Some newforms Widgets render HTML5 input types which, by default, perform their
+own validation.
+
+When you're using newforms with React for interactive validation, this can give
+your forms an inconsistent feeling as the native inputs have their own way of
+presenting validation errors. Consider adding a ``noValidate`` prop to your
+``<form>`` to disable native validation if this starts to feel like an issue:
+
+.. code-block:: html
+
+   <form onSubmit={this.handleSubmit} noValidate>
+
+If you're creating an isomorphic application, you might want to conditionally
+use ``noValidate`` so there's some validation while the page is still initially
+loading, or for scenarios when JavaScript isn't available on the client:
+
+.. code-block:: javascript
+
+   getInitialState() {
+     return {client: false}
+   },
+
+   componentDidMount() {
+     this.setState({client: true})
+   },
+
+   render() {
+     return <form onSubmit={this.handleSubmit} noValidate={!this.state.client}>
+       ...
+
 Creating Forms and FormSets
 ===========================
 
