@@ -11,6 +11,8 @@ var Textarea = require('./widgets/Textarea')
 
 var {prettyName} = require('./util')
 
+var SUFFIX_CHARS = ':?.!'
+
 /**
  * A helper for rendering a field.
  * @param {Form} form the form instance which the field is a part of.
@@ -196,8 +198,8 @@ BoundField.prototype.asWidget = function(kwargs) {
   if (typeof attrs.key == 'undefined') {
     attrs.key = name
   }
-  var controlled = this._isControlled(widget)
-  var validation = this._validation(widget)
+
+  var validation = this._getValidation(widget)
 
   // Always Add an onChange event handler to update form.data when the field is
   // changed.
@@ -217,7 +219,7 @@ BoundField.prototype.asWidget = function(kwargs) {
     }
   }
 
-  var renderKwargs = {attrs: attrs, controlled: controlled}
+  var renderKwargs = {attrs, controlled: this._isControlled(widget)}
   if (widget.needsInitialValue) {
     renderKwargs.initialValue = this.initialValue()
   }
@@ -374,7 +376,7 @@ BoundField.prototype.subWidgets = function() {
  */
 BoundField.prototype._addLabelSuffix = function(label, labelSuffix) {
   // Only add the suffix if the label does not end in punctuation
-  if (labelSuffix && ':?.!'.indexOf(label.charAt(label.length - 1)) == -1) {
+  if (labelSuffix && SUFFIX_CHARS.indexOf(label.charAt(label.length - 1)) == -1) {
     return label + labelSuffix
   }
   return label
@@ -406,18 +408,17 @@ BoundField.prototype._isControlled = function(widget) {
  * @param {Widget=} widget
  * @return {?(Object|string)}
  */
-BoundField.prototype._validation = function(widget) {
-  if (arguments.length === 0) {
-    widget = this.field.widget
-  }
+BoundField.prototype._getValidation = function(widget) {
   // If the field has any validation config set, it should take precedence,
   // otherwise use the form's as it has a default.
   var validation = this.field.validation || this.form.validation
+
   // Allow widgets to override the type of validation that's used for them -
   // primarily for inputs which can only be changed by click/selection.
   if (validation !== 'manual' && widget.validation !== null) {
     validation = widget.validation
   }
+
   return validation
 }
 
