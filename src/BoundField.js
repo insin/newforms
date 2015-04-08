@@ -198,6 +198,11 @@ BoundField.prototype.asWidget = function(kwargs) {
   if (typeof attrs.key == 'undefined') {
     attrs.key = name
   }
+  if (this.form.fieldRef) {
+    attrs.ref = (ref) => {
+      this.form.fieldRef(ref, this.name, this.form)
+    }
+  }
 
   var validation = this._getValidation(widget)
 

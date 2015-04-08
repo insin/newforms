@@ -58,7 +58,7 @@ var Form = Concur.extend({
       data: null, files: null, autoId: 'id_{name}', prefix: null,
       initial: null, errorConstructor: ErrorList, labelSuffix: ':',
       emptyPermitted: false, validation: null, controlled: false,
-      onChange: null, errors: null
+      onChange: null, errors: null, fieldRef: null
     }, kwargs)
     this.isInitialRender = (kwargs.data == null && kwargs.files == null)
     this.data = kwargs.data || {}
@@ -72,6 +72,7 @@ var Form = Concur.extend({
     this.emptyPermitted = kwargs.emptyPermitted
     this.controlled = kwargs.controlled
     this.onChange = kwargs.onChange
+    this.fieldRef = kwargs.fieldRef
 
     // Auto validation is implied when onChange is passed
     if (is.Function(kwargs.onChange)) {
