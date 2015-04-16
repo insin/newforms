@@ -107,7 +107,7 @@ var RenderFormSet = React.createClass({
       />}
       {formset.forms().map(form => <RenderForm
         form={form}
-        formComponent={props.formComponent}
+        component={props.formComponent}
         progress={props.progress}
         row={props.row}
         rowComponent={props.rowComponent}
