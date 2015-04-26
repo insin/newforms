@@ -74,6 +74,12 @@ var RenderForm = React.createClass({
     }
   },
 
+  componentWillReceiveProps(props) {
+    var form = this.getForm();
+
+    form.updateData(props.data);
+  },
+
   getForm() {
     return this.form
   },
