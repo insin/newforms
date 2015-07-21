@@ -69,7 +69,7 @@ gulp.task('browserify-js', ['lint'], function() {
 })
 
 gulp.task('npm-copy', ['lint'], function() {
-  return gulp.src([jsLibPath, './LICENSE.md', './package.json', './README.md'])
+  return gulp.src([jsLibPath, './LICENSE.md', './README.md'])
     .pipe(gulp.dest('./npm-newforms'))
 })
 
