@@ -78,7 +78,6 @@ Select.prototype.renderOption = function(selectedValuesLookup, optValue, optLabe
   optValue = ''+optValue
   var attrs = {value: optValue, key: optValue + optLabel}
   if (typeof selectedValuesLookup[optValue] != 'undefined') {
-    attrs['selected'] = 'selected'
     if (!this.allowMultipleSelected) {
       // Only allow for a single selection with this value
       delete selectedValuesLookup[optValue]
