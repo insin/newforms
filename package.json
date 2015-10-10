@@ -22,7 +22,7 @@
   "dependencies": {
     "Concur": "^0.3.0",
     "envify": "^3.4.0",
-    "get-form-data": "^1.2.1",
+    "get-form-data": "^1.2.2",
     "isomorph": "^0.3.0",
     "validators": "^0.3.1"
   },
@@ -43,11 +43,12 @@
     "gulp-util": "^3.0.2",
     "jshint-stylish": "^1.0.0",
     "qqunit": "^0.6.0",
-    "react": ">=0.13.0",
+    "react": ">=0.14.0",
+    "react-dom": ">=0.14.0",
     "vinyl-source-stream": "^1.0.0"
   },
   "peerDependencies": {
-    "react": ">=0.13.0"
+    "react": ">=0.14.0"
   },
   "scripts": {
     "dist": "gulp browserify-js --production --release && gulp browserify-js --development --release",

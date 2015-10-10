@@ -41,7 +41,7 @@ QUnit.test('MultipleFileField', 1, function() {
 
 QUnit.test("ImageField", 1, function() {
   var f = forms.ImageField()
-  widgetRendersTo(f, "<span><input accept=\"image/*\" type=\"file\" name=\"f\" id=\"id_f\"></span>")
+  widgetRendersTo(f, "<span><input accept=\"image/*\" type=\"file\" name=\"f\" id=\"id_f\"/></span>")
 })
 
 }()

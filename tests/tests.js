@@ -7,7 +7,7 @@ var object = require('isomorph/object')
 global.navigator = {userAgent: 'fake'}
 
 object.extend(global, require('./customAsserts.js'))
-global.React = window.React = require('./vendor/react-0.13.0.js')
+global.React = window.React = require('react/dist/react.js')
 global.isomorph = require('isomorph')
 global.forms = require('../dist/newforms.js')
 
@@ -30,7 +30,7 @@ var tests = [ 'util.js'
             , 'regressions.js'
             , 'docs.js'
             , 'docs-server.js'
-            , 'dom-initial.js'
+            //, 'dom-initial.js'
             , 'components.js'
             ].map(function(t) { return path.join(__dirname, t) })
 

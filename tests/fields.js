@@ -17,7 +17,7 @@ QUnit.test("Field provides given widgetAttrs", 1, function() {
 
 QUnit.test("CharField", 35, function() {
   var f = forms.CharField({widgetAttrs: {placeholder: 'test'}})
-  widgetRendersTo(f, '<input placeholder="test" type="text" name="f" id="id_f">')
+  widgetRendersTo(f, '<input placeholder="test" type="text" name="f" id="id_f"/>')
   strictEqual(f.clean(1), "1")
   equal(f.clean("hello"), "hello")
   cleanErrorEqual(f, "This field is required.", null)
@@ -75,7 +75,7 @@ QUnit.test("CharField", 35, function() {
 
 QUnit.test("IntegerField", 55, function() {
   var f = forms.IntegerField()
-  widgetRendersTo(f, "<input type=\"number\" name=\"f\" id=\"id_f\">" )
+  widgetRendersTo(f, "<input type=\"number\" name=\"f\" id=\"id_f\"/>" )
   cleanErrorEqual(f, "This field is required.", null)
   cleanErrorEqual(f, "This field is required.", "")
   strictEqual(f.clean("1"), 1)
@@ -106,7 +106,7 @@ QUnit.test("IntegerField", 55, function() {
 
   // IntegerField accepts an optional maxValue parameter
   f = forms.IntegerField({maxValue: 10})
-  widgetRendersTo(f, "<input max=\"10\" type=\"number\" name=\"f\" id=\"id_f\">" )
+  widgetRendersTo(f, "<input max=\"10\" type=\"number\" name=\"f\" id=\"id_f\"/>" )
   cleanErrorEqual(f, "This field is required.", null)
   strictEqual(f.clean(1), 1)
   strictEqual(f.clean(10), 10)
@@ -118,7 +118,7 @@ QUnit.test("IntegerField", 55, function() {
 
   // IntegerField accepts an optional minValue parameter
   f = forms.IntegerField({minValue: 10})
-  widgetRendersTo(f, "<input min=\"10\" type=\"number\" name=\"f\" id=\"id_f\">" )
+  widgetRendersTo(f, "<input min=\"10\" type=\"number\" name=\"f\" id=\"id_f\"/>" )
   cleanErrorEqual(f, "This field is required.", null)
   cleanErrorEqual(f, "Ensure this value is greater than or equal to 10.", 1)
   strictEqual(f.clean(10), 10)
@@ -130,7 +130,7 @@ QUnit.test("IntegerField", 55, function() {
 
   // minValue and maxValue can be used together
   f = forms.IntegerField({minValue: 10, maxValue: 20})
-  widgetRendersTo(f, "<input min=\"10\" max=\"20\" type=\"number\" name=\"f\" id=\"id_f\">")
+  widgetRendersTo(f, "<input min=\"10\" max=\"20\" type=\"number\" name=\"f\" id=\"id_f\"/>")
   cleanErrorEqual(f, "This field is required.", null)
   cleanErrorEqual(f, "Ensure this value is greater than or equal to 10.", 1)
   strictEqual(f.clean(10), 10)
@@ -145,7 +145,7 @@ QUnit.test("IntegerField", 55, function() {
 
 QUnit.test("FloatField", 39, function() {
   var f = forms.FloatField()
-  widgetRendersTo(f, "<input step=\"any\" type=\"number\" name=\"f\" id=\"id_f\">" )
+  widgetRendersTo(f, "<input step=\"any\" type=\"number\" name=\"f\" id=\"id_f\"/>" )
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
   strictEqual(f.clean(1), 1.0)
@@ -171,7 +171,7 @@ QUnit.test("FloatField", 39, function() {
 
   // FloatField accepts minValue and maxValue just like forms.IntegerField
   f = forms.FloatField({maxValue: 1.5, minValue: 0.5})
-  widgetRendersTo(f, "<input min=\"0.5\" max=\"1.5\" step=\"any\" type=\"number\" name=\"f\" id=\"id_f\">" )
+  widgetRendersTo(f, "<input min=\"0.5\" max=\"1.5\" step=\"any\" type=\"number\" name=\"f\" id=\"id_f\"/>" )
   cleanErrorEqual(f, "Ensure this value is less than or equal to 1.5.", "1.6")
   cleanErrorEqual(f, "Ensure this value is greater than or equal to 0.5.", "0.4")
   strictEqual(f.clean("1.5"), 1.5)
@@ -182,7 +182,7 @@ QUnit.test("FloatField", 39, function() {
   f = forms.FloatField({
     widget: forms.NumberInput({attrs: {step: '0.01', max: '1.0', min: '0.0'}})
   })
-  widgetRendersTo(f, "<input step=\"0.01\" max=\"1.0\" min=\"0.0\" type=\"number\" name=\"f\" id=\"id_f\">")
+  widgetRendersTo(f, "<input step=\"0.01\" max=\"1.0\" min=\"0.0\" type=\"number\" name=\"f\" id=\"id_f\"/>")
 
   // FloatField implements its own _hasChanged due to String coercion issues
   // in JavaScript.
@@ -203,7 +203,7 @@ QUnit.test("FloatField", 39, function() {
 
 QUnit.test("DecimalField", 73, function() {
   var f = forms.DecimalField({maxDigits: 4, decimalPlaces: 2})
-  widgetRendersTo(f, "<input step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\">")
+  widgetRendersTo(f, "<input step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\"/>")
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
   strictEqual(f.clean("0"), "0")
@@ -256,7 +256,7 @@ QUnit.test("DecimalField", 73, function() {
 
   // DecimalField accepts min_value and max_value just like IntegerField
   f = forms.DecimalField({maxDigits: 4, decimalPlaces: 2, maxValue: 1.5, minValue: 0.5})
-  widgetRendersTo(f, "<input min=\"0.5\" max=\"1.5\" step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\">" )
+  widgetRendersTo(f, "<input min=\"0.5\" max=\"1.5\" step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\"/>" )
   cleanErrorEqual(f, "Ensure this value is less than or equal to 1.5.", "1.6")
   cleanErrorEqual(f, "Ensure this value is greater than or equal to 0.5.", "0.4")
   strictEqual(f.clean("1.5"), "1.5")
@@ -296,7 +296,7 @@ QUnit.test("DecimalField", 73, function() {
   f = forms.DecimalField({maxDigits: 20})
   deepEqual(f.getWidgetAttrs(forms.NumberInput()), {step: 'any'})
   f = forms.DecimalField({maxDigits: 6, widget: forms.NumberInput({attrs: {step: '0.01'}})})
-  widgetRendersTo(f, "<input step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\">")
+  widgetRendersTo(f, "<input step=\"0.01\" type=\"number\" name=\"f\" id=\"id_f\"/>")
 
   // Let's wait for a native decimal type...
   // f = forms.DecimalField({maxDigits: 2, decimalPlaces: 2})
@@ -488,7 +488,7 @@ QUnit.test("RegexField", 24, function() {
 
 QUnit.test("EmailField", 25, function() {
   var f = forms.EmailField()
-  widgetRendersTo(f, "<input type=\"email\" name=\"f\" id=\"id_f\">")
+  widgetRendersTo(f, "<input type=\"email\" name=\"f\" id=\"id_f\"/>")
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
   equal(f.clean("person@example.com"), "person@example.com")
@@ -517,7 +517,7 @@ QUnit.test("EmailField", 25, function() {
 
   // EmailField also has minLength and maxLength parameters, for convenience.
   f = forms.EmailField({minLength: 10, maxLength: 15})
-  widgetRendersTo(f, "<input maxlength=\"15\" type=\"email\" name=\"f\" id=\"id_f\">")
+  widgetRendersTo(f, "<input maxlength=\"15\" type=\"email\" name=\"f\" id=\"id_f\"/>")
   cleanErrorEqual(f, "Ensure this value has at least 10 characters (it has 9).", "a@foo.com")
   equal(f.clean("alf@foo.com"), "alf@foo.com")
   cleanErrorEqual(f, "Ensure this value has at most 15 characters (it has 20).", "alf123456788@foo.com")
@@ -530,7 +530,7 @@ QUnit.test("URLField", 65, function() {
        "http://inv-.alid-.com", "http://inv-.-alid.com"]
 
   var f = forms.URLField()
-  widgetRendersTo(f, "<input type=\"url\" name=\"f\" id=\"id_f\">")
+  widgetRendersTo(f, "<input type=\"url\" name=\"f\" id=\"id_f\"/>")
   cleanErrorEqual(f, "This field is required.", "")
   cleanErrorEqual(f, "This field is required.", null)
   equal(f.clean("http://localhost"), "http://localhost/")
@@ -580,7 +580,7 @@ QUnit.test("URLField", 65, function() {
 
   // URLField also has minLength and maxLength parameters, for convenience
   f = forms.URLField({minLength: 15, maxLength: 20})
-  widgetRendersTo(f, "<input maxlength=\"20\" type=\"url\" name=\"f\" id=\"id_f\">")
+  widgetRendersTo(f, "<input maxlength=\"20\" type=\"url\" name=\"f\" id=\"id_f\"/>")
   cleanErrorEqual(f, "Ensure this value has at least 15 characters (it has 13).", "http://f.com")
   equal(f.clean("http://example.com"), "http://example.com/")
   cleanErrorEqual(f, "Ensure this value has at most 20 characters (it has 38).", "http://abcdefghijklmnopqrstuvwxyz.com")
@@ -1074,7 +1074,7 @@ QUnit.test('GenericIPAddressField', 58, function() {
 
 QUnit.test('MultipleFileField', 9, function() {
   var f = forms.MultipleFileField({maxLength: 9})
-  widgetRendersTo(f, '<input multiple type="file" name="f" id="id_f">')
+  widgetRendersTo(f, '<input multiple="" type="file" name="f" id="id_f"/>')
 
   // No data, no initial
   cleanErrorEqual(f, 'This field is required.', null)

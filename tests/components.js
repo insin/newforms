@@ -16,8 +16,8 @@ QUnit.test('RenderForm', function() {
   , className: 'test'
   }),
 '<div class="test">\
-<div>Name: <input type="text" name="name"></div>\
-<div>Dob: <input type="text" name="dob"></div>\
+<div>Name: <input type="text" name="name"/></div>\
+<div>Dob: <input type="text" name="dob"/></div>\
 </div>',
   'With a Form constructor')
 
@@ -26,8 +26,8 @@ QUnit.test('RenderForm', function() {
   , form: new PersonForm({autoId: false})
   }),
 '<div class="test">\
-<div>Name: <input type="text" name="name"></div>\
-<div>Dob: <input type="text" name="dob"></div>\
+<div>Name: <input type="text" name="name"/></div>\
+<div>Dob: <input type="text" name="dob"/></div>\
 </div>',
   'With a Form instance')
 })
@@ -41,12 +41,12 @@ QUnit.test('RenderFormSet', function() {
   }),
 '<div class="test">\
 <div>\
-<div>Name: <input type="text" name="form-0-name"></div>\
-<div>Dob: <input type="text" name="form-0-dob"></div>\
+<div>Name: <input type="text" name="form-0-name"/></div>\
+<div>Dob: <input type="text" name="form-0-dob"/></div>\
 </div>\
 <div>\
-<div>Name: <input type="text" name="form-1-name"></div>\
-<div>Dob: <input type="text" name="form-1-dob"></div>\
+<div>Name: <input type="text" name="form-1-name"/></div>\
+<div>Dob: <input type="text" name="form-1-dob"/></div>\
 </div>\
 </div>',
   'With a Form constructor')
@@ -57,8 +57,8 @@ QUnit.test('RenderFormSet', function() {
   , className: 'test'
   }),
 '<div class="test"><div>\
-<div>Name: <input type="text" name="form-0-name"></div>\
-<div>Dob: <input type="text" name="form-0-dob"></div>\
+<div>Name: <input type="text" name="form-0-name"/></div>\
+<div>Dob: <input type="text" name="form-0-dob"/></div>\
 </div></div>',
   'With a FormSet constructor')
 
@@ -67,8 +67,8 @@ QUnit.test('RenderFormSet', function() {
   , formset: new PersonFormSet({autoId: false})
   }),
 '<div class="test"><div>\
-<div>Name: <input type="text" name="form-0-name"></div>\
-<div>Dob: <input type="text" name="form-0-dob"></div>\
+<div>Name: <input type="text" name="form-0-name"/></div>\
+<div>Dob: <input type="text" name="form-0-dob"/></div>\
 </div></div>',
   'With a FormSet instance')
 })

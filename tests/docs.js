@@ -66,11 +66,11 @@ QUnit.test('Overview - Customising form display', function() {
   })
   reactHTMLEqual(React.createElement(Contact),
 '<form action="/contact" method="POST">\
-<div class="fieldWrapper"><label for="id_subject">Email subject:</label><input maxlength="100" type="text" name="subject" id="id_subject"></div>\
-<div class="fieldWrapper"><label for="id_message">Your message:</label><input type="text" name="message" id="id_message"></div>\
-<div class="fieldWrapper"><label for="id_sender">Your email address:</label><input type="email" name="sender" id="id_sender"></div>\
-<div class="fieldWrapper"><label for="id_ccMyself">CC yourself?</label><input type="checkbox" name="ccMyself" id="id_ccMyself"></div>\
-<div><input type="submit" value="Send message"></div></form>')
+<div class="fieldWrapper"><label for="id_subject">Email subject:</label><input maxlength="100" type="text" name="subject" id="id_subject"/></div>\
+<div class="fieldWrapper"><label for="id_message">Your message:</label><input type="text" name="message" id="id_message"/></div>\
+<div class="fieldWrapper"><label for="id_sender">Your email address:</label><input type="email" name="sender" id="id_sender"/></div>\
+<div class="fieldWrapper"><label for="id_ccMyself">CC yourself?</label><input type="checkbox" name="ccMyself" id="id_ccMyself"/></div>\
+<div><input type="submit" value="Send message"/></div></form>')
 })
 
 QUnit.test("Overview - Looping over the Form's Fields", function() {
@@ -97,11 +97,11 @@ QUnit.test("Overview - Looping over the Form's Fields", function() {
   })
   reactHTMLEqual(React.createElement(Contact),
 '<form action="/contact" method="POST">\
-<div class="fieldWrapper"><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"></div>\
-<div class="fieldWrapper"><label for="id_message">Message:</label> <input type="text" name="message" id="id_message"></div>\
-<div class="fieldWrapper"><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender"></div>\
-<div class="fieldWrapper"><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself"></div>\
-<div><input type="submit" value="Send message"></div>\
+<div class="fieldWrapper"><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"/></div>\
+<div class="fieldWrapper"><label for="id_message">Message:</label> <input type="text" name="message" id="id_message"/></div>\
+<div class="fieldWrapper"><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender"/></div>\
+<div class="fieldWrapper"><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself"/></div>\
+<div><input type="submit" value="Send message"/></div>\
 </form>')
 })
 
@@ -116,8 +116,8 @@ QUnit.test('React Components - Custom rendering with props', function() {
   , autoId: false
   }),
 '<ul class="parent">\
-<li>Name: <input type="text" name="name"></li>\
-<li>Date of birth: <input type="text" name="dob"></li>\
+<li>Name: <input type="text" name="name"/></li>\
+<li>Date of birth: <input type="text" name="dob"/></li>\
 </ul>')
 })
 
@@ -133,9 +133,9 @@ QUnit.test('Forms - Dynamic initial values', function() {
   var f = new CommentForm({initial: {name: 'instance'}, autoId: false})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div>Name: <input type="text" name="name" value="instance"></div>\
-<div>Url: <input type="url" name="url"></div>\
-<div>Comment: <input type="text" name="comment"></div>\
+<div>Name: <input type="text" name="name" value="instance"/></div>\
+<div>Url: <input type="url" name="url"/></div>\
+<div>Comment: <input type="text" name="comment"/></div>\
 </div>',
     'Form-level initial gets precedence')
 })
@@ -152,9 +152,9 @@ QUnit.test('Forms - Accessing the fields from the form', function() {
   f.fields.name.label = 'Username'
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div>Username: <input type="text" name="name" value="instance"></div>\
-<div>Url: <input type="url" name="url"></div>\
-<div>Comment: <input type="text" name="comment"></div>\
+<div>Username: <input type="text" name="name" value="instance"/></div>\
+<div>Url: <input type="url" name="url"/></div>\
+<div>Comment: <input type="text" name="comment"/></div>\
 </div>',
    'You can alter fields')
 })
@@ -186,10 +186,10 @@ QUnit.test('Forms - Outputting forms as HTML', function() {
   var f = new ContactForm()
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"></div>\
-<div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message"></div>\
-<div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender"></div>\
-<div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself"></div>\
+<div><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"/></div>\
+<div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message"/></div>\
+<div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender"/></div>\
+<div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself"/></div>\
 </div>',
   "Simply call render()")
 
@@ -202,10 +202,10 @@ QUnit.test('Forms - Outputting forms as HTML', function() {
   f = new ContactForm({data: data})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject" value="hello"></div>\
-<div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message" value="Hi there"></div>\
-<div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender" value="foo@example.com"></div>\
-<div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself" checked></div>\
+<div><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject" value="hello"/></div>\
+<div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message" value="Hi there"/></div>\
+<div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender" value="foo@example.com"/></div>\
+<div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself" checked=\"\"/></div>\
 </div>',
   'If the form is bound to data, the HTML output will include that data appropriately')
 })
@@ -231,10 +231,10 @@ QUnit.test('Forms - Styling form rows', function() {
   var f = new CssContactForm({data: data})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div class="row valid required"><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject" value="hello"></div>\
-<div class="row valid required"><label for="id_message">Message:</label> <input type="text" name="message" id="id_message" value="Hi there"></div>\
-<div class="row error required"><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender"><ul class="errorlist"><li>This field is required.</li></ul></div>\
-<div class="row valid optional"><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself" checked></div>\
+<div class="row valid required"><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject" value="hello"/></div>\
+<div class="row valid required"><label for="id_message">Message:</label> <input type="text" name="message" id="id_message" value="Hi there"/></div>\
+<div class="row error required"><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender"/><ul class="errorlist"><li>This field is required.</li></ul></div>\
+<div class="row valid optional"><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself" checked=\"\"/></div>\
 </div>',
   'Form CSS hooks')
 })
@@ -243,50 +243,50 @@ QUnit.test('Forms - Configuring form elements’ HTML id attributes and <label> 
   var f = new ContactForm({autoId: false})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div>Subject: <input maxlength="100" type="text" name="subject"></div>\
-<div>Message: <input type="text" name="message"></div>\
-<div>Sender: <input type="email" name="sender"></div>\
-<div>Cc myself: <input type="checkbox" name="ccMyself"></div>\
+<div>Subject: <input maxlength="100" type="text" name="subject"/></div>\
+<div>Message: <input type="text" name="message"/></div>\
+<div>Sender: <input type="email" name="sender"/></div>\
+<div>Cc myself: <input type="checkbox" name="ccMyself"/></div>\
 </div>',
   'autoId == false')
 
   f = new ContactForm({autoId: true})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div><label for="subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="subject"></div>\
-<div><label for="message">Message:</label> <input type="text" name="message" id="message"></div>\
-<div><label for="sender">Sender:</label> <input type="email" name="sender" id="sender"></div>\
-<div><label for="ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="ccMyself"></div>\
+<div><label for="subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="subject"/></div>\
+<div><label for="message">Message:</label> <input type="text" name="message" id="message"/></div>\
+<div><label for="sender">Sender:</label> <input type="email" name="sender" id="sender"/></div>\
+<div><label for="ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="ccMyself"/></div>\
 </div>',
   'autoId == true')
 
   f = new ContactForm({autoId: 'id_for_{name}'})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div><label for="id_for_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"></div>\
-<div><label for="id_for_message">Message:</label> <input type="text" name="message" id="id_for_message"></div>\
-<div><label for="id_for_sender">Sender:</label> <input type="email" name="sender" id="id_for_sender"></div>\
-<div><label for="id_for_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>\
+<div><label for="id_for_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"/></div>\
+<div><label for="id_for_message">Message:</label> <input type="text" name="message" id="id_for_message"/></div>\
+<div><label for="id_for_sender">Sender:</label> <input type="email" name="sender" id="id_for_sender"/></div>\
+<div><label for="id_for_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"/></div>\
 </div>',
   'autoId == "id_for_{name}"')
 
   f = new ContactForm({autoId: 'id_for_{name}', labelSuffix: ''})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div><label for="id_for_subject">Subject</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"></div>\
-<div><label for="id_for_message">Message</label> <input type="text" name="message" id="id_for_message"></div>\
-<div><label for="id_for_sender">Sender</label> <input type="email" name="sender" id="id_for_sender"></div>\
-<div><label for="id_for_ccMyself">Cc myself</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>\
+<div><label for="id_for_subject">Subject</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"/></div>\
+<div><label for="id_for_message">Message</label> <input type="text" name="message" id="id_for_message"/></div>\
+<div><label for="id_for_sender">Sender</label> <input type="email" name="sender" id="id_for_sender"/></div>\
+<div><label for="id_for_ccMyself">Cc myself</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"/></div>\
 </div>',
   'labelSuffix == ""')
 
   f = new ContactForm({autoId: 'id_for_{name}', labelSuffix: ' ->'})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div><label for="id_for_subject">Subject -&gt;</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"></div>\
-<div><label for="id_for_message">Message -&gt;</label> <input type="text" name="message" id="id_for_message"></div>\
-<div><label for="id_for_sender">Sender -&gt;</label> <input type="email" name="sender" id="id_for_sender"></div>\
-<div><label for="id_for_ccMyself">Cc myself -&gt;</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"></div>\
+<div><label for="id_for_subject">Subject -&gt;</label> <input maxlength="100" type="text" name="subject" id="id_for_subject"/></div>\
+<div><label for="id_for_message">Message -&gt;</label> <input type="text" name="message" id="id_for_message"/></div>\
+<div><label for="id_for_sender">Sender -&gt;</label> <input type="email" name="sender" id="id_for_sender"/></div>\
+<div><label for="id_for_ccMyself">Cc myself -&gt;</label> <input type="checkbox" name="ccMyself" id="id_for_ccMyself"/></div>\
 </div>',
   'labelSuffix == " ->"')
 })
@@ -301,10 +301,10 @@ QUnit.test('Forms - How errors are displayed', function() {
   var f = new ContactForm({data: data})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"><ul class="errorlist"><li>This field is required.</li></ul></div>\
-<div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message" value="Hi there"></div>\
-<div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender" value="invalid email address"><ul class="errorlist"><li>Enter a valid email address.</li></ul></div>\
-<div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself" checked></div>\
+<div><label for="id_subject">Subject:</label> <input maxlength="100" type="text" name="subject" id="id_subject"/><ul class="errorlist"><li>This field is required.</li></ul></div>\
+<div><label for="id_message">Message:</label> <input type="text" name="message" id="id_message" value="Hi there"/></div>\
+<div><label for="id_sender">Sender:</label> <input type="email" name="sender" id="id_sender" value="invalid email address"/><ul class="errorlist"><li>Enter a valid email address.</li></ul></div>\
+<div><label for="id_ccMyself">Cc myself:</label> <input type="checkbox" name="ccMyself" id="id_ccMyself" checked=\"\"/></div>\
 </div>',
   'default error display')
 
@@ -320,10 +320,10 @@ QUnit.test('Forms - How errors are displayed', function() {
   f = new ContactForm({data: data, errorConstructor: DivErrorList, autoId: false})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div>Subject: <input maxlength="100" type="text" name="subject"><div class="errorlist"><div>This field is required.</div></div></div>\
-<div>Message: <input type="text" name="message" value="Hi there"><div class="errorlist"></div></div>\
-<div>Sender: <input type="email" name="sender" value="invalid email address"><div class="errorlist"><div>Enter a valid email address.</div></div></div>\
-<div>Cc myself: <input type="checkbox" name="ccMyself" checked><div class="errorlist"></div></div>\
+<div>Subject: <input maxlength="100" type="text" name="subject"/><div class="errorlist"><div>This field is required.</div></div></div>\
+<div>Message: <input type="text" name="message" value="Hi there"/><div class="errorlist"></div></div>\
+<div>Sender: <input type="email" name="sender" value="invalid email address"/><div class="errorlist"><div>Enter a valid email address.</div></div></div>\
+<div>Cc myself: <input type="checkbox" name="ccMyself" checked=\"\"/><div class="errorlist"></div></div>\
 </div>',
   'Customising the error list format')
 })
@@ -332,25 +332,25 @@ QUnit.test('Forms - BoundFields', function() {
   var form = new ContactForm()
   var bf = form.boundField('subject')
   reactHTMLEqual(bf.render.bind(bf),
-"<input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\">",
+"<input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"/>",
   "form.boundField()")
   reactHTMLEqual(function() {
     return form.boundFields().map(function(bf) { return bf.render() })
   },
-"<input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\">\
-<input type=\"text\" name=\"message\" id=\"id_message\">\
-<input type=\"email\" name=\"sender\" id=\"id_sender\">\
-<input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\">",
+"<input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"/>\
+<input type=\"text\" name=\"message\" id=\"id_message\"/>\
+<input type=\"email\" name=\"sender\" id=\"id_sender\"/>\
+<input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"/>",
   "form.boundFields()")
 
   // BoundField respects autoId
   var f = new ContactForm({autoId: false})
   reactHTMLEqual(function() { return f.boundField('message').render() },
-"<input type=\"text\" name=\"message\">",
+"<input type=\"text\" name=\"message\"/>",
   "BoundField with autoId == false")
   f = new ContactForm({autoId: 'id_{name}'})
   reactHTMLEqual(function() { return f.boundField('message').render() },
-"<input type=\"text\" name=\"message\" id=\"id_message\">",
+"<input type=\"text\" name=\"message\" id=\"id_message\"/>",
   "BoundField with autoId set")
 
   // BoundField errors
@@ -358,7 +358,7 @@ QUnit.test('Forms - BoundFields', function() {
   f = new ContactForm({data: data, autoId: false})
   bf = f.boundField('message')
   reactHTMLEqual(function() { return bf.render() },
-"<input type=\"text\" name=\"message\">")
+"<input type=\"text\" name=\"message\"/>")
   deepEqual(bf.errors().messages(), ["This field is required."])
   var errors = bf.errors()
   reactHTMLEqual(errors.render.bind(errors),
@@ -397,11 +397,11 @@ QUnit.test("Forms - Extending forms", function() {
   var f = new ContactFormWithPrority({autoId: false})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div>Subject: <input maxlength="100" type="text" name="subject"></div>\
-<div>Message: <input type="text" name="message"></div>\
-<div>Sender: <input type="email" name="sender"></div>\
-<div>Cc myself: <input type="checkbox" name="ccMyself"></div>\
-<div>Priority: <input type="text" name="priority"></div>\
+<div>Subject: <input maxlength="100" type="text" name="subject"/></div>\
+<div>Message: <input type="text" name="message"/></div>\
+<div>Sender: <input type="email" name="sender"/></div>\
+<div>Cc myself: <input type="checkbox" name="ccMyself"/></div>\
+<div>Priority: <input type="text" name="priority"/></div>\
 </div>')
 
   var InstrumentForm = forms.Form.extend({
@@ -414,10 +414,10 @@ QUnit.test("Forms - Extending forms", function() {
   var b = new BeatleForm({autoId: false})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: b}),
 '<div>\
-<div>First name: <input type="text" name="first_name"></div>\
-<div>Last name: <input type="text" name="last_name"></div>\
-<div>Instrument: <input type="text" name="instrument"></div>\
-<div>Haircut type: <input type="text" name="haircut_type"></div>\
+<div>First name: <input type="text" name="first_name"/></div>\
+<div>Last name: <input type="text" name="last_name"/></div>\
+<div>Instrument: <input type="text" name="instrument"/></div>\
+<div>Haircut type: <input type="text" name="haircut_type"/></div>\
 </div>',
   "Using forms as mixins")
 })
@@ -427,13 +427,13 @@ QUnit.test('Forms - Prefixes for forms', function() {
   var father = new PersonForm({prefix: 'father'})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: mother}),
 '<div>\
-<div><label for="id_mother-first_name">First name:</label> <input type="text" name="mother-first_name" id="id_mother-first_name"></div>\
-<div><label for="id_mother-last_name">Last name:</label> <input type="text" name="mother-last_name" id="id_mother-last_name"></div>\
+<div><label for="id_mother-first_name">First name:</label> <input type="text" name="mother-first_name" id="id_mother-first_name"/></div>\
+<div><label for="id_mother-last_name">Last name:</label> <input type="text" name="mother-last_name" id="id_mother-last_name"/></div>\
 </div>')
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: father}),
 '<div>\
-<div><label for="id_father-first_name">First name:</label> <input type="text" name="father-first_name" id="id_father-first_name"></div>\
-<div><label for="id_father-last_name">Last name:</label> <input type="text" name="father-last_name" id="id_father-last_name"></div>\
+<div><label for="id_father-first_name">First name:</label> <input type="text" name="father-first_name" id="id_father-first_name"/></div>\
+<div><label for="id_father-last_name">Last name:</label> <input type="text" name="father-last_name" id="id_father-last_name"/></div>\
 </div>')
 })
 
@@ -603,12 +603,12 @@ QUnit.test('Forms and React - Using a Form in a React component', function() {
   reactHTMLEqual(React.createElement(Contact),
 "<form action=\"/contact\" method=\"POST\">\
 <div>\
-<div><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"></div>\
-<div><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"></div>\
-<div><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"></div>\
-<div><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"></div>\
+<div><label for=\"id_subject\">Subject:</label> <input maxlength=\"100\" type=\"text\" name=\"subject\" id=\"id_subject\"/></div>\
+<div><label for=\"id_message\">Message:</label> <input type=\"text\" name=\"message\" id=\"id_message\"/></div>\
+<div><label for=\"id_sender\">Sender:</label> <input type=\"email\" name=\"sender\" id=\"id_sender\"/></div>\
+<div><label for=\"id_ccMyself\">Cc myself:</label> <input type=\"checkbox\" name=\"ccMyself\" id=\"id_ccMyself\"/></div>\
 </div>\
-<div><input type=\"submit\" value=\"Submit\"><input type=\"button\" value=\"Cancel\"></div>\
+<div><input type=\"submit\" value=\"Submit\"/><input type=\"button\" value=\"Cancel\"/></div>\
 </form>")
 })
 
@@ -744,9 +744,9 @@ QUnit.test('Widgets - Styling widget instances', function() {
   var f = new CommentForm({autoId: false})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div>Name: <input type="text" name="name"></div>\
-<div>Url: <input type="url" name="url"></div>\
-<div>Comment: <input type="text" name="comment"></div>\
+<div>Name: <input type="text" name="name"/></div>\
+<div>Url: <input type="url" name="url"/></div>\
+<div>Comment: <input type="text" name="comment"/></div>\
 </div>')
 
   CommentForm = forms.Form.extend({
@@ -759,16 +759,16 @@ QUnit.test('Widgets - Styling widget instances', function() {
   f = new CommentForm({autoId: false})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div>Name: <input class="special" type="text" name="name"></div>\
-<div>Url: <input type="url" name="url"></div>\
-<div>Comment: <input size="40" type="text" name="comment"></div>\
+<div>Name: <input class="special" type="text" name="name"/></div>\
+<div>Url: <input type="url" name="url"/></div>\
+<div>Comment: <input size="40" type="text" name="comment"/></div>\
 </div>')
 })
 
 QUnit.test('Widgets - widget.attrs', function() {
   var name = forms.TextInput({attrs: {size:10, title: 'Your name'}})
   reactHTMLEqual(name.render('name', 'A name'),
-"<input size=\"10\" title=\"Your name\" type=\"text\" name=\"name\" value=\"A name\">" )
+"<input size=\"10\" title=\"Your name\" type=\"text\" name=\"name\" value=\"A name\"/>" )
 })
 
 QUnit.test('Widgets - MultiWidget', function() {
@@ -818,9 +818,9 @@ QUnit.test('Widgets - MultiWidget', function() {
   var w = new DateSelectorWidget()
   reactHTMLEqual(w.render('date', new Date(2014, 2, 7)),
 "<div>\
-<select name=\"date_0\" data-newforms-field=\"date\"><option value=\"1\">1</option><option value=\"2\">2</option><option value=\"3\">3</option><option value=\"4\">4</option><option value=\"5\">5</option><option value=\"6\">6</option><option value=\"7\" selected>7</option><option value=\"8\">8</option><option value=\"9\">9</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option><option value=\"13\">13</option><option value=\"14\">14</option><option value=\"15\">15</option><option value=\"16\">16</option><option value=\"17\">17</option><option value=\"18\">18</option><option value=\"19\">19</option><option value=\"20\">20</option><option value=\"21\">21</option><option value=\"22\">22</option><option value=\"23\">23</option><option value=\"24\">24</option><option value=\"25\">25</option><option value=\"26\">26</option><option value=\"27\">27</option><option value=\"28\">28</option><option value=\"29\">29</option><option value=\"30\">30</option><option value=\"31\">31</option></select>\
-<select name=\"date_1\" data-newforms-field=\"date\"><option value=\"1\">1</option><option value=\"2\">2</option><option value=\"3\" selected>3</option><option value=\"4\">4</option><option value=\"5\">5</option><option value=\"6\">6</option><option value=\"7\">7</option><option value=\"8\">8</option><option value=\"9\">9</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option></select>\
-<select name=\"date_2\" data-newforms-field=\"date\"><option value=\"2012\">2012</option><option value=\"2013\">2013</option><option value=\"2014\" selected>2014</option><option value=\"2015\">2015</option><option value=\"2016\">2016</option></select>\
+<select name=\"date_0\" data-newforms-field=\"date\"><option value=\"1\">1</option><option value=\"2\">2</option><option value=\"3\">3</option><option value=\"4\">4</option><option value=\"5\">5</option><option value=\"6\">6</option><option selected=\"\" value=\"7\">7</option><option value=\"8\">8</option><option value=\"9\">9</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option><option value=\"13\">13</option><option value=\"14\">14</option><option value=\"15\">15</option><option value=\"16\">16</option><option value=\"17\">17</option><option value=\"18\">18</option><option value=\"19\">19</option><option value=\"20\">20</option><option value=\"21\">21</option><option value=\"22\">22</option><option value=\"23\">23</option><option value=\"24\">24</option><option value=\"25\">25</option><option value=\"26\">26</option><option value=\"27\">27</option><option value=\"28\">28</option><option value=\"29\">29</option><option value=\"30\">30</option><option value=\"31\">31</option></select>\
+<select name=\"date_1\" data-newforms-field=\"date\"><option value=\"1\">1</option><option value=\"2\">2</option><option selected=\"\" value=\"3\">3</option><option value=\"4\">4</option><option value=\"5\">5</option><option value=\"6\">6</option><option value=\"7\">7</option><option value=\"8\">8</option><option value=\"9\">9</option><option value=\"10\">10</option><option value=\"11\">11</option><option value=\"12\">12</option></select>\
+<select name=\"date_2\" data-newforms-field=\"date\"><option value=\"2012\">2012</option><option value=\"2013\">2013</option><option selected=\"\" value=\"2014\">2014</option><option value=\"2015\">2015</option><option value=\"2016\">2016</option></select>\
 </div>")
 
   var TestForm = forms.Form.extend({
@@ -847,16 +847,16 @@ QUnit.test('Widgets - RadioSelect', function() {
     })
   },
 "<div class=\"myRadio\">\
-<label for=\"id_beatles_0\"><input id=\"id_beatles_0\" type=\"radio\" name=\"beatles\" value=\"john\"> John</label>\
+<label for=\"id_beatles_0\"><input id=\"id_beatles_0\" type=\"radio\" name=\"beatles\" value=\"john\"/> John</label>\
 </div>\
 <div class=\"myRadio\">\
-<label for=\"id_beatles_1\"><input id=\"id_beatles_1\" type=\"radio\" name=\"beatles\" value=\"paul\"> Paul</label>\
+<label for=\"id_beatles_1\"><input id=\"id_beatles_1\" type=\"radio\" name=\"beatles\" value=\"paul\"/> Paul</label>\
 </div>\
 <div class=\"myRadio\">\
-<label for=\"id_beatles_2\"><input id=\"id_beatles_2\" type=\"radio\" name=\"beatles\" value=\"george\"> George</label>\
+<label for=\"id_beatles_2\"><input id=\"id_beatles_2\" type=\"radio\" name=\"beatles\" value=\"george\"/> George</label>\
 </div>\
 <div class=\"myRadio\">\
-<label for=\"id_beatles_3\"><input id=\"id_beatles_3\" type=\"radio\" name=\"beatles\" value=\"ringo\"> Ringo</label>\
+<label for=\"id_beatles_3\"><input id=\"id_beatles_3\" type=\"radio\" name=\"beatles\" value=\"ringo\"/> Ringo</label>\
 </div>")
 
   reactHTMLEqual(function() {
@@ -869,19 +869,19 @@ QUnit.test('Widgets - RadioSelect', function() {
   },
 "<label for=\"id_beatles_0\">\
 John\
-<span class=\"radio\"><input id=\"id_beatles_0\" type=\"radio\" name=\"beatles\" value=\"john\"></span>\
+<span class=\"radio\"><input id=\"id_beatles_0\" type=\"radio\" name=\"beatles\" value=\"john\"/></span>\
 </label>\
 <label for=\"id_beatles_1\">\
 Paul\
-<span class=\"radio\"><input id=\"id_beatles_1\" type=\"radio\" name=\"beatles\" value=\"paul\"></span>\
+<span class=\"radio\"><input id=\"id_beatles_1\" type=\"radio\" name=\"beatles\" value=\"paul\"/></span>\
 </label>\
 <label for=\"id_beatles_2\">\
 George\
-<span class=\"radio\"><input id=\"id_beatles_2\" type=\"radio\" name=\"beatles\" value=\"george\"></span>\
+<span class=\"radio\"><input id=\"id_beatles_2\" type=\"radio\" name=\"beatles\" value=\"george\"/></span>\
 </label>\
 <label for=\"id_beatles_3\">\
 Ringo\
-<span class=\"radio\"><input id=\"id_beatles_3\" type=\"radio\" name=\"beatles\" value=\"ringo\"></span>\
+<span class=\"radio\"><input id=\"id_beatles_3\" type=\"radio\" name=\"beatles\" value=\"ringo\"/></span>\
 </label>")
 })
 
@@ -896,8 +896,8 @@ QUnit.test('Formsets - intro', function() {
     })
   },
 '<div>\
-<div><label for=\"id_form-0-title\">Title:</label> <input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></div>\
-<div><label for=\"id_form-0-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></div>\
+<div><label for=\"id_form-0-title\">Title:</label> <input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"/></div>\
+<div><label for=\"id_form-0-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"/></div>\
 </div>')
 
   formset = new ArticleFormSet({extra: 2, initial: [
@@ -909,16 +909,16 @@ QUnit.test('Formsets - intro', function() {
     })
   },
 '<div>\
-<div><label for=\"id_form-0-title\">Title:</label> <input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\" value=\"Django&#x27;s docs are open source!\"></div>\
-<div><label for=\"id_form-0-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\" value=\"2014-02-28\"></div>\
+<div><label for=\"id_form-0-title\">Title:</label> <input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\" value=\"Django&#x27;s docs are open source!\"/></div>\
+<div><label for=\"id_form-0-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\" value=\"2014-02-28\"/></div>\
 </div>\
 <div>\
-<div><label for=\"id_form-1-title\">Title:</label> <input type=\"text\" name=\"form-1-title\" id=\"id_form-1-title\"></div>\
-<div><label for=\"id_form-1-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-1-pubDate\" id=\"id_form-1-pubDate\"></div>\
+<div><label for=\"id_form-1-title\">Title:</label> <input type=\"text\" name=\"form-1-title\" id=\"id_form-1-title\"/></div>\
+<div><label for=\"id_form-1-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-1-pubDate\" id=\"id_form-1-pubDate\"/></div>\
 </div>\
 <div>\
-<div><label for=\"id_form-2-title\">Title:</label> <input type=\"text\" name=\"form-2-title\" id=\"id_form-2-title\"></div>\
-<div><label for=\"id_form-2-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-2-pubDate\" id=\"id_form-2-pubDate\"></div>\
+<div><label for=\"id_form-2-title\">Title:</label> <input type=\"text\" name=\"form-2-title\" id=\"id_form-2-title\"/></div>\
+<div><label for=\"id_form-2-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-2-pubDate\" id=\"id_form-2-pubDate\"/></div>\
 </div>',
   "Initial data display + 2 extras")
 
@@ -929,8 +929,8 @@ QUnit.test('Formsets - intro', function() {
     })
   },
 '<div>\
-<div><label for=\"id_form-0-title\">Title:</label> <input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"></div>\
-<div><label for=\"id_form-0-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"></div>\
+<div><label for=\"id_form-0-title\">Title:</label> <input type=\"text\" name=\"form-0-title\" id=\"id_form-0-title\"/></div>\
+<div><label for=\"id_form-0-pubDate\">Pub date:</label> <input type=\"text\" name=\"form-0-pubDate\" id=\"id_form-0-pubDate\"/></div>\
 </div>',
   "maxNum vs. extra")
 })

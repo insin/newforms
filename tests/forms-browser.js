@@ -100,9 +100,9 @@ QUnit.test("Validating multiple fields", 28, function() {
   f = new UserRegistration({data: {}, autoId: false})
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
-<div>Username: <input maxlength="10" type="text" name="username"><ul class="errorlist"><li>This field is required.</li></ul></div>\
-<div>Password1: <input type="password" name="password1"><ul class="errorlist"><li>This field is required.</li></ul></div>\
-<div>Password2: <input type="password" name="password2"><ul class="errorlist"><li>This field is required.</li></ul></div>\
+<div>Username: <input maxlength="10" type="text" name="username"/><ul class="errorlist"><li>This field is required.</li></ul></div>\
+<div>Password1: <input type="password" name="password1"/><ul class="errorlist"><li>This field is required.</li></ul></div>\
+<div>Password2: <input type="password" name="password2"/><ul class="errorlist"><li>This field is required.</li></ul></div>\
 </div>')
   deepEqual(f.errors("username").messages(), ["This field is required."])
   deepEqual(f.errors("password1").messages(), ["This field is required."])
@@ -113,9 +113,9 @@ QUnit.test("Validating multiple fields", 28, function() {
     reactHTMLEqual(React.createElement(forms.RenderForm, {form: f}),
 '<div>\
 <div><ul class=\"errorlist\"><li>Please make sure your passwords match.</li></ul></div>\
-<div>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"></div>\
-<div>Password1: <input type=\"password\" name=\"password1\" value=\"foo\"></div>\
-<div>Password2: <input type=\"password\" name=\"password2\" value=\"bar\"></div>\
+<div>Username: <input maxlength=\"10\" type=\"text\" name=\"username\" value=\"adrian\"/></div>\
+<div>Password1: <input type=\"password\" name=\"password1\" value=\"foo\"/></div>\
+<div>Password2: <input type=\"password\" name=\"password2\" value=\"bar\"/></div>\
 </div>')
 
   f = new UserRegistration({data: {username: "adrian", password1: "foo", password2: "foo"}, autoId: false})
@@ -175,18 +175,18 @@ QUnit.test("Basic form processing", 3, function() {
   // Case 1: GET (and empty form, with no errors)
   reactHTMLEqual(myFunction("GET", {}),
 '<div>\
-<div>Username: <input maxlength="10" type="text" name="username"></div>\
-<div>Password1: <input type="password" name="password1"></div>\
-<div>Password2: <input type="password" name="password2"></div>\
+<div>Username: <input maxlength="10" type="text" name="username"/></div>\
+<div>Password1: <input type="password" name="password1"/></div>\
+<div>Password2: <input type="password" name="password2"/></div>\
 </div>')
 
   // Case 2: POST with erroneous data (a redisplayed form, with errors)
   reactHTMLEqual(myFunction("POST", {username: "this-is-a-long-username", password1: "foo", password2: "bar"}),
 '<div>\
 <div><ul class="errorlist"><li>Please make sure your passwords match.</li></ul></div>\
-<div>Username: <input maxlength="10" type="text" name="username" value="this-is-a-long-username"><ul class="errorlist"><li>Ensure this value has at most 10 characters (it has 23).</li></ul></div>\
-<div>Password1: <input type="password" name="password1" value="foo"></div>\
-<div>Password2: <input type="password" name="password2" value="bar"></div>\
+<div>Username: <input maxlength="10" type="text" name="username" value="this-is-a-long-username"/><ul class="errorlist"><li>Ensure this value has at most 10 characters (it has 23).</li></ul></div>\
+<div>Password1: <input type="password" name="password1" value="foo"/></div>\
+<div>Password2: <input type="password" name="password2" value="bar"/></div>\
 </div>')
 
   // Case 3: POST with valid data (the success message)

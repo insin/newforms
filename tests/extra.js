@@ -28,15 +28,15 @@ QUnit.test("MultiWidget and MultiValueField", 11, function() {
 
   var w = ComplexWidget()
   reactHTMLEqual(w.render("name", "some text,JP,2007-04-25 06:24:00"),
-'<div class="complex"><input type="text" name="name_0" data-newforms-field="name" value="some text"><select name="name_1" multiple data-newforms-field="name">\
-<option value="J" selected>John</option>\
-<option value="P" selected>Paul</option>\
+'<div class="complex"><input type="text" name="name_0" data-newforms-field="name" value="some text"/><select name="name_1" multiple="" data-newforms-field="name">\
+<option selected="" value="J">John</option>\
+<option selected="" value="P">Paul</option>\
 <option value="G">George</option>\
 <option value="R">Ringo</option>\
 </select>\
 <div>\
-<input type="text" name="name_2_0" data-newforms-field="name" value="2007-04-25">\
-<input type="text" name="name_2_1" data-newforms-field="name" value="06:24:00">\
+<input type="text" name="name_2_0" data-newforms-field="name" value="2007-04-25"/>\
+<input type="text" name="name_2_1" data-newforms-field="name" value="06:24:00"/>\
 </div>\
 </div>')
 
@@ -91,16 +91,16 @@ QUnit.test("MultiWidget and MultiValueField", 11, function() {
 <div>\
 <label for="id_field1_0">Field1:</label> \
 <div class="complex">\
-<input type="text" name="field1_0" data-newforms-field="field1" id="id_field1_0">\
-<select name="field1_1" multiple data-newforms-field="field1" id="id_field1_1">\
+<input type="text" name="field1_0" data-newforms-field="field1" id="id_field1_0"/>\
+<select name="field1_1" multiple="" data-newforms-field="field1" id="id_field1_1">\
 <option value="J">John</option>\
 <option value="P">Paul</option>\
 <option value="G">George</option>\
 <option value="R">Ringo</option>\
 </select>\
 <div>\
-<input type="text" name="field1_2_0" data-newforms-field="field1" id="id_field1_2_0">\
-<input type="text" name="field1_2_1" data-newforms-field="field1" id="id_field1_2_1">\
+<input type="text" name="field1_2_0" data-newforms-field="field1" id="id_field1_2_0"/>\
+<input type="text" name="field1_2_1" data-newforms-field="field1" id="id_field1_2_1"/>\
 </div></div>\
 </div></div>')
 
@@ -109,16 +109,16 @@ QUnit.test("MultiWidget and MultiValueField", 11, function() {
 '<div><div>\
 <label for="id_field1_0">Field1:</label> \
 <div class="complex">\
-<input type="text" name="field1_0" data-newforms-field="field1" id="id_field1_0" value="some text">\
-<select name="field1_1" multiple data-newforms-field="field1" id="id_field1_1">\
-<option value="J" selected>John</option>\
-<option value="P" selected>Paul</option>\
+<input type="text" name="field1_0" data-newforms-field="field1" id="id_field1_0" value="some text"/>\
+<select name="field1_1" multiple="" data-newforms-field="field1" id="id_field1_1">\
+<option selected="" value="J">John</option>\
+<option selected="" value="P">Paul</option>\
 <option value="G">George</option>\
 <option value="R">Ringo</option>\
 </select>\
 <div>\
-<input type="text" name="field1_2_0" data-newforms-field="field1" id="id_field1_2_0" value="2007-04-25">\
-<input type="text" name="field1_2_1" data-newforms-field="field1" id="id_field1_2_1" value="06:24:00">\
+<input type="text" name="field1_2_0" data-newforms-field="field1" id="id_field1_2_0" value="2007-04-25"/>\
+<input type="text" name="field1_2_1" data-newforms-field="field1" id="id_field1_2_1" value="06:24:00"/>\
 </div></div>\
 </div></div>')
 
@@ -134,8 +134,8 @@ QUnit.test("Extra attrs", 1, function() {
 
   reactHTMLEqual(React.createElement(forms.RenderForm, {form: TestForm, autoId: false}),
 '<div>\
-<div>F1: <input class="special" maxlength="10" type="text" name="f1"></div>\
-<div>F2: <input class="special" type="text" name="f2"></div>\
+<div>F1: <input class="special" maxlength="10" type="text" name="f1"/></div>\
+<div>F2: <input class="special" type="text" name="f2"/></div>\
 </div>')
 })
 
@@ -163,7 +163,7 @@ QUnit.test("Forms with *only* hidden fields", 1, function() {
 </ul>\
 </div>\
 <div style="display:none;">\
-<input type="hidden" name="data" id="id_data" value="">\
+<input type="hidden" name="data" id="id_data" value=""/>\
 </div></div>')
 })
 
