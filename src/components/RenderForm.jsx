@@ -63,15 +63,23 @@ var RenderForm = React.createClass({
     }
   },
 
-  componentWillMount() {
-    if (this.props.form instanceof Form) {
-      this.form = this.props.form
+  setupForm: function(props) {
+    if (props.form instanceof Form) {
+      this.form = props.form
     }
     else {
-      this.form = new this.props.form(object.extend({
+      this.form = new props.form(object.extend({
         onChange: this.forceUpdate.bind(this)
-      }, getProps(this.props, Object.keys(formProps))))
+      }, getProps(props, Object.keys(formProps))))
     }
+  },
+
+  componentWillMount() {
+    this.setupForm(this.props);
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    this.setupForm(nextProps);
   },
 
   getForm() {
