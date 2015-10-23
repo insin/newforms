@@ -1,6 +1,6 @@
 QUnit.module('dom-initial', {
   teardown: function() {
-    React.unmountComponentAtNode(document.getElementById('qunit-fixture'))
+    ReactDOM.unmountComponentAtNode(document.getElementById('qunit-fixture'))
   }
 })
 
@@ -17,7 +17,7 @@ function renderField(field, cb) {
     }
   })
   stop()
-  React.render(React.createElement(_Component), document.getElementById('qunit-fixture'), function() {
+  ReactDOM.render(React.createElement(_Component), document.getElementById('qunit-fixture'), function() {
     cb()
     start()
   })
