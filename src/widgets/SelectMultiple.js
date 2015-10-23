@@ -40,7 +40,7 @@ SelectMultiple.prototype.render = function(name, selectedValues, kwargs) {
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name,
                                                   multiple: 'multiple'})
-  var options = this.renderOptions(kwargs.choices, selectedValues)
+  var options = this.renderOptions(kwargs.choices)
   var valueAttr = (kwargs.controlled ? 'value' : 'defaultValue')
   finalAttrs[valueAttr] = selectedValues
   return React.createElement('select', finalAttrs, options)
