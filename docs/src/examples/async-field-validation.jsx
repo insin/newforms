@@ -1,6 +1,7 @@
 'use strict';
 
 var React = require('react')
+var {render} = require('react-dom')
 var {CharField, Form, ValidationError} = require('newforms')
 
 var FormRenderer = require('../FormRenderer')
@@ -19,4 +20,4 @@ var AsyncSignupForm = Form.extend({
   }
 })
 
-React.render(<FormRenderer form={AsyncSignupForm} submitButton="Sign Up"/>, document.body)
+render(<FormRenderer form={AsyncSignupForm} submitButton="Sign Up"/>, document.body)

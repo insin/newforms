@@ -2,6 +2,7 @@
 
 var React = require('react')
 var {CharField, DateField, Form, RenderForm} = require('newforms')
+var {render} = require('react-dom')
 
 var IFrameMixin = require('../IFrameMixin')
 
@@ -26,4 +27,4 @@ var RenderFormProps = React.createClass({
   }
 })
 
-React.render(<RenderFormProps/>, document.body)
+render(<RenderFormProps/>, document.body)

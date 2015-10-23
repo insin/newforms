@@ -35,8 +35,9 @@ gulp.task('bundle-deps', function() {
     detectGlobals: false
   })
   b.require('react')
+  b.require('react-dom')
   b.require('../lib/newforms', {expose: 'newforms'})
-  b.transform('envify')
+  b.transform('envify', {global: true})
 
   return b.bundle()
     .pipe(source('deps.js'))
@@ -77,6 +78,7 @@ gulp.task('js', ['lint-js'], function() {
   var browserified = transform(function(filename) {
     var b = browserify(filename)
     b.external('react')
+    b.external('react-dom')
     b.external('newforms')
     return b.bundle()
   })

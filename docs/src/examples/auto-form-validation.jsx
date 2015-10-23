@@ -2,6 +2,7 @@
 
 var React = require('react')
 var forms = require('newforms')
+var {render} = require('react-dom')
 
 var FormRenderer = require('../FormRenderer')
 
@@ -26,4 +27,4 @@ var SignupForm = forms.Form.extend({
   }]
 })
 
-React.render(<FormRenderer form={SignupForm} submitButton="Sign Up"/>, document.body)
+render(<FormRenderer form={SignupForm} submitButton="Sign Up"/>, document.body)

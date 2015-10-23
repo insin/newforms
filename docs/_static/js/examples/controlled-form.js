@@ -119,6 +119,7 @@ module.exports = IFrameMixin
 
 var React = require('react')
 var forms = require('newforms')
+var $__0=  require('react-dom'),render=$__0.render
 
 var Collapsible = require('../Collapsible')
 var FormInspector = require('../FormInspector')
@@ -222,8 +223,9 @@ var PeopleEditor = React.createClass({displayName: "PeopleEditor",
   }
 })
 
-React.render(React.createElement(PeopleEditor, null), document.body)
-},{"../Collapsible":1,"../FormInspector":2,"../IFrameMixin":3,"../renderField":5,"newforms":"newforms","react":"react"}],5:[function(require,module,exports){
+render(React.createElement(PeopleEditor, null), document.body)
+
+},{"../Collapsible":1,"../FormInspector":2,"../IFrameMixin":3,"../renderField":5,"newforms":"newforms","react":"react","react-dom":"react-dom"}],5:[function(require,module,exports){
 'use strict';
 
 var React = require('react')

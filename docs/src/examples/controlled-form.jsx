@@ -2,6 +2,7 @@
 
 var React = require('react')
 var forms = require('newforms')
+var {render} = require('react-dom')
 
 var Collapsible = require('../Collapsible')
 var FormInspector = require('../FormInspector')
@@ -105,4 +106,4 @@ var PeopleEditor = React.createClass({
   }
 })
 
-React.render(<PeopleEditor/>, document.body)
+render(<PeopleEditor/>, document.body)

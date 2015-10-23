@@ -27,6 +27,7 @@ module.exports = IFrameMixin
 
 var React = require('react')
 var forms = require('newforms')
+var $__0=  require('react-dom'),render=$__0.render
 
 var IFrameMixin = require('../IFrameMixin')
 
@@ -91,8 +92,9 @@ var QuickstartExample = React.createClass({displayName: "QuickstartExample",
   }
 })
 
-React.render(React.createElement(QuickstartExample, null), document.body)
-},{"../IFrameMixin":1,"newforms":"newforms","react":"react"}],3:[function(require,module,exports){
+render(React.createElement(QuickstartExample, null), document.body)
+
+},{"../IFrameMixin":1,"newforms":"newforms","react":"react","react-dom":"react-dom"}],3:[function(require,module,exports){
 'use strict';
 
 var iframe = null

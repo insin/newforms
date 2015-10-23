@@ -27,6 +27,7 @@ module.exports = IFrameMixin
 
 var React = require('react')
 var $__0=     require('newforms'),CharField=$__0.CharField,DateField=$__0.DateField,Form=$__0.Form,RenderForm=$__0.RenderForm
+var $__1=  require('react-dom'),render=$__1.render
 
 var IFrameMixin = require('../IFrameMixin')
 
@@ -51,8 +52,9 @@ var RenderFormProps = React.createClass({displayName: "RenderFormProps",
   }
 })
 
-React.render(React.createElement(RenderFormProps, null), document.body)
-},{"../IFrameMixin":1,"newforms":"newforms","react":"react"}],3:[function(require,module,exports){
+render(React.createElement(RenderFormProps, null), document.body)
+
+},{"../IFrameMixin":1,"newforms":"newforms","react":"react","react-dom":"react-dom"}],3:[function(require,module,exports){
 'use strict';
 
 var iframe = null

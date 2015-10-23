@@ -2,6 +2,7 @@
 
 var React = require('react')
 var forms = require('newforms')
+var {render} = require('react-dom')
 
 var FormRenderer = require('../FormRenderer')
 
@@ -18,4 +19,4 @@ var PersonForm = forms.Form.extend({
   }]
 })
 
-React.render(<FormRenderer form={PersonForm}/>, document.body)
+render(<FormRenderer form={PersonForm}/>, document.body)

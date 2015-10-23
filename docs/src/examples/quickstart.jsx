@@ -2,6 +2,7 @@
 
 var React = require('react')
 var forms = require('newforms')
+var {render} = require('react-dom')
 
 var IFrameMixin = require('../IFrameMixin')
 
@@ -66,4 +67,4 @@ var QuickstartExample = React.createClass({
   }
 })
 
-React.render(<QuickstartExample/>, document.body)
+render(<QuickstartExample/>, document.body)

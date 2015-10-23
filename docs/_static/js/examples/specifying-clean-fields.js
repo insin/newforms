@@ -185,6 +185,7 @@ module.exports = IFrameMixin
 
 var React = require('react')
 var forms = require('newforms')
+var $__0=  require('react-dom'),render=$__0.render
 
 var FormRenderer = require('../FormRenderer')
 
@@ -201,8 +202,9 @@ var PersonForm = forms.Form.extend({
   }]
 })
 
-React.render(React.createElement(FormRenderer, {form: PersonForm}), document.body)
-},{"../FormRenderer":3,"newforms":"newforms","react":"react"}],6:[function(require,module,exports){
+render(React.createElement(FormRenderer, {form: PersonForm}), document.body)
+
+},{"../FormRenderer":3,"newforms":"newforms","react":"react","react-dom":"react-dom"}],6:[function(require,module,exports){
 'use strict';
 
 function extend(dest, src) {

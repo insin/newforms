@@ -184,7 +184,8 @@ module.exports = IFrameMixin
 'use strict';
 
 var React = require('react')
-var $__0=    require('newforms'),CharField=$__0.CharField,Form=$__0.Form,ValidationError=$__0.ValidationError
+var $__0=  require('react-dom'),render=$__0.render
+var $__1=    require('newforms'),CharField=$__1.CharField,Form=$__1.Form,ValidationError=$__1.ValidationError
 
 var FormRenderer = require('../FormRenderer')
 
@@ -202,8 +203,9 @@ var AsyncSignupForm = Form.extend({
   }
 })
 
-React.render(React.createElement(FormRenderer, {form: AsyncSignupForm, submitButton: "Sign Up"}), document.body)
-},{"../FormRenderer":3,"newforms":"newforms","react":"react"}],6:[function(require,module,exports){
+render(React.createElement(FormRenderer, {form: AsyncSignupForm, submitButton: "Sign Up"}), document.body)
+
+},{"../FormRenderer":3,"newforms":"newforms","react":"react","react-dom":"react-dom"}],6:[function(require,module,exports){
 'use strict';
 
 function extend(dest, src) {
