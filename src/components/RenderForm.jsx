@@ -82,7 +82,7 @@ var RenderForm = React.createClass({
     // Allow a single child to be passed for custom rendering - passing any more
     // will throw an error.
     if (React.Children.count(this.props.children) !== 0) {
-      // TODO Cloning should no longer be necessary when facebook/react#2112 lands
+      // Pass a form prop to the child, which will also be available via context
       return React.cloneElement(React.Children.only(this.props.children), {form: this.form})
     }
 
@@ -134,4 +134,4 @@ var RenderForm = React.createClass({
   }
 })
 
-module.exports =  RenderForm
+module.exports = RenderForm

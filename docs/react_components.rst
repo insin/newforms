@@ -357,12 +357,6 @@ automatic validation and redisplay, pass a component as the only child of
 RenderForm wil then clone your component and pass the Form instance it manages
 as a ``form`` prop.
 
-.. Note::
-   This method of implementing custom rendering by passing a prop is temporary.
-   An upcoming change to React's currently (as of React 0.13) undocumented
-   `context feature`_ will remove the need to pass props down the chain of
-   components for this sort of scenario.
-
 For example, this is how `newforms-gridforms`_ implements a custom grid layout:
 
 .. code-block:: html
@@ -378,7 +372,12 @@ For example, this is how `newforms-gridforms`_ implements a custom grid layout:
      </GridForm>
    </RenderForm>
 
-.. _`context feature`: http://www.tildedave.com/2014/11/15/introduction-to-contexts-in-react-js.html
+.. versionchanged:: 0.13
+   The Form instance is also available via React's `context feature`_ as a
+   ``form`` context variable, allowing you to access the Form instance in nested
+   custom rendering components without having to manually pass it down via props.
+
+.. _`context feature`: http://facebook.github.io/react/docs/context.html
 .. _`newforms-gridforms`: https://github.com/insin/newforms-gridforms
 
 Custom async progress rendering
