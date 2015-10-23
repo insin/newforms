@@ -1,5 +1,5 @@
 /**
- * newforms 0.12.1 - https://github.com/insin/newforms
+ * newforms 0.13.0 - https://github.com/insin/newforms
  * MIT Licensed
  */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.forms = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
@@ -245,6 +245,8 @@ var Textarea = require('./Textarea')
 
 var $__0=  require('./util'),prettyName=$__0.prettyName
 
+var SUFFIX_CHARS = ':?.!'
+
 /**
  * A helper for rendering a field.
  * @param {Form} form the form instance which the field is a part of.
@@ -430,8 +432,8 @@ BoundField.prototype.asWidget = function(kwargs) {
   if (typeof attrs.key == 'undefined') {
     attrs.key = name
   }
-  var controlled = this._isControlled(widget)
-  var validation = this._validation(widget)
+
+  var validation = this._getValidation(widget)
 
   // Always Add an onChange event handler to update form.data when the field is
   // changed.
@@ -451,7 +453,7 @@ BoundField.prototype.asWidget = function(kwargs) {
     }
   }
 
-  var renderKwargs = {attrs: attrs, controlled: controlled}
+  var renderKwargs = {attrs:attrs, controlled: this._isControlled(widget)}
   if (widget.needsInitialValue) {
     renderKwargs.initialValue = this.initialValue()
   }
@@ -608,7 +610,7 @@ BoundField.prototype.subWidgets = function() {
  */
 BoundField.prototype._addLabelSuffix = function(label, labelSuffix) {
   // Only add the suffix if the label does not end in punctuation
-  if (labelSuffix && ':?.!'.indexOf(label.charAt(label.length - 1)) == -1) {
+  if (labelSuffix && SUFFIX_CHARS.indexOf(label.charAt(label.length - 1)) == -1) {
     return label + labelSuffix
   }
   return label
@@ -640,18 +642,17 @@ BoundField.prototype._isControlled = function(widget) {
  * @param {Widget=} widget
  * @return {?(Object|string)}
  */
-BoundField.prototype._validation = function(widget) {
-  if (arguments.length === 0) {
-    widget = this.field.widget
-  }
+BoundField.prototype._getValidation = function(widget) {
   // If the field has any validation config set, it should take precedence,
   // otherwise use the form's as it has a default.
   var validation = this.field.validation || this.form.validation
+
   // Allow widgets to override the type of validation that's used for them -
   // primarily for inputs which can only be changed by click/selection.
   if (validation !== 'manual' && widget.validation !== null) {
     validation = widget.validation
   }
+
   return validation
 }
 
@@ -5815,7 +5816,7 @@ var RenderForm = React.createClass({displayName: "RenderForm",
     // Allow a single child to be passed for custom rendering - passing any more
     // will throw an error.
     if (React.Children.count(this.props.children) !== 0) {
-      // TODO Cloning should no longer be necessary when facebook/react#2112 lands
+      // Pass a form prop to the child, which will also be available via context
       return React.cloneElement(React.Children.only(this.props.children), {form: this.form})
     }
 
@@ -5867,7 +5868,8 @@ var RenderForm = React.createClass({displayName: "RenderForm",
   }
 })
 
-module.exports =  RenderForm
+module.exports = RenderForm
+
 },{"./ErrorObject":25,"./Form":31,"./FormRow":32,"./ProgressMixin":49,"./constants":73,"./util":78,"isomorph/object":85}],55:[function(require,module,exports){
 'use strict';
 
@@ -6100,14 +6102,13 @@ Select.prototype.render = function(name, selectedValue, kwargs) {
     selectedValue = ''
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name})
-  var options = this.renderOptions(kwargs.choices, [selectedValue])
+  var options = this.renderOptions(kwargs.choices)
   var valueAttr = (kwargs.controlled ? 'value' : 'defaultValue')
   finalAttrs[valueAttr] = selectedValue
   return React.createElement('select', finalAttrs, options)
 }
 
-Select.prototype.renderOptions = function(additionalChoices, selectedValues) {
-  var selectedValuesLookup = object.lookup(selectedValues)
+Select.prototype.renderOptions = function(additionalChoices) {
   var options = []
   var choices = this.choices.concat(normaliseChoices(additionalChoices))
   for (var i = 0, l = choices.length, choice; i < l; i++) {
@@ -6116,35 +6117,27 @@ Select.prototype.renderOptions = function(additionalChoices, selectedValues) {
       var optgroupOptions = []
       var optgroupChoices = choice[1]
       for (var j = 0, m = optgroupChoices.length; j < m; j++) {
-        optgroupOptions.push(this.renderOption(selectedValuesLookup,
-                                               optgroupChoices[j][0],
+        optgroupOptions.push(this.renderOption(optgroupChoices[j][0],
                                                optgroupChoices[j][1]))
       }
       options.push(React.createElement('optgroup', {label: choice[0], key: choice[9]}, optgroupOptions))
     }
     else {
-      options.push(this.renderOption(selectedValuesLookup,
-                                     choice[0],
+      options.push(this.renderOption(choice[0],
                                      choice[1]))
     }
   }
   return options
 }
 
-Select.prototype.renderOption = function(selectedValuesLookup, optValue, optLabel) {
+Select.prototype.renderOption = function(optValue, optLabel) {
   optValue = ''+optValue
   var attrs = {value: optValue, key: optValue + optLabel}
-  if (typeof selectedValuesLookup[optValue] != 'undefined') {
-    attrs['selected'] = 'selected'
-    if (!this.allowMultipleSelected) {
-      // Only allow for a single selection with this value
-      delete selectedValuesLookup[optValue]
-    }
-  }
   return React.createElement('option', attrs, optLabel)
 }
 
 module.exports = Select
+
 },{"./Widget":72,"./util":78,"isomorph/is":84,"isomorph/object":85}],58:[function(require,module,exports){
 'use strict';
 
@@ -6188,7 +6181,7 @@ SelectMultiple.prototype.render = function(name, selectedValues, kwargs) {
   }
   var finalAttrs = this.buildAttrs(kwargs.attrs, {name: name,
                                                   multiple: 'multiple'})
-  var options = this.renderOptions(kwargs.choices, selectedValues)
+  var options = this.renderOptions(kwargs.choices)
   var valueAttr = (kwargs.controlled ? 'value' : 'defaultValue')
   finalAttrs[valueAttr] = selectedValues
   return React.createElement('select', finalAttrs, options)
@@ -6209,6 +6202,7 @@ SelectMultiple.prototype.valueFromData = function(data, files, name) {
 }
 
 module.exports = SelectMultiple
+
 },{"./Select":57,"isomorph/is":84,"isomorph/object":85}],59:[function(require,module,exports){
 'use strict';
 
@@ -8152,7 +8146,7 @@ function getFormData(form, options) {
       continue
     }
     elementName = element.name || element.id
-    if (!elementNameLookup[elementName]) {
+    if (elementName && !elementNameLookup[elementName]) {
       elementNames.push(elementName)
       elementNameLookup[elementName] = true
     }
@@ -8182,7 +8176,7 @@ function getNamedFormElementData(form, elementName, options) {
   if (!form) {
     throw new Error('A form is required by getNamedFormElementData, was given form=' + form)
   }
-  if (!elementName) {
+  if (!elementName && toString.call(elementName) !== '[object String]') {
     throw new Error('A form element name is required by getNamedFormElementData, was given elementName=' + elementName)
   }
 

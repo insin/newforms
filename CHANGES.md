@@ -1,3 +1,14 @@
+# 0.13.0 / 2015-10-23
+
+## Breaking Changes
+
+* Now depends on React 0.14.
+
+## Changes
+
+* `Select` and `SelectMultiple` no longer render `selected` attributes on their options, which was causing a warning message. React 0.14 now handles creating these in server-generated markup via parent context.
+* Documented that when using a custom rendering component with `RenderForm`, the Form instance is now available via a `form` context variable due to React 0.14 parent context.
+
 # 0.12.1 / 2015-03-12
 
 ## Bug Fixes

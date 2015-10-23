@@ -3,6 +3,12 @@
 See [CHANGES](https://github.com/insin/newforms/blob/react/CHANGES.md) for the
 full changelog between releases.
 
+## 0.13.0
+
+### Upgrade to React 0.14
+
+As of this release, newforms depends on React >=0.14.0 as a peer dependency.
+
 ## 0.12.0
 
 ### Upgrade to React 0.13
