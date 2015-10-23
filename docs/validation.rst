@@ -132,7 +132,7 @@ for the less verbose:
 
 .. code-block:: javascript
 
-   forns.ValidationError('Invalid value: ' + value)
+   forms.ValidationError('Invalid value: ' + value)
 
 Throwing multiple errors
 ------------------------
