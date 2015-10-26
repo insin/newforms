@@ -33,11 +33,11 @@ find global `React` variable to work with.
 The uncompressed bundle is in development mode, so will log warnings about
 potential mistakes.
 
-You can find it in the [/dist directory](https://github.com/insin/newforms/tree/v0.13.0/dist).
+You can find it in the [/dist directory](https://github.com/insin/newforms/tree/v0.13.1/dist).
 
 ## [Upgrade Guide](https://github.com/insin/newforms/blob/react/UPGRADE_GUIDE.md#0130)
 
-## [Documentation @ ReadTheDocs](http://newforms.readthedocs.org/en/v0.13.0/)
+## [Documentation @ ReadTheDocs](http://newforms.readthedocs.org/en/v0.13.1/)
 
 ## [Newforms Examples @ GitHub](https://github.com/insin/newforms-examples)
 
