@@ -1,8 +1,4 @@
-# 0.13.1 / 2015-10-26
-
-The npm package for 0.13.0 was missing files.
-
-# 0.13.0 / 2015-10-23
+# 0.13.2 / 2015-10-26
 
 ## Breaking Changes
 
