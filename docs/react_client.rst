@@ -61,7 +61,7 @@ loading, or for scenarios when JavaScript isn't available on the client:
    },
 
    render() {
-     return <form onSubmit={this.handleSubmit} noValidate={!this.state.client}>
+     return <form onSubmit={this.handleSubmit} noValidate={this.state.client}>
        ...
 
 Creating Forms and FormSets
