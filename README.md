@@ -4,6 +4,12 @@ An isomorphic form-handling library for [React](http://facebook.github.io/react/
 
 (Formerly a direct port of the [Django](http://www.djangoproject.com) framework's `django.forms` library)
 
+## Other React Form Libraries
+
+* [react-formal](https://github.com/jquense/react-formal) - uses a schema and leverages React's context feature to make it really simple to render fields and error messages
+
+* [redux-form](https://github.com/erikras/redux-form) - manages form state for you, leaving you do the rendering exactly as you wish
+
 ## Getting newforms
 
 ### Node.js
@@ -48,12 +54,6 @@ You can find it in the [/dist directory](https://github.com/insin/newforms/tree/
 
 * [newforms-gridforms](https://github.com/insin/newforms-gridforms) -
   [Grid Forms](http://kumailht.com/gridforms/) form layout components.
-
-## Other React Form Libraries
-
-* [React Forms](https://github.com/prometheusresearch/react-forms)
-
-* [tcomb-form](https://github.com/gcanti/tcomb-form)
 
 ## Quick Guide
 
