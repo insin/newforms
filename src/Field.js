@@ -73,7 +73,8 @@ var Field = Concur.extend({
     messages.push(kwargs.errorMessages)
     this.errorMessages = object.extend.apply(object, messages)
 
-    this.validators = this.defaultValidators.concat(kwargs.validators)
+    // Allow override the defaultValidators
+    this.validators = kwargs.validators || this.this.defaultValidators
   }
 })
 
