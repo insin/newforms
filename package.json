@@ -43,8 +43,8 @@
     "gulp-util": "^3.0.2",
     "jshint-stylish": "^1.0.0",
     "qqunit": "^0.6.0",
-    "react": ">=0.14.0",
-    "react-dom": ">=0.14.0",
+    "react": ">=0.15.0",
+    "react-dom": ">=0.15.0",
     "vinyl-source-stream": "^1.0.0"
   },
   "peerDependencies": {

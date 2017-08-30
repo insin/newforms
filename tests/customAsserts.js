@@ -101,7 +101,7 @@ var reactHTMLEqual = (function() {
       component = React.createElement(reactClass)
     }
 
-    var html = React.renderToStaticMarkup(component)
+    var html = ReactDOMServer.renderToStaticMarkup(component)
     // Remove HTML for any wrapper element which was added
     if (wrapped) {
       html = html.replace(wrapperElement, '')

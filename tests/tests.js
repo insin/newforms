@@ -8,6 +8,7 @@ global.navigator = {userAgent: 'fake'}
 
 object.extend(global, require('./customAsserts.js'))
 global.React = window.React = require('react/dist/react.js')
+global.ReactDOMServer = window.ReactDOMServer = require('react-dom/server')
 global.isomorph = require('isomorph')
 global.forms = require('../dist/newforms.js')
 
