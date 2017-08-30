@@ -2,10 +2,11 @@
 
 var is = require('isomorph/is')
 var React = require('react')
+var PropTypes = require('prop-types')
 
 var ProgressMixin = {
   propTypes: {
-    progress: React.PropTypes.any // Component or function to render async progress
+    progress: PropTypes.any // Component or function to render async progress
   },
 
   renderProgress() {

@@ -24,6 +24,7 @@
     "envify": "^3.4.0",
     "get-form-data": "^1.2.2",
     "isomorph": "^0.3.0",
+    "prop-types": "^15.5.10",
     "validators": "^0.3.1"
   },
   "devDependencies": {

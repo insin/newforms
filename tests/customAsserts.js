@@ -91,7 +91,7 @@ var reactHTMLEqual = (function() {
     // rendering should be passsed.
     if (typeof component == 'function') {
       var renderFunc = component
-      var reactClass = React.createClass({
+      var reactClass = createReactClass({
         render: function() {
           var rendered = renderFunc()
           if (Array.isArray(rendered)) {
