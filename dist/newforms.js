@@ -1,5 +1,5 @@
 /**
- * newforms 0.13.2 - https://github.com/insin/newforms
+ * newforms 0.13.2 (dev build at Wed, 30 Aug 2017 19:10:56 GMT) - https://github.com/insin/newforms
  * MIT Licensed
  */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.forms = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
@@ -238,7 +238,7 @@ var Concur = require('Concur')
 var is = require('isomorph/is')
 var format = require('isomorph/format').formatObj
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var TextInput = require('./TextInput')
 var Textarea = require('./Textarea')
@@ -766,7 +766,7 @@ module.exports = CheckboxFieldRenderer
 
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var Widget = require('./Widget')
 
@@ -933,7 +933,7 @@ module.exports = ChoiceField
 var Concur = require('Concur')
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 /**
  * An object used by choice Selects to enable customisation of choice widgets.
@@ -1027,7 +1027,7 @@ module.exports = ChoiceFieldRenderer
 'use strict';
 
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var SubWidget = require('./SubWidget')
 var Widget = require('./Widget')
@@ -1091,7 +1091,7 @@ module.exports = ChoiceInput
 'use strict';
 
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var CheckboxInput = require('./CheckboxInput')
 var FileInput = require('./FileInput')
@@ -1718,7 +1718,7 @@ module.exports = EmailInput
 
 var Concur = require('Concur')
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var $__0=  require('validators'),ValidationError=$__0.ValidationError
 
@@ -1863,7 +1863,7 @@ module.exports = ErrorList
 
 var Concur = require('Concur')
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var ErrorList = require('./ErrorList')
 
@@ -3725,7 +3725,7 @@ module.exports = Form
 },{"./BoundField":4,"./DeclarativeFieldsMeta":21,"./ErrorList":24,"./ErrorObject":25,"./FileField":27,"./MultipleFileField":43,"./constants":73,"./util":78,"Concur":79,"get-form-data":81,"isomorph/copy":82,"isomorph/format":83,"isomorph/is":84,"isomorph/object":85,"validators":89}],32:[function(require,module,exports){
 'use strict';
 
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var BoundField = require('./BoundField')
 var ProgressMixin = require('./ProgressMixin')
@@ -4829,7 +4829,7 @@ module.exports = ImageField
 'use strict';
 
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var Widget = require('./Widget')
 
@@ -5116,7 +5116,7 @@ module.exports = MultiValueField
 
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var Widget = require('./Widget')
 
@@ -5417,7 +5417,7 @@ module.exports = MultipleFileField
 'use strict';
 
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var HiddenInput = require('./HiddenInput')
 
@@ -5624,7 +5624,7 @@ module.exports = PasswordInput
 'use strict';
 
 var is = require('isomorph/is')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var ProgressMixin = {
   propTypes: {
@@ -5735,7 +5735,7 @@ module.exports = RegexField
 'use strict';
 
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var ErrorObject = require('./ErrorObject')
 var Form = require('./Form')
@@ -5874,7 +5874,7 @@ module.exports = RenderForm
 'use strict';
 
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var FormRow = require('./FormRow')
 var FormSet = require('./FormSet')
@@ -6061,7 +6061,7 @@ module.exports = RendererMixin
 
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var Widget = require('./Widget')
 
@@ -6143,7 +6143,7 @@ module.exports = Select
 
 var is = require('isomorph/is')
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var Select = require('./Select')
 
@@ -6431,7 +6431,7 @@ module.exports = TextInput
 'use strict';
 
 var object = require('isomorph/object')
-var React = (typeof window !== "undefined" ? window.React : typeof global !== "undefined" ? global.React : null)
+var React = (typeof window !== "undefined" ? window['React'] : typeof global !== "undefined" ? global['React'] : null)
 
 var Widget = require('./Widget')
 
@@ -8096,124 +8096,128 @@ Concur.extend = function(prototypeProps, constructorProps) {
 },{}],81:[function(require,module,exports){
 'use strict';
 
+exports.__esModule = true;
 var NODE_LIST_CLASSES = {
-  '[object HTMLCollection]': true
-, '[object NodeList]': true
-, '[object RadioNodeList]': true
-}
+  '[object HTMLCollection]': true,
+  '[object NodeList]': true,
+  '[object RadioNodeList]': true
+};
 
-var IGNORED_INPUT_TYPES = {
-  'button': true
-, 'reset': true
-, 'submit': true
-, 'fieldset': true
-}
+// .type values for elements which can appear in .elements and should be ignored
+var IGNORED_ELEMENT_TYPES = {
+  'button': true,
+  'fieldset': true,
+  // 'keygen': true,
+  // 'output': true,
+  'reset': true,
+  'submit': true
+};
 
 var CHECKED_INPUT_TYPES = {
-  'checkbox': true
-, 'radio': true
-}
+  'checkbox': true,
+  'radio': true
+};
 
-var TRIM_RE = /^\s+|\s+$/g
+var TRIM_RE = /^\s+|\s+$/g;
 
-var slice = Array.prototype.slice
-var toString = Object.prototype.toString
+var slice = Array.prototype.slice;
+var toString = Object.prototype.toString;
 
 /**
  * @param {HTMLFormElement} form
+ * @param {Object} options
  * @return {Object.<string,(string|Array.<string>)>} an object containing
  *   submittable value(s) held in the form's .elements collection, with
  *   properties named as per element names or ids.
  */
-function getFormData(form, options) {
+function getFormData(form) {
+  var options = arguments.length <= 1 || arguments[1] === undefined ? { trim: false } : arguments[1];
+
   if (!form) {
-    throw new Error('A form is required by getFormData, was given form=' + form)
+    throw new Error('A form is required by getFormData, was given form=' + form);
   }
 
-  if (!options) {
-    options = {trim: false}
-  }
-
-  var data = {}
-  var elementName
-  var elementNames = []
-  var elementNameLookup = {}
+  var data = {};
+  var elementName = undefined;
+  var elementNames = [];
+  var elementNameLookup = {};
 
   // Get unique submittable element names for the form
   for (var i = 0, l = form.elements.length; i < l; i++) {
-    var element = form.elements[i]
-    if (IGNORED_INPUT_TYPES[element.type] || element.disabled) {
-      continue
+    var element = form.elements[i];
+    if (IGNORED_ELEMENT_TYPES[element.type] || element.disabled) {
+      continue;
     }
-    elementName = element.name || element.id
+    elementName = element.name || element.id;
     if (elementName && !elementNameLookup[elementName]) {
-      elementNames.push(elementName)
-      elementNameLookup[elementName] = true
+      elementNames.push(elementName);
+      elementNameLookup[elementName] = true;
     }
   }
 
   // Extract element data name-by-name for consistent handling of special cases
   // around elements which contain multiple inputs.
-  for (i = 0, l = elementNames.length; i < l; i++) {
-    elementName = elementNames[i]
-    var value = getNamedFormElementData(form, elementName, options)
+  for (var i = 0, l = elementNames.length; i < l; i++) {
+    elementName = elementNames[i];
+    var value = getNamedFormElementData(form, elementName, options);
     if (value != null) {
-      data[elementName] = value
+      data[elementName] = value;
     }
   }
 
-  return data
+  return data;
 }
 
 /**
  * @param {HTMLFormElement} form
  * @param {string} elementName
+ * @param {Object} options
  * @return {(string|Array.<string>)} submittable value(s) in the form for a
  *   named element from its .elements collection, or null if there was no
  *   element with that name or the element had no submittable value(s).
  */
-function getNamedFormElementData(form, elementName, options) {
+function getNamedFormElementData(form, elementName) {
+  var options = arguments.length <= 2 || arguments[2] === undefined ? { trim: false } : arguments[2];
+
   if (!form) {
-    throw new Error('A form is required by getNamedFormElementData, was given form=' + form)
+    throw new Error('A form is required by getNamedFormElementData, was given form=' + form);
   }
   if (!elementName && toString.call(elementName) !== '[object String]') {
-    throw new Error('A form element name is required by getNamedFormElementData, was given elementName=' + elementName)
+    throw new Error('A form element name is required by getNamedFormElementData, was given elementName=' + elementName);
   }
 
-  var element = form.elements[elementName]
+  var element = form.elements[elementName];
   if (!element || element.disabled) {
-    return null
+    return null;
   }
-
-  var trim = !!(options && options.trim)
 
   if (!NODE_LIST_CLASSES[toString.call(element)]) {
-    return getFormElementValue(element, trim)
+    return getFormElementValue(element, options.trim);
   }
 
   // Deal with multiple form controls which have the same name
-  var data = []
-  var allRadios = true
+  var data = [];
+  var allRadios = true;
   for (var i = 0, l = element.length; i < l; i++) {
     if (element[i].disabled) {
-      continue
+      continue;
     }
     if (allRadios && element[i].type !== 'radio') {
-      allRadios = false
+      allRadios = false;
     }
-    var value = getFormElementValue(element[i], trim)
+    var value = getFormElementValue(element[i], options.trim);
     if (value != null) {
-      data = data.concat(value)
+      data = data.concat(value);
     }
   }
 
   // Special case for an element with multiple same-named inputs which were all
   // radio buttons: if there was a selected value, only return the value.
   if (allRadios && data.length === 1) {
-    return data[0]
+    return data[0];
   }
 
-  return (data.length > 0 ? data : null)
+  return data.length > 0 ? data : null;
 }
 
 /**
@@ -8223,57 +8227,57 @@ function getNamedFormElementData(form, elementName, options) {
  *   value(s), or null if it had none.
  */
 function getFormElementValue(element, trim) {
-  var value = null
+  var value = null;
+  var type = element.type;
 
-  if (element.type === 'select-one') {
+  if (type === 'select-one') {
     if (element.options.length) {
-      value = element.options[element.selectedIndex].value
+      value = element.options[element.selectedIndex].value;
     }
-    return value
+    return value;
   }
 
-  if (element.type === 'select-multiple') {
-    value = []
+  if (type === 'select-multiple') {
+    value = [];
     for (var i = 0, l = element.options.length; i < l; i++) {
       if (element.options[i].selected) {
-        value.push(element.options[i].value)
+        value.push(element.options[i].value);
       }
     }
     if (value.length === 0) {
-      value = null
+      value = null;
     }
-    return value
+    return value;
   }
 
   // If a file input doesn't have a files attribute, fall through to using its
   // value attribute.
-  if (element.type === 'file' && 'files' in element) {
+  if (type === 'file' && 'files' in element) {
     if (element.multiple) {
-      value = slice.call(element.files)
+      value = slice.call(element.files);
       if (value.length === 0) {
-        value = null
+        value = null;
       }
-    }
-    else {
+    } else {
       // Should be null if not present, according to the spec
-      value = element.files[0]
+      value = element.files[0];
     }
-    return value
+    return value;
   }
 
-  if (!CHECKED_INPUT_TYPES[element.type]) {
-    value = (trim ? element.value.replace(TRIM_RE, '') : element.value)
-  }
-  else if (element.checked) {
-    value = element.value
+  if (!CHECKED_INPUT_TYPES[type]) {
+    value = trim ? element.value.replace(TRIM_RE, '') : element.value;
+  } else if (element.checked) {
+    value = element.value;
   }
 
-  return value
+  return value;
 }
 
-getFormData.getNamedFormElementData = getNamedFormElementData
+getFormData.getNamedFormElementData = getNamedFormElementData;
 
-module.exports = getFormData
+exports['default'] = getFormData;
+module.exports = exports['default'];
 },{}],82:[function(require,module,exports){
 'use strict';
 
