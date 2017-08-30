@@ -1705,7 +1705,7 @@ QUnit.test("Forms with prefixes", 30, function() {
   deepEqual(p.errors("last_name").messages(), ["This field is required."])
   deepEqual(p.errors("birthday").messages(), ["This field is required."])
   deepEqual(p.boundField("first_name").errors().messages(), ["This field is required."])
-  try { p.boundField("person1-first_name"); } catch(e) { equal(e.message, "Form does not have a 'person1-first_name' field."); }
+  try { p.boundField("person1-first_name"); } catch(e) { equal(e.message, "'childConstructor' does not have a 'person1-first_name' field."); }
 
   // In this example, the data doesn't have a prefix, but the form requires
   // it, so the form doesn't "see" the fields.
