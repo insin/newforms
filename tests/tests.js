@@ -12,8 +12,27 @@ global.ReactDOMServer = window.ReactDOMServer = require('react-dom/server')
 global.isomorph = require('isomorph')
 global.forms = require('../dist/newforms.js')
 
-var tests = [
-      'extra.js'
+var tests = [ 'util.js'
+            , 'formats.js'
+            , 'locales.js'
+            , 'forms.js'
+            , 'forms-browser.js'
+            , 'forms-server.js'
+            , 'formsets.js'
+            , 'formsets-server.js'
+            , 'fields.js'
+            , 'fields-browser.js'
+            , 'fields-server.js'
+            , 'errormessages.js'
+            , 'errormessages-server.js'
+            , 'widgets.js'
+            , 'widgets-server.js'
+            , 'extra.js'
+            , 'regressions.js'
+            , 'docs.js'
+            , 'docs-server.js'
+            //, 'dom-initial.js'
+            , 'components.js'
             ].map(function(t) { return path.join(__dirname, t) })
 
 qqunit.Runner.run(tests, function(stats) {
