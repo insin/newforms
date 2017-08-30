@@ -67,6 +67,9 @@ function validationErrorEqual(validator, message, value) {
  * Custom assertion for contents created with ReactElements.
  */
 var reactHTMLEqual = (function() {
+  var HtmlDiffer = require('html-differ').HtmlDiffer,
+      htmlDiffer = new HtmlDiffer;
+
   var wrapperElement = /^<div>|<\/div>$/g
 
   return function reactHTMLEqual(component, expectedHTML, message) {
@@ -106,7 +109,11 @@ var reactHTMLEqual = (function() {
     if (wrapped) {
       html = html.replace(wrapperElement, '')
     }
-    equal(html, expectedHTML, message)
+
+    ok(
+      htmlDiffer.isEqual(html, expectedHTML),
+      message
+    )
   }
 })()
 
