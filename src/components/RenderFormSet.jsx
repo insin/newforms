@@ -2,6 +2,8 @@
 
 var object = require('isomorph/object')
 var React = require('react')
+var PropTypes = require('prop-types')
+var createReactClass = require('create-react-class')
 
 var FormRow = require('./FormRow')
 var FormSet = require('../FormSet')
@@ -12,26 +14,26 @@ var {NON_FIELD_ERRORS} = require('../constants')
 var {autoIdChecker, getProps} = require('../util')
 
 var formsetProps = {
-  canDelete: React.PropTypes.bool
-, canOrder: React.PropTypes.bool
-, extra: React.PropTypes.number
-, form: React.PropTypes.func
-, maxNum: React.PropTypes.number
-, minNum: React.PropTypes.number
-, validateMax: React.PropTypes.bool
-, validateMin: React.PropTypes.bool
+  canDelete: PropTypes.bool
+, canOrder: PropTypes.bool
+, extra: PropTypes.number
+, form: PropTypes.func
+, maxNum: PropTypes.number
+, minNum: PropTypes.number
+, validateMax: PropTypes.bool
+, validateMin: PropTypes.bool
 
 , autoId: autoIdChecker
-, controlled: React.PropTypes.bool
-, data: React.PropTypes.object
-, errorConstructor: React.PropTypes.func
-, files: React.PropTypes.object
-, initial: React.PropTypes.object
-, onChange: React.PropTypes.func
-, prefix: React.PropTypes.string
-, validation: React.PropTypes.oneOfType([
-    React.PropTypes.string
-  , React.PropTypes.object
+, controlled: PropTypes.bool
+, data: PropTypes.object
+, errorConstructor: PropTypes.func
+, files: PropTypes.object
+, initial: PropTypes.object
+, onChange: PropTypes.func
+, prefix: PropTypes.string
+, validation: PropTypes.oneOfType([
+    PropTypes.string
+  , PropTypes.object
   ])
 }
 
@@ -41,19 +43,19 @@ var formsetProps = {
  * mounted, and any additional props will be passed to the constructor as
  * options.
  */
-var RenderFormSet = React.createClass({
+var RenderFormSet = createReactClass({
   mixins: [ProgressMixin],
   propTypes: object.extend({}, formsetProps, {
-    className: React.PropTypes.string         // Class for the component wrapping all forms
-  , component: React.PropTypes.any            // Component to wrap all forms
-  , formComponent: React.PropTypes.any        // Component to wrap each form
-  , formset: React.PropTypes.oneOfType([      // Formset instance or constructor
-      React.PropTypes.func,
-      React.PropTypes.instanceOf(FormSet)
+    className: PropTypes.string         // Class for the component wrapping all forms
+  , component: PropTypes.any            // Component to wrap all forms
+  , formComponent: PropTypes.any        // Component to wrap each form
+  , formset: PropTypes.oneOfType([      // Formset instance or constructor
+      PropTypes.func,
+      PropTypes.instanceOf(FormSet)
     ])
-  , row: React.PropTypes.any                  // Component to render form rows
-  , rowComponent: React.PropTypes.any         // Component to wrap each form row
-  , useManagementForm: React.PropTypes.bool   // Should ManagementForm hidden fields be rendered?
+  , row: PropTypes.any                  // Component to render form rows
+  , rowComponent: PropTypes.any         // Component to wrap each form row
+  , useManagementForm: PropTypes.bool   // Should ManagementForm hidden fields be rendered?
   , __all__(props) {
       if (!props.form && !props.formset) {
         return new Error(

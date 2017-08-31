@@ -8,7 +8,7 @@ void function() {
 
 function renderField(field, cb) {
   var _Form  = forms.Form.extend({f: field})
-  var _Component = React.createClass({
+  var _Component = createReactClass({
     displayName: 'QUnitTestComponent'
   , render: function() {
       return React.createElement('form', {id: 'form'}

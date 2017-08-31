@@ -1,6 +1,8 @@
 'use strict';
 
 var React = require('react')
+var PropTypes = require('prop-types')
+var createReactClass = require('create-react-class')
 
 var BoundField = require('../BoundField')
 var ProgressMixin = require('./ProgressMixin')
@@ -10,14 +12,14 @@ var ProgressMixin = require('./ProgressMixin')
  * if a BoundField is given, it will be used to display a field's label, widget,
  * error message(s), help text and async pending indicator.
  */
-var FormRow = React.createClass({
+var FormRow = createReactClass({
   mixins: [ProgressMixin],
   propTypes: {
-    bf: React.PropTypes.instanceOf(BoundField)
-  , className: React.PropTypes.string
-  , component: React.PropTypes.any
-  , content: React.PropTypes.any
-  , hidden: React.PropTypes.bool
+    bf: PropTypes.instanceOf(BoundField)
+  , className: PropTypes.string
+  , component: PropTypes.any
+  , content: PropTypes.any
+  , hidden: PropTypes.bool
   , __all__(props) {
       if (!props.bf && !props.content) {
         return new Error(

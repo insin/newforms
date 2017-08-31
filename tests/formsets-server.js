@@ -959,8 +959,8 @@ QUnit.test("Empty forms are unbound", 3, function() {
   strictEqual(emptyForms[0].isInitialRender, true)
   strictEqual(emptyForms[1].isInitialRender, true)
   // The empty forms should be equal
-  equal(React.renderToStaticMarkup(React.createElement(RenderForm, {form: emptyForms[0]})),
-        React.renderToStaticMarkup(React.createElement(RenderForm, {form: emptyForms[1]})))
+  equal(ReactDOMServer.renderToStaticMarkup(React.createElement(RenderForm, {form: emptyForms[0]})),
+        ReactDOMServer.renderToStaticMarkup(React.createElement(RenderForm, {form: emptyForms[1]})))
 })
 
 QUnit.test("Empty formset is valid", 2, function() {

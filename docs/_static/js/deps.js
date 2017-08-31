@@ -4190,17 +4190,17 @@ var FormRow = React.createClass({displayName: "FormRow",
     }
     // If content was given, use it
     if (this.props.content) {
-      return React.createElement(this.props.component, React.__spread({},  attrs), this.props.content)
+      return React.createElement(this.props.component, Object.assign({},  attrs), this.props.content)
     }
     // Otherwise render a BoundField
     var bf = this.props.bf
     var isPending = bf.isPending()
-    return React.createElement(this.props.component, React.__spread({},  attrs), 
-      bf.label && bf.labelTag(), " ", bf.render(), 
-      isPending && ' ', 
-      isPending && this.renderProgress(), 
-      bf.errors().render(), 
-      bf.helpText && ' ', 
+    return React.createElement(this.props.component, Object.assign({},  attrs),
+      bf.label && bf.labelTag(), " ", bf.render(),
+      isPending && ' ',
+      isPending && this.renderProgress(),
+      bf.errors().render(),
+      bf.helpText && ' ',
       bf.helpTextTag()
     )
   }
@@ -6252,31 +6252,31 @@ var RenderForm = React.createClass({displayName: "RenderForm",
       return bf.render()
     })
 
-    return React.createElement(props.component, React.__spread({},  attrs), 
+    return React.createElement(props.component, Object.assign({},  attrs),
       topErrors.isPopulated() && React.createElement(props.row, {
-        className: form.errorCssClass, 
-        component: props.rowComponent, 
-        content: topErrors.render(), 
+        className: form.errorCssClass,
+        component: props.rowComponent,
+        content: topErrors.render(),
         key: form.addPrefix(NON_FIELD_ERRORS)}
-      ), 
+      ),
       form.visibleFields().map(function(bf)  {return React.createElement(props.row, {
-        bf: bf, 
-        className: bf.cssClasses(), 
-        component: props.rowComponent, 
-        key: bf.htmlName, 
+        bf: bf,
+        className: bf.cssClasses(),
+        component: props.rowComponent,
+        key: bf.htmlName,
         progress: props.progress}
-      );}), 
+      );}),
       form.nonFieldPending() && React.createElement(props.row, {
-        className: form.pendingRowCssClass, 
-        component: props.rowComponent, 
-        content: this.renderProgress(), 
+        className: form.pendingRowCssClass,
+        component: props.rowComponent,
+        content: this.renderProgress(),
         key: form.addPrefix('__pending__')}
-      ), 
+      ),
       hiddenFields.length > 0 && React.createElement(props.row, {
-        className: form.hiddenFieldRowCssClass, 
-        component: props.rowComponent, 
-        content: hiddenFields, 
-        hidden: true, 
+        className: form.hiddenFieldRowCssClass,
+        component: props.rowComponent,
+        content: hiddenFields,
+        hidden: true,
         key: form.addPrefix('__hidden__')}
       )
     )
@@ -6386,30 +6386,30 @@ var RenderFormSet = React.createClass({displayName: "RenderFormSet",
     }
     var topErrors = formset.nonFormErrors()
 
-    return React.createElement(props.component, React.__spread({},  attrs), 
+    return React.createElement(props.component, Object.assign({},  attrs),
       topErrors.isPopulated() && React.createElement(props.row, {
-        className: formset.errorCssClass, 
-        content: topErrors.render(), 
-        key: formset.addPrefix(NON_FIELD_ERRORS), 
+        className: formset.errorCssClass,
+        content: topErrors.render(),
+        key: formset.addPrefix(NON_FIELD_ERRORS),
         rowComponent: props.rowComponent}
-      ), 
+      ),
       formset.forms().map(function(form)  {return React.createElement(RenderForm, {
-        form: form, 
-        formComponent: props.formComponent, 
-        progress: props.progress, 
-        row: props.row, 
+        form: form,
+        formComponent: props.formComponent,
+        progress: props.progress,
+        row: props.row,
         rowComponent: props.rowComponent}
-      );}), 
+      );}),
       formset.nonFormPending() && React.createElement(props.row, {
-        className: formset.pendingRowCssClass, 
-        content: this.renderProgress(), 
-        key: formset.addPrefix('__pending__'), 
+        className: formset.pendingRowCssClass,
+        content: this.renderProgress(),
+        key: formset.addPrefix('__pending__'),
         rowComponent: props.rowComponent}
-      ), 
+      ),
       props.useManagementForm && React.createElement(RenderForm, {
-        form: formset.managementForm(), 
-        formComponent: props.formComponent, 
-        row: props.row, 
+        form: formset.managementForm(),
+        formComponent: props.formComponent,
+        row: props.row,
         rowComponent: props.rowComponent}
       )
     )
@@ -27839,7 +27839,7 @@ module.exports = performanceNow;
  *
  * @providesModule shallowEqual
  * @typechecks
- * 
+ *
  */
 
 'use strict';

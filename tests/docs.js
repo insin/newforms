@@ -29,7 +29,7 @@ function repr(o) {
 // ================================================================ overview ===
 
 QUnit.test('Overview - Customising form display', function() {
-  var Contact = React.createClass({displayName: 'Contact',
+  var Contact = createReactClass({displayName: 'Contact',
     getInitialState: function() {
       return {form: new ContactForm()}
     }
@@ -74,7 +74,7 @@ QUnit.test('Overview - Customising form display', function() {
 })
 
 QUnit.test("Overview - Looping over the Form's Fields", function() {
-  var Contact = React.createClass({displayName: 'Contact',
+  var Contact = createReactClass({displayName: 'Contact',
     getInitialState: function() {
       return {form: new ContactForm()}
     }
@@ -580,7 +580,7 @@ var MultiRecipientContactForm = forms.Form.extend({
 // =================================================================== react ===
 
 QUnit.test('Forms and React - Using a Form in a React component', function() {
-  var Contact = React.createClass({displayName: 'Contact',
+  var Contact = createReactClass({displayName: 'Contact',
     render: function() {
       return React.createElement('form', {ref:"form", onSubmit:this.onSubmit, action:"/contact", method:"POST"},
         React.createElement(forms.RenderForm, {form: ContactForm, ref: 'contactForm'}),
