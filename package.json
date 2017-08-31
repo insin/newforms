@@ -1,7 +1,7 @@
 {
   "name": "newforms-ajb",
   "description": "An isomorphic form-handling library for React",
-  "version": "0.0.1",
+  "version": "0.0.1-rc.1",
   "author": "Adam Becker <ad@mbecker.cc>",
   "keywords": [
     "isomorphic",
