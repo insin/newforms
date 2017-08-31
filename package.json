@@ -1,8 +1,8 @@
 {
-  "name": "newforms",
+  "name": "newforms-ajb",
   "description": "An isomorphic form-handling library for React",
-  "version": "0.13.2",
-  "author": "Jonny Buchanan <jonathan.buchanan@gmail.com>",
+  "version": "0.0.1",
+  "author": "Adam Becker <ad@mbecker.cc>",
   "keywords": [
     "isomorphic",
     "form-handling",
@@ -17,7 +17,7 @@
   "main": "./lib/newforms.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/insin/newforms.git"
+    "url": "http://github.com/ajb/newforms.git"
   },
   "dependencies": {
     "Concur": "^0.3.0",
